@@ -1,0 +1,3414 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>6 The HTTP Server 1.0.0.BUILD-SNAPSHOT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/quickStart.html"><strong>2</strong><span>Quick Start</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/ioc.html"><strong>3</strong><span>Inversion of Control</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/config.html"><strong>4</strong><span>Application Configuration</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/aop.html"><strong>5</strong><span>Aspect Oriented Programming</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/httpServer.html"><strong>6</strong><span>The HTTP Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/languageSupport.html"><strong>11</strong><span>Language Support</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/management.html"><strong>12</strong><span>Management &amp; Monitoring</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/security.html"><strong>13</strong><span>Security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>14</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/faq.html"><strong>15</strong><span>Frequently Asked Questions (FAQ)</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/problems.html"><strong>16</strong><span>Common Problems</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/breaks.html"><strong>17</strong><span>Breaking Changes</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>6 The HTTP Server</h1>
+
+                    <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#runningServer"><strong>6.1</strong><span>Running the Embedded Server</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#runningSpecificPort"><strong>6.2</strong><span>Running Server on a Specific Port</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#routing"><strong>6.3</strong><span>HTTP Routing</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#binding"><strong>6.4</strong><span>Simple Request Binding</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#requestResponse"><strong>6.5</strong><span>The HttpRequest and HttpResponse</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#producesAnnotation"><strong>6.6</strong><span>Response Content-Type</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#consumesAnnotation"><strong>6.7</strong><span>Accepted Request Content-Type</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#reactiveServer"><strong>6.8</strong><span>Reactive HTTP Request Processing</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#bodyAnnotation"><strong>6.8.1</strong><span>Using the @Body Annotation</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#reactiveResponses"><strong>6.8.2</strong><span>Reactive Responses</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#jsonBinding"><strong>6.9</strong><span>JSON Binding with Jackson</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#staticResources"><strong>6.10</strong><span>Serving Static Resources</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#errorHandling"><strong>6.11</strong><span>Error Handling</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#formData"><strong>6.12</strong><span>Handling Form Data</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#uploads"><strong>6.13</strong><span>File Uploads</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#transfers"><strong>6.14</strong><span>File Transfers</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#sse"><strong>6.15</strong><span>Server Sent Events</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#filters"><strong>6.16</strong><span>HTTP Filters</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#sessions"><strong>6.17</strong><span>HTTP Sessions</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#serverEvents"><strong>6.18</strong><span>Server Events</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#serverConfiguration"><strong>6.19</strong><span>Configuring the HTTP Server</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#threadPools"><strong>6.19.1</strong><span>Configuring Server Thread Pools</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#cors"><strong>6.19.2</strong><span>Configuring CORS</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#https"><strong>6.19.3</strong><span>Securing the Server with HTTPS</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="httpServer">6 The HTTP Server</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut includes both non-blocking HTTP server and client APIs based on <a href="https://netty.io">Netty</a>.</p>
+</div>
+<div class="paragraph">
+<p>The design of the HTTP server in Micronaut is optimized for interchanging messages between Microservices, typically in JSON, and is not intended as a full server-side MVC framework. For example, there is currently no support for server-side views or features typical of a traditional server-side MVC framework.</p>
+</div>
+<div class="paragraph">
+<p>The goal of the HTTP server is to make it as easy as possible to expose APIs that can be consumed by HTTP clients, whatever language they may be written in. To use the HTTP server you must have the <code>http-server-netty</code> dependency on your classpath. For example in <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:http-server-netty</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A "Hello World" server application written in Java can be seen below:</p>
+</div>
+<div class="listingblock">
+<div class="title">Micronaut Server Hello World</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
+
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">HelloController</span> {
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="directive">public</span> <span class="predefined-type">String</span> index() {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello World</span><span class="delimiter">&quot;</span></span>; <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The class is defined as a controller with the <a href="../api/io/micronaut/http/annotation/Controller.html">@Controller</a> annotation mapped to the path <code>/hello</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The scope of the <code>@Controller</code> is singleton</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>By defining method called <code>index</code>, by convention the method is exposed via the <code>/hello</code> URI</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="runningServer">6.1 Running the Embedded Server</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/runningServer.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To run the server simply create an <code>Application</code> class with a <code>static void main</code> method. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Micronaut Application Class</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.runtime.Micronaut</span>;
+
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Application</span> {
+
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
+        Micronaut.run(Application.class);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To run the application from a unit test you can use the <a href="../api/io/micronaut/runtime/server/EmbeddedServer.html">EmbeddedServer</a> interface. The following test is written in Groovy with <a href="http://spockframework.org">Spock</a>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Micronaut Spock Test</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.ApplicationContext</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.runtime.server.EmbeddedServer</span>
+<span class="keyword">import</span> <span class="include">spock.lang.*</span>
+
+<span class="type">class</span> <span class="class">HelloControllerSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="annotation">@Shared</span> <span class="annotation">@AutoCleanup</span> EmbeddedServer embeddedServer =
+            ApplicationContext.run(EmbeddedServer) <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="annotation">@Shared</span> <span class="annotation">@AutoCleanup</span> HttpClient client = HttpClient.create(embeddedServer.URL) <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test hello world response</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">expect</span>:
+        client.toBlocking() <i class="conum" data-value="3"></i><b>(3)</b>
+              .retrieve(HttpRequest.GET(<span class="string"><span class="delimiter">'</span><span class="content">/hello</span><span class="delimiter">'</span></span>)) == <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello World</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>EmbeddedServer</code> is run and Spock&#8217;s <code>@AutoCleanup</code> annotation ensures the server is stopped after the specification completes.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>EmbeddedServer</code> interface provides the <code>URL</code> of the server under test which runs on a random port.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="runningSpecificPort">6.2 Running Server on a Specific Port</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/runningSpecificPort.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The server starts by default on a random port. However, you can set the server to run on a specific port:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+  <span class="key">server</span>:
+    <span class="key">port</span>: <span class="string"><span class="content">8080</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="routing">6.3 HTTP Routing</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/routing.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/http/annotation/Controller.html">@Controller</a> annotation used in the previous section is one of <a href="../api/io/micronaut/http/annotation/package-summary.html">several annotations</a> that allow you to control the construction of HTTP routes.</p>
+</div>
+<div class="sect1">
+<h2 id="_uri_paths">URI Paths</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the previous example a value of <code>/hello</code> was specified as the path to the controller. If no value is specified to the <code>@Controller</code> action then the URI is formulated from the class name.</p>
+</div>
+<div class="paragraph">
+<p>The following table summarizes values for the <code>@Controller</code> annotation and the calculated base paths:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Class Name</th>
+<th class="tableblock halign-left valign-top">Annotation</th>
+<th class="tableblock halign-left valign-top">Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HelloController</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Controller</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/hello</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HelloWorldController</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Controller</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/hello-world</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HelloController</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Controller("/somepath")</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/somepath</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HelloController</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Controller("/")</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The value of the <code>@Controller</code> annotation is a <a href="https://tools.ietf.org/html/rfc6570">RFC-6570 URI template</a> you can therefore embed URI variables within the path using the syntax defined by the URI template specification.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Many other frameworks, including Spring, implement the URI template specification
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_uri_variables">URI Variables</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>URI variables can be referenced via method arguments. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">URI Variables Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
+
+<span class="annotation">@Controller</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">IssuesController</span> {
+
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/{number}</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="predefined-type">String</span> issue(<span class="predefined-type">Integer</span> number) {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Issue # </span><span class="delimiter">&quot;</span></span> + number + <span class="string"><span class="delimiter">&quot;</span><span class="content">!</span><span class="delimiter">&quot;</span></span>; <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>@Controller</code> annotation is specified without an argument resulting in a base URI of <code>/issues</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <a href="../api/io/micronaut/http/annotation/Get.html">Get</a> annotation is used to map the method to an HTTP <a href="../api/io/micronaut/http/HttpMethod.html#GET">GET</a> with a URI variable embedded in the URI called <code>number</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The value of the URI variable is referenced in the implementation</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Micronaut will map the URI <code>/issues/{number}</code> for the above controller. We can assert this is the case by writing a unit test, this time in Java and JUnit:</p>
+</div>
+<div class="listingblock">
+<div class="title">Testing URI Variables</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.ApplicationContext</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>;
+<span class="keyword">import</span> <span class="include">org.junit</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.runtime.server.EmbeddedServer</span>;
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.junit.Assert</span>.*;
+
+<span class="directive">public</span> <span class="type">class</span> <span class="class">IssuesControllerTest</span> {
+    <span class="directive">private</span> <span class="directive">static</span> EmbeddedServer server;
+    <span class="directive">private</span> <span class="directive">static</span> HttpClient client;
+
+    <span class="annotation">@BeforeClass</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> setupServer() {
+        server = ApplicationContext.run(EmbeddedServer.class);
+        client = server
+                    .getApplicationContext()
+                    .createBean(HttpClient.class, server.getURL());
+    }
+
+    <span class="annotation">@AfterClass</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> stopServer() {
+        <span class="keyword">if</span>(server != <span class="predefined-constant">null</span>) {
+            server.stop();
+        }
+        <span class="keyword">if</span>(client != <span class="predefined-constant">null</span>) {
+            client.stop();
+        }
+    }
+
+    <span class="annotation">@Test</span>
+    <span class="directive">public</span> <span class="type">void</span> testIssue() <span class="directive">throws</span> <span class="exception">Exception</span> {
+        <span class="predefined-type">String</span> body = client.toBlocking().retrieve(<span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/12</span><span class="delimiter">&quot;</span></span>); <i class="conum" data-value="2"></i><b>(2)</b>
+        assertNotNull(body);
+        assertEquals( <i class="conum" data-value="3"></i><b>(3)</b>
+                body,
+                <span class="string"><span class="delimiter">&quot;</span><span class="content">Issue # 12!</span><span class="delimiter">&quot;</span></span>
+        );
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>For JUnit you can write methods to start and stop the server for the scope of the test</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The tests sends a request to the URI <code>/issues/12</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>And then asserts the response is "Issue # 12"</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you invoke the previous endpoint without the required URI variable or with an invalid type, Micronaut responds with the appropriate HTTP failure codes as illustrated in the following Spock tests that use the <a href="#httpClient">HTTP client</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Testing for Response Errors</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/show/{number} with an invalid Integer number responds 400</span><span class="delimiter">&quot;</span></span>() {
+    when:
+    client.toBlocking().exchange(<span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/hello</span><span class="delimiter">&quot;</span></span>)
+
+    then:
+    HttpClientResponseException e = thrown(HttpClientResponseException)
+    e.status.code == <span class="integer">400</span>
+}
+
+<span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/show/{number} without number responds 404</span><span class="delimiter">&quot;</span></span>() {
+    when:
+    client.toBlocking().exchange(<span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/</span><span class="delimiter">&quot;</span></span>)
+
+    then:
+    HttpClientResponseException e = thrown(HttpClientResponseException)
+    e.status.code == <span class="integer">404</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the URI template in the previous example requires that the <code>number</code> variable is specified. You can specify optional URI templates with the syntax: <code>/issues{/number}</code> and by annotating the <code>number</code> parameter with <code>@Nullable</code>.</p>
+</div>
+<div class="paragraph">
+<p>The following table provides some examples of URI templates and what they match:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. URI Template Matching</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Template</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Matching URI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/{id}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Simple match</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/1</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/{id:2}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A variable of 2 characters max</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/10</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books{/id}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An optional URI variable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/10</code> or <code>/books</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/book{/id:[a-zA-Z]+}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An optional URI variable with regex</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/foo</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books{?max,offset}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional query parameters</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books?max=10&amp;offset=10</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books{/path:.*}{.ext}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Regex path match with extension</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/foo/bar.xml</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_routing_annotations">Routing Annotations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The previous example used the <a href="../api/io/micronaut/http/annotation/Get.html">@Get</a> annotation to add method that accepted HTTP <a href="../api/io/micronaut/http/HttpMethod.html#GET">GET</a> requests. The following tables summarizes the available annotations and how they map to the different HTTP methods:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 2. HTTP Routing Annotations</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Annotation</th>
+<th class="tableblock halign-left valign-top">HTTP Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Delete.html">@Delete</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#DELETE">DELETE</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Get.html">@Get</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#GET">GET</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Head.html">@Head</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#HEAD">HEAD</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Options.html">@Options</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#OPTIONS">OPTIONS</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Patch.html">@Patch</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#PATCH">PATCH</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Put.html">@Put</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#PUT">PUT</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Post.html">@Post</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#POST">POST</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Trace.html">@Trace</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#TRACE">TRACE</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>If no URI path is specified to any of the annotations then the method name is used as the URI. In other words both of the following methods are essentially equivalent and map to the <code>/hello</code> URI:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello</span><span class="delimiter">&quot;</span></span>)
+<span class="predefined-type">String</span> hello() {
+    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello World</span><span class="delimiter">&quot;</span></span>;
+}
+
+<span class="annotation">@Get</span>
+<span class="predefined-type">String</span> hello() {
+    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello World</span><span class="delimiter">&quot;</span></span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_building_routes_programmatically">Building Routes Programmatically</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you prefer to not use annotations and declare all of your routes in code then never fear, Micronaut has a flexible <a href="../api/io/micronaut/web/router/RouteBuilder.html">RouteBuilder</a> API that makes it a breeze to define routes programmatically.</p>
+</div>
+<div class="paragraph">
+<p>To start off with you should subclass <a href="../api/io/micronaut/web/router/DefaultRouteBuilder.html">DefaultRouteBuilder</a> and then simply inject the controller you wish to route to into the method and define your routes:</p>
+</div>
+<div class="listingblock">
+<div class="title">RouteBuilder Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.ExecutionHandleLocator</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.web.router.DefaultRouteBuilder</span>;
+
+<span class="keyword">import</span> <span class="include">javax.inject</span>.*;
+
+<span class="annotation">@Singleton</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">MyRoutes</span> <span class="directive">extends</span> DefaultRouteBuilder { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">public</span> MyRoutes(ExecutionHandleLocator executionHandleLocator, UriNamingStrategy uriNamingStrategy) {
+        <span class="local-variable">super</span>(executionHandleLocator, uriNamingStrategy);
+    }
+
+    <span class="annotation">@Inject</span>
+    <span class="type">void</span> issuesRoutes(IssuesController issuesController) { <i class="conum" data-value="2"></i><b>(2)</b>
+        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/show/{name}</span><span class="delimiter">&quot;</span></span>, issuesController, <span class="string"><span class="delimiter">&quot;</span><span class="content">issue</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">Integer</span>.class); <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Route definitions should subclass <a href="../api/io/micronaut/web/router/DefaultRouteBuilder.html">DefaultRouteBuilder</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Use <code>@Inject</code> to inject a method with the controllers you want to route to</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Use methods such as <a href="../api/io/micronaut/web/router/RouteBuilder.html#GET-java.lang.String-java.lang.Class-java.lang.String-java.lang.Class&#8230;&#8203;-">GET</a> to route to controller methods</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Unfortunately due to type erasure a Java method lambda reference cannot be used with the API. For Groovy there is a <code>GroovyRouteBuilder</code> class which can be subclassed that allows passing Groovy method references.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+
+
+<h2 id="binding">6.4 Simple Request Binding</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/binding.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The examples in the previous section demonstrates how Micronaut allows you to bind method parameters from URI path variables.</p>
+</div>
+<div class="sect1">
+<h2 id="_binding_annotations">Binding Annotations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can customize the name of the variable bound with the <a href="../api/io/micronaut/context/annotation/Parameter.html">@Parameter</a> annotation which accepts a value which is the name of the URI variable or request parameter to bind from.</p>
+</div>
+<div class="paragraph">
+<p>In addition, there are other annotations within the <a href="../api/io/micronaut/http/annotation/package-summary.html">io.micronaut.http.annotation</a> package to bind from different sources.</p>
+</div>
+<div class="paragraph">
+<p>The following table summarizes the annotations, their purpose and provides an example:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Parameter Binding Annotations</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Annotation</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Body.html">@Body</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows to specify the parameter the body of the request should bind to</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Body String body</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/CookieValue.html">@CookieValue</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Binds a parameter from a Cookie</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@CookieValue String myCookie</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Header.html">@Header</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Binds a parameter from an HTTP header</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Header String contentType</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Parameter.html">@Parameter</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bindings from a request URI variable or request parameter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Parameter String myParam</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>When a value is not specified to any binding annotation then the parameter name is used. In other words the following two methods are equivalent and both bind from a cookie called <code>myCookie</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">String</span> hello(<span class="annotation">@CookieValue</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">myCookie</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> myCookie) {
+    ...
+}
+
+<span class="predefined-type">String</span> hello(<span class="annotation">@CookieValue</span> <span class="predefined-type">String</span> myCookie) {
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since Java doesn&#8217;t allow hyphens in variable names in the case of headers the following two definitions are equivalent:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="predefined-type">String</span> hello(<span class="annotation">@Header</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">Content-Type</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> contentType) {
+    ...
+}
+
+<span class="directive">public</span> <span class="predefined-type">String</span> hello(<span class="annotation">@Header</span> <span class="predefined-type">String</span> contentType) {
+    ...
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_bindable_types">Bindable Types</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Generally any type that can be converted from a String representation to a Java type via the <a href="../api/io/micronaut/core/convert/ConversionService.html">ConversionService</a> API can be bound to.</p>
+</div>
+<div class="paragraph">
+<p>This includes most common Java types, however additional <a href="../api/io/micronaut/core/convert/TypeConverter.html">TypeConverter</a> instances can be registered simply be creating <code>@Singleton</code> beans of type <code>TypeConverter</code>.</p>
+</div>
+<div class="paragraph">
+<p>The handling of <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a> deserves special mention. Consider for example the following example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="predefined-type">String</span> hello(<span class="annotation">@Header</span> <span class="predefined-type">String</span> contentType) {
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case if the HTTP header <code>Content-Type</code> is not present in the request the route is considered invalid, since it cannot be satisfied and a HTTP 400 <code>BAD REQUEST</code> is returned.</p>
+</div>
+<div class="paragraph">
+<p>If you wish for the <code>Content-Type</code> header to be optional, you can instead write:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="predefined-type">String</span> hello(<span class="annotation">@Header</span> Optional&lt;<span class="predefined-type">String</span>&gt; contentType) {
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An empty <code>Optional</code> will be passed if the header is absent from the request.</p>
+</div>
+<div class="paragraph">
+<p>Additionally, any <code>DateTime</code> that conforms to <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#RFC_1123_DATE_TIME">RFC-1123</a> can be bound to a parameter, alternatively the format can be customized with the <a href="../api/io/micronaut/core/convert/format/Format.html">Format</a> annotation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="predefined-type">String</span> hello(<span class="annotation">@Header</span> ZonedDateTime date) {
+    ...
+}
+
+<span class="directive">public</span> <span class="predefined-type">String</span> hello(<span class="annotation">@Format</span>(<span class="string"><span class="delimiter">'</span><span class="content">dd/MM/yyy</span><span class="delimiter">'</span></span>) <span class="annotation">@Header</span> ZonedDateTime date) {
+    ...
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_variables_resolution">Variables resolution</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Micronaut will try to populate method arguments in the following order:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>URI variables like <code>/{id}</code>.</p>
+</li>
+<li>
+<p>If the request is a <code>GET</code> request from query parameters (ie. <code>?foo=bar</code>).</p>
+</li>
+<li>
+<p>If there is a <code>@Body</code> and request allows the body, bind the body to it.</p>
+</li>
+<li>
+<p>if the request can have a body and no <code>@Body</code> is defined then try parse the body (either JSON or form data) and
+bind the method arguments from the body.</p>
+</li>
+<li>
+<p>Finally, if the method arguments cannot be populated return <code>400 BAD REQUEST</code>.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+<h2 id="requestResponse">6.5 The HttpRequest and HttpResponse</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/requestResponse.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you need more control over request processing then you can instead write a method that receives the complete <a href="../api/io/micronaut/http/HttpRequest.html">HttpRequest</a>.</p>
+</div>
+<div class="paragraph">
+<p>In fact, there are several higher level interfaces that can be bound to method parameters of controllers. These include:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Bindable Micronaut Interfaces</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Interface</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpRequest.html">HttpRequest</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The full <code>HttpRequest</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String hello(HttpRequest request)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpHeaders.html">HttpHeaders</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All HTTP headers present in the request</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String hello(HttpHeaders headers)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpParameters.html">HttpParameters</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All HTTP parameters (either from URI variables or request parameters) present in the request</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String hello(HttpParameters params)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/cookie/Cookies.html">Cookies</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All the Cookies present in the request</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String hello(Cookies cookies)</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>In addition, for full control over the emitted HTTP response you can use the static factory methods of the <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> class which return a <a href="../api/io/micronaut/http/MutableHttpResponse.html">MutableHttpResponse</a>.</p>
+</div>
+<div class="paragraph">
+<p>The following example implements the previous <code>MessageController</code> example using the <a href="../api/io/micronaut/http/HttpRequest.html">HttpRequest</a> and <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> objects:</p>
+</div>
+<div class="listingblock">
+<div class="title">Request and Response Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
+
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">io.micronaut.http.HttpResponse</span>.*; <i class="conum" data-value="1"></i><b>(1)</b>
+
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/request</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">MessageController</span> {
+
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    HttpResponse&lt;<span class="predefined-type">String</span>&gt; hello(HttpRequest&lt;?&gt; request) {
+        <span class="predefined-type">String</span> name = request.getParameters()
+                             .getFirst(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>)
+                             .orElse(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nobody</span><span class="delimiter">&quot;</span></span>); <i class="conum" data-value="3"></i><b>(3)</b>
+
+        <span class="keyword">return</span> ok(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello </span><span class="delimiter">&quot;</span></span> + name + <span class="string"><span class="delimiter">&quot;</span><span class="content">!!</span><span class="delimiter">&quot;</span></span>)
+                 .header(<span class="string"><span class="delimiter">&quot;</span><span class="content">X-My-Header</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Foo</span><span class="delimiter">&quot;</span></span>); <i class="conum" data-value="4"></i><b>(4)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The factory methods of the <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> are statically imported</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The method is mapped to the URI <code>/hello</code> and accepts a <a href="../api/io/micronaut/http/HttpRequest.html">HttpRequest</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <a href="../api/io/micronaut/http/HttpRequest.html">HttpRequest</a> is used to obtain the value of a query parameter called <code>name</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <a href="../api/io/micronaut/http/HttpResponse.html#ok-T-">HttpResponse.ok(T)</a> method is used to return a <a href="../api/io/micronaut/http/MutableHttpResponse.html">MutableHttpResponse</a> with a text body. A header called <code>X-My-Header</code> is also added to the response object.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="producesAnnotation">6.6 Response Content-Type</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/producesAnnotation.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A Micronaut&#8217;s controller action produces <code>application-json</code> by default.
+Nonetheless you can change the <code>Content-Type</code> of the response with the <code>@Produces</code> annotation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/test</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">TestController</span> {
+
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>)
+    <span class="directive">public</span> HttpResponse index() {
+        <span class="keyword">return</span> HttpResponse.ok().body(<span class="string"><span class="delimiter">&quot;</span><span class="content">{</span><span class="char">\&quot;</span><span class="content">msg</span><span class="char">\&quot;</span><span class="content">:</span><span class="char">\&quot;</span><span class="content">This is JSON</span><span class="char">\&quot;</span><span class="content">}</span><span class="delimiter">&quot;</span></span>);
+    }
+
+    <span class="annotation">@Produces</span>(MediaType.TEXT_HTML) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="annotation">@Get</span>
+    <span class="directive">public</span> <span class="predefined-type">String</span> html() {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;html&gt;&lt;title&gt;&lt;h1&gt;HTML&lt;/h1&gt;&lt;/title&gt;&lt;body&gt;&lt;/body&gt;&lt;/html&gt;</span><span class="delimiter">&quot;</span></span>;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Annotate a controller&#8217;s action with <code>@Produces</code> to change the response content type.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="consumesAnnotation">6.7 Accepted Request Content-Type</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/consumesAnnotation.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A Micronaut&#8217;s controller action consumes <code>application-json</code> by default. Nonetheless, you can support other <code>Content-Type</code> with the <code>@Consumes</code> annotation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/test</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">TestController</span> {
+
+    <span class="annotation">@Consumes</span>([MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON]) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="annotation">@Post</span>
+    <span class="directive">public</span> HttpResponse multipleConsumes() {
+        <span class="keyword">return</span> HttpResponse.ok();
+    }
+
+    <span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="directive">public</span> HttpResponse index() {
+        <span class="keyword">return</span> HttpResponse.ok();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>@Consumes</code> annotation takes a <code>String[]</code> of supported media types for an incoming request.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>By default, a controller&#8217;s action consumes request with <code>Content-Type</code> of type <code>application-json</code>.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="reactiveServer">6.8 Reactive HTTP Request Processing</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/reactiveServer.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>As mentioned previously, Micronaut is built on Netty which is designed around an Event loop model and non-blocking I/O.</p>
+</div>
+<div class="paragraph">
+<p>Although it is recommended to following a non-blocking approach, in particular when making remote calls to other microservices, Micronaut acknowledges the fact that in real world scenarios developers encounter situations where the need arises to interface with blocking APIs and in order to facilitate this features blocking operation detection.</p>
+</div>
+<div class="paragraph">
+<p>If your controller method returns a non-blocking type such as an RxJava <code>Observable</code> or a <code>CompletableFuture</code> then Micronaut will use the Event loop thread to subscribe to the result.</p>
+</div>
+<div class="paragraph">
+<p>If however you return any other type then Micronaut will execute your <code>@Controller</code> method in a pre-configured I/O thread pool.</p>
+</div>
+<div class="paragraph">
+<p>This thread pool by default is a caching, unbound thread pool. However, you may wish to configure the nature of the thread pool. For example the following configuration will configure the I/O thread pool as a fixed thread pool with 75 threads (similar to what a traditional blocking server such as Tomcat uses in the thread per connection model):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="error">micronaut.executors.io.type=fixed</span>
+<span class="error">micronaut.executors.io.nThreads=75</span></code></pre>
+</div>
+</div>
+
+
+<h2 id="bodyAnnotation">6.8.1 Using the @Body Annotation</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/reactiveServer/bodyAnnotation.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To parse the request body, you first need to indicate to Micronaut the parameter which will receive the data. This is done with the <a href="../api/io/micronaut/http/annotation/Body.html">Body</a> annotation.</p>
+</div>
+<div class="paragraph">
+<p>The following example implements a simple echo server that echos the body sent in the request:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using the @Body annotation</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.reactivex.Flowable</span>;
+<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
+<span class="keyword">import</span> <span class="include">javax.validation.constraints.Size</span>;
+
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/receive</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">MessageController</span> {
+
+    <span class="annotation">@Post</span>(consumes = MediaType.TEXT_PLAIN) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">String</span> echo(<span class="annotation">@Size</span>(max = <span class="integer">1024</span>) <span class="annotation">@Body</span> <span class="predefined-type">String</span> text) { <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">return</span> text; <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/http/annotation/Post.html">Post</a> annotation is used with a <a href="../api/io/micronaut/http/MediaType.html">MediaType</a> of <code>text/plain</code> (the default is <code>application/json</code>).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <a href="../api/io/micronaut/http/annotation/Body.html">Body</a> annotation is used with a <code>javax.validation.constraints.Size</code> that limits the size of the body to at most 1MB</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The body is returned as the result of the method</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note that reading the request body is done in a non-blocking manner in that the request contents are read as the data becomes available and accumulated into the String passed to the method.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The <code>micronaut.server.maxRequestSize</code> setting in <code>application.yml</code> will limit the size of the data (the default maximum request size is 10MB) if no <code>@Size</code> constraint is specified.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Regardless of the limit, for a  large amount of data accumulating the data into a String in-memory may lead to memory strain on the server. A better approach is to include a Reactive library in your project (such as <code>RxJava 2.x</code>, <code>Reactor</code> or <code>Akka</code>) that supports the Reactive streams implementation and stream the data it becomes available:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using RxJava 2 to Read the request body</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(consumes = MediaType.TEXT_PLAIN) <i class="conum" data-value="1"></i><b>(1)</b>
+Single&lt;MutableHttpResponse&lt;<span class="predefined-type">String</span>&gt;&gt; echoFlow(<span class="annotation">@Body</span> Flowable&lt;<span class="predefined-type">String</span>&gt; text) { <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="keyword">return</span> text.collect(<span class="predefined-type">StringBuffer</span>::<span class="keyword">new</span>, <span class="predefined-type">StringBuffer</span>::append) <i class="conum" data-value="3"></i><b>(3)</b>
+               .map(buffer -&gt;
+                    HttpResponse.ok(buffer.toString())
+               );
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>In this case the method is altered to receive and return an RxJava 2.x <code>Flowable</code> type</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> is returned so that Micronaut will only emit the response once the operation completes without blocking.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>collect</code> method is used to accumulate the data in this simulated example, but it could for example write the data to logging service, database or whatever chunk by chunk</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="reactiveResponses">6.8.2 Reactive Responses</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/reactiveServer/reactiveResponses.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The previous section introduced the notion of Reactive programming using RxJava 2.x and Micronaut.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut supports returning common reactive types such as <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> or <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Observable.html">Observable</a> (or the <code>Mono</code> type from Reactor 3.x), an instance of <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> or <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a> from any controller method.</p>
+</div>
+<div class="paragraph">
+<p>The argument that is designated the body of the request using the <a href="../api/io/micronaut/http/annotation/Body.html">Body</a> annotation can also be a reactive type or a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a>.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut also uses these types to influence which thread pool to execute the method on. If the request is considered non-blocking (because it returns a non-blocking type) then the Netty event loop thread will be used to execute the method.</p>
+</div>
+<div class="paragraph">
+<p>If the method is considered blocking then the method is executed on the I/O thread pool, which Micronaut creates at startup.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+See the section on <a href="#threadPools">Configuring Thread Pools</a> for information on the thread pools that Micronaut sets up and how to configure them.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To summarize, the following table illustrates some common response types and their handling:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Micronaut Response Types</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example Signature</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Any type that implements the <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> interface</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flowable&lt;String&gt; hello()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A Java <code>CompletableFuture</code> instance</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CompletableFuture&lt;String&gt; hello()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> and optional response body</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HttpResponse&lt;Flowable&lt;String&gt;&gt; hello()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/CharSequence.html">CharSequence</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Any implementation of <code>CharSequence</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String hello()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">T</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Any simple POJO type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Book show()</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+When returning a Reactive type, the type of reactive type has an impact on the response returned. For example, when returning a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a>, Micronaut can not know the size of the response, so <code>Transfer-Encoding</code> type of <code>Chunked</code> is used. Whilst for types that emit a single result such as <code><a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a></code> the <code>Content-Length</code> header will be populated.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="jsonBinding">6.9 JSON Binding with Jackson</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/jsonBinding.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The most common data interchange format nowadays is JSON.</p>
+</div>
+<div class="paragraph">
+<p>In fact, the defaults in the <a href="../api/io/micronaut/http/annotation/Controller.html">Controller</a> annotation specify that the controllers in Micronaut consume and produce JSON by default.</p>
+</div>
+<div class="paragraph">
+<p>In order to do so in a non-blocking manner Micronaut builds on the <a href="https://github.com/FasterXML/jackson">Jackson</a> Asynchronous JSON parsing API and Netty such that the reading of incoming JSON is done in a non-blocking manner.</p>
+</div>
+<div class="sect1">
+<h2 id="_binding_using_reactive_frameworks">Binding using Reactive Frameworks</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>From a developer perspective however, you can generally just work with Plain Old Java Objects (POJOs) and can optionally use a Reactive framework such as RxJava or Reactor. The following is an example of a controller that reads and saves an incoming POJO in a non-blocking way from JSON:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using RxJava 2 to Read the JSON</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/people</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">PersonController</span> {
+
+    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, Person&gt; inMemoryDatastore = <span class="keyword">new</span> <span class="predefined-type">LinkedHashMap</span>&lt;&gt;();
+
+    <span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> Single&lt;HttpResponse&lt;Person&gt;&gt; save(<span class="annotation">@Body</span> Single&lt;Person&gt; person) { <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="keyword">return</span> person.map(p -&gt; {
+                    inMemoryDatastore.put(p.getFirstName(), p); <i class="conum" data-value="2"></i><b>(2)</b>
+                    <span class="keyword">return</span> HttpResponse.created(p); <i class="conum" data-value="3"></i><b>(3)</b>
+                }
+        );
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The method receives a RxJava <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> which emits the POJO once the JSON has been read</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>map</code> method is used to store the instance in <code>Map</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>An <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> is returned</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Using CURL from the command line you can POST JSON to the <code>/people</code> URI for the server to receive it:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using CURL to Post JSON</div>
+<div class="content">
+<pre>$ curl -X POST localhost:8080/people -d '{"firstName":"Fred","lastName":"Flintstone","age":45}'</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_binding_using_completablefuture">Binding Using CompletableFuture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The same method as the previous example can also be written with the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a> API instead:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using CompletableFuture to Read the JSON</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> CompletableFuture&lt;HttpResponse&lt;Person&gt;&gt; save(<span class="annotation">@Body</span> CompletableFuture&lt;Person&gt; person) {
+    <span class="keyword">return</span> person.thenApply(p -&gt; {
+                inMemoryDatastore.put(p.getFirstName(), p);
+                <span class="keyword">return</span> HttpResponse.created(p);
+            }
+    );
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example uses the <code>thenApply</code> method to achieve the same as the previous example.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_binding_using_pojos">Binding using POJOs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Note however, that if your method does not do any blocking I/O then you can just as easily write:</p>
+</div>
+<div class="listingblock">
+<div class="title">Binding JSON POJOs</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> HttpResponse&lt;Person&gt; save(<span class="annotation">@Body</span> Person person) {
+    inMemoryDatastore.put(person.getFirstName(), person);
+    <span class="keyword">return</span> HttpResponse.created(person);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Micronaut will still using non-blocking I/O to read the JSON and only execute your method once the data has been read.</p>
+</div>
+<div class="paragraph">
+<p>In other words, as a rule reactive types should be used when you plan to do further downstream I/O operations in which case they can greatly simplify composing operations.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The output produced by Jackson can be customized in a variety of manners, from defining Jackson modules to using <a href="https://github.com/FasterXML/jackson-annotations/wiki/Jackson-Annotations">Jackson&#8217;s annotations</a>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jackson_configuration">Jackson Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Jackson ObjectMapper can be configured through normal configuration with the <a href="../api/io/micronaut/jackson/JacksonConfiguration.html">JacksonConfiguration</a> class.</p>
+</div>
+<div class="paragraph">
+<p>All jackson configuration keys start with <code>jackson</code>.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">dateFormat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The date format</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">locale</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uses <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#forLanguageTag-java.lang.String-">Locale.forLanguageTag</a>. Example: <code>en-US</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">timeZone</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uses <a href="https://docs.oracle.com/javase/8/docs/api/java/util/TimeZone.html#getTimeZone-java.lang.String-">TimeZone.getTimeZone</a>. Example: 'PST`</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">serializationInclusion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">One of <a href="http://fasterxml.github.io/jackson-annotations/javadoc/2.9/com/fasterxml/jackson/annotation/JsonInclude.Include.html">JsonInclude.Include</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="_features">Features</h3>
+<div class="paragraph">
+<p>All features can be configured with their name as the key and a boolean to indicate enabled or disabled.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">serialization</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Map</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://fasterxml.github.io/jackson-databind/javadoc/2.9/com/fasterxml/jackson/databind/SerializationFeature.html">SerializationFeature</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deserialization</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Map</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://fasterxml.github.io/jackson-databind/javadoc/2.9/com/fasterxml/jackson/databind/DeserializationFeature.html">DeserializationFeature</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mapper</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Map</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://fasterxml.github.io/jackson-databind/javadoc/2.9/com/fasterxml/jackson/databind/MapperFeature.html">MapperFeature</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">parser</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Map</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://fasterxml.github.io/jackson-core/javadoc/2.9/com/fasterxml/jackson/core/JsonParser.Feature.html">JsonParser.Feature</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">generator</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Map</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://fasterxml.github.io/jackson-core/javadoc/2.9/com/fasterxml/jackson/core/JsonGenerator.Feature.html">JsonGenerator.Feature</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">jackson</span>:
+    <span class="key">serialization</span>:
+        <span class="key">indentOutput</span>: <span class="string"><span class="content">true</span></span>
+        <span class="key">writeDatesAsTimestamps</span>: <span class="string"><span class="content">false</span></span>
+    <span class="key">deserialization</span>:
+        <span class="key">useBigIntegerForInts</span>: <span class="string"><span class="content">true</span></span>
+        <span class="key">failOnUnknownProperties</span>: <span class="string"><span class="content">false</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_beans">Beans</h3>
+<div class="paragraph">
+<p>In addition to configuration, beans can be registered to customize Jackson. All beans that extend any of the following classes will be registered with the object mapper.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://fasterxml.github.io/jackson-databind/javadoc/2.9/com/fasterxml/jackson/databind/Module.html">Module</a></p>
+</li>
+<li>
+<p><a href="http://fasterxml.github.io/jackson-databind/javadoc/2.9/com/fasterxml/jackson/databind/JsonDeserializer.html">JsonDeserializer</a></p>
+</li>
+<li>
+<p><a href="http://fasterxml.github.io/jackson-databind/javadoc/2.9/com/fasterxml/jackson/databind/JsonSerializer.html">JsonSerializer</a></p>
+</li>
+<li>
+<p><a href="http://fasterxml.github.io/jackson-databind/javadoc/2.9/com/fasterxml/jackson/databind/deser/BeanDeserializerModifier.html">BeanDeserializerModifier</a></p>
+</li>
+<li>
+<p><a href="http://fasterxml.github.io/jackson-databind/javadoc/2.9/com/fasterxml/jackson/databind/ser/BeanSerializerModifier.html">BeanSerializerModifier</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+<h2 id="staticResources">6.10 Serving Static Resources</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/staticResources.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Static resource resolution is disabled by default.</p>
+</div>
+<div class="paragraph">
+<p>The following configuration options are available through <a href="../api/io/micronaut/web/router/resource/StaticResourceConfiguration.html">StaticResourceConfiguration</a>:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether static resources will be resolved at all</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mapping</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The path resources should be served from. Uses ant path matching. Options might be <code>/<strong>*</strong>*</code> or <code>/static/<strong>*</strong>*</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">paths</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List&lt;String&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A list of paths either starting with <code>classpath:</code> or <code>file:</code>. You can serve files from anywhere on disk or the classpath. For example to serve static resources from <code>src/main/resources/public</code>, you would use <code>classpath:public</code> as the path.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Here is what an example YAML configuration might look like (note that the <code>router</code> declaration must be at the top-level of the file and not nested under any other items):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">router</span>:
+    <span class="key">static</span>:
+        <span class="key">resources</span>:
+            <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+            <span class="key">mapping</span>: <span class="string"><span class="content">/static/**</span></span>
+            <span class="key">paths</span>: <span class="string"><span class="content">classpath:public</span></span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<code>index.html</code> will be resolved by default. In the above example a request to <code>/static</code> will attempt to retrieve <code>src/main/resources/public/index.html</code>.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="errorHandling">6.11 Error Handling</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/errorHandling.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Sometimes with distributing applications, bad things happen. Thus having a good way to handle errors is important.</p>
+</div>
+<div class="paragraph">
+<p>To define local error handling simply define a method in a controller where the last argument is the type of the exception you wish to handle. For example the following method will handling JSON parse exceptions from Jackson for the scope of the declaring controller:</p>
+</div>
+<div class="listingblock">
+<div class="title">Handling Controller Exceptions</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> HttpResponse&lt;JsonError&gt; jsonError(HttpRequest request, JsonParseException jsonParseException) { <i class="conum" data-value="1"></i><b>(1)</b>
+    JsonError error = <span class="keyword">new</span> JsonError(<span class="string"><span class="delimiter">&quot;</span><span class="content">Invalid JSON: </span><span class="delimiter">&quot;</span></span> + jsonParseException.getMessage()) <i class="conum" data-value="2"></i><b>(2)</b>
+            .link(Link.SELF, Link.of(request.getUri()));
+
+    <span class="keyword">return</span> HttpResponse.&lt;JsonError&gt;status(HttpStatus.BAD_REQUEST, <span class="string"><span class="delimiter">&quot;</span><span class="content">Fix Your JSON</span><span class="delimiter">&quot;</span></span>)
+            .body(error); <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A method that explicitly handles <code>JsonParseException</code> is declared</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>An instance of <a href="../api/io/micronaut/http/hateos/JsonError.html">JsonError</a> is returned.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>A custom response is returned to handle the error</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note that the previous example will only handle errors thrown from the declaring controller. To handle errors globally you should use the <a href="../api/io/micronaut/http/annotation/Error.html">Error</a> annotation with the <code>global</code> attribute set to <code>true</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Handling Global Errors</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Error</span>(global = <span class="predefined-constant">true</span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="directive">public</span> HttpResponse&lt;JsonError&gt; error(HttpRequest request, <span class="predefined-type">Throwable</span> e) {
+    JsonError error = <span class="keyword">new</span> JsonError(<span class="string"><span class="delimiter">&quot;</span><span class="content">Bad Things Happened: </span><span class="delimiter">&quot;</span></span> + e.getMessage()) <i class="conum" data-value="2"></i><b>(2)</b>
+            .link(Link.SELF, Link.of(request.getUri()));
+
+    <span class="keyword">return</span> HttpResponse.&lt;JsonError&gt;serverError()
+            .body(error); <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/http/annotation/Error.html">Error</a> is used to declare the method a global error handler</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A <a href="../api/io/micronaut/http/hateos/JsonError.html">JsonError</a> instance is returned for all errors</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>An <a href="../api/io/micronaut/http/HttpStatus.html#INTERNAL_SERVER_ERROR">INTERNAL_SERVER_ERROR</a> response is returned</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can also specify an exception type to the <a href="../api/io/micronaut/http/annotation/Error.html">Error</a> to add a more specific exception handler
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Finally, you can also add global handlers for error status responses:</p>
+</div>
+<div class="listingblock">
+<div class="title">Handling Global HTTP Status Errors</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Error</span>(status = HttpStatus.NOT_FOUND, global = <span class="predefined-constant">true</span>)
+<span class="directive">public</span> HttpResponse&lt;JsonError&gt; notFound(HttpRequest request) { <i class="conum" data-value="1"></i><b>(1)</b>
+    JsonError error = <span class="keyword">new</span> JsonError(<span class="string"><span class="delimiter">&quot;</span><span class="content">Page Not Found</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+            .link(Link.SELF, Link.of(request.getUri()));
+
+    <span class="keyword">return</span> HttpResponse.&lt;JsonError&gt;notFound()
+            .body(error); <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/http/annotation/Error.html">Error</a> declares which <a href="../api/io/micronaut/http/HttpStatus.html">HttpStatus</a> error code to handle (in this case 404)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A <a href="../api/io/micronaut/http/hateos/JsonError.html">JsonError</a> instance is returned for all 404 responses</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>An <a href="../api/io/micronaut/http/HttpStatus.html#NOT_FOUND">NOT_FOUND</a> response is returned</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+A few things to note about the <a href="../api/io/micronaut/http/annotation/Error.html">Error</a> annotation. Two identical <code>@Error</code> annotations that are
+global cannot be declared. Two identical <code>@Error</code> annotations that are non-global cannot be declared in the same controller.
+If an <code>@Error</code> annotation with the same parameter exists as global and another as a local, the local one will take precedence.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="formData">6.12 Handling Form Data</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/formData.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In order to make data binding model customizations consistent between form data and JSON, Micronaut uses Jackson to implement binding data from form submissions.</p>
+</div>
+<div class="paragraph">
+<p>The advantage of this approach is that the same Jackson annotations used for customizing JSON binding can be used for form submissions too.</p>
+</div>
+<div class="paragraph">
+<p>What this means in practise is that in order to bind regular form data the only change required to the previous JSON binding code is updating the <a href="../api/io/micronaut/http/MediaType.html">MediaType</a> consumed:</p>
+</div>
+<div class="listingblock">
+<div class="title">Binding Form Data to POJOs</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(uri=<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>, consumes=MediaType.APPLICATION_FORM_URLENCODED)
+<span class="directive">public</span> HttpResponse&lt;Person&gt; save(<span class="annotation">@Body</span> Person person) {
+    inMemoryDatastore.put(person.getFirstName(), person);
+    <span class="keyword">return</span> HttpResponse.created(person);
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+To avoid denial of service attacks, collection types and arrays created during binding are limited by the setting <code>jackson.arraySizeThreshold</code> in <code>application.yml</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Alternatively, instead of using a POJO you can bind form data directly to method parameters (which works with JSON too!):</p>
+</div>
+<div class="listingblock">
+<div class="title">Binding Form Data to Parameters</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(uri=<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>, consumes=MediaType.APPLICATION_FORM_URLENCODED)
+<span class="directive">public</span> HttpResponse&lt;Person&gt; save(<span class="predefined-type">String</span> firstName, <span class="predefined-type">String</span> lastName, Optional&lt;<span class="predefined-type">Integer</span>&gt; age) {
+    Person p = <span class="keyword">new</span> Person(firstName, lastName);
+    age.ifPresent(p::setAge);
+    inMemoryDatastore.put(p.getFirstName(), p);
+    <span class="keyword">return</span> HttpResponse.created(p);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see from the example above, this approach allows you to use features such as support for <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a> types and restrict the parameters to be bound (When using POJOs you must be careful to use Jackson annotations to exclude properties that should not be bound).</p>
+</div>
+
+
+<h2 id="uploads">6.13 File Uploads</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/uploads.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Handling of file uploads has special treatment in Micronaut. Support is provided for streaming of uploads in a non-blocking manner through streaming uploads or completed uploads.</p>
+</div>
+<div class="paragraph">
+<p>To receive data from a multipart request, set the <code>consumes</code> argument of the method annotation to <a href="../api/io/micronaut/http/MediaType.html#MULTIPART_FORM_DATA">MULTIPART_FORM_DATA</a>. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(consumes = MediaType.MULTIPART_FORM_DATA)
+HttpResponse upload( ... )</code></pre>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_route_arguments">Route Arguments</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>How the files are received by your method is determined by the type of the arguments. Data can be received a chunk at a time or when an upload is completed.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If the route argument name can&#8217;t or shouldn&#8217;t match the name of the part in the request, simply add the <a href="../api/io/micronaut/http/annotation/Part.html">@Part</a> annotation to the argument and specify the name that is expected to be in the request.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_chunk_data_types">Chunk Data Types</h3>
+<div class="paragraph">
+<p><a href="../api/io/micronaut/http/multipart/PartData.html">PartData</a> is the data type used to represent a chunk of data received in a multipart request. There are methods on the <a href="../api/io/micronaut/http/multipart/PartData.html">PartData</a> interface to convert the data to a <code>byte[]</code>, <a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html">InputStream</a>, or a <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html">ByteBuffer</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Data can only be retrieved from a <a href="../api/io/micronaut/http/multipart/PartData.html">PartData</a> once. The underlying buffer will be released which causes further attempts to fail.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Route arguments of type <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher&lt;PartData&gt;</a> will be treated as only intended to receive a single file and each chunk of the received file will be sent downstream. If the generic type is something other than <a href="../api/io/micronaut/http/multipart/PartData.html">PartData</a>, conversion will be attempted using Micronaut&#8217;s conversion service. Conversions to <code>String</code> and <code>byte[]</code> are supported by default.</p>
+</div>
+<div class="paragraph">
+<p>If requirements dictate you must have knowledge about the metadata of the file being received, a special class called <a href="../api/io/micronaut/http/multipart/StreamingFileUpload.html">StreamingFileUpload</a> has been created that is a <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher&lt;PartData&gt;</a>, but also has file information like the content type and file name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.multipart.StreamingFileUpload</span>;
+<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
+<span class="keyword">import</span> <span class="include">org.reactivestreams.Publisher</span>;
+
+<span class="keyword">import</span> <span class="include">java.io.File</span>;
+
+<span class="annotation">@Controller</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">UploadController</span> {
+
+    <span class="annotation">@Post</span>(value = <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>, consumes = MediaType.MULTIPART_FORM_DATA) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">public</span> Single&lt;HttpResponse&lt;<span class="predefined-type">String</span>&gt;&gt; upload(StreamingFileUpload file) <span class="directive">throws</span> <span class="exception">IOException</span> { <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="predefined-type">File</span> tempFile = <span class="predefined-type">File</span>.createTempFile(file.getFilename(), <span class="string"><span class="delimiter">&quot;</span><span class="content">temp</span><span class="delimiter">&quot;</span></span>);
+        Publisher&lt;<span class="predefined-type">Boolean</span>&gt; uploadPublisher = file.transferTo(tempFile); <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="keyword">return</span> Single.fromPublisher(uploadPublisher)  <i class="conum" data-value="4"></i><b>(4)</b>
+            .map(success -&gt; {
+                <span class="keyword">if</span> (success) {
+                    <span class="keyword">return</span> HttpResponse.ok(<span class="string"><span class="delimiter">&quot;</span><span class="content">Uploaded</span><span class="delimiter">&quot;</span></span>);
+                } <span class="keyword">else</span> {
+                    <span class="keyword">return</span> HttpResponse.&lt;<span class="predefined-type">String</span>&gt;status(HttpStatus.CONFLICT)
+                                       .body(<span class="string"><span class="delimiter">&quot;</span><span class="content">Upload Failed</span><span class="delimiter">&quot;</span></span>);
+                }
+            });
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The method is set to consume <a href="../api/io/micronaut/http/MediaType.html#MULTIPART_FORM_DATA">MULTIPART_FORM_DATA</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The method parameters match form attribute names. In this case the <code>file</code> will match for example an <code>&lt;input type="file" name="file"&gt;</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <a href="../api/io/micronaut/http/multipart/StreamingFileUpload.html#transferTo-java.lang.String-">StreamingFileUpload.transferTo(java.lang.String)</a> method is used to transfer the file to the server. The method returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The returned <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> subscribes to the <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> and outputs a response once the upload is complete, without blocking.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_whole_data_types">Whole Data Types</h3>
+<div class="paragraph">
+<p>Route arguments that are not publishers will cause the route execution to be delayed until the upload has finished. The received data will attempt to be converted to the requested type. Conversions to a <code>String</code> or <code>byte[]</code> are supported by default. In addition, the file can be converted to a POJO if a media type codec has been registered that supports the media type of the file. A media type codec is included by default that allows conversion of JSON files to POJOs.</p>
+</div>
+<div class="paragraph">
+<p>If requirements dictate you must have knowledge about the metadata of the file being received, a special class called <a href="../api/io/micronaut/http/multipart/CompletedFileUpload.html">CompletedFileUpload</a> has been created that has methods to retrieve the data of the file, but also has file information like the content type and file name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.multipart.CompletedFileUpload</span>;
+
+<span class="keyword">import</span> <span class="include">java.io.IOException</span>;
+<span class="keyword">import</span> <span class="include">java.nio.file</span>.*;
+
+<span class="annotation">@Controller</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">UploadController</span> {
+
+    <span class="annotation">@Post</span>(value = <span class="string"><span class="delimiter">&quot;</span><span class="content">/completed</span><span class="delimiter">&quot;</span></span>, consumes = MediaType.MULTIPART_FORM_DATA) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">public</span> HttpResponse&lt;<span class="predefined-type">String</span>&gt; uploadCompleted(CompletedFileUpload file) { <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">try</span> {
+            <span class="predefined-type">File</span> tempFile = <span class="predefined-type">File</span>.createTempFile(file.getFilename(), <span class="string"><span class="delimiter">&quot;</span><span class="content">temp</span><span class="delimiter">&quot;</span></span>); <i class="conum" data-value="3"></i><b>(3)</b>
+            Path path = Paths.get(tempFile.getAbsolutePath());
+            Files.write(path, file.getBytes()); <i class="conum" data-value="3"></i><b>(3)</b>
+            <span class="keyword">return</span> HttpResponse.ok(<span class="string"><span class="delimiter">&quot;</span><span class="content">Uploaded</span><span class="delimiter">&quot;</span></span>);
+        } <span class="keyword">catch</span> (<span class="exception">IOException</span> exception) {
+            <span class="keyword">return</span> HttpResponse.badRequest(<span class="string"><span class="delimiter">&quot;</span><span class="content">Upload Failed</span><span class="delimiter">&quot;</span></span>);
+        }
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The method is set to consume <a href="../api/io/micronaut/http/MediaType.html#MULTIPART_FORM_DATA">MULTIPART_FORM_DATA</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The method parameters match form attribute names. In this case the <code>file</code> will match for example an <code>&lt;input type="file" name="file"&gt;</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>CompletedFileUpload</code> instance gives access to metadata about the upload as well as access to the file&#8217;s contents.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_multiple_uploads">Multiple Uploads</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_different_names">Different Names</h3>
+<div class="paragraph">
+<p>If a multipart request supplies multiple uploads that each have a different part name, simply create an argument to your route that receives each part. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">HttpResponse upload(<span class="predefined-type">String</span> title, <span class="predefined-type">String</span> name)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A route method signature like the above will expect 2 different parts with the names "title" and "name".</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_same_name">Same Name</h3>
+<div class="paragraph">
+<p>To handle receiving multiple parts with the same part name, the argument must be a <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a>. When used in one of the following ways, the publisher will emit one item per file found with the specified name. The publisher must accept one of the following types:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../api/io/micronaut/http/multipart/StreamingFileUpload.html">StreamingFileUpload</a></p>
+</li>
+<li>
+<p><a href="../api/io/micronaut/http/multipart/CompletedFileUpload.html">CompletedFileUpload</a></p>
+</li>
+<li>
+<p>Any POJO assuming a media codec is found that supports the content type</p>
+</li>
+<li>
+<p>Another <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> that accepts one of the chunked data types described above</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">HttpResponse upload(Publisher&lt;StreamingFileUpload&gt; files)
+HttpResponse upload(Publisher&lt;CompletedFileUpload&gt; files)
+HttpResponse upload(Publisher&lt;MyObject&gt; files)
+HttpResponse upload(Publisher&lt;Publisher&lt;PartData&gt;&gt; files)</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<h2 id="transfers">6.14 File Transfers</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/transfers.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut supports the sending of files to the client in a couple of easy ways.</p>
+</div>
+<div class="sect1">
+<h2 id="_sending_file_objects">Sending File Objects</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It is possible to simply return a <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html">File</a> object from your controller method and the data will be returned to the client.</p>
+</div>
+<div class="paragraph">
+<p>For files that should be downloaded (i.e. using the <code>Content-Disposition</code> header) you should instead construct an <a href="../api/io/micronaut/http/server/types/files/AttachedFile.html">AttachedFile</a> with the file object and the name you would like to be used. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Sending an AttachedFile</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>
+<span class="directive">public</span> AttachedFile download() {
+    <span class="predefined-type">File</span> file = ...
+    return <span class="keyword">new</span> AttachedFile(file, <span class="string"><span class="delimiter">&quot;</span><span class="content">myfile.txt</span><span class="delimiter">&quot;</span></span>);
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_sending_an_inputstream">Sending an InputStream</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For cases where a reference to a <code>File</code> object is not possible (for example resources contained within JAR files), Micronaut supports transferring of input streams. To return a stream of data from the controller method, construct a <a href="../api/io/micronaut/http/server/types/files/StreamedFile.html">StreamedFile</a>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The constructor for <code>StreamedFile</code> also accepts a <code>java.net.URL</code> for your convenience.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Sending a StreamedFile</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>
+<span class="directive">public</span> StreamedFile download() {
+    <span class="predefined-type">InputStream</span> inputStream = ...
+    return <span class="keyword">new</span> StreamedFile(inputStream, <span class="string"><span class="delimiter">&quot;</span><span class="content">download.txt</span><span class="delimiter">&quot;</span></span>)
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>Content-Type</code> header of file responses will be calculated based on the name of the file.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The server supports returning <code>304</code> (Not Modified) responses if the files being transferred have not changed and the request contains the appropriate header. In addition, if the client accepts encoded responses, Micronaut will encode the file if it is deemed appropriate. Encoding will happen if the file is text based and greater than 1 kilobyte.</p>
+</div>
+</div>
+</div>
+
+
+<h2 id="sse">6.15 Server Sent Events</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/sse.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The Micronaut HTTP server supports emitting <a href="https://en.wikipedia.org/wiki/Server-sent_events">Server Sent Events (SSE)</a> using the <a href="../api/io/micronaut/http/sse/Event.html">Event</a> API.</p>
+</div>
+<div class="paragraph">
+<p>To emit events from the server you simply return a Reactive Streams <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> that emits objects of type <a href="../api/io/micronaut/http/sse/Event.html">Event</a>.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> itself could publish events from a background task, via an event system or whatever.</p>
+</div>
+<div class="paragraph">
+<p>Imagine for an example a event stream of news headlines, you may define a data class as follows:</p>
+</div>
+<div class="listingblock">
+<div class="title">Headline.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">Headline</span> {
+    <span class="directive">private</span> <span class="predefined-type">String</span> title;
+    <span class="directive">private</span> <span class="predefined-type">String</span> description;
+
+    <span class="directive">public</span> Headline(<span class="predefined-type">String</span> title, <span class="predefined-type">String</span> description) {
+        <span class="local-variable">this</span>.title = title;
+        <span class="local-variable">this</span>.description = description;
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getTitle() {
+        <span class="keyword">return</span> title;
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getDescription() {
+        <span class="keyword">return</span> description;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To emit news headline events you can write a controller that returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> of <a href="../api/io/micronaut/http/sse/Event.html">Event</a> instances using which ever Reactive library you prefer. The example below uses RxJava 2&#8217;s <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> via the <code>generate</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="title">Publishing Server Sent Events from a Controller</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.sse.Event</span>;
+<span class="keyword">import</span> <span class="include">io.reactivex.Flowable</span>;
+<span class="keyword">import</span> <span class="include">org.reactivestreams.Publisher</span>;
+
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/headlines</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">HeadlineController</span> {
+
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> Publisher&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; index() { <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="predefined-type">String</span><span class="type">[]</span> versions = <span class="keyword">new</span> <span class="predefined-type">String</span><span class="type">[]</span>{<span class="string"><span class="delimiter">&quot;</span><span class="content">1.0</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">2.0</span><span class="delimiter">&quot;</span></span>}; <i class="conum" data-value="2"></i><b>(2)</b>
+
+        <span class="keyword">return</span> Flowable.generate(() -&gt; <span class="integer">0</span>, (i, emitter) -&gt; { <i class="conum" data-value="3"></i><b>(3)</b>
+            <span class="keyword">if</span> (i &lt; versions.length) {
+                emitter.onNext( <i class="conum" data-value="4"></i><b>(4)</b>
+                    <span class="predefined-type">Event</span>.of(<span class="keyword">new</span> Headline(<span class="string"><span class="delimiter">&quot;</span><span class="content">Micronaut </span><span class="delimiter">&quot;</span></span> + versions[i] + <span class="string"><span class="delimiter">&quot;</span><span class="content"> Released</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Come and get it</span><span class="delimiter">&quot;</span></span>))
+                );
+            } <span class="keyword">else</span> {
+                emitter.onComplete(); <i class="conum" data-value="5"></i><b>(5)</b>
+            }
+            <span class="keyword">return</span> ++i;
+        });
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The controller method returns a <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> of <a href="../api/io/micronaut/http/sse/Event.html">Event</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>For each version of Micronaut a headline is emitted</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> type&#8217;s <code>generate</code> method is used to generate a <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a>. The <code>generate</code> method accepts an initial value and a lambda that accepts the value and a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Emitter.html">Emitter</a>.  Note that this example executes on the same thread as the controller action, but you could use <code>subscribeOn</code> or map and existing "hot" <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Emitter.html">Emitter</a> interface&#8217;s <code>onNext</code> method is used to emit objects of type <a href="../api/io/micronaut/http/sse/Event.html">Event</a>. The <a href="../api/io/micronaut/http/sse/Event.html#of-ET-">Event.of(ET)</a> factory method is used to construct the event.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Emitter.html">Emitter</a> interface&#8217;s <code>onComplete</code> method is used to indicate when to finish sending server sent events.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The above example will send back a response of type <code>text/event-stream</code> and for each  <a href="../api/io/micronaut/http/sse/Event.html">Event</a> emitted the <code>Headline</code> type previously will be converted to JSON resulting in responses such as:</p>
+</div>
+<div class="listingblock">
+<div class="title">Server Sent Event Response Output</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json"> <span class="error">d</span><span class="error">a</span><span class="error">t</span><span class="error">a</span>: {<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Micronaut 1.0 Released</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">description</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Come and get it</span><span class="delimiter">&quot;</span></span>}
+ <span class="error">d</span><span class="error">a</span><span class="error">t</span><span class="error">a</span>: {<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Micronaut 2.0 Released</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">description</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Come and get it</span><span class="delimiter">&quot;</span></span>}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can use the methods of the <a href="../api/io/micronaut/http/sse/Event.html">Event</a> interface to customize the Server Sent Event data sent back including associating event ids, comments, retry timeouts etc.</p>
+</div>
+
+
+<h2 id="filters">6.16 HTTP Filters</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/filters.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The Micronaut HTTP server supports the ability to apply filters to request/response processing in a similar, but reactive, way to Servlet filters in traditional Java applications.</p>
+</div>
+<div class="paragraph">
+<p>Filters provide the ability to support the following use cases:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Decoration of the incoming <a href="../api/io/micronaut/http/HttpRequest.html">HttpRequest</a></p>
+</li>
+<li>
+<p>Modification of the outgoing <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a></p>
+</li>
+<li>
+<p>Implementation of cross cutting concerns such as security, tracing etc.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For a server application, the <a href="../api/io/micronaut/http/filter/HttpServerFilter.html">HttpServerFilter</a> interface&#8217;s <code>doFilter</code> method can be implemented.</p>
+</div>
+<div class="paragraph">
+<p>The <code>doFilter</code> method accepts the <a href="../api/io/micronaut/http/HttpRequest.html">HttpRequest</a> and an instance of <a href="../api/io/micronaut/http/filter/ServerFilterChain.html">ServerFilterChain</a>.</p>
+</div>
+<div class="paragraph">
+<p>The <code>ServerFilterChain</code> interface contains a resolved chain of filters with the final entry in the chain being the matched route. The <a href="../api/io/micronaut/http/filter/ServerFilterChain.html#proceed-io.micronaut.http.HttpRequest-">ServerFilterChain.proceed(io.micronaut.http.HttpRequest)</a> method can be used to resume processing of the request.</p>
+</div>
+<div class="paragraph">
+<p>The <code>proceed(..)</code> method returns a Reactive Streams <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> that emits the response that will be returned to the client. Implementors of filters can subscribe to the <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> and mutate the emitted <a href="../api/io/micronaut/http/MutableHttpResponse.html">MutableHttpResponse</a> object to modify the response prior to returning the response to the client.</p>
+</div>
+<div class="paragraph">
+<p>To put these concepts into practise lets look at an example.</p>
+</div>
+<div class="sect1">
+<h2 id="_writing_a_filter">Writing a Filter</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Consider a hypothetical use case whereby you wish to trace each request to the Micronaut "Hello World" example using some external system. The external system could be a database, a distributed tracing service and may require I/O operations.</p>
+</div>
+<div class="paragraph">
+<p>What you don&#8217;t want to do is block the underlying Netty event loop within your filter, instead you want to the filter to proceed with execution once any I/O is complete.</p>
+</div>
+<div class="paragraph">
+<p>As an example, consider the following example <code>TraceService</code> that uses RxJava to compose an I/O operation:</p>
+</div>
+<div class="listingblock">
+<div class="title">A TraceService Example using RxJava</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>;
+<span class="keyword">import</span> <span class="include">io.reactivex.Flowable</span>;
+<span class="keyword">import</span> <span class="include">io.reactivex.schedulers.Schedulers</span>;
+<span class="keyword">import</span> <span class="include">org.slf4j</span>.*;
+
+<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
+<span class="annotation">@Singleton</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">TraceService</span> {
+
+    <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">Logger</span> LOG = LoggerFactory.getLogger(TraceService.class);
+
+    Flowable&lt;<span class="predefined-type">Boolean</span>&gt; trace(HttpRequest&lt;?&gt; request) {
+        <span class="keyword">return</span> Flowable.fromCallable(() -&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+            <span class="keyword">if</span> (LOG.isDebugEnabled()) {
+                LOG.debug(<span class="string"><span class="delimiter">&quot;</span><span class="content">Tracing request: </span><span class="delimiter">&quot;</span></span> + request.getUri());
+            }
+            <span class="comment">// trace logic here, potentially performing I/O </span><i class="conum" data-value="2"></i><b>(2)</b>
+            <span class="keyword">return</span> <span class="predefined-constant">true</span>;
+        }).subscribeOn(Schedulers.io()); <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> type is used to create logic that executes potentially blocking operations to write the trace data from the request</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Since this is just an example the logic does nothing and a place holder comment is used</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The RxJava I/O scheduler is used to execute the logic</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can then inject this implementation into your filter definition:</p>
+</div>
+<div class="listingblock">
+<div class="title">An Example HttpServerFilter</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Filter</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.filter</span>.*;
+<span class="keyword">import</span> <span class="include">org.reactivestreams.Publisher</span>;
+
+<span class="annotation">@Filter</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/**</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">TraceFilter</span> <span class="directive">implements</span> HttpServerFilter { <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="directive">private</span> <span class="directive">final</span> TraceService traceService;
+
+    <span class="directive">public</span> TraceFilter(TraceService traceService) { <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="local-variable">this</span>.traceService = traceService;
+    }
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/http/annotation/Filter.html">Filter</a> annotation is used to define the URI patterns the filter matches</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The class implements the <a href="../api/io/micronaut/http/filter/HttpServerFilter.html">HttpServerFilter</a> interface</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The previously defined <code>TraceService</code> is injected via a constructor argument</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The final step is write the <code>doFilter</code> implementation of the <a href="../api/io/micronaut/http/filter/HttpServerFilter.html">HttpServerFilter</a> interface.</p>
+</div>
+<div class="listingblock">
+<div class="title">The doFilter implementation</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Override</span>
+<span class="directive">public</span> Publisher&lt;MutableHttpResponse&lt;?&gt;&gt; doFilter(HttpRequest&lt;?&gt; request, ServerFilterChain chain) {
+    <span class="keyword">return</span> traceService.trace(request) <i class="conum" data-value="1"></i><b>(1)</b>
+                       .switchMap(aBoolean -&gt; chain.proceed(request)) <i class="conum" data-value="2"></i><b>(2)</b>
+                       .doOnNext(res -&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+                            res.getHeaders().add(<span class="string"><span class="delimiter">&quot;</span><span class="content">X-Trace-Enabled</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>)
+                       );
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The previously defined <code>TraceService</code> is called to trace the request</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>If the trace call succeeds then the filter switches back to resuming the request processing using RxJava&#8217;s <code>switchMap</code> method, which invokes the <code>proceed</code> method of the <a href="../api/io/micronaut/http/filter/ServerFilterChain.html">ServerFilterChain</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Finally, RxJava&#8217;s <code>doOnNext</code> method is used to add a header called <code>X-Trace-Enabled</code> to the response.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The previous example demonstrates some key concepts such as executing logic in a non-blocking matter before proceeding with the request and modifying the outgoing response.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The examples use RxJava, however you can use any reactive framework that supports the Reactive streams specifications
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+
+
+<h2 id="sessions">6.17 HTTP Sessions</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/sessions.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>By default Micronaut is a stateless HTTP server, however depending on your application requirements you may need to notion of HTTP sessions.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut comes with a <code>session</code> module inspired by <a href="https://projects.spring.io/spring-session/">Spring Session</a> that enables this that currently features two implementations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In-Memory sessions - which you should combine with an a sticky sessions proxy if you plan to run multiple instances.</p>
+</li>
+<li>
+<p>Redis sessions - In this case <a href="https://redis.io">Redis</a> is used to store sessions and non-blocking I/O is used to read/write sessions to Redis.</p>
+</li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="_enabling_sessions">Enabling Sessions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To enable support for in-memory sessions you just need the <code>session</code> dependency:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:session</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To enable sessions with Redis you must also have the <code>redis-lettuce</code> configuration on your classpath:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:session</span><span class="delimiter">&quot;</span></span>
+compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:redis-lettuce</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And enable Redis sessions via configuration in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Enabling Redis Sessions</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">redis</span>:
+    <span class="key">uri</span>: <span class="string"><span class="content">redis://localhost:6379</span></span>
+<span class="key">micronaut</span>:
+    <span class="key">session</span>:
+        <span class="key">http</span>:
+            <span class="key">redis</span>:
+                <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configuring_session_resolution">Configuring Session Resolution</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>How the <a href="../api/io/micronaut/session/Session.html">Session</a> is resolved can be configured with <a href="../api/io/micronaut/session/http/HttpSessionConfiguration.html">HttpSessionConfiguration</a>.</p>
+</div>
+<div class="paragraph">
+<p>By default sessions are resolved using an <a href="../api/io/micronaut/session/http/HttpSessionFilter.html">HttpSessionFilter</a> that looks up session identifiers via either an HTTP header (using the <code>Authorization-Info</code> or <code>X-Auth-Token</code> header values) or via a Cookie called <code>SESSION</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to disable either header resolution or cookie resolution you can via configuration in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Disabling Cookie Resolution</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">session</span>:
+        <span class="key">http</span>:
+            <span class="key">cookie</span>: <span class="string"><span class="content">false</span></span>
+            <span class="key">header</span>: <span class="string"><span class="content">true</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above configuration enables header resolution, but disables cookie resolution. You can also configure the header or cookie names as necessary.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_working_with_sessions">Working with Sessions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A <a href="../api/io/micronaut/session/Session.html">Session</a> object can be retrieved simply by declaring the <a href="../api/io/micronaut/session/Session.html">Session</a> in a controller method signature. For example consider the following controller:</p>
+</div>
+<div class="listingblock">
+<div class="title">ShoppingController.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.session.Session</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.session.annotation.SessionValue</span>;
+
+<span class="keyword">import</span> <span class="include">javax.annotation.Nullable</span>;
+<span class="keyword">import</span> <span class="include">javax.validation.constraints.NotBlank</span>;
+
+<span class="annotation">@Controller</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">ShoppingController</span> {
+    <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> ATTR_CART = <span class="string"><span class="delimiter">&quot;</span><span class="content">cart</span><span class="delimiter">&quot;</span></span>; <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/cart/{name}</span><span class="delimiter">&quot;</span></span>)
+    Cart addItem(Session session, <span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> name) { <i class="conum" data-value="2"></i><b>(2)</b>
+        Cart cart = session.get(ATTR_CART, Cart.class).orElseGet(() -&gt; { <i class="conum" data-value="3"></i><b>(3)</b>
+            Cart newCart = <span class="keyword">new</span> Cart();
+            session.put(ATTR_CART, newCart); <i class="conum" data-value="4"></i><b>(4)</b>
+            <span class="keyword">return</span> newCart;
+        });
+        cart.getItems().add(name);
+        <span class="keyword">return</span> cart;
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>ShoppingController</code> declares a <a href="../api/io/micronaut/session/Session.html">Session</a> attribute called <code>cart</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <a href="../api/io/micronaut/session/Session.html">Session</a> is declared as a parameter to the method</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>cart</code> attribute is retrieved</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Otherwise a new <code>Cart</code> instance is created and stored in the session</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note that because the <a href="../api/io/micronaut/session/Session.html">Session</a> is declared as a required parameter to the execute the controller action, the <a href="../api/io/micronaut/session/Session.html">Session</a> will be created and saved to the <a href="../api/io/micronaut/session/SessionStore.html">SessionStore</a>.</p>
+</div>
+<div class="paragraph">
+<p>If you don&#8217;t want to create unnecessary sessions then you can declare the <a href="../api/io/micronaut/session/Session.html">Session</a> as <code>@Nullable</code> in which case a session will not be created and saved unnecessarily. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using @Nullable with Sessions</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/cart/clear</span><span class="delimiter">&quot;</span></span>)
+<span class="type">void</span> clearCart(<span class="annotation">@Nullable</span> Session session) {
+    <span class="keyword">if</span> (session != <span class="predefined-constant">null</span>) {
+        session.remove(ATTR_CART);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above method will only create and inject a new <a href="../api/io/micronaut/session/Session.html">Session</a> if one already exists.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_session_clients">Session Clients</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If the client is a web browser then sessions should just work if you have cookies is enabled. However for programmatic HTTP clients you need to make sure you propagate the session id between HTTP calls.</p>
+</div>
+<div class="paragraph">
+<p>For example, when invoking the <code>viewCart</code> method of the <code>StoreController</code> in the previous example the HTTP client will receive by default a <code>AUTHORIZATION_INFO</code> header. The following example, using a Spock test, demonstrates this:</p>
+</div>
+<div class="listingblock">
+<div class="title">Retrieving the AUTHORIZATION_INFO header</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The shopping cart is retrieved</span><span class="delimiter">&quot;</span></span>
+HttpResponse&lt;Cart&gt; response = httpClient.exchange(HttpRequest.GET(<span class="string"><span class="delimiter">'</span><span class="content">/shopping/cart</span><span class="delimiter">'</span></span>), Cart) <i class="conum" data-value="1"></i><b>(1)</b>
+                                        .blockingFirst()
+Cart cart = response.body()
+
+<span class="key">then</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The shopping cart is present as well as a session id header</span><span class="delimiter">&quot;</span></span>
+response.header(HttpHeaders.AUTHORIZATION_INFO) != <span class="predefined-constant">null</span> <i class="conum" data-value="2"></i><b>(2)</b>
+cart != <span class="predefined-constant">null</span>
+cart.items.isEmpty()</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A request is made to <code>/shopping/cart</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>AUTHORIZATION_INFO</code> header is present in the response</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can then pass this <code>AUTHORIZATION_INFO</code> in subsequent requests to re-use the existing <a href="../api/io/micronaut/session/Session.html">Session</a>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Sending the AUTHORIZATION_INFO header</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">String</span> sessionId = response.header(HttpHeaders.AUTHORIZATION_INFO) <i class="conum" data-value="1"></i><b>(1)</b>
+
+response = httpClient.exchange(
+        HttpRequest.POST(<span class="string"><span class="delimiter">'</span><span class="content">/shopping/cart/Apple</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>)
+                .header(HttpHeaders.AUTHORIZATION_INFO, sessionId), Cart) <i class="conum" data-value="2"></i><b>(2)</b>
+        .blockingFirst()
+cart = response.body()</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>AUTHORIZATION_INFO</code> is retrieved from the response</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>And then sent as a header in the subsequent request</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_using_sessionvalue">Using @SessionValue</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Rather than explicitly injecting the <a href="../api/io/micronaut/session/Session.html">Session</a> into a controller method you can instead use <a href="../api/io/micronaut/session/annotation/SessionValue.html">@SessionValue</a>. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using @SessionValue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/cart</span><span class="delimiter">&quot;</span></span>)
+<span class="annotation">@SessionValue</span>(ATTR_CART) <i class="conum" data-value="1"></i><b>(1)</b>
+Cart viewCart(<span class="annotation">@SessionValue</span> <span class="annotation">@Nullable</span> Cart cart) { <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="keyword">if</span> (cart == <span class="predefined-constant">null</span>) {
+        cart = <span class="keyword">new</span> Cart();
+    }
+    <span class="keyword">return</span> cart;
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><a href="../api/io/micronaut/session/annotation/SessionValue.html">@SessionValue</a> is declared on the method resulting in the return value being stored in the <a href="../api/io/micronaut/session/Session.html">Session</a>. Note that you must specify the attribute name when used on a return value</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><a href="../api/io/micronaut/session/annotation/SessionValue.html">@SessionValue</a> is used on a <code>@Nullable</code> parameter which results in looking up the value from the <a href="../api/io/micronaut/session/Session.html">Session</a> in a non-blocking way and supplying it if present. In the case a value is not specified to <a href="../api/io/micronaut/session/annotation/SessionValue.html">@SessionValue</a> resulting in the parameter name being used to lookup the attribute.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_session_events">Session Events</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can register <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> beans to listen for <a href="../api/io/micronaut/session/Session.html">Session</a> related events located in the <a href="../api/io/micronaut/session/event/package-summary.html">io.micronaut.session.event</a> package.</p>
+</div>
+<div class="paragraph">
+<p>The following table summarizes the events:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Session Events</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/session/event/SessionCreatedEvent.html">SessionCreatedEvent</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fired when a <a href="../api/io/micronaut/session/Session.html">Session</a> is created</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/session/event/SessionDeletedEvent.html">SessionDeletedEvent</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fired when a <a href="../api/io/micronaut/session/Session.html">Session</a> is deleted</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/session/event/SessionExpiredEvent.html">SessionExpiredEvent</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fired when a <a href="../api/io/micronaut/session/Session.html">Session</a> expires</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/session/event/SessionDestroyedEvent.html">SessionDestroyedEvent</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Parent of both <code>SessionDeletedEvent</code> and <code>SessionExpiredEvent</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_redis_sessions">Redis Sessions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Storing <a href="../api/io/micronaut/session/Session.html">Session</a> instances is Redis requires special considerations.</p>
+</div>
+<div class="paragraph">
+<p>You can configure how sessions are stored in Redis using <a href="../api/io/micronaut/configuration/lettuce/session/RedisHttpSessionConfiguration.html">RedisHttpSessionConfiguration</a>.</p>
+</div>
+<div class="paragraph">
+<p>The following represents an example configuration in <code>application.yml</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Redis Sessions</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">session</span>:
+        <span class="key">http</span>:
+            <span class="key">redis</span>:
+                <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+                <span class="comment"># The Redis namespace to write sessions to</span>
+                <span class="key">namespace</span>: <span class="string"><span class="content">'myapp:sessions'</span></span>
+                <span class="comment"># Write session changes in the background</span>
+                <span class="key">write-mode</span>: <span class="string"><span class="content">BACKGROUND</span></span>
+                <span class="comment"># Disable programatic activation of keyspace events</span>
+                <span class="key">enable-keyspace-events</span>: <span class="string"><span class="content">false</span></span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <a href="../api/io/micronaut/configuration/lettuce/session/RedisSessionStore.html">RedisSessionStore</a> implementation uses <a href="https://redis.io/topics/notifications">keyspace events</a> to cleanup active sessions and fire <a href="../api/io/micronaut/session/event/SessionExpiredEvent.html">SessionExpiredEvent</a> and requires they are active.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>By default sessions values are serialized using Java serialization and stored in Redis hashes. You can configure serialization to instead use Jackson to serialize to JSON if desired:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using Jackson Serialization</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">session</span>:
+        <span class="key">http</span>:
+            <span class="key">redis</span>:
+                <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+                <span class="key">valueSerializer</span>: <span class="string"><span class="content">io.micronaut.jackson.serialize.JacksonObjectSerializer</span></span></code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<h2 id="serverEvents">6.18 Server Events</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverEvents.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The HTTP server will emit a number of <a href="#events">Bean Events</a>, defined in the <a href="../api/io/micronaut/runtime/server/event/package-summary.html">io.micronaut.runtime.server.event</a> package, that you can write listeners for. The following table summarizes those events:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Server Events</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Event</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/runtime/server/event/ServerStartupEvent.html">ServerStartupEvent</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Emitted when the server completes startup</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/runtime/server/event/ServerShutdownEvent.html">ServerShutdownEvent</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Emitted when the server shuts down</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/discovery/event/ServiceStartedEvent.html">ServiceStartedEvent</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Emitted after all <a href="../api/io/micronaut/runtime/server/event/ServerStartupEvent.html">ServerStartupEvent</a> listeners have been executed and exposes the <a href="../api/io/micronaut/runtime/server/EmbeddedServerInstance.html">EmbeddedServerInstance</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/discovery/event/ServiceShutdownEvent.html">ServiceShutdownEvent</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Emitted after all <a href="../api/io/micronaut/runtime/server/event/ServerShutdownEvent.html">ServerShutdownEvent</a> listeners have been executed and exposes the <a href="../api/io/micronaut/runtime/server/EmbeddedServerInstance.html">EmbeddedServerInstance</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+If you do significant work within a listener for a <a href="../api/io/micronaut/runtime/server/event/ServerStartupEvent.html">ServerStartupEvent</a> this will slow down you startup time.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following example defines a <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> that listens for <a href="../api/io/micronaut/runtime/server/event/ServerStartupEvent.html">ServerStartupEvent</a>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listening for Server Startup Events</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.event.ApplicationEventListener</span>;
+...
+<span class="annotation">@Singleton</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">StartupListener</span> <span class="directive">implements</span> ApplicationEventListener&lt;ServerStartupEvent&gt; {
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">void</span> onApplicationEvent(ServerStartupEvent event) {
+        <span class="comment">// logic here</span>
+        ...
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="serverConfiguration">6.19 Configuring the HTTP Server</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The HTTP server features a number of configuration options you may wish to tweak. They are defined in the <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.html">NettyHttpServerConfiguration</a> configuration class, which extends <a href="../api/io/micronaut/http/server/HttpServerConfiguration.html">HttpServerConfiguration</a>.</p>
+</div>
+<div class="paragraph">
+<p>The following example shows how to tweak configuration options for the server via <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring HTTP server settings</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">server</span>:
+        <span class="key">maxRequestSize</span>: <span class="string"><span class="content">1MB</span></span>
+        <span class="key">netty</span>:
+           <span class="key">maxHeaderSize</span>: <span class="string"><span class="content">500KB</span></span> <span class="comment"># maximum size for headers</span>
+           <span class="key">worker</span>:
+              <span class="key">threads</span>: <span class="string"><span class="content">8</span></span> <span class="comment"># number of netty worker threads</span>
+           <span class="key">childOptions</span>:
+              <span class="key">autoRead</span>: <span class="string"><span class="content">true</span></span> <span class="comment"># auto read request body</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All the available options are described within the javadoc of <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.html">NettyHttpServerConfiguration</a>.</p>
+</div>
+
+
+<h2 id="threadPools">6.19.1 Configuring Server Thread Pools</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration/threadPools.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The HTTP server is built on <a href="http://netty.io">Netty</a> which is designed as a non-blocking I/O toolkit in an event loop model.</p>
+</div>
+<div class="paragraph">
+<p>To configure the number of threads used by the Netty <a href="https://netty.io/4.0/api/io/netty/channel/EventLoop.html">EventLoop</a>, you can use <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Netty Event Loop Threads</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">server</span>:
+        <span class="key">netty</span>:
+           <span class="key">worker</span>:
+              <span class="key">threads</span>: <span class="string"><span class="content">8</span></span> <span class="comment"># number of netty worker threads</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The default value is the value of the system property <code>io.netty.eventLoopThreads</code> or if not specified the available processors x 2
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>When dealing with blocking operations, Micronaut will shift the blocking operations to an unbound, caching I/O thread pool by default. You can configure the I/O thread pool using the <a href="../api/io/micronaut/scheduling/executor/ExecutorConfiguration.html">ExecutorConfiguration</a> named <code>io</code>. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring the Server I/O Thread Pool</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">executors</span>:
+        <span class="key">io</span>:
+           <span class="key">type</span>: <span class="string"><span class="content">fixed</span></span>
+           <span class="key">nThreads</span>: <span class="string"><span class="content">75</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above configuration will create a fixed thread pool with 75 threads.</p>
+</div>
+
+
+<h2 id="cors">6.19.2 Configuring CORS</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration/cors.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut supports CORS (<a href="https://www.w3.org/TR/cors/">Cross Origin Resource Sharing</a>) out of the box. By default, CORS requests will be rejected. To enable processing of CORS requests, modify your configuration. For example with <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">CORS Configuration Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">server</span>:
+        <span class="key">cors</span>:
+            <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By only enabling CORS processing, a "wide open" strategy will be adopted that will allow requests from any origin.</p>
+</div>
+<div class="paragraph">
+<p>To change the settings for all origins or a specific origin, change the configuration to provide a set of "configurations". By providing any configuration, the default "wide open" configuration is not configured.</p>
+</div>
+<div class="listingblock">
+<div class="title">CORS Configurations (&#8230;&#8203; is a placeholder)</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">server</span>:
+        <span class="key">cors</span>:
+            <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+            <span class="key">configurations</span>:
+                <span class="key">all</span>:
+                    <span class="error">...</span>
+                <span class="key">web</span>:
+                    <span class="error">...</span>
+                <span class="key">mobile</span>:
+                    <span class="error">...</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example, three configurations are being provided. Their names (<code>all</code>, <code>web</code>, <code>mobile</code>) are not important and have no significance inside Micronaut. They are there purely to be able to easily recognize the intended user of the configuration.</p>
+</div>
+<div class="paragraph">
+<p>The same configuration properties can be applied to each configuration. See <a href="../api/io/micronaut/http/server/cors/CorsOriginConfiguration.html">CorsOriginConfiguration</a> for the reference of properties that can be defined. Each configuration supplied will have its values default to the default values of the corresponding fields.</p>
+</div>
+<div class="paragraph">
+<p>When a CORS request is made, configurations are searched for allowed origins that are an exact match or match the request origin through a regular expression.</p>
+</div>
+<div class="sect1">
+<h2 id="_allowed_origins">Allowed Origins</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To allow any origin for a given configuration, simply don&#8217;t include the <code>allowedOrigins</code> key in your configuration.</p>
+</div>
+<div class="paragraph">
+<p>To specify a list of valid origins, set the <code>allowedOrigins</code> key of the configuration to a list of strings. Each value can either be a static value (<code><a href="http://www.foo.com" class="bare">http://www.foo.com</a></code>) or a regular expression (<code>^http(|s)://www\.google\.com$</code>).</p>
+</div>
+<div class="paragraph">
+<p>Any regular expressions are passed to <a href="https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html#compile-java.lang.String-">Pattern#compile</a> and compared to the request origin with <a href="https://docs.oracle.com/javase/8/docs/api/java/util/regex/Matcher.html#matches--">Matcher#matches</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example CORS Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">server</span>:
+        <span class="key">cors</span>:
+            <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+            <span class="key">configurations</span>:
+                <span class="key">web</span>:
+                    <span class="key">allowedOrigins</span>:
+                        - <span class="string"><span class="content">http://foo.com</span></span>
+                        - <span class="string"><span class="content">^http(|s)://www\.google\.com$</span></span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_allowed_methods">Allowed Methods</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To allow any request method for a given configuration, simply don&#8217;t include the <code>allowedHeaders</code> key in your configuration.</p>
+</div>
+<div class="paragraph">
+<p>To specify a list of allowed methods, set the <code>allowedMethods</code> key of the configuration to a list of strings.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example CORS Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">server</span>:
+        <span class="key">cors</span>:
+            <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+            <span class="key">configurations</span>:
+                <span class="key">web</span>:
+                    <span class="key">allowedMethods</span>:
+                        - <span class="string"><span class="content">POST</span></span>
+                        - <span class="string"><span class="content">PUT</span></span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_allowed_headers">Allowed Headers</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To allow any request header for a given configuration, simply don&#8217;t include the <code>allowedHeaders</code> key in your configuration.</p>
+</div>
+<div class="paragraph">
+<p>To specify a list of allowed headers, set the <code>allowedHeaders</code> key of the configuration to a list of strings.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example CORS Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">server</span>:
+        <span class="key">cors</span>:
+            <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+            <span class="key">configurations</span>:
+                <span class="key">web</span>:
+                    <span class="key">allowedHeaders</span>:
+                        - <span class="string"><span class="content">Content-Type</span></span>
+                        - <span class="string"><span class="content">Authorization</span></span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_exposed_headers">Exposed Headers</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To configure the list of headers that are sent in the response to a CORS request through the <code>Access-Control-Expose-Headers</code> header, include a list of strings for the <code>exposedHeaders</code> key in your configuration. By default no headers are exposed.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example CORS Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">server</span>:
+        <span class="key">cors</span>:
+            <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+            <span class="key">configurations</span>:
+                <span class="key">web</span>:
+                    <span class="key">exposedHeaders</span>:
+                        - <span class="string"><span class="content">Content-Type</span></span>
+                        - <span class="string"><span class="content">Authorization</span></span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_allow_credentials">Allow Credentials</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Credentials are allowed by default for CORS requests. To disallow credentials, simply set the <code>allowCredentials</code> option to <code>false</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example CORS Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">server</span>:
+        <span class="key">cors</span>:
+            <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+            <span class="key">configurations</span>:
+                <span class="key">web</span>:
+                    <span class="key">allowCredentials</span>: <span class="string"><span class="content">false</span></span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_max_age">Max Age</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The default maximum age that preflight requests can be cached is 30 minutes. To change that behavior, specify a value in seconds.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example CORS Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">server</span>:
+        <span class="key">cors</span>:
+            <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+            <span class="key">configurations</span>:
+                <span class="key">web</span>:
+                    <span class="key">maxAge</span>: <span class="string"><span class="content">3600</span></span> <span class="comment"># 1 hour</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<h2 id="https">6.19.3 Securing the Server with HTTPS</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration/https.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut supports HTTPS out of the box. By default HTTPS is disabled and all requests are served using HTTP. To enable
+HTTPS support, modify your configuration. For example with <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">HTTPS Configuration Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">ssl</span>:
+        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+        <span class="key">buildSelfSigned</span>: <span class="string"><span class="content">true </span></span><i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Micronaut will create a self-signed certificate.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+By default Micronaut with HTTPS support starts on port <code>8443</code> but you can change the port the property
+ <code>micronaut.ssl.port</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Keep in mind that this configuration will generate a warning on the browser.
+</td>
+</tr>
+</table>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/https-warning.jpg" alt="https warning">
+</div>
+</div>
+<div class="sect1">
+<h2 id="_using_a_valid_x509_certificate">Using a valid x509 certificate</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It is also possible to configure Micronaut to use an existing valid x509 certificate, for example one created with
+<a href="https://letsencrypt.org/">Let&#8217;s Encrypt</a>. You will need the <code>server.crt</code> and <code>server.key</code> files and convert them to a
+ PKCS #12 file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ openssl pkcs12 -export \
+                 -in server.crt \ <i class="conum" data-value="1"></i><b>(1)</b>
+                 -inkey server.key \ <i class="conum" data-value="2"></i><b>(2)</b>
+                 -out server.p12 \ <i class="conum" data-value="3"></i><b>(3)</b>
+                 -name someAlias \ <i class="conum" data-value="4"></i><b>(4)</b>
+                 -CAfile ca.crt -caname root</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The original <code>server.crt</code> file</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The original <code>server.key</code> file</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>server.p12</code> file that will be created</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The alias for the certificate</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>During the creation of the <code>server.p12</code> file it is necessary to define a password that will be required later when using
+the certificate in Micronaut.</p>
+</div>
+<div class="paragraph">
+<p>Now modify your configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">HTTPS Configuration Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">ssl</span>:
+        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+        <span class="key">keyStore</span>:
+            <span class="key">path</span>: <span class="string"><span class="content">classpath:server.p12 </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+            <span class="key">password</span>: <span class="string"><span class="content">mypassword </span></span><i class="conum" data-value="2"></i><b>(2)</b>
+            <span class="key">type</span>: <span class="string"><span class="content">PKCS12</span></span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>p12</code> file created. It can also be referenced as <code>file:/path/to/the/file</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The password defined during the export</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With this configuration if we start Micronaut and connect to <code><a href="https://localhost:8443" class="bare">https://localhost:8443</a></code> we still see the warning on the
+browser but if we inspect the certificate we can check that it&#8217;s the one generated by Let&#8217;s Encrypt.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/https-certificate.jpg" alt="https certificate">
+</div>
+</div>
+<div class="paragraph">
+<p>Finally we can test that the certificate is valid for the browser just by adding an alias to the domain in <code>/etc/hosts</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cat /etc/hosts
+...
+127.0.0.1   my-domain.org
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we can connect to <code><a href="https://my-domain.org:8443" class="bare">https://my-domain.org:8443</a></code>:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/https-valid-certificate.jpg" alt="https valid certificate">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_using_java_keystore_jks">Using Java Keystore (JKS)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It is not recommended using this type of certificate because it is a proprietary format and it&#8217;s better to use a PKCS12
+format. In any case Micronaut also supports it.</p>
+</div>
+<div class="paragraph">
+<p>Convert the <code>p12</code> certificate to a JKS one:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ keytool -importkeystore \
+          -deststorepass newPassword -destkeypass newPassword \ <i class="conum" data-value="1"></i><b>(1)</b>
+          -destkeystore server.keystore \ <i class="conum" data-value="2"></i><b>(2)</b>
+          -srckeystore server.p12 -srcstoretype PKCS12 -srcstorepass mypassword \ <i class="conum" data-value="3"></i><b>(3)</b>
+          -alias someAlias <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>It is necessary to define a the password for the keystore</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The file that will be created</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The PKCS12 file created before and the password defined during the creation</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The alias used before</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+If either <code>srcstorepass</code> or <code>alias</code> are not the same as defined in the <code>p12</code> file, the conversion will fail.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now modify your configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">HTTPS Configuration Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">ssl</span>:
+        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+        <span class="key">keyStore</span>:
+            <span class="key">path</span>: <span class="string"><span class="content">classpath:server.keystore</span></span>
+            <span class="key">password</span>: <span class="string"><span class="content">newPassword</span></span>
+            <span class="key">type</span>: <span class="string"><span class="content">JKS</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Start Micronaut and the application is running on <code><a href="https://localhost:8443" class="bare">https://localhost:8443</a></code> using the certificate in the keystore.</p>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

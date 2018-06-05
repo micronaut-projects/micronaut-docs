@@ -1,0 +1,809 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>7.2 Declarative HTTP Clients with @Client 1.0.0.BUILD-SNAPSHOT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/quickStart.html"><strong>2</strong><span>Quick Start</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/ioc.html"><strong>3</strong><span>Inversion of Control</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/config.html"><strong>4</strong><span>Application Configuration</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/aop.html"><strong>5</strong><span>Aspect Oriented Programming</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpServer.html"><strong>6</strong><span>The HTTP Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>11</strong><span>Language Support</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>12</strong><span>Management &amp; Monitoring</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>13</strong><span>Security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>14</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/faq.html"><strong>15</strong><span>Frequently Asked Questions (FAQ)</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/problems.html"><strong>16</strong><span>Common Problems</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/breaks.html"><strong>17</strong><span>Breaking Changes</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/httpServer.html">&lt;&lt; <strong>6</strong><span>The HTTP Server</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>7.2 Declarative HTTP Clients with @Client</h1>
+
+                    <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#clientParameters"><strong>7.1</strong><span>Customizing Parameter Binding</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#clientHeaders"><strong>7.2</strong><span>Customizing Request Headers</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#clientJackson"><strong>7.3</strong><span>Customizing Jackson Settings</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#clientRetry"><strong>7.4</strong><span>Retry and Circuit Breaker</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#clientFallback"><strong>7.5</strong><span>Client Fallbacks</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#netflixHystrix"><strong>7.6</strong><span>Netflix Hystrix Support</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h2 id="clientAnnotation">7.2 Declarative HTTP Clients with @Client</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpClient/clientAnnotation.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now that you have gathered an understanding of the workings of the lower level HTTP client, it is time to take a look at Micronaut&#8217;s support for declarative clients via the <a href="../api/io/micronaut/http/client/Client.html">Client</a> annotation.</p>
+</div>
+<div class="paragraph">
+<p>Essentially, the <code>@Client</code> annotation can be declared on any interface or abstract class and through the use of <a href="#introductionAdvice">Introduction Advice</a> the abstract methods will be implemented for you at compile time, greatly simplifying the creation of HTTP clients.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s start with a simple example. Given the following class:</p>
+</div>
+<div class="listingblock">
+<div class="title">Pet.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">Pet</span> {
+    <span class="directive">private</span> <span class="predefined-type">String</span> name;
+    <span class="directive">private</span> <span class="type">int</span> age;
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getName() {
+        <span class="keyword">return</span> name;
+    }
+
+    <span class="directive">public</span> <span class="type">void</span> setName(<span class="predefined-type">String</span> name) {
+        <span class="local-variable">this</span>.name = name;
+    }
+
+    <span class="directive">public</span> <span class="type">int</span> getAge() {
+        <span class="keyword">return</span> age;
+    }
+
+    <span class="directive">public</span> <span class="type">void</span> setAge(<span class="type">int</span> age) {
+        <span class="local-variable">this</span>.age = age;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can define a common interface for saving new <code>Pet</code> instances:</p>
+</div>
+<div class="listingblock">
+<div class="title">PetOperations.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Post</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.validation.Validated</span>;
+<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
+
+<span class="keyword">import</span> <span class="include">javax.validation.constraints</span>.*;
+
+<span class="annotation">@Validated</span>
+<span class="directive">public</span> <span class="type">interface</span> <span class="class">PetOperations</span> {
+    <span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
+    Single&lt;Pet&gt; save(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> name, <span class="annotation">@Min</span>(<span class="integer">1L</span>) <span class="type">int</span> age);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note how the interface uses Micronaut&#8217;s HTTP annotations which are usable on both the server and client side. Also, as you can see you can use <code>javax.validation</code> constraints to validate arguments.</p>
+</div>
+<div class="paragraph">
+<p>Additionally, to use the <code>javax.validation</code> features you should have the <code>validation</code> and <code>hibernate-validator</code> dependencies on your classpath. For example in <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:validation</span><span class="delimiter">&quot;</span></span>
+compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:hibernate-validator</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On the server-side of Micronaut you can implement the <code>PetOperations</code> interface:</p>
+</div>
+<div class="listingblock">
+<div class="title">PetController.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
+<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
+
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pets</span><span class="delimiter">&quot;</span></span>)
+<span class="type">class</span> <span class="class">PetController</span> <span class="directive">implements</span> PetOperations {
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age) {
+        Pet pet = <span class="keyword">new</span> Pet();
+        pet.setName(name);
+        pet.setAge(age);
+        <span class="comment">// save to database or something</span>
+        <span class="keyword">return</span> Single.just(pet);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can then define a declarative client in <code>src/test/java</code> that uses <code>@Client</code> to automatically, at compile time, implement a client:</p>
+</div>
+<div class="listingblock">
+<div class="title">PetClient.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.client.Client</span>;
+<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
+
+<span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pets</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="directive">public</span> <span class="type">interface</span> <span class="class">PetClient</span> <span class="directive">extends</span> PetOperations { <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="annotation">@Override</span>
+    Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age); <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/http/client/Client.html">Client</a> annotation is used with a value relative to the current server. In this case <code>/pets</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The interface extends from <code>PetOperations</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>save</code> method is overridden. See warning below.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Notice in the above example we override the <code>save</code> method. This is necessary if you compile without the <code>-parameters</code> option since Java does not retain parameters names in the byte code otherwise. If you compile with <code>-parameters</code> then overriding is not necessary.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Once you have defined a client you can simply <code>@Inject</code> it wherever you may need it.</p>
+</div>
+<div class="paragraph">
+<p>Recall that the value of <code>@Client</code> can be:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>An absolute URI. Example <code><a href="https://api.twitter.com/1.1" class="bare">https://api.twitter.com/1.1</a></code></p>
+</li>
+<li>
+<p>A relative URI, in which case the server targeted will be the current server (useful for testing)</p>
+</li>
+<li>
+<p>A service identifier. See the section on <a href="#serviceDiscovery">Service Discovery</a> for more information on this topic.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In a production deployment you would typically use a service ID and <a href="#serviceDiscovery">Service Discovery</a> to discover services automatically.</p>
+</div>
+<div class="paragraph">
+<p>Another important thing to notice regarding the <code>save</code> method in the example above is that is returns a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> type.</p>
+</div>
+<div class="paragraph">
+<p>This is a non-blocking reactive type and typically you want your HTTP clients not to block. There are cases where you may want to write an HTTP client that does block (such as in unit test cases), but this are rare.</p>
+</div>
+<div class="paragraph">
+<p>The following table illustrates common return types usable with <a href="../api/io/micronaut/http/client/Client.html">@Client</a>:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Micronaut Response Types</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example Signature</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Any type that implements the <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> interface</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flowable&lt;String&gt; hello()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> and optional response body type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Single&lt;HttpResponse&lt;&lt;String&gt;&gt;&gt; hello()</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> implementation that emits a POJO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Mono&lt;Book&gt; hello()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A Java <code>CompletableFuture</code> instance</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CompletableFuture&lt;String&gt; hello()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/CharSequence.html">CharSequence</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A blocking native type. Such as <code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String hello()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">T</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Any simple POJO type.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Book show()</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Generally, any reactive type that can be converted to the <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> interface is supported as a return type including (but not limited to) the reactive types defined by RxJava 1.x, RxJava 2.x and Reactor 3.x.</p>
+</div>
+<div class="paragraph">
+<p>Returning <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a> instances is also supported. Note that returning any other type <em>will result in a blocking request</em> and is not recommended other than for testing.</p>
+</div>
+
+
+<h2 id="clientParameters">7.2.1 Customizing Parameter Binding</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpClient/clientAnnotation/clientParameters.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The previous example presented a trivial example that uses the parameters of a method to represent the body of a <code>POST</code> request:</p>
+</div>
+<div class="listingblock">
+<div class="title">PetOperations.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
+Single&lt;Pet&gt; save(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> name, <span class="annotation">@Min</span>(<span class="integer">1L</span>) <span class="type">int</span> age);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>save</code> method when called will perform an HTTP <code>POST</code> with the following JSON by default:</p>
+</div>
+<div class="listingblock">
+<div class="title">Example Produced JSON</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Dino</span><span class="delimiter">&quot;</span></span>, <span class="error">a</span><span class="error">g</span><span class="error">e</span>:<span class="integer">10</span>}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You may however want to customize what is sent as the body, the parameters, URI variables and so on. The <a href="../api/io/micronaut/http/client/Client.html">@Client</a> annotation is very flexible in this regard and supports the same <a href="../api/io/micronaut/http/annotation/package-summary.html">HTTP Annotations</a> as Micronaut&#8217;s HTTP server.</p>
+</div>
+<div class="paragraph">
+<p>For example, the following defines a URI template and the <code>name</code> parameter is used as part of the URI template, whilst <a href="../api/io/micronaut/http/annotation/Body.html">@Body</a> is used declare that the contents to send to the server are represented by the <code>Pet</code> POJO:</p>
+</div>
+<div class="listingblock">
+<div class="title">PetOperations.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/{name}</span><span class="delimiter">&quot;</span></span>)
+Single&lt;Pet&gt; save(
+    <span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> name, <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="annotation">@Body</span> <span class="annotation">@Valid</span> Pet pet) <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The name parameter, included as part of the URI, and declared <code>@NotBlank</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>pet</code> parameter, used to encode the body and declared <code>@Valid</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following table summarizes the parameter annotations, their purpose and provides an example:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Parameter Binding Annotations</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Annotation</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Body.html">@Body</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows to specify the parameter that is the body of the request</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Body String body</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/CookieValue.html">@CookieValue</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows specifying parameters that should be sent as cookies</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@CookieValue String myCookie</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Header.html">@Header</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows specifying parameters that should be sent as HTTP headers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Header String contentType</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Parameter.html">@Parameter</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows customizing the name of the URI parameter to bind from</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Parameter('userAge') Integer age</code></p></td>
+</tr>
+</tbody>
+</table>
+
+
+<h2 id="clientHeaders">7.2.2 Customizing Request Headers</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpClient/clientAnnotation/clientHeaders.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Customizing the request headers deserves special mention as there are several ways that can be accomplished.</p>
+</div>
+<div class="sect1">
+<h2 id="_populating_headers_using_configuration">Populating Headers Using Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/http/annotation/Header.html">@Header</a> annotation can be declared at the type level and is repeatable such that it is possible to drive the request headers sent via configuration using annotation metadata.</p>
+</div>
+<div class="paragraph">
+<p>The following example serves to illustrate this:</p>
+</div>
+<div class="listingblock">
+<div class="title">Defining Headers via Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pets</span><span class="delimiter">&quot;</span></span>)
+<span class="annotation">@Header</span>(name=<span class="string"><span class="delimiter">&quot;</span><span class="content">X-Pet-Client</span><span class="delimiter">&quot;</span></span>, value=<span class="string"><span class="delimiter">&quot;</span><span class="content">${pet.client.id}</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">interface</span> <span class="class">PetClient</span> <span class="directive">extends</span> PetOperations {
+
+    <span class="annotation">@Override</span>
+    Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example defines a <a href="../api/io/micronaut/http/annotation/Header.html">@Header</a> annotation on the <code>PetClient</code> interface that reads a property using property placeholder configuration called <code>pet.client.id</code>.</p>
+</div>
+<div class="paragraph">
+<p>In your application configuration you then set the following in <code>application.yml</code> to populate the value:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Headers in YAML</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">pet</span>:
+    <span class="key">client</span>:
+        <span class="key">id</span>: <span class="string"><span class="content">foo</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively you can supply a <code>PET_CLIENT_ID</code> environment variable and the value will be populated.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_populating_headers_using_an_client_filter">Populating Headers using an Client Filter</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Alternatively if you need the ability to dynamically populate headers an alternative is to use a <a href="#clientFilter">Client Filter</a>.</p>
+</div>
+<div class="paragraph">
+<p>For more information on writing client filters see the <a href="#clientFilter">Client Filters</a> section of the guide.</p>
+</div>
+</div>
+</div>
+
+
+<h2 id="clientJackson">7.2.3 Customizing Jackson Settings</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpClient/clientAnnotation/clientJackson.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>As mentioned previously, Jackson is used for message encoding to JSON. A default Jackson <code>ObjectMapper</code> is configured and used by Micronaut HTTP clients.</p>
+</div>
+<div class="paragraph">
+<p>You can override the settings used to construct the <code>ObjectMapper</code> using the properties defined by the <a href="../api/io/micronaut/jackson/JacksonConfiguration.html">JacksonConfiguration</a> class in <code>application.yml</code>.</p>
+</div>
+<div class="paragraph">
+<p>For example, the following configuration enabled indented output for Jackson:</p>
+</div>
+<div class="listingblock">
+<div class="title">Example Jackson Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">jackson</span>:
+    <span class="key">serialization</span>:
+        <span class="key">indentOutput</span>: <span class="string"><span class="content">true</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, these settings apply globally and impact both how the HTTP server renders JSON and how JSON is sent from the HTTP client. Given that sometimes it useful to provide client specific Jackson settings which can be done with the <a href="../api/io/micronaut/jackson/annotation/JacksonFeatures.html">@JacksonFeatures</a> annotation on any client:</p>
+</div>
+<div class="paragraph">
+<p>As an example, the following snippet is taken from Micronaut&#8217;s native Eureka client (which, of course, is built using Micronaut&#8217;s HTTP client):</p>
+</div>
+<div class="listingblock">
+<div class="title">Example of JacksonFeatures</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(id = EurekaClient.SERVICE_ID, path = <span class="string"><span class="delimiter">&quot;</span><span class="content">/eureka</span><span class="delimiter">&quot;</span></span>, configuration = EurekaConfiguration.class)
+<span class="annotation">@JacksonFeatures</span>(
+    enabledSerializationFeatures = WRAP_ROOT_VALUE,
+    disabledSerializationFeatures = WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED,
+    enabledDeserializationFeatures = {UNWRAP_ROOT_VALUE, ACCEPT_SINGLE_VALUE_AS_ARRAY}
+)
+<span class="directive">public</span> <span class="type">interface</span> <span class="class">EurekaClient</span> {
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Eureka serialization format for JSON uses the <code>WRAP_ROOT_VALUE</code> serialization feature of Jackson, hence it is enabled just for that client.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If the customization offered by <code>JacksonFeatures</code> is not enough, you can also write a <a href="../api/io/micronaut/context/event/BeanCreatedEventListener.html">BeanCreatedEventListener</a> for the <code>ObjectMapper</code> and add whatever customizations you need.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="clientRetry">7.2.4 Retry and Circuit Breaker</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpClient/clientAnnotation/clientRetry.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Being able to recover from failure is critical for HTTP clients, and that is where the integrated <a href="#retry">Retry Advice</a> included as part of Micronaut comes in really handy.</p>
+</div>
+<div class="paragraph">
+<p>You can declare the <a href="../api/io/micronaut/retry/annotation/Retryable.html">@Retryable</a> or <a href="../api/io/micronaut/retry/annotation/CircuitBreaker.html">@CircuitBreaker</a> annotations on any <a href="../api/io/micronaut/http/client/Client.html">@Client</a> interface and the retry policy will be applied, for example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Declaring @Retryable</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pets</span><span class="delimiter">&quot;</span></span>)
+<span class="annotation">@Retryable</span>
+<span class="directive">public</span> <span class="type">interface</span> <span class="class">PetClient</span> <span class="directive">extends</span> PetOperations {
+
+    <span class="annotation">@Override</span>
+    Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For more information on customizing retry, see the section on <a href="#retry">Retry Advice</a>.</p>
+</div>
+
+
+<h2 id="clientFallback">7.2.5 Client Fallbacks</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpClient/clientAnnotation/clientFallback.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In distributed systems, failure happens and it is best to be prepared for it and handle it in as graceful a manner possible.</p>
+</div>
+<div class="paragraph">
+<p>In addition, when developing Microservices it is quite common to work on a single Microservice without other Microservices the project requires being available.</p>
+</div>
+<div class="paragraph">
+<p>With that in mind Micronaut features a native fallback mechanism that is integrated into <a href="#retry">Retry Advice</a> that allows falling back to another implementation in the case of failure.</p>
+</div>
+<div class="paragraph">
+<p>Using the <a href="../api/io/micronaut/retry/annotation/Fallback.html">@Fallback</a> annotation you can declare a fallback implementation of a client that will be picked up and used once all possible retries have been exhausted.</p>
+</div>
+<div class="paragraph">
+<p>In fact the mechanism is not strictly linked to Retry, you can declare any class as <a href="../api/io/micronaut/retry/annotation/Recoverable.html">@Recoverable</a> and if a method call fails (or, in the case of reactive types, an error is emitted) a class annotated with <code>@Fallback</code> will be searched for.</p>
+</div>
+<div class="paragraph">
+<p>To illustrate this consider again the <code>PetOperations</code> interface declared earlier. You can define a <code>PetFallback</code> class that will be called in the case of failure:</p>
+</div>
+<div class="listingblock">
+<div class="title">Defining a Fallback</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Fallback</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">PetFallback</span> <span class="directive">implements</span> PetOperations {
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age) {
+        Pet pet = <span class="keyword">new</span> Pet();
+        pet.setAge(age);
+        pet.setName(name);
+        <span class="keyword">return</span> Single.just(pet);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you purely want to use fallbacks to help with testing against external Microservices you can define fallbacks in the <code>src/test/java</code> directory so they are not included in production code.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>As you can see the fallback does not perform any network operations and is quite simple, hence will provide a successful result in the case of an external system being down.</p>
+</div>
+<div class="paragraph">
+<p>Of course, the actual behaviour of the fallback is down to you. You could for example implement a fallback that pulls data from a local cache when the real data is not available, and sends alert emails to operations about downtime or whatever.</p>
+</div>
+
+
+<h2 id="netflixHystrix">7.2.6 Netflix Hystrix Support</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpClient/clientAnnotation/netflixHystrix.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="https://github.com/Netflix/Hystrix">Netflix Hystrix</a> is a fault tolerance library developed by the Netflix team and designed to improve resilience of inter process communication.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut features integration with Hystrix through the <code>netflix-hystrix</code> module, which you can add to your <code>build.gradle</code> or <code>pom.xml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:netflix-hystrix</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_using_the_hystrixcommand_annotation">Using the @HystrixCommand Annotation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>With the above dependency declared you can annotate any method (including methods defined on <code>@Client</code> interfaces) with the <a href="../api/io/micronaut/configurations/hystrix/annotation/HystrixCommand.html">@HystrixCommand</a> annotation and it will wrap the methods execution in a Hystrix command. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using @HystrixCommand</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@HystrixCommand</span>
+<span class="predefined-type">String</span> hello(<span class="predefined-type">String</span> name) {
+    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello </span><span class="inline"><span class="inline-delimiter">$</span>name</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This works for reactive return types such as <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> etc. as well and the reactive type will be wrapped in a <code>HystrixObservableCommand</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/configurations/hystrix/annotation/HystrixCommand.html">@HystrixCommand</a> annotation also integrates with Micronauts support for <a href="#retry">Retry Advice</a> and <a href="#clientFallback">Fallbacks</a></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For information on how to customize the Hystrix thread pool, group and properties see the javadoc for <a href="../api/io/micronaut/configurations/hystrix/annotation/HystrixCommand.html">@HystrixCommand</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_enabling_hystrix_stream_dashboard">Enabling Hystrix Stream &amp; Dashboard</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can enable a Server Sent Event stream to feed into the <a href="https://github.com/Netflix-Skunkworks/hystrix-dashboard">Hystrix Dashboard</a> by setting the <code>hystrix.stream.enabled</code> setting to <code>true</code> in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Enabling Hystrix Stream</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">hystrix</span>:
+    <span class="key">stream</span>:
+        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This exposes a <code>/hystrix.stream</code> endpoint with the format the <a href="https://github.com/Netflix-Skunkworks/hystrix-dashboard">Hystrix Dashboard</a> expects.</p>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/httpServer.html">&lt;&lt; <strong>6</strong><span>The HTTP Server</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
