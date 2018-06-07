@@ -1643,13 +1643,37 @@ The output produced by Jackson can be customized in a variety of manners, from d
 <div class="paragraph">
 <p>Sometimes with distributing applications, bad things happen. Thus having a good way to handle errors is important.</p>
 </div>
+<div class="sect2">
+<h3 id="_status_handlers">Status Handlers</h3>
 <div class="paragraph">
-<p>To define local error handling simply define a method in a controller where the last argument is the type of the exception you wish to handle. For example the following method will handling JSON parse exceptions from Jackson for the scope of the declaring controller:</p>
+<p>The <a href="../api/io/micronaut/http/annotation/Error.html">Error</a> annotation supports defining either an exception class or an HTTP status. Methods decorated with the annotation will be invoked as the result of other controller methods. The annotation also supports the notion of global and local, local being the default.</p>
+</div>
+<div class="paragraph">
+<p>Local error handlers will only respond to methods defined in the same controller. Global error handlers can respond to any method in any controller. A local error handler is always searched for first when resolving which handler to execute.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+When defining an error handler for an exception, you can specify the exception instance as an argument to the method and omit the exception property of the annotation.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_local_error_handling">Local Error Handling</h3>
+<div class="paragraph">
+<p>For example the following method will handling JSON parse exceptions from Jackson for the scope of the declaring controller:</p>
 </div>
 <div class="listingblock">
-<div class="title">Handling Controller Exceptions</div>
+<div class="title">Local exception handler</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> HttpResponse&lt;JsonError&gt; jsonError(HttpRequest request, JsonParseException jsonParseException) { <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Error</span>
+<span class="directive">public</span> HttpResponse&lt;JsonError&gt; jsonError(HttpRequest request, JsonParseException jsonParseException) { <i class="conum" data-value="1"></i><b>(1)</b>
     JsonError error = <span class="keyword">new</span> JsonError(<span class="string"><span class="delimiter">&quot;</span><span class="content">Invalid JSON: </span><span class="delimiter">&quot;</span></span> + jsonParseException.getMessage()) <i class="conum" data-value="2"></i><b>(2)</b>
             .link(Link.SELF, Link.of(request.getUri()));
 
@@ -1674,11 +1698,40 @@ The output produced by Jackson can be customized in a variety of manners, from d
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>Note that the previous example will only handle errors thrown from the declaring controller. To handle errors globally you should use the <a href="../api/io/micronaut/http/annotation/Error.html">Error</a> annotation with the <code>global</code> attribute set to <code>true</code>:</p>
-</div>
 <div class="listingblock">
-<div class="title">Handling Global Errors</div>
+<div class="title">Local status handler</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Error</span>(status = HttpStatus.NOT_FOUND)
+<span class="directive">public</span> HttpResponse&lt;JsonError&gt; notFound(HttpRequest request) { <i class="conum" data-value="1"></i><b>(1)</b>
+    JsonError error = <span class="keyword">new</span> JsonError(<span class="string"><span class="delimiter">&quot;</span><span class="content">Page Not Found</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+            .link(Link.SELF, Link.of(request.getUri()));
+
+    <span class="keyword">return</span> HttpResponse.&lt;JsonError&gt;notFound()
+            .body(error); <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/http/annotation/Error.html">Error</a> declares which <a href="../api/io/micronaut/http/HttpStatus.html">HttpStatus</a> error code to handle (in this case 404)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A <a href="../api/io/micronaut/http/hateos/JsonError.html">JsonError</a> instance is returned for all 404 responses</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>An <a href="../api/io/micronaut/http/HttpStatus.html#NOT_FOUND">NOT_FOUND</a> response is returned</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_global_error_handling">Global Error Handling</h3>
+<div class="listingblock">
+<div class="title">Global error handler</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Error</span>(global = <span class="predefined-constant">true</span>) <i class="conum" data-value="1"></i><b>(1)</b>
 <span class="directive">public</span> HttpResponse&lt;JsonError&gt; error(HttpRequest request, <span class="predefined-type">Throwable</span> e) {
@@ -1706,23 +1759,8 @@ The output produced by Jackson can be customized in a variety of manners, from d
 </tr>
 </table>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-You can also specify an exception type to the <a href="../api/io/micronaut/http/annotation/Error.html">Error</a> to add a more specific exception handler
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Finally, you can also add global handlers for error status responses:</p>
-</div>
 <div class="listingblock">
-<div class="title">Handling Global HTTP Status Errors</div>
+<div class="title">Global status handler</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Error</span>(status = HttpStatus.NOT_FOUND, global = <span class="predefined-constant">true</span>)
 <span class="directive">public</span> HttpResponse&lt;JsonError&gt; notFound(HttpRequest request) { <i class="conum" data-value="1"></i><b>(1)</b>
@@ -1763,6 +1801,7 @@ If an <code>@Error</code> annotation with the same parameter exists as global an
 </td>
 </tr>
 </table>
+</div>
 </div>
 
 
