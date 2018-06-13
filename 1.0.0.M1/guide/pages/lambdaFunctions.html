@@ -1,0 +1,396 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>9.3 Deploying Functions to AWS Lambda 1.0.0.M1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/quickStart.html"><strong>2</strong><span>Quick Start</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/ioc.html"><strong>3</strong><span>Inversion of Control</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/config.html"><strong>4</strong><span>Application Configuration</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/aop.html"><strong>5</strong><span>Aspect Oriented Programming</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpServer.html"><strong>6</strong><span>The HTTP Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>11</strong><span>Language Support</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>12</strong><span>Management &amp; Monitoring</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>13</strong><span>Security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>14</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/faq.html"><strong>15</strong><span>Frequently Asked Questions (FAQ)</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/cloud.html">&lt;&lt; <strong>8</strong><span>Cloud Native Features</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>9.3 Deploying Functions to AWS Lambda</h1>
+
+                    <p><strong>Version:</strong> 1.0.0.M1</p>
+                </div>
+
+                
+
+                
+
+<h2 id="lambdaFunctions">9.3 Deploying Functions to AWS Lambda</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/serverlessFunctions/lambdaFunctions.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>For Java &amp; Kotlin functions, support for <a href="http://aws.amazon.com">AWS Lambda</a> can be enabled by adding the <code>function-aws</code> dependency to your classpath. For example, in <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    ...
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:function-aws</span><span class="delimiter">&quot;</span></span>
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For Groovy functions, the <code>function-groovy</code> dependency is sufficient for AWS Lambda support.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    ...
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:function-groovy</span><span class="delimiter">&quot;</span></span>
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configuration">Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Configuration properties specific to AWS Lambda environments can be supplied in an <code>application-aws</code> configuration file in <code>src/main/resources</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">application-aws.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">production</span>:
+    <span class="key">property</span>: <span class="string"><span class="content">44</span></span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_manual_deployment">Manual Deployment</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can deploy your function to AWS Lambda manually by building and uploading an executable JAR file. Various build plugins offer this capability.</p>
+</div>
+<div class="sect2">
+<h3 id="_gradle_shadow_plugin">Gradle Shadow plugin</h3>
+<div class="paragraph">
+<p>The <a href="https://plugins.gradle.org/plugin/com.github.johnrengelman.shadow">Gradle Shadow</a> plugin provides a <code>shadowJar</code> task to generate a self-contained executable JAR file, which is suitable for AWS Lambda deployments.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">buildscript {
+    repositories {
+        maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://plugins.gradle.org/m2/</span><span class="delimiter">&quot;</span></span> } <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+    dependencies {
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.github.jengelman.gradle.plugins:shadow:2.0.4</span><span class="delimiter">&quot;</span></span>
+...
+    }
+}
+
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">com.github.johnrengelman.shadow</span><span class="delimiter">&quot;</span></span>
+
+shadowJar {
+    mergeServiceFiles()
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The Gradle Shadow plugin is hosted in the <code><a href="http://plugins.gradle.org" class="bare">http://plugins.gradle.org</a></code> repository</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The executable JAR file can now be built using the <code>shadowJar</code> task.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew shadowJar</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_maven_shade_plugin">Maven Shade plugin</h3>
+<div class="paragraph">
+<p>The <a href="https://maven.apache.org/plugins/maven-shade-plugin/">Maven Shade</a> plugin will generate an executable JAR file for Maven projects. For further details, consult the <a href="https://docs.aws.amazon.com/lambda/latest/dg/java-create-jar-pkg-maven-no-ide.html">AWS Lambda Documentation.</a></p>
+</div>
+<div class="listingblock">
+<div class="title">Example pom.xml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;project&gt;</span>
+
+    <span class="tag">&lt;build&gt;</span>
+        <span class="tag">&lt;plugins&gt;</span>
+            <span class="tag">&lt;plugin&gt;</span>
+                <span class="tag">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/groupId&gt;</span>
+                <span class="tag">&lt;artifactId&gt;</span>maven-shade-plugin<span class="tag">&lt;/artifactId&gt;</span>
+                <span class="tag">&lt;version&gt;</span>3.1.0<span class="tag">&lt;/version&gt;</span>
+                <span class="tag">&lt;executions&gt;</span>
+                    <span class="tag">&lt;execution&gt;</span>
+                        <span class="tag">&lt;phase&gt;</span>package<span class="tag">&lt;/phase&gt;</span>
+                        <span class="tag">&lt;goals&gt;</span>
+                            <span class="tag">&lt;goal&gt;</span>shade<span class="tag">&lt;/goal&gt;</span>
+                        <span class="tag">&lt;/goals&gt;</span>
+                        <span class="tag">&lt;configuration&gt;</span>
+                            <span class="tag">&lt;transformers&gt;</span>
+                                <span class="tag">&lt;transformer</span> <span class="attribute-name">implementation</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">org.apache.maven.plugins.shade.resource.ManifestResourceTransformer</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+                                    <span class="tag">&lt;mainClass&gt;</span>${exec.mainClass}<span class="tag">&lt;/mainClass&gt;</span>
+                                <span class="tag">&lt;/transformer&gt;</span>
+                                <span class="tag">&lt;transformer</span> <span class="attribute-name">implementation</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">org.apache.maven.plugins.shade.resource.ServicesResourceTransformer</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+                            <span class="tag">&lt;/transformers&gt;</span>
+                        <span class="tag">&lt;/configuration&gt;</span>
+                    <span class="tag">&lt;/execution&gt;</span>
+                <span class="tag">&lt;/executions&gt;</span>
+            <span class="tag">&lt;/plugin&gt;</span>
+        <span class="tag">&lt;/plugins&gt;</span>
+    <span class="tag">&lt;/build&gt;</span>
+<span class="tag">&lt;/project&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The executable JAR file can now be built using the <code>package</code> phase.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./mvnw package</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_gradle_aws_plugin">Gradle AWS Plugin</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For Gradle projects, deployment can be made even more straightforward using the <a href="https://github.com/classmethod/gradle-aws-plugin">Gradle AWS Plugin</a>. This plugin provides a <code>deploy</code> task which can push your function to AWS Lambda directly, as well as a <code>AWSLambdaInvokeTask</code> which can be used to invoke your function when it is deployed.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.amazonaws.services.lambda.model.InvocationType</span>
+<span class="keyword">import</span> <span class="include">jp.classmethod.aws.gradle.lambda.AWSLambdaInvokeTask</span>
+<span class="keyword">import</span> <span class="include">jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask</span>
+<span class="keyword">import</span> <span class="include">com.amazonaws.services.lambda.model.Runtime</span>
+
+buildscript {
+    repositories {
+        ...
+        maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://plugins.gradle.org/m2/</span><span class="delimiter">&quot;</span></span> } <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+    dependencies {
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">jp.classmethod.aws:gradle-aws-plugin:0.22</span><span class="delimiter">&quot;</span></span>
+    }
+}
+
+apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">jp.classmethod.aws.lambda</span><span class="delimiter">'</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+
+...
+task deploy(<span class="key">type</span>: AWSLambdaMigrateFunctionTask, <span class="key">dependsOn</span>: shadowJar) {
+    functionName = <span class="string"><span class="delimiter">&quot;</span><span class="content">hello-world</span><span class="delimiter">&quot;</span></span>
+    handler = <span class="string"><span class="delimiter">&quot;</span><span class="content">example.HelloWorldFunction::hello</span><span class="delimiter">&quot;</span></span>
+    role = <span class="string"><span class="delimiter">&quot;</span><span class="content">arn:aws:iam::</span><span class="inline"><span class="inline-delimiter">${</span>aws.accountId<span class="inline-delimiter">}</span></span><span class="content">:role/lambda_basic_execution</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+    runtime = <span class="predefined-type">Runtime</span>.Java8
+    zipFile = shadowJar.archivePath
+    memorySize = <span class="integer">256</span>
+    timeout = <span class="integer">60</span>
+}
+
+task invoke(<span class="key">type</span>: AWSLambdaInvokeTask) {
+    functionName = <span class="string"><span class="delimiter">&quot;</span><span class="content">hello-world</span><span class="delimiter">&quot;</span></span>
+    invocationType = InvocationType.RequestResponse
+    payload = <span class="string"><span class="delimiter">'</span><span class="content">{&quot;name&quot;:&quot;Fred&quot;}</span><span class="delimiter">'</span></span>
+    doLast {
+        println <span class="string"><span class="delimiter">&quot;</span><span class="content">Lambda function result: </span><span class="delimiter">&quot;</span></span> + <span class="keyword">new</span> <span class="predefined-type">String</span>(invokeResult.payload.array(), <span class="string"><span class="delimiter">&quot;</span><span class="content">UTF-8</span><span class="delimiter">&quot;</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The AWS Gradle plugin is hosted from the <code><a href="https://plugins.gradle.org" class="bare">https://plugins.gradle.org</a></code> repository</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Apply the Gradle AWS plugin</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The Gradle AWS plugin will resolve your AWS credentials from <code>.aws/credentials</code> file, which is the default location used by the <a href="https://aws.amazon.com/cli/">AWS CLI</a> to set up your environment</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note that the value of the <code>handler</code> property of the <code>deploy</code> task should be either:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In this case of Java or Kotlin: <code>io.micronaut.function.aws.MicronautRequestStreamHandler</code></p>
+</li>
+<li>
+<p>In the case of Groovy function definitions: A reference to the function (in the above case <code>example.HelloWorldFunction::hello</code>)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The reason for this is the <code>function-groovy</code> dependency applies additional code transformations to make it possible to reference the function directly.</p>
+</div>
+<div class="paragraph">
+<p>With the above build configuration, the function can be deployed to AWS Lambda using the <code>deploy</code> task.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew deploy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The deployed function can then be invoked.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew invoke
+Hello, Fred</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Consult the <a href="https://github.com/classmethod/gradle-aws-plugin">Gradle AWS plugin documentation</a> for more details on the use of the plugin.</p>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/cloud.html">&lt;&lt; <strong>8</strong><span>Cloud Native Features</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
