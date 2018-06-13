@@ -1,0 +1,517 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>6.8 Reactive HTTP Request Processing 1.0.0.M1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/quickStart.html"><strong>2</strong><span>Quick Start</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/ioc.html"><strong>3</strong><span>Inversion of Control</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/config.html"><strong>4</strong><span>Application Configuration</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/aop.html"><strong>5</strong><span>Aspect Oriented Programming</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpServer.html"><strong>6</strong><span>The HTTP Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>11</strong><span>Language Support</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>12</strong><span>Management &amp; Monitoring</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>13</strong><span>Security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>14</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/faq.html"><strong>15</strong><span>Frequently Asked Questions (FAQ)</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>6.8 Reactive HTTP Request Processing</h1>
+
+                    <p><strong>Version:</strong> 1.0.0.M1</p>
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#bodyAnnotation"><strong>6.1</strong><span>Using the @Body Annotation</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#reactiveResponses"><strong>6.2</strong><span>Reactive Responses</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#jsonBinding"><strong>6.3</strong><span>JSON Binding with Jackson</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h2 id="reactiveServer">6.8 Reactive HTTP Request Processing</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/reactiveServer.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>As mentioned previously, Micronaut is built on Netty which is designed around an Event loop model and non-blocking I/O.</p>
+</div>
+<div class="paragraph">
+<p>Although it is recommended to following a non-blocking approach, in particular when making remote calls to other microservices, Micronaut acknowledges the fact that in real world scenarios developers encounter situations where the need arises to interface with blocking APIs and in order to facilitate this features blocking operation detection.</p>
+</div>
+<div class="paragraph">
+<p>If your controller method returns a non-blocking type such as an RxJava <code>Observable</code> or a <code>CompletableFuture</code> then Micronaut will use the Event loop thread to subscribe to the result.</p>
+</div>
+<div class="paragraph">
+<p>If however you return any other type then Micronaut will execute your <code>@Controller</code> method in a pre-configured I/O thread pool.</p>
+</div>
+<div class="paragraph">
+<p>This thread pool by default is a caching, unbound thread pool. However, you may wish to configure the nature of the thread pool. For example the following configuration will configure the I/O thread pool as a fixed thread pool with 75 threads (similar to what a traditional blocking server such as Tomcat uses in the thread per connection model):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="error">micronaut.executors.io.type=fixed</span>
+<span class="error">micronaut.executors.io.nThreads=75</span></code></pre>
+</div>
+</div>
+
+
+<h2 id="bodyAnnotation">6.8.1 Using the @Body Annotation</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/reactiveServer/bodyAnnotation.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To parse the request body, you first need to indicate to Micronaut the parameter which will receive the data. This is done with the <a href="../api/io/micronaut/http/annotation/Body.html">Body</a> annotation.</p>
+</div>
+<div class="paragraph">
+<p>The following example implements a simple echo server that echos the body sent in the request:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using the @Body annotation</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.reactivex.Flowable</span>;
+<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
+<span class="keyword">import</span> <span class="include">javax.validation.constraints.Size</span>;
+
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/receive</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">MessageController</span> {
+
+    <span class="annotation">@Post</span>(consumes = MediaType.TEXT_PLAIN) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">String</span> echo(<span class="annotation">@Size</span>(max = <span class="integer">1024</span>) <span class="annotation">@Body</span> <span class="predefined-type">String</span> text) { <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">return</span> text; <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/http/annotation/Post.html">Post</a> annotation is used with a <a href="../api/io/micronaut/http/MediaType.html">MediaType</a> of <code>text/plain</code> (the default is <code>application/json</code>).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <a href="../api/io/micronaut/http/annotation/Body.html">Body</a> annotation is used with a <code>javax.validation.constraints.Size</code> that limits the size of the body to at most 1MB</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The body is returned as the result of the method</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note that reading the request body is done in a non-blocking manner in that the request contents are read as the data becomes available and accumulated into the String passed to the method.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The <code>micronaut.server.maxRequestSize</code> setting in <code>application.yml</code> will limit the size of the data (the default maximum request size is 10MB) if no <code>@Size</code> constraint is specified.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Regardless of the limit, for a  large amount of data accumulating the data into a String in-memory may lead to memory strain on the server. A better approach is to include a Reactive library in your project (such as <code>RxJava 2.x</code>, <code>Reactor</code> or <code>Akka</code>) that supports the Reactive streams implementation and stream the data it becomes available:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using RxJava 2 to Read the request body</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(consumes = MediaType.TEXT_PLAIN) <i class="conum" data-value="1"></i><b>(1)</b>
+Single&lt;MutableHttpResponse&lt;<span class="predefined-type">String</span>&gt;&gt; echoFlow(<span class="annotation">@Body</span> Flowable&lt;<span class="predefined-type">String</span>&gt; text) { <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="keyword">return</span> text.collect(<span class="predefined-type">StringBuffer</span>::<span class="keyword">new</span>, <span class="predefined-type">StringBuffer</span>::append) <i class="conum" data-value="3"></i><b>(3)</b>
+               .map(buffer -&gt;
+                    HttpResponse.ok(buffer.toString())
+               );
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>In this case the method is altered to receive and return an RxJava 2.x <code>Flowable</code> type</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> is returned so that Micronaut will only emit the response once the operation completes without blocking.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>collect</code> method is used to accumulate the data in this simulated example, but it could for example write the data to logging service, database or whatever chunk by chunk</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="reactiveResponses">6.8.2 Reactive Responses</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/reactiveServer/reactiveResponses.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The previous section introduced the notion of Reactive programming using RxJava 2.x and Micronaut.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut supports returning common reactive types such as <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> or <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Observable.html">Observable</a> (or the <code>Mono</code> type from Reactor 3.x), an instance of <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> or <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a> from any controller method.</p>
+</div>
+<div class="paragraph">
+<p>The argument that is designated the body of the request using the <a href="../api/io/micronaut/http/annotation/Body.html">Body</a> annotation can also be a reactive type or a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a>.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut also uses these types to influence which thread pool to execute the method on. If the request is considered non-blocking (because it returns a non-blocking type) then the Netty event loop thread will be used to execute the method.</p>
+</div>
+<div class="paragraph">
+<p>If the method is considered blocking then the method is executed on the I/O thread pool, which Micronaut creates at startup.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+See the section on <a href="#threadPools">Configuring Thread Pools</a> for information on the thread pools that Micronaut sets up and how to configure them.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To summarize, the following table illustrates some common response types and their handling:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Micronaut Response Types</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example Signature</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Any type that implements the <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> interface</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flowable&lt;String&gt; hello()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A Java <code>CompletableFuture</code> instance</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CompletableFuture&lt;String&gt; hello()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> and optional response body</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HttpResponse&lt;Flowable&lt;String&gt;&gt; hello()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/CharSequence.html">CharSequence</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Any implementation of <code>CharSequence</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String hello()</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">T</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Any simple POJO type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Book show()</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+When returning a Reactive type, the type of reactive type has an impact on the response returned. For example, when returning a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a>, Micronaut can not know the size of the response, so <code>Transfer-Encoding</code> type of <code>Chunked</code> is used. Whilst for types that emit a single result such as <code><a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a></code> the <code>Content-Length</code> header will be populated.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="jsonBinding">6.8.3 JSON Binding with Jackson</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/reactiveServer/jsonBinding.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The examples so far have dealt with simply text based responses, but the most common data interchange format nowadays is JSON.</p>
+</div>
+<div class="paragraph">
+<p>In fact, the defaults in the <a href="../api/io/micronaut/http/annotation/Controller.html">Controller</a> annotation specify that the controllers in Micronaut consume and produce JSON by default.</p>
+</div>
+<div class="paragraph">
+<p>In order to do so in a non-blocking manner Micronaut builds on the <a href="https://github.com/FasterXML/jackson">Jackson</a> Asynchronous JSON parsing API and Netty such that the reading of incoming JSON is done in a non-blocking manner.</p>
+</div>
+<div class="sect1">
+<h2 id="_binding_using_reactive_frameworks">Binding using Reactive Frameworks</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>From a developer perspective however, you can generally just work with Plain Old Java Objects (POJOs) and can optionally use a Reactive framework such as RxJava or Reactor. The following is an example of a controller that reads and saves an incoming POJO in a non-blocking way from JSON:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using RxJava 2 to Read the JSON</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/people</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">PersonController</span> {
+
+    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, Person&gt; inMemoryDatastore = <span class="keyword">new</span> <span class="predefined-type">LinkedHashMap</span>&lt;&gt;();
+
+    <span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> Single&lt;HttpResponse&lt;Person&gt;&gt; save(<span class="annotation">@Body</span> Single&lt;Person&gt; person) { <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="keyword">return</span> person.map(p -&gt; {
+                    inMemoryDatastore.put(p.getFirstName(), p); <i class="conum" data-value="2"></i><b>(2)</b>
+                    <span class="keyword">return</span> HttpResponse.created(p); <i class="conum" data-value="3"></i><b>(3)</b>
+                }
+        );
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The method receives a RxJava <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> which emits the POJO once the JSON has been read</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>map</code> method is used to store the instance in <code>Map</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>An <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> is returned</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Using CURL from the command line you can POST JSON to the <code>/people</code> URI for the server to receive it:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using CURL to Post JSON</div>
+<div class="content">
+<pre>$ curl -X POST localhost:8080/people -d '{"firstName":"Fred","lastName":"Flintstone","age":45}'</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_binding_using_completablefuture">Binding Using CompletableFuture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The same method as the previous example can also be written with the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a> API instead:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using CompletableFuture to Read the JSON</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> CompletableFuture&lt;HttpResponse&lt;Person&gt;&gt; save(<span class="annotation">@Body</span> CompletableFuture&lt;Person&gt; person) {
+    <span class="keyword">return</span> person.thenApply(p -&gt; {
+                inMemoryDatastore.put(p.getFirstName(), p);
+                <span class="keyword">return</span> HttpResponse.created(p);
+            }
+    );
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example uses the <code>thenApply</code> method to achieve the same as the previous example.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_binding_using_pojos">Binding using POJOs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Note however, that if your method does not do any blocking I/O then you can just as easily write:</p>
+</div>
+<div class="listingblock">
+<div class="title">Binding JSON POJOs</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> HttpResponse&lt;Person&gt; save(<span class="annotation">@Body</span> Person person) {
+    inMemoryDatastore.put(person.getFirstName(), person);
+    <span class="keyword">return</span> HttpResponse.created(person);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Micronaut will still using non-blocking I/O to read the JSON and only execute your method once the data has been read.</p>
+</div>
+<div class="paragraph">
+<p>In other words, as a rule reactive types should be used when you plan to do further downstream I/O operations in which case they can greatly simplify composing operations.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The output produced by Jackson can be customized in a variety of manners, from defining Jackson modules to using <a href="https://github.com/FasterXML/jackson-annotations/wiki/Jackson-Annotations">Jackson&#8217;s annotations</a>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

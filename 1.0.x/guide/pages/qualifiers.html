@@ -1,0 +1,363 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.5 Bean Qualifiers 1.0.0.M1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/quickStart.html"><strong>2</strong><span>Quick Start</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/ioc.html"><strong>3</strong><span>Inversion of Control</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/config.html"><strong>4</strong><span>Application Configuration</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/aop.html"><strong>5</strong><span>Aspect Oriented Programming</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpServer.html"><strong>6</strong><span>The HTTP Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>11</strong><span>Language Support</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>12</strong><span>Management &amp; Monitoring</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>13</strong><span>Security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>14</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/faq.html"><strong>15</strong><span>Frequently Asked Questions (FAQ)</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/quickStart.html">&lt;&lt; <strong>2</strong><span>Quick Start</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/config.html"><strong>4</strong><span>Application Configuration</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>3.5 Bean Qualifiers</h1>
+
+                    <p><strong>Version:</strong> 1.0.0.M1</p>
+                </div>
+
+                
+
+                
+
+<h2 id="qualifiers">3.5 Bean Qualifiers</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/ioc/qualifiers.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you have multiple possible implementations for a given interface that you want to inject, you need to use a qualifier.</p>
+</div>
+<div class="paragraph">
+<p>Once again Micronaut leverages JSR-303 and the <a href="https://docs.oracle.com/javaee/6/api/javax/inject/Qualifier.html">Qualifier</a> and <a href="https://docs.oracle.com/javaee/6/api/javax/inject/Named.html">Named</a> annotations to support this use case.</p>
+</div>
+<div class="sect1">
+<h2 id="_qualifying_by_name">Qualifying By Name</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To qualify by name you can use the <a href="https://docs.oracle.com/javaee/6/api/javax/inject/Named.html">Named</a> annotation. For example, consider the following classes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">javax.inject.*</span>
+
+<span class="type">interface</span> Engine { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="type">int</span> getCylinders()
+    <span class="predefined-type">String</span> start()
+}
+
+<span class="annotation">@Singleton</span>
+<span class="type">class</span> <span class="class">V6Engine</span> <span class="directive">implements</span> Engine { <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="type">int</span> cylinders = <span class="integer">6</span>
+
+    <span class="predefined-type">String</span> start() {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Starting V6</span><span class="delimiter">&quot;</span></span>
+    }
+}
+
+<span class="annotation">@Singleton</span>
+<span class="type">class</span> <span class="class">V8Engine</span> <span class="directive">implements</span> Engine { <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="type">int</span> cylinders = <span class="integer">8</span>
+
+    <span class="predefined-type">String</span> start() {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Starting V8</span><span class="delimiter">&quot;</span></span>
+    }
+}
+
+<span class="annotation">@Singleton</span>
+<span class="type">class</span> <span class="class">Vehicle</span> {
+    <span class="directive">final</span> Engine engine
+
+    <span class="annotation">@Inject</span> Vehicle(<span class="annotation">@Named</span>(<span class="string"><span class="delimiter">'</span><span class="content">v8</span><span class="delimiter">'</span></span>) Engine engine) { <i class="conum" data-value="4"></i><b>(4)</b>
+        <span class="local-variable">this</span>.engine = engine
+    }
+
+    <span class="predefined-type">String</span> start() {
+        engine.start() <i class="conum" data-value="5"></i><b>(5)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>Engine</code> interface defines the common contract</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>V6Engine</code> class is the first implementation</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>V8Engine</code> class is the second implementation</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <a href="https://docs.oracle.com/javaee/6/api/javax/inject/Named.html">Named</a> annotation is used to indicate the <code>V8Engine</code> implementation is required</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Calling the start method prints: <code>"Starting V8"</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can also declare <a href="https://docs.oracle.com/javaee/6/api/javax/inject/Named.html">@Named</a> at the class level of a bean to explicitly define the name of the bean.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_qualifying_by_annotation">Qualifying By Annotation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In addition to being able to qualify by name, you can build your own qualifiers using the <a href="https://docs.oracle.com/javaee/6/api/javax/inject/Qualifier.html">Qualifier</a> annotation. For example, consider the following annotation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">javax.inject.Qualifier</span>
+<span class="keyword">import</span> <span class="include">java.lang.annotation.Retention</span>
+
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">java.lang.annotation.RetentionPolicy.RUNTIME</span>
+
+<span class="annotation">@Qualifier</span>
+<span class="annotation">@Retention</span>(RUNTIME)
+<span class="annotation">@interface</span> V8 {
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above annotation is itself annotated with the <code>@Qualifier</code> annotation to designate it as a qualifier. You can then use the annotation at any injection point in your code. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Inject</span> Vehicle(<span class="annotation">@V8</span> Engine engine) {
+    <span class="local-variable">this</span>.engine = engine
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_primary_and_secondary_beans">Primary and Secondary Beans</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="../api/io/micronaut/context/annotation/Primary.html">Primary</a> is a qualifier that indicates that a bean is the primary bean that should be selected in the case of multiple possible interface implementations.</p>
+</div>
+<div class="paragraph">
+<p>Consider the following example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">interface</span> <span class="class">ColorPicker</span> {
+    <span class="predefined-type">String</span> color()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Given a common interface called <code>ColorPicker</code> that is implemented by multiple classes.</p>
+</div>
+<div class="listingblock">
+<div class="title">The Primary Bean</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Primary</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Requires</span>;
+<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
+
+<span class="annotation">@Primary</span>
+<span class="annotation">@Singleton</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Green</span> <span class="directive">implements</span> ColorPicker {
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="predefined-type">String</span> color() {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">green</span><span class="delimiter">&quot;</span></span>;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>Green</code> bean is a <code>ColorPicker</code>, but is annotated with <code>@Primary</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Another Bean of the Same Type</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Requires</span>;
+<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
+
+<span class="annotation">@Singleton</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Blue</span> <span class="directive">implements</span> ColorPicker {
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="predefined-type">String</span> color() {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">blue</span><span class="delimiter">&quot;</span></span>;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>Blue</code> bean is also a <code>ColorPicker</code> and hence you have two possible candidates when injecting the <code>ColorPicker</code> interface. Since <code>Green</code> is the primary it will always be favoured.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/test</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">TestController</span> {
+
+    <span class="directive">protected</span> <span class="directive">final</span> ColorPicker colorPicker;
+
+    <span class="directive">public</span> TestController(ColorPicker colorPicker) { <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="local-variable">this</span>.colorPicker = colorPicker;
+    }
+
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>)
+    <span class="directive">public</span> <span class="predefined-type">String</span> index() {
+        <span class="keyword">return</span> colorPicker.color();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Although there are two <code>ColorPicker</code> beans, <code>Green</code> gets injected due to the <code>@Primary</code> annotation.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If multiple possible candidates are present and no <code>@Primary</code> is defined then a <a href="../api/io/micronaut/context/exceptions/NonUniqueBeanException.html">NonUniqueBeanException</a> will be thrown.</p>
+</div>
+<div class="paragraph">
+<p>In addition to <code>@Primary</code>, there is also a <a href="../api/io/micronaut/context/annotation/Secondary.html">Secondary</a> annotation which causes the opposite effect and allows de-prioritizing a bean.</p>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/quickStart.html">&lt;&lt; <strong>2</strong><span>Quick Start</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/config.html"><strong>4</strong><span>Application Configuration</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

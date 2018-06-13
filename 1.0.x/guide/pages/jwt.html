@@ -1,0 +1,747 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>13.3.3 JSON Web Token 1.0.0.M1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/quickStart.html"><strong>2</strong><span>Quick Start</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/ioc.html"><strong>3</strong><span>Inversion of Control</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/config.html"><strong>4</strong><span>Application Configuration</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/aop.html"><strong>5</strong><span>Aspect Oriented Programming</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpServer.html"><strong>6</strong><span>The HTTP Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>11</strong><span>Language Support</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>12</strong><span>Management &amp; Monitoring</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>13</strong><span>Security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>14</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/faq.html"><strong>15</strong><span>Frequently Asked Questions (FAQ)</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/management.html">&lt;&lt; <strong>12</strong><span>Management &amp; Monitoring</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/cli.html"><strong>14</strong><span>Micronaut CLI</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>13.3.3 JSON Web Token</h1>
+
+                    <p><strong>Version:</strong> 1.0.0.M1</p>
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#reader"><strong>13.1</strong><span>Reading JWT Token</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#bearerToken"><strong>13.1.1</strong><span>Bearer Token Reader</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#cookieToken"><strong>13.1.2</strong><span>Cookie Token Reader</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#jwtGenerator"><strong>13.2</strong><span>JWT Token Generation</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#jwtGeneratorSignature"><strong>13.2.1</strong><span>JWT Signature</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#jwtGeneratorEncryption"><strong>13.2.2</strong><span>Encrypted JWTs</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#jwtValidation"><strong>13.3</strong><span>JWT Token Validation</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#claimsGeneration"><strong>13.4</strong><span>Claims Generation</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#render"><strong>13.5</strong><span>Token Render</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h2 id="jwt">13.3.3 JSON Web Token</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/authenticationStrategies/jwt.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut ships with security capabilities based on <a href="https://jwt.io/">Json Web Token (JWT)</a>.
+JWT is an <a href="https://tools.ietf.org/html/rfc7519">IETF standard</a> which defines a secure way to encapsulate arbitrary data that can be sent over unsecure URL’s.</p>
+</div>
+<div class="paragraph">
+<p>To use the Micronaut&#8217;s JWT based authentication capabilities you must have the <code>security-jwt</code> dependency on your classpath. For example in <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:security-jwt</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following configuration properties are available to customize JWT based authentication behaviour:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configuration Property</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default Value</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.security.token.jwt.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">You can enable JWT capabilities by enabling this property.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.security.token.rolesName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>roles</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default roles claim name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.security.token.defaultExpiration</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>3600</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Access token expiration time in seconds</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.security.token.refreshTokenExpiration</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Refresh token expiration time in milliseconds. By default, they don&#8217;t expire.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>See the javadoc for <a href="../api/io/micronaut/security/token/jwt/config/JwtConfigurationProperties.html">JwtConfigurationProperties</a> and <a href="../api/io/micronaut/security/token/config/TokenConfigurationProperties.html">TokenConfigurationProperties</a> for more information.</p>
+</div>
+<div class="sect1">
+<h2 id="_what_does_a_jwt_look_like">What does a JWT look like?</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="../img/jwt.png" alt="jwt">
+</div>
+</div>
+<div class="sect2">
+<h3 id="_header">Header</h3>
+<div class="paragraph">
+<p>A base64-encoded JSON like:</p>
+</div>
+<div class="listingblock">
+<div class="title">JWT header</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">alg</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">HS256</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">typ</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">JWT</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_claims">Claims</h3>
+<div class="paragraph">
+<p>A base64-encoded JSON like:</p>
+</div>
+<div class="listingblock">
+<div class="title">JWT claims</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">exp</span><span class="delimiter">&quot;</span></span>: <span class="integer">1422990129</span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">sub</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">jimi</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">roles</span><span class="delimiter">&quot;</span></span>: [
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">ROLE_ADMIN</span><span class="delimiter">&quot;</span></span>,
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">ROLE_USER</span><span class="delimiter">&quot;</span></span>
+    ],
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">iat</span><span class="delimiter">&quot;</span></span>: <span class="integer">1422986529</span>
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_signature">Signature</h3>
+<div class="paragraph">
+<p>Depends on the algorithm specified on the header, it can be a digital signature of the base64-encoded header and claims, or an encryption of them.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+<h2 id="reader">13.3.3.1 Reading JWT Token</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/authenticationStrategies/jwt/reader.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+
+<h2 id="bearerToken">13.3.3.1.1 Bearer Token Reader</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/authenticationStrategies/jwt/reader/bearerToken.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut supports <a href="https://tools.ietf.org/html/rfc6750">RFC 6750 Bearer Token</a> specification out-of-the-box.</p>
+</div>
+<div class="paragraph">
+<p>It is enabled by default but requires JWT Authentication to be enabled.</p>
+</div>
+<div class="paragraph">
+<p>The following sequence illustrates the authentication flow:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/jwt-bearer-token.svg" alt="jwt bearer token">
+</div>
+</div>
+<div class="paragraph">
+<p>The following configuration properties are available to customize Bearer Token read:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configuration Property</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default Value</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.security.token.jwt.bearer.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/security/token/jwt/bearer/BearerTokenReader.html">BearerTokenReader</a> is enabled by default</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.security.token.jwt.bearer.headerName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Authorization</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Header name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.security.token.jwt.bearer.prefix</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bearer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">e.g. <code>Bearer XXXXXXXXXXX</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>See the javadoc for <a href="../api/io/micronaut/security/token/jwt/bearer/BearerTokenConfigurationProperties.html">BearerTokenConfigurationProperties</a> for more information.</p>
+</div>
+<div class="sect1">
+<h2 id="_sending_tokens_in_the_request">Sending tokens in the request</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following code snippet illustrates how to send a JWT token in the <code>Authorization</code> request header:</p>
+</div>
+<div class="listingblock">
+<div class="title">Accessing a protected resource using Authorization request header</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">GET /protectedResource HTTP/1.1
+Host: micronaut.example
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0MjI5OTU5MjIsInN1YiI6ImppbWkiLCJyb2xlcyI6WyJST0xFX0FETUlOIiwiUk9MRV9VU0VSIl0sImlhdCI6MTQyMjk5MjMyMn0.rA7A2Gwt14LaYMpxNRtrCdO24RGrfHtZXY9fIjV8x8o</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<h2 id="cookieToken">13.3.3.1.2 Cookie Token Reader</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/authenticationStrategies/jwt/reader/cookieToken.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can send/read a JWT token from a Cookie too.</p>
+</div>
+<div class="paragraph">
+<p>The following sequence illustrates the authentication flow:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/jwt-cookie.svg" alt="jwt cookie">
+</div>
+</div>
+<div class="paragraph">
+<p>Reading tokens from Cookies is disabled by default. Note that using JWT tokens from cookies requires JWT Authentication to be enabled.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configuration Property</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default Value</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.security.token.jwt.cookie.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Disabled by default.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.security.token.jwt.cookie.cookieName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JWT</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cookie name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.security.token.jwt.cookie.logoutTargetUrl</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String to be parsed into a URI which represents where the user is redirected to after logout.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.security.token.jwt.cookie.loginSuccessTargetUrl</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String to be parsed into a URI which represents where the user is redirected to after a successful login.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.security.token.jwt.cookie.loginFailureTargetUrl</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String to be parsed into a URI which represents where the user is redirected to after a failed login.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>See the javadoc for <a href="../api/io/micronaut/security/token/jwt/cookie/JwtCookieConfigurationProperties.html">JwtCookieConfigurationProperties</a> for more information.</p>
+</div>
+
+
+<h2 id="jwtGenerator">13.3.3.2 JWT Token Generation</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/authenticationStrategies/jwt/jwtGenerator.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut relies on <a href="https://connect2id.com/products/nimbus-jose-jwt">Nimbus JOSE + JWT</a> library to provide JWT token signature and encryption.</p>
+</div>
+
+
+<h2 id="jwtGeneratorSignature">13.3.3.2.1 JWT Signature</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/authenticationStrategies/jwt/jwtGenerator/jwtGeneratorSignature.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut security capabilities use signed JWT’s as specified by the
+<a href="https://tools.ietf.org/html/rfc7515">JSON Web Signature</a> specification.</p>
+</div>
+<div class="paragraph">
+<p>To enable a JWT signature in token generation, you need to have in your app a bean of type <a href="../api/io/micronaut/security/token/jwt/signature/rsa/RSASignatureConfiguration.html">RSASignatureConfiguration</a>,
+<a href="../api/io/micronaut/security/token/jwt/signature/ec/ECSignatureConfiguration.html">ECSignatureConfiguration</a>,
+<a href="../api/io/micronaut/security/token/jwt/signature/secret/SecretSignatureConfiguration.html">SecretSignatureConfiguration</a> qualified with name <code>generator</code>.</p>
+</div>
+<div class="paragraph">
+<p>You can setup a <code>SecretSignatureConfiguration</code> named <code>generator</code> easily via configuration properties:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+  <span class="key">security</span>:
+    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+    <span class="key">token</span>:
+      <span class="key">jwt</span>:
+        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+        <span class="key">signatures</span>:
+          <span class="key">secret</span>:
+            <span class="key">generator</span>:
+              <span class="key">secret</span>: <span class="string"><span class="content">pleaseChangeThisSecretForANewOne </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+              <span class="key">jwsAlgorithm</span>: <span class="string"><span class="content">HS256 </span></span><i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>Change this for your own secret and keep it safe</strong>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Json Web Token Signature name. In this example, HMAC using SHA-256 hash algorithm.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="jwtGeneratorEncryption">13.3.3.2.2 Encrypted JWTs</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/authenticationStrategies/jwt/jwtGenerator/jwtGeneratorEncryption.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Signed claims prevents an attacker to tamper its contents to introduce malicious data or try a privilege escalation by adding more roles. However, the claims can be decoded just by using Base 64.</p>
+</div>
+<div class="paragraph">
+<p>If the claims contains sensitive information, you can use a JSON Web Encryption algorithm to prevent them to be decoded.</p>
+</div>
+<div class="paragraph">
+<p>To enable a JWT encryption in token generation, you need to have in your app a bean of type  <a href="../api/io/micronaut/security/token/jwt/encryption/rsa/RSAEncryptionConfiguration.html">RSAEncryptionConfiguration</a>,
+<a href="../api/io/micronaut/security/token/jwt/encryption/ec/ECEncryptionConfiguration.html">ECEncryptionConfiguration</a>,
+<a href="../api/io/micronaut/security/token/jwt/encryption/secret/SecretEncryptionConfiguration.html">SecretEncryptionConfiguration</a> qualified with name <code>generator</code>.</p>
+</div>
+<div class="sect1">
+<h2 id="_example_of_jwt_signed_with_secret_and_encrypted_with_rsa">Example of JWT Signed with Secret and Encrypted with RSA</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Setup a <a href="../api/io/micronaut/security/token/jwt/signature/secret/SecretSignatureConfiguration.html">SecretSignatureConfiguration</a> through configuration properties</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">micronaut</span>:
+  <span class="key">security</span>:
+    <span class="key">enabled</span>: <span class="predefined-constant">true</span>
+    <span class="key">token</span>:
+      <span class="key">jwt</span>:
+        <span class="key">enabled</span>: <span class="predefined-constant">true</span>
+        <span class="key">signatures</span>:
+          <span class="key">secret</span>:
+            <span class="key">generator</span>:
+              <span class="key">secret</span>: qrD6h8K6S9503Q06Y6Rfk21TErImPYqa <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="key">pem</span>:
+  <span class="key">path</span>: <span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>user/rsa-<span class="integer">2048</span>bit-key-pair.pem <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Name the Signature configuration <code>generator</code> to make it participate in JWT token generation.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Location of PEM file</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Generate a 2048-bit RSA private + public key pair:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">openssl genrsa -out rsa-2048bit-key-pair.pem 2048</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Named</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">generator</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@Singleton</span>
+<span class="type">class</span> <span class="class">RSAOAEPEncryptionConfiguration</span> <span class="directive">implements</span> RSAEncryptionConfiguration {
+
+    <span class="directive">private</span> <span class="predefined-type">RSAPrivateKey</span> rsaPrivateKey
+    <span class="directive">private</span> <span class="predefined-type">RSAPublicKey</span> rsaPublicKey
+    JWEAlgorithm jweAlgorithm = JWEAlgorithm.RSA_OAEP_256
+    EncryptionMethod encryptionMethod = EncryptionMethod.A128GCM
+
+    RSAOAEPEncryptionConfiguration(<span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${pem.path}</span><span class="delimiter">'</span></span>) <span class="predefined-type">String</span> pemPath) {
+        Optional&lt;<span class="predefined-type">KeyPair</span>&gt; keyPair = KeyPairProvider.keyPair(pemPath)
+        <span class="keyword">if</span> (keyPair.isPresent()) {
+            <span class="local-variable">this</span>.rsaPublicKey = (<span class="predefined-type">RSAPublicKey</span>) keyPair.get().getPublic()
+            <span class="local-variable">this</span>.rsaPrivateKey = (<span class="predefined-type">RSAPrivateKey</span>) keyPair.get().getPrivate()
+        }
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="predefined-type">RSAPublicKey</span> getPublicKey() {
+        <span class="keyword">return</span> rsaPublicKey
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="predefined-type">RSAPrivateKey</span> getPrivateKey() {
+        <span class="keyword">return</span> rsaPrivateKey
+    }
+
+    <span class="annotation">@Override</span>
+    JWEAlgorithm getJweAlgorithm() {
+        <span class="keyword">return</span> jweAlgorithm
+    }
+
+    <span class="annotation">@Override</span>
+    EncryptionMethod getEncryptionMethod() {
+        <span class="keyword">return</span> encryptionMethod
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Name Bean <code>generator</code> to designate this bean as participant in the JWT Token Generation.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To parse the PEM key, use a collaborator as described in <a href="https://connect2id.com/products/nimbus-jose-jwt/openssl-key-generation">OpenSSL key generation</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Slf4j</span>
+<span class="type">class</span> <span class="class">KeyPairProvider</span> {
+    <span class="comment">/**
+     *
+     * @param pemPath Full path to PEM file.
+     * @return returns KeyPair if successfully for PEM files.
+     */</span>
+    <span class="directive">static</span> Optional&lt;<span class="predefined-type">KeyPair</span>&gt; keyPair(<span class="predefined-type">String</span> pemPath) {
+        <span class="comment">// Load BouncyCastle as JCA provider</span>
+        <span class="predefined-type">Security</span>.addProvider(<span class="keyword">new</span> BouncyCastleProvider())
+
+        <span class="comment">// Parse the EC key pair</span>
+        PEMParser pemParser
+        <span class="keyword">try</span> {
+            pemParser = <span class="keyword">new</span> PEMParser(<span class="keyword">new</span> <span class="predefined-type">InputStreamReader</span>(<span class="keyword">new</span> <span class="predefined-type">FileInputStream</span>(pemPath)))
+            PEMKeyPair pemKeyPair = (PEMKeyPair) pemParser.readObject()
+
+            <span class="comment">// Convert to Java (JCA) format</span>
+            JcaPEMKeyConverter converter = <span class="keyword">new</span> JcaPEMKeyConverter()
+            <span class="predefined-type">KeyPair</span> keyPair = converter.getKeyPair(pemKeyPair)
+            pemParser.close()
+
+            <span class="keyword">return</span> Optional.of(keyPair)
+
+        } <span class="keyword">catch</span> (<span class="exception">FileNotFoundException</span> e) {
+            log.warn(<span class="string"><span class="delimiter">&quot;</span><span class="content">file not found: {}</span><span class="delimiter">&quot;</span></span>, pemPath)
+
+        } <span class="keyword">catch</span> (PEMException e) {
+            log.warn(<span class="string"><span class="delimiter">&quot;</span><span class="content">PEMException {}</span><span class="delimiter">&quot;</span></span>, e.getMessage())
+
+        } <span class="keyword">catch</span> (<span class="exception">IOException</span> e) {
+            log.warn(<span class="string"><span class="delimiter">&quot;</span><span class="content">IOException {}</span><span class="delimiter">&quot;</span></span>, e.getMessage())
+        }
+        <span class="keyword">return</span> Optional.empty()
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<h2 id="jwtValidation">13.3.3.3 JWT Token Validation</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/authenticationStrategies/jwt/jwtValidation.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut&#8217;s JWT validation support multiple Signature and Encryption configurations.</p>
+</div>
+<div class="paragraph">
+<p>Any beans of type <a href="../api/io/micronaut/security/token/jwt/signature/rsa/RSASignatureConfiguration.html">RSASignatureConfiguration</a>,
+<a href="../api/io/micronaut/security/token/jwt/signature/ec/ECSignatureConfiguration.html">ECSignatureConfiguration</a>,
+<a href="../api/io/micronaut/security/token/jwt/signature/secret/SecretSignatureConfiguration.html">SecretSignatureConfiguration</a>
+participate as signature configurations in the JWT validation.</p>
+</div>
+<div class="paragraph">
+<p>Any beans of type <a href="../api/io/micronaut/security/token/jwt/encryption/rsa/RSAEncryptionConfiguration.html">RSAEncryptionConfiguration</a>,
+<a href="../api/io/micronaut/security/token/jwt/encryption/ec/ECEncryptionConfiguration.html">ECEncryptionConfiguration</a>,
+<a href="../api/io/micronaut/security/token/jwt/encryption/secret/SecretEncryptionConfiguration.html">SecretEncryptionConfiguration</a> participate as encryption configurations in the JWT validation.</p>
+</div>
+
+
+<h2 id="claimsGeneration">13.3.3.4 Claims Generation</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/authenticationStrategies/jwt/claimsGeneration.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If the built-in
+<a href="../api/io/micronaut/security/token/jwt/generator/claims/JWTClaimsSetGenerator.html">JWTClaimsSetGenerator</a>, does not
+fulfil your needs you can provide your own <a href="#replaces">replacement</a> of <a href="../api/io/micronaut/security/token/jwt/generator/claims/ClaimsGenerator.html">ClaimsGenerator</a>.</p>
+</div>
+
+
+<h2 id="render">13.3.3.5 Token Render</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/authenticationStrategies/jwt/render.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>When you use JWT authentication and the built-in <a href="#login">LoginController</a>,
+the JWT tokens are returned to the client as part of an OAuth 2.0 <a href="https://tools.ietf.org/html/RFC6749">RFC6749</a> access token response.</p>
+</div>
+<div class="paragraph">
+<p>An example of such a response is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json"><span class="error">H</span><span class="error">T</span><span class="error">T</span><span class="error">P</span><span class="error">/</span><span class="float">1.1</span> <span class="integer">200</span> <span class="error">O</span><span class="error">K</span>
+<span class="error">C</span><span class="error">o</span><span class="error">n</span><span class="error">t</span><span class="error">e</span><span class="error">n</span><span class="error">t</span><span class="error">-</span><span class="error">T</span><span class="error">y</span><span class="error">p</span><span class="error">e</span>: <span class="error">a</span><span class="error">p</span><span class="error">p</span><span class="error">l</span><span class="error">i</span><span class="error">c</span><span class="error">a</span><span class="error">t</span><span class="error">i</span><span class="error">o</span><span class="error">n</span><span class="error">/</span><span class="error">j</span><span class="error">s</span><span class="error">o</span><span class="error">n</span><span class="error">;</span><span class="error">c</span><span class="error">h</span><span class="error">a</span><span class="error">r</span><span class="error">s</span><span class="error">e</span><span class="error">t</span><span class="error">=</span><span class="error">U</span><span class="error">T</span><span class="error">F</span><span class="integer">-8</span>
+<span class="error">C</span><span class="error">a</span><span class="error">c</span><span class="error">h</span><span class="error">e</span><span class="error">-</span><span class="error">C</span><span class="error">o</span><span class="error">n</span><span class="error">t</span><span class="error">r</span><span class="error">o</span><span class="error">l</span>: <span class="error">n</span><span class="error">o</span><span class="error">-</span><span class="error">s</span><span class="error">t</span><span class="error">o</span><span class="error">r</span><span class="error">e</span>
+<span class="error">P</span><span class="error">r</span><span class="error">a</span><span class="error">g</span><span class="error">m</span><span class="error">a</span>: <span class="error">n</span><span class="error">o</span><span class="error">-</span><span class="error">c</span><span class="error">a</span><span class="error">c</span><span class="error">h</span><span class="error">e</span>
+{
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">access_token</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">eyJhbGciOiJIUzI1NiJ9...</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">token_type</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">expires_in</span><span class="delimiter">&quot;</span></span>:<span class="integer">3600</span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">refresh_token</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">tGzv3JOkF0XG5Qx2TlKWIA...</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">euler</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">roles</span><span class="delimiter">&quot;</span></span>: [
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">ROLE_USER</span><span class="delimiter">&quot;</span></span>
+    ],
+}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/management.html">&lt;&lt; <strong>12</strong><span>Management &amp; Monitoring</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/cli.html"><strong>14</strong><span>Micronaut CLI</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
