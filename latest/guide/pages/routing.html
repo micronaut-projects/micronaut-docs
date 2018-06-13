@@ -1,0 +1,533 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>6.3 HTTP Routing 1.0.0.M1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/quickStart.html"><strong>2</strong><span>Quick Start</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/ioc.html"><strong>3</strong><span>Inversion of Control</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/config.html"><strong>4</strong><span>Application Configuration</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/aop.html"><strong>5</strong><span>Aspect Oriented Programming</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpServer.html"><strong>6</strong><span>The HTTP Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>11</strong><span>Language Support</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>12</strong><span>Management &amp; Monitoring</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>13</strong><span>Security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>14</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/faq.html"><strong>15</strong><span>Frequently Asked Questions (FAQ)</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>6.3 HTTP Routing</h1>
+
+                    <p><strong>Version:</strong> 1.0.0.M1</p>
+                </div>
+
+                
+
+                
+
+<h2 id="routing">6.3 HTTP Routing</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/routing.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/http/annotation/Controller.html">@Controller</a> annotation used in the previous section is one of <a href="../api/io/micronaut/http/annotation/package-summary.html">several annotations</a> that allow you to control the construction of HTTP routes.</p>
+</div>
+<div class="sect1">
+<h2 id="_uri_paths">URI Paths</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the previous example a value of <code>/hello</code> was specified as the path to the controller. If no value is specified to the <code>@Controller</code> action then the URI is formulated from the class name.</p>
+</div>
+<div class="paragraph">
+<p>The following table summarizes values for the <code>@Controller</code> annotation and the calculated base paths:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Class Name</th>
+<th class="tableblock halign-left valign-top">Annotation</th>
+<th class="tableblock halign-left valign-top">Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HelloController</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Controller</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/hello</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HelloWorldController</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Controller</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/hello-world</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HelloController</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Controller("/somepath")</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/somepath</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HelloController</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Controller("/")</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The value of the <code>@Controller</code> annotation is a <a href="https://tools.ietf.org/html/rfc6570">RFC-6570 URI template</a> you can therefore embed URI variables within the path using the syntax defined by the URI template specification.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Many other frameworks, including Spring, implement the URI template specification
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_uri_variables">URI Variables</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>URI variables can be referenced via method arguments. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">URI Variables Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
+
+<span class="annotation">@Controller</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">IssuesController</span> {
+
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/{number}</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="predefined-type">String</span> issue(<span class="predefined-type">Integer</span> number) {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Issue # </span><span class="delimiter">&quot;</span></span> + number + <span class="string"><span class="delimiter">&quot;</span><span class="content">!</span><span class="delimiter">&quot;</span></span>; <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>@Controller</code> annotation is specified without an argument resulting in a base URI of <code>/issues</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <a href="../api/io/micronaut/http/annotation/Get.html">Get</a> annotation is used to map the method to an HTTP <a href="../api/io/micronaut/http/HttpMethod.html#GET">GET</a> with a URI variable embedded in the URI called <code>number</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The value of the URI variable is referenced in the implementation</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Micronaut will map the URI <code>/issues/{number}</code> for the above controller. We can assert this is the case by writing a unit test, this time in Java and JUnit:</p>
+</div>
+<div class="listingblock">
+<div class="title">Testing URI Variables</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.ApplicationContext</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>;
+<span class="keyword">import</span> <span class="include">org.junit</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.runtime.server.EmbeddedServer</span>;
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.junit.Assert</span>.*;
+
+<span class="directive">public</span> <span class="type">class</span> <span class="class">IssuesControllerTest</span> {
+    <span class="directive">private</span> <span class="directive">static</span> EmbeddedServer server;
+    <span class="directive">private</span> <span class="directive">static</span> HttpClient client;
+
+    <span class="annotation">@BeforeClass</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> setupServer() {
+        server = ApplicationContext.run(EmbeddedServer.class);
+        client = server
+                    .getApplicationContext()
+                    .createBean(HttpClient.class, server.getURL());
+    }
+
+    <span class="annotation">@AfterClass</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> stopServer() {
+        <span class="keyword">if</span>(server != <span class="predefined-constant">null</span>) {
+            server.stop();
+        }
+        <span class="keyword">if</span>(client != <span class="predefined-constant">null</span>) {
+            client.stop();
+        }
+    }
+
+    <span class="annotation">@Test</span>
+    <span class="directive">public</span> <span class="type">void</span> testIssue() <span class="directive">throws</span> <span class="exception">Exception</span> {
+        <span class="predefined-type">String</span> body = client.toBlocking().retrieve(<span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/12</span><span class="delimiter">&quot;</span></span>); <i class="conum" data-value="2"></i><b>(2)</b>
+        assertNotNull(body);
+        assertEquals( <i class="conum" data-value="3"></i><b>(3)</b>
+                body,
+                <span class="string"><span class="delimiter">&quot;</span><span class="content">Issue # 12!</span><span class="delimiter">&quot;</span></span>
+        );
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>For JUnit you can write methods to start and stop the server for the scope of the test</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The tests sends a request to the URI <code>/issues/12</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>And then asserts the response is "Issue # 12"</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you invoke the previous endpoint without the required URI variable or with an invalid type, Micronaut responds with the appropriate HTTP failure codes as illustrated in the following Spock tests that use the <a href="#httpClient">HTTP client</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Testing for Response Errors</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/show/{number} with an invalid Integer number responds 400</span><span class="delimiter">&quot;</span></span>() {
+    when:
+    client.toBlocking().exchange(<span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/hello</span><span class="delimiter">&quot;</span></span>)
+
+    then:
+    HttpClientResponseException e = thrown(HttpClientResponseException)
+    e.status.code == <span class="integer">400</span>
+}
+
+<span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/show/{number} without number responds 404</span><span class="delimiter">&quot;</span></span>() {
+    when:
+    client.toBlocking().exchange(<span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/</span><span class="delimiter">&quot;</span></span>)
+
+    then:
+    HttpClientResponseException e = thrown(HttpClientResponseException)
+    e.status.code == <span class="integer">404</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the URI template in the previous example requires that the <code>number</code> variable is specified. You can specify optional URI templates with the syntax: <code>/issues{/number}</code> and by annotating the <code>number</code> parameter with <code>@Nullable</code>.</p>
+</div>
+<div class="paragraph">
+<p>The following table provides some examples of URI templates and what they match:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. URI Template Matching</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Template</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Matching URI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/{id}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Simple match</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/1</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/{id:2}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A variable of 2 characters max</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/10</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books{/id}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An optional URI variable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/10</code> or <code>/books</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/book{/id:[a-zA-Z]+}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An optional URI variable with regex</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/foo</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books{?max,offset}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional query parameters</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books?max=10&amp;offset=10</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books{/path:.*}{.ext}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Regex path match with extension</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/books/foo/bar.xml</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_routing_annotations">Routing Annotations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The previous example used the <a href="../api/io/micronaut/http/annotation/Get.html">@Get</a> annotation to add method that accepted HTTP <a href="../api/io/micronaut/http/HttpMethod.html#GET">GET</a> requests. The following tables summarizes the available annotations and how they map to the different HTTP methods:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 2. HTTP Routing Annotations</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Annotation</th>
+<th class="tableblock halign-left valign-top">HTTP Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Delete.html">@Delete</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#DELETE">DELETE</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Get.html">@Get</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#GET">GET</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Head.html">@Head</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#HEAD">HEAD</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Options.html">@Options</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#OPTIONS">OPTIONS</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Patch.html">@Patch</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#PATCH">PATCH</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Put.html">@Put</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#PUT">PUT</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Post.html">@Post</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#POST">POST</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Trace.html">@Trace</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpMethod.html#TRACE">TRACE</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>If no URI path is specified to any of the annotations then the method name is used as the URI. In other words both of the following methods are essentially equivalent and map to the <code>/hello</code> URI:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello</span><span class="delimiter">&quot;</span></span>)
+<span class="predefined-type">String</span> hello() {
+    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello World</span><span class="delimiter">&quot;</span></span>;
+}
+
+<span class="annotation">@Get</span>
+<span class="predefined-type">String</span> hello() {
+    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello World</span><span class="delimiter">&quot;</span></span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_building_routes_programmatically">Building Routes Programmatically</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you prefer to not use annotations and declare all of your routes in code then never fear, Micronaut has a flexible <a href="../api/io/micronaut/web/router/RouteBuilder.html">RouteBuilder</a> API that makes it a breeze to define routes programmatically.</p>
+</div>
+<div class="paragraph">
+<p>To start off with you should subclass <a href="../api/io/micronaut/web/router/DefaultRouteBuilder.html">DefaultRouteBuilder</a> and then simply inject the controller you wish to route to into the method and define your routes:</p>
+</div>
+<div class="listingblock">
+<div class="title">RouteBuilder Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.ExecutionHandleLocator</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.web.router.DefaultRouteBuilder</span>;
+
+<span class="keyword">import</span> <span class="include">javax.inject</span>.*;
+
+<span class="annotation">@Singleton</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">MyRoutes</span> <span class="directive">extends</span> DefaultRouteBuilder { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">public</span> MyRoutes(ExecutionHandleLocator executionHandleLocator, UriNamingStrategy uriNamingStrategy) {
+        <span class="local-variable">super</span>(executionHandleLocator, uriNamingStrategy);
+    }
+
+    <span class="annotation">@Inject</span>
+    <span class="type">void</span> issuesRoutes(IssuesController issuesController) { <i class="conum" data-value="2"></i><b>(2)</b>
+        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/show/{name}</span><span class="delimiter">&quot;</span></span>, issuesController, <span class="string"><span class="delimiter">&quot;</span><span class="content">issue</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">Integer</span>.class); <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Route definitions should subclass <a href="../api/io/micronaut/web/router/DefaultRouteBuilder.html">DefaultRouteBuilder</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Use <code>@Inject</code> to inject a method with the controllers you want to route to</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Use methods such as <a href="../api/io/micronaut/web/router/RouteBuilder.html#GET-java.lang.String-java.lang.Class-java.lang.String-java.lang.Class&#8230;&#8203;-">GET</a> to route to controller methods</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Unfortunately due to type erasure a Java method lambda reference cannot be used with the API. For Groovy there is a <code>GroovyRouteBuilder</code> class which can be subclassed that allows passing Groovy method references.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

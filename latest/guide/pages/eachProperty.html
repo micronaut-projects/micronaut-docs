@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4.6 Using @EachProperty to Drive Configuration 1.0.0.M1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/quickStart.html"><strong>2</strong><span>Quick Start</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/ioc.html"><strong>3</strong><span>Inversion of Control</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/config.html"><strong>4</strong><span>Application Configuration</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/aop.html"><strong>5</strong><span>Aspect Oriented Programming</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpServer.html"><strong>6</strong><span>The HTTP Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>11</strong><span>Language Support</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>12</strong><span>Management &amp; Monitoring</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>13</strong><span>Security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>14</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/faq.html"><strong>15</strong><span>Frequently Asked Questions (FAQ)</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/ioc.html">&lt;&lt; <strong>3</strong><span>Inversion of Control</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/aop.html"><strong>5</strong><span>Aspect Oriented Programming</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>4.6 Using @EachProperty to Drive Configuration</h1>
+
+                    <p><strong>Version:</strong> 1.0.0.M1</p>
+                </div>
+
+                
+
+                
+
+<h2 id="eachProperty">4.6 Using @EachProperty to Drive Configuration</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/config/eachProperty.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a> annotation is great for a single configuration class, but sometimes you want multiple instances each with their own distinct configuration. That is where <a href="../api/io/micronaut/context/annotation/EachProperty.html">EachProperty</a> comes in.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/context/annotation/EachProperty.html">@EachProperty</a> annotation will create a <code>ConfigurationProperties</code> bean for each sub-property within the given property. As an example consider the following class:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using @EachProperty</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Parameter</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.EachProperty</span>;
+
+<span class="annotation">@EachProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">test.datasource</span><span class="delimiter">&quot;</span></span>)  <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">DataSourceConfiguration</span> {
+
+    <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">String</span> name;
+    <span class="directive">private</span> <span class="predefined-type">URI</span> url = <span class="keyword">new</span> <span class="predefined-type">URI</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">localhost</span><span class="delimiter">&quot;</span></span>);
+
+    <span class="directive">public</span> DataSourceConfiguration(<span class="annotation">@Parameter</span> <span class="predefined-type">String</span> name) <i class="conum" data-value="2"></i><b>(2)</b>
+            <span class="directive">throws</span> <span class="exception">URISyntaxException</span> {
+        <span class="local-variable">this</span>.name = name;
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getName() {
+        <span class="keyword">return</span> name;
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">URI</span> getUrl() { <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="keyword">return</span> url;
+    }
+
+    <span class="directive">public</span> <span class="type">void</span> setUrl(<span class="predefined-type">URI</span> url) {
+        <span class="local-variable">this</span>.url = url;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>@EachProperty</code> annotation defines the property name that should be handled.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>@Parameter</code> annotation can be used to inject the name of the sub-property that defines the name of the bean (which is also the bean qualifier)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Each property of the bean is bound to configuration.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The above <code>DataSourceConfiguration</code> defines a <code>url</code> property to configure one or many hypothetical data sources of some sort. The URLs themselves can be configured using any of the <a href="../api/io/micronaut/context/env/PropertySource.html">PropertySource</a> instances evaluated to Micronaut:</p>
+</div>
+<div class="listingblock">
+<div class="title">Providing Configuration to @EachProperty</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">ApplicationContext applicationContext = ApplicationContext.run(PropertySource.of(
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>,
+        CollectionUtils.mapOf(
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">test.datasource.one.url</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">jdbc:mysql://localhost/one</span><span class="delimiter">&quot;</span></span>,
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">test.datasource.two.url</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">jdbc:mysql://localhost/two</span><span class="delimiter">&quot;</span></span>)
+));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example two data sources (called <code>one</code> and <code>two</code>) are defined under the <code>test.datasource</code> prefix defined earlier in the <code>@EachProperty</code> annotation. Each of these configuration entries triggers the creation of a new <code>DataSourceConfiguration</code> bean such that the following test succeeds:</p>
+</div>
+<div class="listingblock">
+<div class="title">Evaluating Beans Built by @EachProperty</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">Collection</span>&lt;DataSourceConfiguration&gt; beansOfType = applicationContext.getBeansOfType(DataSourceConfiguration.class);
+assertEquals(beansOfType.size(), <span class="integer">2</span>); <i class="conum" data-value="1"></i><b>(1)</b>
+
+DataSourceConfiguration firstConfig = applicationContext.getBean(
+        DataSourceConfiguration.class,
+        Qualifiers.byName(<span class="string"><span class="delimiter">&quot;</span><span class="content">one</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+);
+
+assertEquals(
+        firstConfig.getUrl(),
+        <span class="keyword">new</span> <span class="predefined-type">URI</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">jdbc:mysql://localhost/one</span><span class="delimiter">&quot;</span></span>)
+);</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>All beans of type <code>DataSourceConfiguration</code> can be retrieved using <code>getBeansOfType</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Individual beans can be achieved by using the <code>byName</code> qualifier.</td>
+</tr>
+</table>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/ioc.html">&lt;&lt; <strong>3</strong><span>Inversion of Control</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/aop.html"><strong>5</strong><span>Aspect Oriented Programming</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

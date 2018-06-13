@@ -1,0 +1,276 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>6.8.3 JSON Binding with Jackson 1.0.0.M1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/quickStart.html"><strong>2</strong><span>Quick Start</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/ioc.html"><strong>3</strong><span>Inversion of Control</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/config.html"><strong>4</strong><span>Application Configuration</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/aop.html"><strong>5</strong><span>Aspect Oriented Programming</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpServer.html"><strong>6</strong><span>The HTTP Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>11</strong><span>Language Support</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>12</strong><span>Management &amp; Monitoring</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>13</strong><span>Security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>14</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/faq.html"><strong>15</strong><span>Frequently Asked Questions (FAQ)</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>6.8.3 JSON Binding with Jackson</h1>
+
+                    <p><strong>Version:</strong> 1.0.0.M1</p>
+                </div>
+
+                
+
+                
+
+<h2 id="jsonBinding">6.8.3 JSON Binding with Jackson</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/reactiveServer/jsonBinding.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The examples so far have dealt with simply text based responses, but the most common data interchange format nowadays is JSON.</p>
+</div>
+<div class="paragraph">
+<p>In fact, the defaults in the <a href="../api/io/micronaut/http/annotation/Controller.html">Controller</a> annotation specify that the controllers in Micronaut consume and produce JSON by default.</p>
+</div>
+<div class="paragraph">
+<p>In order to do so in a non-blocking manner Micronaut builds on the <a href="https://github.com/FasterXML/jackson">Jackson</a> Asynchronous JSON parsing API and Netty such that the reading of incoming JSON is done in a non-blocking manner.</p>
+</div>
+<div class="sect1">
+<h2 id="_binding_using_reactive_frameworks">Binding using Reactive Frameworks</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>From a developer perspective however, you can generally just work with Plain Old Java Objects (POJOs) and can optionally use a Reactive framework such as RxJava or Reactor. The following is an example of a controller that reads and saves an incoming POJO in a non-blocking way from JSON:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using RxJava 2 to Read the JSON</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/people</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">PersonController</span> {
+
+    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, Person&gt; inMemoryDatastore = <span class="keyword">new</span> <span class="predefined-type">LinkedHashMap</span>&lt;&gt;();
+
+    <span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> Single&lt;HttpResponse&lt;Person&gt;&gt; save(<span class="annotation">@Body</span> Single&lt;Person&gt; person) { <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="keyword">return</span> person.map(p -&gt; {
+                    inMemoryDatastore.put(p.getFirstName(), p); <i class="conum" data-value="2"></i><b>(2)</b>
+                    <span class="keyword">return</span> HttpResponse.created(p); <i class="conum" data-value="3"></i><b>(3)</b>
+                }
+        );
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The method receives a RxJava <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> which emits the POJO once the JSON has been read</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>map</code> method is used to store the instance in <code>Map</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>An <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> is returned</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Using CURL from the command line you can POST JSON to the <code>/people</code> URI for the server to receive it:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using CURL to Post JSON</div>
+<div class="content">
+<pre>$ curl -X POST localhost:8080/people -d '{"firstName":"Fred","lastName":"Flintstone","age":45}'</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_binding_using_completablefuture">Binding Using CompletableFuture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The same method as the previous example can also be written with the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a> API instead:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using CompletableFuture to Read the JSON</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> CompletableFuture&lt;HttpResponse&lt;Person&gt;&gt; save(<span class="annotation">@Body</span> CompletableFuture&lt;Person&gt; person) {
+    <span class="keyword">return</span> person.thenApply(p -&gt; {
+                inMemoryDatastore.put(p.getFirstName(), p);
+                <span class="keyword">return</span> HttpResponse.created(p);
+            }
+    );
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example uses the <code>thenApply</code> method to achieve the same as the previous example.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_binding_using_pojos">Binding using POJOs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Note however, that if your method does not do any blocking I/O then you can just as easily write:</p>
+</div>
+<div class="listingblock">
+<div class="title">Binding JSON POJOs</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> HttpResponse&lt;Person&gt; save(<span class="annotation">@Body</span> Person person) {
+    inMemoryDatastore.put(person.getFirstName(), person);
+    <span class="keyword">return</span> HttpResponse.created(person);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Micronaut will still using non-blocking I/O to read the JSON and only execute your method once the data has been read.</p>
+</div>
+<div class="paragraph">
+<p>In other words, as a rule reactive types should be used when you plan to do further downstream I/O operations in which case they can greatly simplify composing operations.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The output produced by Jackson can be customized in a variety of manners, from defining Jackson modules to using <a href="https://github.com/FasterXML/jackson-annotations/wiki/Jackson-Annotations">Jackson&#8217;s annotations</a>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
