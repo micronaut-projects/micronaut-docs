@@ -202,25 +202,27 @@
     
     <div class="toc-item" style="margin-left:10px"><a href="#formData"><strong>6.12</strong><span>Handling Form Data</span></a></div>
     
-    <div class="toc-item" style="margin-left:10px"><a href="#uploads"><strong>6.13</strong><span>File Uploads</span></a></div>
+    <div class="toc-item" style="margin-left:10px"><a href="#serverIO"><strong>6.13</strong><span>Writing Response Data</span></a></div>
     
-    <div class="toc-item" style="margin-left:10px"><a href="#transfers"><strong>6.14</strong><span>File Transfers</span></a></div>
+    <div class="toc-item" style="margin-left:10px"><a href="#uploads"><strong>6.14</strong><span>File Uploads</span></a></div>
     
-    <div class="toc-item" style="margin-left:10px"><a href="#sse"><strong>6.15</strong><span>Server Sent Events</span></a></div>
+    <div class="toc-item" style="margin-left:10px"><a href="#transfers"><strong>6.15</strong><span>File Transfers</span></a></div>
     
-    <div class="toc-item" style="margin-left:10px"><a href="#filters"><strong>6.16</strong><span>HTTP Filters</span></a></div>
+    <div class="toc-item" style="margin-left:10px"><a href="#sse"><strong>6.16</strong><span>Server Sent Events</span></a></div>
     
-    <div class="toc-item" style="margin-left:10px"><a href="#sessions"><strong>6.17</strong><span>HTTP Sessions</span></a></div>
+    <div class="toc-item" style="margin-left:10px"><a href="#filters"><strong>6.17</strong><span>HTTP Filters</span></a></div>
     
-    <div class="toc-item" style="margin-left:10px"><a href="#serverEvents"><strong>6.18</strong><span>Server Events</span></a></div>
+    <div class="toc-item" style="margin-left:10px"><a href="#sessions"><strong>6.18</strong><span>HTTP Sessions</span></a></div>
     
-    <div class="toc-item" style="margin-left:10px"><a href="#serverConfiguration"><strong>6.19</strong><span>Configuring the HTTP Server</span></a></div>
+    <div class="toc-item" style="margin-left:10px"><a href="#serverEvents"><strong>6.19</strong><span>Server Events</span></a></div>
     
-    <div class="toc-item" style="margin-left:20px"><a href="#threadPools"><strong>6.19.1</strong><span>Configuring Server Thread Pools</span></a></div>
+    <div class="toc-item" style="margin-left:10px"><a href="#serverConfiguration"><strong>6.20</strong><span>Configuring the HTTP Server</span></a></div>
     
-    <div class="toc-item" style="margin-left:20px"><a href="#cors"><strong>6.19.2</strong><span>Configuring CORS</span></a></div>
+    <div class="toc-item" style="margin-left:20px"><a href="#threadPools"><strong>6.20.1</strong><span>Configuring Server Thread Pools</span></a></div>
     
-    <div class="toc-item" style="margin-left:20px"><a href="#https"><strong>6.19.3</strong><span>Securing the Server with HTTPS</span></a></div>
+    <div class="toc-item" style="margin-left:20px"><a href="#cors"><strong>6.20.2</strong><span>Configuring CORS</span></a></div>
+    
+    <div class="toc-item" style="margin-left:20px"><a href="#https"><strong>6.20.3</strong><span>Securing the Server with HTTPS</span></a></div>
     
     <div class="toc-item" style="margin-left:0px"><a href="#httpClient"><strong>7</strong><span>The HTTP Client</span></a></div>
     
@@ -5789,7 +5791,139 @@ To avoid denial of service attacks, collection types and arrays created during b
 </div>
 
 
-<h2 id="uploads">6.13 File Uploads</h2>
+<h2 id="serverIO">6.13 Writing Response Data</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverIO.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect2">
+<h3 id="_writing_data_without_blocking">Writing Data without Blocking</h3>
+<div class="paragraph">
+<p>Micronaut&#8217;s HTTP server supports writing data with blocking simply by returning a <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> the emits objects that can be encoded to the HTTP response.</p>
+</div>
+<div class="paragraph">
+<p>The following table summarizes example return type signatures and the behaviour the server exhibits to handle each of them:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Return Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flowable&lt;byte[]&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> that emits each chunk of content as a <code>byte[]</code> without blocking</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flux&lt;ByteBuf&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A Reactor <code>Flux</code> that emits each chunk as a Netty <code>ByteBuf</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Publisher&lt;String&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a> that emits each chunk of content as a String</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flowable&lt;Book&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">When emitting a POJO each emitted object is encoded as JSON by default without blocking</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>When returning reactive type the server will use a <code>Transfer-Encoding</code> of <code>chunked</code> and keep writing data until the <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a>'s <code>onComplete</code> method is called.</p>
+</div>
+<div class="paragraph">
+<p>The server will request a single item from the <a href="http://www.reactive-streams.org/reactive-streams-1.0.2-javadoc/org/reactivestreams/Publisher.html">Publisher</a>, write the item, without blocking, and then request the next item, thus controlling back pressure.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_performing_blocking_i_o">Performing Blocking I/O</h3>
+<div class="paragraph">
+<p>In some cases you may wish to integrate with a library that does not support non-blocking I/O.</p>
+</div>
+<div class="paragraph">
+<p>In this you can return a <a href="../api/io/micronaut/core/io/Writable.html">Writable</a> object from any controller method. The <a href="../api/io/micronaut/core/io/Writable.html">Writable</a> has various signatures that allowing writing to traditional blocking streams like <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Writer.html">Writer</a> or <a href="https://docs.oracle.com/javase/8/docs/api/java/io/OutputStream.html">OutputStream</a>.</p>
+</div>
+<div class="paragraph">
+<p>When returning a <a href="../api/io/micronaut/core/io/Writable.html">Writable</a> object the blocking I/O operation will be shifted to the I/O thread pool so that the Netty event loop is not blocked.</p>
+</div>
+<div class="paragraph">
+<p>The following example demonstrates how to use this API with Groovy&#8217;s <code>SimpleTemplateEngine</code> to write a server side template:</p>
+</div>
+<div class="listingblock">
+<div class="title">Performing Blocking I/O</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">groovy.text.SimpleTemplateEngine</span>;
+<span class="keyword">import</span> <span class="include">groovy.text.Template</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.core.io.Writable</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.core.util.CollectionUtils</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.MediaType</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.server.exceptions.HttpServerException</span>;
+
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/template</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">TemplateController</span> {
+
+    <span class="directive">private</span> <span class="directive">final</span> SimpleTemplateEngine templateEngine = <span class="keyword">new</span> SimpleTemplateEngine();
+    <span class="directive">private</span> <span class="directive">final</span> Template template;
+
+    <span class="directive">public</span> TemplateController() {
+        template = initTemplate(); <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+
+    <span class="annotation">@Get</span>(uri = <span class="string"><span class="delimiter">&quot;</span><span class="content">/welcome</span><span class="delimiter">&quot;</span></span>, produces = MediaType.TEXT_PLAIN)
+    Writable render() { <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">return</span> writer -&gt; template.make( <i class="conum" data-value="3"></i><b>(3)</b>
+            CollectionUtils.mapOf(
+                    <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>,
+                    <span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Flintstone</span><span class="delimiter">&quot;</span></span>
+            )
+        ).writeTo(writer);
+    }
+
+    <span class="directive">private</span> Template initTemplate() {
+        Template template;
+        <span class="keyword">try</span> {
+            template = templateEngine.createTemplate(
+                    <span class="string"><span class="delimiter">&quot;</span><span class="content">Dear $firstName $lastName. Nice to meet you.</span><span class="delimiter">&quot;</span></span>
+            );
+        } <span class="keyword">catch</span> (<span class="exception">Exception</span> e) {
+            <span class="keyword">throw</span> <span class="keyword">new</span> HttpServerException(<span class="string"><span class="delimiter">&quot;</span><span class="content">Cannot create template</span><span class="delimiter">&quot;</span></span>);
+        }
+        <span class="keyword">return</span> template;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The controller creates a simple template</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The controller method returns a <a href="../api/io/micronaut/core/io/Writable.html">Writable</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The returned function receives a <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Writer.html">Writer</a> and calls <code>writeTo</code> on the template.</td>
+</tr>
+</table>
+</div>
+</div>
+
+
+<h2 id="uploads">6.14 File Uploads</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/uploads.adoc"'>
@@ -6009,7 +6143,7 @@ HttpResponse upload(Publisher&lt;Publisher&lt;PartData&gt;&gt; files)</code></pr
 </div>
 
 
-<h2 id="transfers">6.14 File Transfers</h2>
+<h2 id="transfers">6.15 File Transfers</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/transfers.adoc"'>
@@ -6089,7 +6223,7 @@ The <code>Content-Type</code> header of file responses will be calculated based 
 </div>
 
 
-<h2 id="sse">6.15 Server Sent Events</h2>
+<h2 id="sse">6.16 Server Sent Events</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/sse.adoc"'>
@@ -6203,7 +6337,7 @@ The <code>Content-Type</code> header of file responses will be calculated based 
 </div>
 
 
-<h2 id="filters">6.16 HTTP Filters</h2>
+<h2 id="filters">6.17 HTTP Filters</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/filters.adoc"'>
@@ -6389,7 +6523,7 @@ The examples use RxJava, however you can use any reactive framework that support
 </div>
 
 
-<h2 id="sessions">6.17 HTTP Sessions</h2>
+<h2 id="sessions">6.18 HTTP Sessions</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/sessions.adoc"'>
@@ -6753,7 +6887,7 @@ The <a href="../api/io/micronaut/configuration/lettuce/session/RedisSessionStore
 </div>
 
 
-<h2 id="serverEvents">6.18 Server Events</h2>
+<h2 id="serverEvents">6.19 Server Events</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverEvents.adoc"'>
@@ -6828,7 +6962,7 @@ If you do significant work within a listener for a <a href="../api/io/micronaut/
 </div>
 
 
-<h2 id="serverConfiguration">6.19 Configuring the HTTP Server</h2>
+<h2 id="serverConfiguration">6.20 Configuring the HTTP Server</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration.adoc"'>
@@ -6862,7 +6996,7 @@ If you do significant work within a listener for a <a href="../api/io/micronaut/
 </div>
 
 
-<h2 id="threadPools">6.19.1 Configuring Server Thread Pools</h2>
+<h2 id="threadPools">6.20.1 Configuring Server Thread Pools</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration/threadPools.adoc"'>
@@ -6917,7 +7051,7 @@ The default value is the value of the system property <code>io.netty.eventLoopTh
 </div>
 
 
-<h2 id="cors">6.19.2 Configuring CORS</h2>
+<h2 id="cors">6.20.2 Configuring CORS</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration/cors.adoc"'>
@@ -7111,7 +7245,7 @@ The default value is the value of the system property <code>io.netty.eventLoopTh
 </div>
 
 
-<h2 id="https">6.19.3 Securing the Server with HTTPS</h2>
+<h2 id="https">6.20.3 Securing the Server with HTTPS</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration/https.adoc"'>
