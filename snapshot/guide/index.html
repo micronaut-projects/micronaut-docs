@@ -84,6 +84,8 @@
     
     <div class="toc-item" style="margin-left:0px"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
     
+    <div class="toc-item" style="margin-left:10px"><a href="#whatsNew"><strong>1.1</strong><span>What's New?</span></a></div>
+    
     <div class="toc-item" style="margin-left:0px"><a href="#quickStart"><strong>2</strong><span>Quick Start</span></a></div>
     
     <div class="toc-item" style="margin-left:10px"><a href="#buildCLI"><strong>2.1</strong><span>Build/Install the CLI</span></a></div>
@@ -502,6 +504,84 @@
 </div>
 <div class="paragraph">
 <p>Many of the APIs within Micronaut are heavily inspired by Spring and Grails. This is by design, and aids in bringing developers up to speed quickly.</p>
+</div>
+
+
+<h2 id="whatsNew">1.1 What's New?</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/whatsNew.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>This section covers what&#8217;s new since the previous release of Micronaut.</p>
+</div>
+<div class="sect2">
+<h3 id="_metrics_support">Metrics Support</h3>
+<div class="paragraph">
+<p>The first version of support for Metrics via <a href="http://micrometer.io">Micrometer</a> is now available. Metrics are exposed via the <a href="#metricsEndpoint">Metrics Endpoint</a> and can be extensively customized.</p>
+</div>
+<div class="paragraph">
+<p>The first version of Metrics support includes support for Statsd, Atlas, Graphite and Prometheus with more Metrics backends coming in the future.</p>
+</div>
+<div class="paragraph">
+<p>See the section on the <a href="#metricsEndpoint">Metrics Endpoint</a> for more information.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_server_sent_event_sse_client">Server Sent Event (SSE) Client</h3>
+<div class="paragraph">
+<p>A new <a href="../api/io/micronaut/http/client/sse/SseClient.html">SseClient</a> interface has been introduced that provides a client for streaming Server Sent Events (SSE) on the server. The client can also be used for testing SSE controllers.</p>
+</div>
+<div class="paragraph">
+<p>In additional the <code>@Client</code> annotation has been updated to add support for automatically implementing streaming interfaces for both JSON and SSE streaming.</p>
+</div>
+<div class="paragraph">
+<p>See the section on <a href="#clientAnnotationStreaming">Client Streaming</a> for more information.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_blocking_i_o_support">Blocking I/O Support</h3>
+<div class="paragraph">
+<p>It is now possible to return a <a href="../api/io/micronaut/core/io/Writable.html">Writable</a> and have the operation offloaded to a the I/O thread pool, thus improving the ability to interface with APIs that do not yet support non-blocking I/O:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>(uri = <span class="string"><span class="delimiter">&quot;</span><span class="content">/welcome</span><span class="delimiter">&quot;</span></span>, produces = MediaType.TEXT_PLAIN)
+Writable render() { <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="keyword">return</span> writer -&gt; template.make( <i class="conum" data-value="3"></i><b>(3)</b>
+        CollectionUtils.mapOf(
+                <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>,
+                <span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Flintstone</span><span class="delimiter">&quot;</span></span>
+        )
+    ).writeTo(writer);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See the section on <a href="#serverIO">Writing Response Data</a> for more information.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_support_for_openfaas">Support for OpenFaaS</h3>
+<div class="paragraph">
+<p>Micronaut functions can now be executed from the CLI and will read from <code>System.in</code> the data required to execute a function.</p>
+</div>
+<div class="paragraph">
+<p>This means it is possible to deploy functions developed with Micronaut to Serverless platforms that package functions within containers such as OpenFaaS, Fn etc.</p>
+</div>
+<div class="paragraph">
+<p>The command line has also been updated with a <code>openfaas</code> feature which will create the necessary <code>Dockerfile</code> ready for deployment to OpenFaaS:</p>
+</div>
+<div class="listingblock">
+<div class="title">Creating an OpenFaaS Function</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-function foo --features openfaas</code></pre>
+</div>
+</div>
 </div>
 
 
