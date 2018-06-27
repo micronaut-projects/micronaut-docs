@@ -12960,6 +12960,62 @@ Theoretically any language that supports a way to analyze the AST at compile tim
 </div>
 </div>
 <div class="sect1">
+<h2 id="_using_project_lombok">Using Project Lombok</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://projectlombok.org">Project Lombok</a> is a popular java library that adds a number of useful AST transformations to the Java language via annotation processors.</p>
+</div>
+<div class="paragraph">
+<p>Since both Micronaut and Lombok use annotation processors, special care needs to be taken when configuring Lombok to ensure that the Lombok processor runs <strong>before</strong> Micronaut&#8217;s processor.</p>
+</div>
+<div class="paragraph">
+<p>For example in Gradle adding the following dependencies to the <code>dependencies</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Lombok in Gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compileOnly <span class="string"><span class="delimiter">'</span><span class="content">org.projectlombok:lombok:1.16.20</span><span class="delimiter">'</span></span>
+annotationProcessor <span class="string"><span class="delimiter">&quot;</span><span class="content">org.projectlombok:lombok:1.16.20</span><span class="delimiter">&quot;</span></span>
+...
+<span class="comment">// Micronaut processor define after Lombok</span>
+annotationProcessor <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:inject-java</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or when using Maven:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Lombok in Maven</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;annotationProcessorPaths&gt;</span>
+  <span class="tag">&lt;path&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.projectlombok<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>lombok<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span>1.18.0<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;/path&gt;</span>
+  <span class="tag">&lt;path&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>io.micronaut<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>inject-java<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;/path&gt;</span>
+<span class="tag">&lt;/annotationProcessorPaths&gt;</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+In both cases (Gradle and Maven) the Micronaut processor should be configured after the Lombok processor, reversing the order of the declared dependencies will not work.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_ide_considerations">IDE Considerations</h2>
 <div class="sectionbody">
 <div class="paragraph">
