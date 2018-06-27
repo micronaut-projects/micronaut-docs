@@ -13457,50 +13457,18 @@ Learn more about kapt and its features from the <a href="https://kotlinlang.org/
 </table>
 </div>
 <div class="paragraph">
-<p>If you are using Gradle, you can use the <a href="https://docs.gradle.org/current/userguide/application_plugin.html">Application</a> plugin to run your application with the kapt compilation step in your build:</p>
+<p>The Micronaut annotation processors are declared in the <code>kapt</code> scope when using Gradle. For example:</p>
 </div>
 <div class="listingblock">
 <div class="title">Example build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">buildscript {
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.jetbrains.kotlin:kotlin-gradle-plugin:</span><span class="inline"><span class="inline-delimiter">$</span>kotlinVersion</span><span class="delimiter">&quot;</span></span>
-    }
-}
-
-apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">kotlin</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
-apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">kotlin-kapt</span><span class="delimiter">'</span></span>
-
-apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application</span><span class="delimiter">&quot;</span></span>
-mainClassName = <span class="string"><span class="delimiter">&quot;</span><span class="content">example.Application</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
-
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
-dependencies {
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.jetbrains.kotlin:kotlin-stdlib-jdk8:</span><span class="inline"><span class="inline-delimiter">$</span>kotlinVersion</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.jetbrains.kotlin:kotlin-stdlib-jdk8:</span><span class="inline"><span class="inline-delimiter">$</span>kotlinVersion</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
     compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.jetbrains.kotlin:kotlin-reflect:</span><span class="inline"><span class="inline-delimiter">$</span>kotlinVersion</span><span class="delimiter">&quot;</span></span>
-    kapt <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:inject-java</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
+    kapt <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:inject-java</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
 
-    kaptTest <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:inject-java</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="5"></i><b>(5)</b>
-}
-
-test {
-    useJUnitPlatform()
-}
-
-compileKotlin {
-    kotlinOptions.jvmTarget = <span class="string"><span class="delimiter">&quot;</span><span class="content">1.8</span><span class="delimiter">&quot;</span></span>
-}
-
-compileTestKotlin {
-    kotlinOptions.jvmTarget = <span class="string"><span class="delimiter">&quot;</span><span class="content">1.8</span><span class="delimiter">&quot;</span></span>
+    kaptTest <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:inject-java</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+    ...
 }</code></pre>
 </div>
 </div>
@@ -13508,22 +13476,14 @@ compileTestKotlin {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Apply the Kotlin and Kapt plugins</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Set a <code>mainClassName</code> (required by the Application plugin)</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
 <td>Add the Kotlin standard libraries</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Add the <code>inject-java</code> dependency under the <code>kapt</code> scope, so classes in <code>src/main</code> are processed</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
 <td>Add the <code>inject-java</code> dependency under the <code>kaptTest</code> scope, so classes in <code>src/test</code> are processed.</td>
 </tr>
 </table>
@@ -13537,15 +13497,14 @@ compileTestKotlin {
 </div>
 </div>
 <div class="paragraph">
-<p>You can now use Kotlin in your Micronaut project:</p>
+<p>An example controller written in Kotlin can be seen below:</p>
 </div>
 <div class="listingblock">
 <div class="title">src/main/kotlin/example/HelloController.kt</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="kotlin">package example
 
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.*
 
 @Controller(&quot;/&quot;)
 class HelloController {
@@ -13557,17 +13516,54 @@ class HelloController {
 }</code></pre>
 </div>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The IntelliJ IDEA compiler does not support kapt! Classes must be compiled with the Gradle or Maven plugins.
-</td>
-</tr>
-</table>
+<div class="sect1">
+<h2 id="_kotlin_kapt_and_intellij">Kotlin, Kapt and IntelliJ</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As of this writing IntelliJ&#8217;s built-in compiler does not directly support Kapt and annotation processing. You must instead configure Intellij to run Gradle (or Maven) compilation as a build step before running your tests or application class.</p>
+</div>
+<div class="paragraph">
+<p>First edit the run configuration for tests or for the application and select "Run Gradle task" as a build step:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/kotlin-run-1.png" alt="Intellij Settings" width="1024" height="768">
+</div>
+</div>
+<div class="paragraph">
+<p>Then add the <code>classes</code> task as task to execute for the application or for tests the <code>testClasses</code> task:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/kotlin-run-2.png" alt="Intellij Settings" width="1024" height="768">
+</div>
+</div>
+<div class="paragraph">
+<p>Now whenever you run tests or the application Micronaut classes will be generated at compilation time.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kotlin_and_retaining_parameter_names">Kotlin and Retaining Parameter Names</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Like with Java, the parameter name data for method parameters is not retained at compile time when using Kotlin. This can be a problem for Micronaut if you do not define parameter names explicitly and depend on an external JAR that is already compiled.</p>
+</div>
+<div class="paragraph">
+<p>To enable the retention of parameter name data with Kotlin you should set the <code>javaParameters</code> option to <code>true</code> in your <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compileTestKotlin {
+        kotlinOptions {
+            jvmTarget = <span class="string"><span class="delimiter">'</span><span class="content">1.8</span><span class="delimiter">'</span></span>
+            javaParameters = <span class="predefined-constant">true</span>
+        }
+}</code></pre>
+</div>
+</div>
+</div>
 </div>
 
 
@@ -17574,7 +17570,10 @@ Provided Features:
 <p>When an HttpClientResponseException is thrown, the body of the response will be set to the exception message for responses with a text media type. Previously the status description was returned.</p>
 </li>
 <li>
-<p>Mongo configurations were updated to a new version of the driver (3.6.1 &#8594; 3.7.1), which may break existing uses. See their <a href="http://mongodb.github.io/mongo-java-driver/3.7/whats-new/">whats new</a> page for more information.</p>
+<p>Mongo configurations were updated to a new version of the driver (3.6.1 &#8594; 3.7.1), which may break existing uses. See their <a href="http://mongodb.github.io/mongo-java-driver/3.7/upgrading/">upgrading</a> page for more information.</p>
+</li>
+<li>
+<p>The <code>router</code> configuration key was changed to be <code>micronaut.router</code>. Static resource configuration is affected by this change. Please update your configuration: <code>router.static.resources</code> &#8594; <code>micronaut.router.static.resources</code>.</p>
 </li>
 </ul>
 </div>
