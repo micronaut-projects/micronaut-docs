@@ -517,7 +517,7 @@
 
 
 <div class="paragraph">
-<p>This section covers what&#8217;s new since the previous release of Micronaut.</p>
+<p>Apart from <a href="https://github.com/micronaut-projects/micronaut-core/milestone/2?closed=1">issues resolved and minor enhancements</a> since the last release of Micronaut, this section covers significant new features.</p>
 </div>
 <div class="sect2">
 <h3 id="_metrics_support">Metrics Support</h3>
@@ -525,10 +525,10 @@
 <p>The first version of support for Metrics via <a href="http://micrometer.io">Micrometer</a> is now available. Metrics are exposed via the <a href="#metricsEndpoint">Metrics Endpoint</a> and can be extensively customized.</p>
 </div>
 <div class="paragraph">
-<p>The first version of Metrics support includes support for Statsd, Atlas, Graphite and Prometheus with more Metrics backends coming in the future.</p>
+<p>Metrics support includes support for Statsd, Atlas, Graphite and Prometheus with more Metrics backends coming in the future.</p>
 </div>
 <div class="paragraph">
-<p>See the section on the <a href="#metricsEndpoint">Metrics Endpoint</a> for more information.</p>
+<p>See the section on the <a href="#metricsEndpoint">Metrics Endpoint</a> for more information. Special thanks to <a href="https://github.com/ctoestreich">Christian Oestreich</a> for significant contributions in this area.</p>
 </div>
 </div>
 <div class="sect2">
@@ -544,7 +544,7 @@
 </div>
 </div>
 <div class="sect2">
-<h3 id="_blocking_i_o_support">Blocking I/O Support</h3>
+<h3 id="_improved_blocking_i_o_support">Improved Blocking I/O Support</h3>
 <div class="paragraph">
 <p>It is now possible to return a <a href="../api/io/micronaut/core/io/Writable.html">Writable</a> and have the operation offloaded to a the I/O thread pool, thus improving the ability to interface with APIs that do not yet support non-blocking I/O:</p>
 </div>
@@ -17516,6 +17516,46 @@ Provided Features:
 </div>
 </div>
 <div class="sect3">
+<h4 id="_why_doesn_t_micronaut_use_spring">Why Doesn&#8217;t Micronaut use Spring?</h4>
+<div class="paragraph">
+<p>When asking why Micronaut doesn&#8217;t use Spring, it is typically in reference to the Spring Dependency Injection container.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The Spring ecosystem is very broad and there are many Spring libraries you can use directly in Micronaut without requiring the Spring container.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The reason Micronaut features its own native JSR-305 compliant dependency injection is that the cost of these features in Spring (and any reflection based DI/AOP container) is too great in terms of memory consumption and the impact on startup time. In order to support dependency injection at runtime Spring:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/spring-projects/spring-framework/tree/master/spring-core/src/main/java/org/springframework/core/type/classreading">Reads the byte code</a> of every bean it finds at runtime.</p>
+</li>
+<li>
+<p><a href="https://github.com/spring-projects/spring-framework/blob/a691065d05741a4f1ca17925c8a5deec0f378c8b/spring-core/src/main/java/org/springframework/core/annotation/AnnotationUtils.java#L1465">Synthesizes new annotations</a> for each annotation on each bean method, constructor, field etc. to support Annotation metadata.</p>
+</li>
+<li>
+<p><a href="https://github.com/spring-projects/spring-framework/blob/master/spring-beans/src/main/java/org/springframework/beans/CachedIntrospectionResults.java">Builds Reflective Metadata</a> for each bean for every method, constructor, field etc.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The result is a progressive degradation of startup time and memory consumption as your application incorporates more features.</p>
+</div>
+<div class="paragraph">
+<p>For Microservices and Serverless functions where it is critical that startup time and memory consumption remain low the above behaviour is an undesirable reality of using the Spring container, hence the designers of Micronaut chose not to use Spring.</p>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_does_micronaut_support_scala">Does Micronaut support Scala?</h4>
 <div class="paragraph">
 <p>Micronaut supports any JVM language that supports the Annotation Processor API. Scala currently does not support this API. However, Groovy also doesn&#8217;t support this API and special support has been built that processes the Groovy AST. It may be technically possible to support Scala future if a similar module to <code>inject-groovy</code> is built, but as of this writing Scala is not supported.</p>
@@ -17556,7 +17596,12 @@ Provided Features:
 </div>
 <div class="sect3">
 <h4 id="_why_is_it_taking_much_longer_than_it_should_to_start_the_application">Why is it taking much longer than it should to start the application</h4>
-
+<div class="paragraph">
+<p>Micronaut&#8217;s startup time is typically very fast. At the application level, however, it is possible to block startup time so if you are seeing slow startup, review if you have any application startup listeners or <code>@Context</code> scope beans that are slowing startup.</p>
+</div>
+<div class="paragraph">
+<p>Some network issues can, also cause slow startup. On the Mac for example misconfiguration of your <code>/etc/hosts</code> file can cause issues. See the following <a href="https://stackoverflow.com/a/39698914/1264846">stackoverflow answer</a>.</p>
+</div>
 </div>
 
 
