@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3 Inversion of Control 1.0.0.M1</title>
+    <title>3 Inversion of Control 1.0.0.M2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,19 +59,28 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/languageSupport.html"><strong>11</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/otherConfigurations.html"><strong>11</strong><span>Other Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/management.html"><strong>12</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/security.html"><strong>13</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>14</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/security.html"><strong>14</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/faq.html"><strong>15</strong><span>Frequently Asked Questions (FAQ)</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/faq.html"><strong>16</strong><span>Frequently Asked Questions (FAQ)</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/problems.html"><strong>17</strong><span>Common Problems</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/breaks.html"><strong>18</strong><span>Breaking Changes</span></a>
                         </div>
                         
                     </div>
@@ -105,7 +114,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>3 Inversion of Control</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M1</p>
+                    <p><strong>Version:</strong> 1.0.0.M2</p>
                 </div>
 
                 
@@ -253,7 +262,7 @@ function addJsClass() {
 <span class="type">class</span> <span class="class">Vehicle</span> {
     <span class="directive">final</span> Engine engine
 
-    <span class="annotation">@Inject</span> Vehicle(Engine engine) { <i class="conum" data-value="3"></i><b>(3)</b>
+    Vehicle(Engine engine) { <i class="conum" data-value="3"></i><b>(3)</b>
         <span class="local-variable">this</span>.engine = engine
     }
 
@@ -1124,10 +1133,10 @@ If you take this approach, then you should not invoke other methods annotated wi
 <p>One significant difference between Micronaut&#8217;s Dependency Injection system and Spring is the way beans can be replaced.</p>
 </div>
 <div class="paragraph">
-<p>With Spring beans have names and you can effectively override another bean just be creating a bean with the same name regardless of the type of the bean. Spring also has the notion of bean registration order, hence in Spring Boot you have <code>@AutoConfigureBefore</code> and <code>@AutoConfigureAfter</code> the control how beans override each other.</p>
+<p>In a Spring application, beans have names and can effectively be overriden simply by creating a bean with the same name, regardless of the type of the bean. Spring also has the notion of bean registration order, hence in Spring Boot you have <code>@AutoConfigureBefore</code> and <code>@AutoConfigureAfter</code> the control how beans override each other.</p>
 </div>
 <div class="paragraph">
-<p>This strategy leads to difficult to debug problems in cases where:</p>
+<p>This strategy leads to difficult to debug problems, for example:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1140,19 +1149,13 @@ If you take this approach, then you should not invoke other methods annotated wi
 </ul>
 </div>
 <div class="paragraph">
-<p>To avoid these problems, the design of Micronaut DI has no concept of bean names or load order. Beans have a type and a <a href="../api/io/micronaut/context/Qualifier.html">Qualifier</a>. You cannot override a bean of a completely different type with another.</p>
+<p>To avoid these problems, Micronaut&#8217;s DI has no concept of bean names or load order. Beans have a type and a <a href="../api/io/micronaut/context/Qualifier.html">Qualifier</a>. You cannot override a bean of a completely different type with another.</p>
 </div>
 <div class="paragraph">
-<p>However, one feature that the Spring way of doing things enables is that it allows overriding existing beans to customize behaviour.</p>
+<p>A useful benefit of Spring&#8217;s approach is that it allows overriding existing beans to customize behaviour. In order to support the same ability, Micronaut&#8217;s DI provides an explicit <a href="../api/io/micronaut/context/annotation/Replaces.html">@Replaces</a> annotation, which integrates nicely with support for <a href="#conditionalBeans">Conditional Beans</a> and clearly documents and expresses the intention of the developer.</p>
 </div>
 <div class="paragraph">
-<p>To support this use case Micronaut DI has an explicit <a href="../api/io/micronaut/context/annotation/Replaces.html">@Replaces</a> annotation, which integrates nicely with support for <a href="#conditionalBeans">Conditional Beans</a> and clearly documents and expresses the purpose and intent.</p>
-</div>
-<div class="paragraph">
-<p>Basically any existing bean can be replaced by another bean that declares <a href="../api/io/micronaut/context/annotation/Replaces.html">@Replaces</a>.</p>
-</div>
-<div class="paragraph">
-<p>For example, consider the following class:</p>
+<p>Any existing bean can be replaced by another bean that declares <a href="../api/io/micronaut/context/annotation/Replaces.html">@Replaces</a>. For example, consider the following class:</p>
 </div>
 <div class="listingblock">
 <div class="title">JdbcBookService.java</div>
@@ -1504,8 +1507,8 @@ beans = {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
     ...
-    annotationProcessor "io.micronaut:inject-java:1.0.0.M1"
-    compileOnly "io.micronaut:inject-java:1.0.0.M1"
+    annotationProcessor "io.micronaut:inject-java:1.0.0.M2"
+    compileOnly "io.micronaut:inject-java:1.0.0.M2"
     ...
 }</code></pre>
 </div>
