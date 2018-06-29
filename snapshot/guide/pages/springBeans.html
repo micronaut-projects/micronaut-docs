@@ -135,8 +135,8 @@ function addJsClass() {
 class is a <code>BeanFactoryPostProcessor</code> which will add Micronaut beans to a
 Spring Application Context.  An instance of <code>MicronautBeanProcessor</code> should
 be added to the Spring Application Context.  <code>MicronautBeanProcessor</code> requires
-a constructor parameter which represents the stereotype annotation for
-the Micronaut beans which should be added the Spring Application Context.  The
+a constructor parameter which represents a list of the types of
+Micronaut beans which should be added the Spring Application Context.  The
 processor may be used in any Spring application.  As an example, a Grails 3
 application could take advantage of <code>MicronautBeanProcessor</code> to add all of the
 Micronaut HTTP Client beans to the Spring Application Context with something
@@ -150,6 +150,37 @@ like the folowing:</p>
 
 beans = {
     httpClientBeanProcessor MicronautBeanProcessor, Client
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Multiple types may be specified:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// grails-app/conf/spring/resources.groovy</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.spring.beans.MicronautBeanProcessor</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.Client</span>
+<span class="keyword">import</span> <span class="include">com.sample.Widget</span>
+
+beans = {
+    httpClientBeanProcessor MicronautBeanProcessor, [Client, Widget]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In a non-Grails application something similar may be specified using
+any of Spring&#8217;s bean definition styles:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Configuration</span>
+<span class="type">class</span> <span class="class">ByAnnotationTypeConfig</span> {
+
+    <span class="annotation">@Bean</span>
+    MicronautBeanProcessor beanProcessor() {
+        <span class="keyword">new</span> MicronautBeanProcessor(Prototype, Singleton)
+    }
 }</code></pre>
 </div>
 </div>
