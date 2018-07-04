@@ -487,7 +487,57 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 </div>
 <div class="sect2">
 <h3 id="_receiving_and_returning_reactive_types">Receiving and returning Reactive Types</h3>
-
+<div class="paragraph">
+<p>In addition to common Java types and POJOs you can also define listener methods that receive a Reactive type such as a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> or a Reactor <code>Mono</code>. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using Reactive Types</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">reactive-products</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> Single&lt;Product&gt; receive(
+        <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand,  <i class="conum" data-value="1"></i><b>(1)</b>
+        Single&lt;Product&gt; productFlowable) { <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="keyword">return</span> productFlowable.doOnSuccess((product) -&gt;
+            <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Product - </span><span class="delimiter">&quot;</span></span> + product.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> by </span><span class="delimiter">&quot;</span></span> + brand) <i class="conum" data-value="3"></i><b>(3)</b>
+    );
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>@KafkaKey</code> annotation is used to indicate the key</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> is used to receive the message body</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>doOnSuccess</code> method is used to process the result</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note that in this case the method returns an <code><a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a></code> this indicates to Micronaut that the <code>poll</code> loop should continue and if <code>enable.auto.commit</code> is set to <code>true</code> (the default) the offsets will be committed potentially before the <code>doOnSuccess</code> is called.</p>
+</div>
+<div class="paragraph">
+<p>The idea here is that you are able to write consumers that don&#8217;t block, however care must be taken in the case where an error occurs in the <code>doOnSuccess</code> method otherwise the message could be lost. You could for example re-deliver the message in case of an error.</p>
+</div>
+<div class="paragraph">
+<p>Alternatively, you can use the <a href="../api/io/micronaut/core/annotation/Blocking.html">@Blocking</a> annotation to tell Micronaut to subscribe to the returned reactive type in a blocking manner which will result in blocking the <code>poll</code> loop, preventing offsets from being committed automatically:</p>
+</div>
+<div class="listingblock">
+<div class="title">Blocking with Reactive Consumers</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Blocking</span>
+<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">reactive-products</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> Single&lt;Product&gt; receive(
+    ...
+}</code></pre>
+</div>
+</div>
 </div>
 
 
