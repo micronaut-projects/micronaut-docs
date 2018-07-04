@@ -265,10 +265,10 @@ You can also set the environment variable <code>KAFKA_BOOTSTRAP_SERVERS</code> t
 <div class="listingblock">
 <div class="title">ProductClient.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.*</span>;
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation</span>.*;
 
 <span class="annotation">@KafkaClient</span> <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">interface</span> ProductClient {
+<span class="directive">public</span> <span class="type">interface</span> <span class="class">ProductClient</span> {
 
     <span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">my-products</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
     <span class="type">void</span> sendProduct(<span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand, <span class="predefined-type">String</span> name); <i class="conum" data-value="3"></i><b>(3)</b>
@@ -309,7 +309,7 @@ You can omit the key, however this will result in a <code>null</code> key which 
 <div class="listingblock">
 <div class="title">Using ProductClient</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">ProductClient client = applicationContext.getBean(ProductClient.class);
+<pre class="CodeRay highlight"><code data-lang="java">ProductClient client = applicationContext.getBean(ProductClient.class);
 client.sendProduct(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nike</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Blue Trainers</span><span class="delimiter">&quot;</span></span>);</code></pre>
 </div>
 </div>
@@ -328,7 +328,7 @@ client.sendProduct(<span class="string"><span class="delimiter">&quot;</span><sp
 <div class="listingblock">
 <div class="title">ProductListener.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.*</span>;
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation</span>.*;
 
 <span class="annotation">@KafkaListener</span>(offsetReset = OffsetReset.EARLIEST) <i class="conum" data-value="1"></i><b>(1)</b>
 <span class="directive">public</span> <span class="type">class</span> <span class="class">ProductListener</span> {
@@ -369,7 +369,26 @@ client.sendProduct(<span class="string"><span class="delimiter">&quot;</span><sp
 
 
 <div class="paragraph">
-<p>TODO</p>
+<p>The previous section presented a trivial example of what is possible with the <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaListener.html">@KafkaListener</a> annotation.</p>
+</div>
+<div class="paragraph">
+<p>Using the <code>@KafkaListener</code> annotation Micronaut will build a <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html">KafkaConsumer</a> and start the <code>poll</code> loop by running the <code>KafkaConsumer</code> in a special <code>consumer</code> thread pool. You can re-configure the size of the thread pool based on the number of consumers in your application in <code>application.yml</code> as desired:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring the <code>consumer</code> thread pool</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">executors</span>:
+        <span class="key">consumer</span>:
+            <span class="key">type</span>: <span class="string"><span class="content">fixed</span></span>
+            <span class="key">nThreads</span>: <span class="string"><span class="content">25</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>KafkaConsumer</code> instances are single threaded, hence for each <code>@KafkaListener</code> method you define a new thread is created to execute the <code>poll</code> loop.</p>
+</div>
+<div class="paragraph">
+<p>By default Micronaut will inspect the method signature of the method annotated with <code>@Topic</code> that will listen for <code>ConsumerRecord</code> instances and from the types infer an appropriate key and value <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/common/serialization/Deserializer.html">Deserializer</a>.</p>
 </div>
 
 
@@ -382,8 +401,126 @@ client.sendProduct(<span class="string"><span class="delimiter">&quot;</span><sp
 </div>
 
 
+<div class="sect2">
+<h3 id="_kafkalistener_and_consumer_groups">@KafkaListener and Consumer Groups</h3>
 <div class="paragraph">
-<p>TODO</p>
+<p>Kafka consumers created with <code>@KafkaListener</code> will by default run within a consumer group that is the value of <code>micronaut.application.name</code> unless you explicitly specify a value to the <code>@KafkaListener</code> annotation. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Specifying a Consumer Group</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaListener</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">myGroup</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example will run the consumer within a consumer group called <code>myGroup</code>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can make the consumer group configurable using a placeholder: <code>@KafkaListener("${my.consumer.group:myGroup}")</code>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_kafkalistener_and_consumer_properties">@KafkaListener and Consumer Properties</h3>
+<div class="paragraph">
+<p>There are a number of ways to pass configuration properties to the <code>KafkaConsumer</code>. You can set default consumer properties using <code>kafka.consumers.default</code> in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Applying Default Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
+    <span class="key">consumer</span>:
+        <span class="key">default</span>:
+            <span class="key">session</span>:
+                <span class="key">timeout</span>:
+                    <span class="key">ms</span>: <span class="string"><span class="content">5000</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example will set the default <code>session.timeout.ms</code> that Kafka uses to decide whether a consumer is alive or not and applies it to all created <code>KafkaConsumer</code> instances.</p>
+</div>
+<div class="paragraph">
+<p>You can also provide configuration specific to a consumer group. For example consider the following configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">Applying Consumer Group Specific config</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
+    <span class="key">consumer</span>:
+        <span class="key">myGroup</span>:
+            <span class="key">session</span>:
+                <span class="key">timeout</span>:
+                    <span class="key">ms</span>: <span class="string"><span class="content">5000</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above configuration will pass properties to only the <code>@KafkaListener</code> beans that apply to the consumer group <code>myGroup</code>.</p>
+</div>
+<div class="paragraph">
+<p>Finally, the <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaListener.html">@KafkaListener</a> annotation itself provides a <code>properties</code> member that you can use to set consumer specific properties:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Consumer Properties with @KafkaListener</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Property</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.ConsumerConfig</span>;
+
+<span class="annotation">@KafkaListener</span>(
+    groupId = <span class="string"><span class="delimiter">&quot;</span><span class="content">products</span><span class="delimiter">&quot;</span></span>,
+    pollTimeout = <span class="string"><span class="delimiter">&quot;</span><span class="content">500ms</span><span class="delimiter">&quot;</span></span>,
+    properties = <span class="annotation">@Property</span>(name = ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, value = <span class="string"><span class="delimiter">&quot;</span><span class="content">5000</span><span class="delimiter">&quot;</span></span>)
+)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">ProductListener</span> {
+    ...
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_kafkalistener_and_deserializers">@KafkaListener and Deserializers</h3>
+<div class="paragraph">
+<p>As mentioned previously when defining <code>@KafkaListener</code> methods, Micronaut will attempt to pick an appropriate deserializer for the method signature. This is done via the <a href="../api/io/micronaut/configuration/kafka/serde/CompositeSerdeRegistry.html">CompositeSerdeRegistry</a> bean.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can replace the default <a href="../api/io/micronaut/configuration/kafka/serde/SerdeRegistry.html">SerdeRegistry</a> bean with your own implementation by defining a bean that uses <code>@Replaces(CompositeSerdeRegistry.class)</code>. See the section on <a href="#replaces">Bean Replacement</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>All common <code>java.lang</code> types (<code>String</code>, <code>Integer</code>, primitives etc.) are supported and for POJOs by default a Jackson based JSON deserializer is used.</p>
+</div>
+<div class="paragraph">
+<p>You can, however, explicitly override the <code>Deserializer</code> used by providing the appropriate configuration in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Applying Default Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
+    <span class="key">consumer</span>:
+        <span class="key">myGroup</span>:
+            <span class="key">value</span>:
+                <span class="key">deserializer</span>: <span class="string"><span class="content">org.apache.kafka.common.serialization.ByteArrayDeserializer</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You may want to do this if for example you choose an alternative deserialization format such as Avro or Protobuf.</p>
+</div>
 </div>
 
 
