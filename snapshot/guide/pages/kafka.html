@@ -473,6 +473,7 @@ You can make the consumer group configurable using a placeholder: <code>@KafkaLi
 <pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation</span>.*;
 <span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Property</span>;
 <span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.ConsumerConfig</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.ConsumerRecord</span>;
 
 <span class="annotation">@KafkaListener</span>(
     groupId = <span class="string"><span class="delimiter">&quot;</span><span class="content">products</span><span class="delimiter">&quot;</span></span>,
@@ -534,7 +535,180 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 
 
 <div class="paragraph">
-<p>TODO</p>
+<p>The <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaListener.html">@KafkaListener</a> annotation examples up until now have been relatively trivial, but Micronaut offers a lot of flexibility when it comes to the types of method signatures you can define.</p>
+</div>
+<div class="paragraph">
+<p>The following sections detail examples of supported use cases.</p>
+</div>
+<div class="sect2">
+<h3 id="_available_annotations">Available Annotations</h3>
+<div class="paragraph">
+<p>There are a number of annotations available that allow you to specify how a method argument is bound.</p>
+</div>
+<div class="paragraph">
+<p>The following table summarizes the annotations and their purpose, with an example:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Kafka Messaging Annotations</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Annotation</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/messaging/annotation/Body.html">@Body</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows explicitly indicating the body of the message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Body Product product</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/messaging/annotation/Header.html">@Header</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows binding a parameter to a message header</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Header("X-My-Header") String myHeader</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/configuration/kafka/annotation/KafkaKey.html">@KafkaKey</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows specifying the parameter that is the key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@KafkaKey String key</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>For example, you can use the <a href="../api/io/micronaut/messaging/annotation/Header.html">@Header</a> annotation to bind a parameter value from a header contained within a <code>ConsumerRecord</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_topics_partitions_and_offsets">Topics, Partitions and Offsets</h3>
+<div class="paragraph">
+<p>If you want a reference to the topic, partition or offset it is a simple matter of defining a parameter for each.</p>
+</div>
+<div class="paragraph">
+<p>The following table summarizes example parameters and how they related to the <code>ConsumerRecord</code> being processed:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 2. @KafkaListener Method Parameters</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String topic</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the topic</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>long offset</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The offset of the <code>ConsumerRecord</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>int partition</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The partition of the <code>ConsumerRecord</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>long timestamp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The timestamp of the <code>ConsumerRecord</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>As an example, following listener method will receive all of the above mentioned parameters:</p>
+</div>
+<div class="listingblock">
+<div class="title">Specifying Parameters for offset, topic etc.</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">void</span> receive(
+        <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand, <i class="conum" data-value="1"></i><b>(1)</b>
+        Product product, <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="type">long</span> offset, <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="type">int</span> partition, <i class="conum" data-value="4"></i><b>(4)</b>
+        <span class="predefined-type">String</span> topic, <i class="conum" data-value="5"></i><b>(5)</b>
+        <span class="type">long</span> timestamp) { <i class="conum" data-value="6"></i><b>(6)</b>
+    <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Product - </span><span class="delimiter">&quot;</span></span> + product.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> by </span><span class="delimiter">&quot;</span></span> + brand);
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The Kafka key</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The message body</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The offset of the <code>ConsumerRecord</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The partition of the <code>ConsumerRecord</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The topic. Note that the <code>@Topic</code> annotation supports multiple topics.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>The timestamp of the <code>ConsumerRecord</code></td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_receiving_a_consumerrecord">Receiving a ConsumerRecord</h3>
+<div class="paragraph">
+<p>If you prefer you can also receive the entire <code>ConsumerRecord</code> object being listened for. In this case you should specify appropriate generic types for the key and value of the <code>ConsumerRecord</code> so that Micronaut can pick the correct deserializer for each.</p>
+</div>
+<div class="paragraph">
+<p>Consider the following example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Specifying Parameters for offset, topic etc.</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">void</span> receive(ConsumerRecord&lt;<span class="predefined-type">String</span>, Product&gt; record) { <i class="conum" data-value="1"></i><b>(1)</b>
+    Product product = record.value(); <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="predefined-type">String</span> brand = record.key(); <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Product - </span><span class="delimiter">&quot;</span></span> + product.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> by </span><span class="delimiter">&quot;</span></span> + brand);
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The method signature accepts a <code>ConsumerRecord</code> that specifies a <code>String</code> for the key type and a POJO (<code>Product</code>) for the value type.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>value()</code> method is used to retrieve the value</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>key()</code> method is used to retrieve the key</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_receiving_and_returning_reactive_types">Receiving and returning Reactive Types</h3>
+
 </div>
 
 
