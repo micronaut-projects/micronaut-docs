@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>10.1.3.1 Configuring @KafkaClient beans 1.0.0.BUILD-SNAPSHOT</title>
+    <title>10.1.2.2 Configuring @KafkaClient beans 1.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -106,7 +106,7 @@ function addJsClass() {
 
 
                 <div class="project">
-                    <h1>10.1.3.1 Configuring @KafkaClient beans</h1>
+                    <h1>10.1.2.2 Configuring @KafkaClient beans</h1>
 
                     <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
                 </div>
@@ -115,7 +115,7 @@ function addJsClass() {
 
                 
 
-<h2 id="kafkaClientConfiguration">10.1.3.1 Configuring @KafkaClient beans</h2>
+<h2 id="kafkaClientConfiguration">10.1.2.2 Configuring @KafkaClient beans</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/messaging/kafka/kafkaClient/kafkaClientConfiguration.adoc"'>
@@ -124,8 +124,104 @@ function addJsClass() {
 </div>
 
 
+<div class="sect2">
+<h3 id="_kafkaclient_and_producer_properties">@KafkaClient and Producer Properties</h3>
 <div class="paragraph">
-<p>TODO</p>
+<p>There are a number of ways to pass configuration properties to the <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html">KafkaProducer</a>. You can set default producer properties using <code>kafka.producers.default</code> in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Applying Default Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
+    <span class="key">producers</span>:
+        <span class="key">default</span>:
+            <span class="key">retries</span>: <span class="string"><span class="content">5</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Any property in the <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/producer/ProducerConfig.html">ProducerConfig</a> class can be set. The above example will set the default number of times to retry sending a record.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_per_kafkaclient_producer_properties">Per @KafkaClient Producer Properties</h3>
+<div class="paragraph">
+<p>To configure different properties for each client, you should set a <code>@KafkaClient</code> id using the annotation:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using a Client ID</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaClient</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">product-client</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This serves 2 purposes. Firstly it sets the value of the <code>client.id</code> setting used to build the <code>KafkaProducer</code>. Secondly, it allows you to apply per producer configuration in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Applying Default Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
+    <span class="key">producers</span>:
+        <span class="key">product-client</span>:
+            <span class="key">retries</span>: <span class="string"><span class="content">5</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, the <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaClient.html">@KafkaClient</a> annotation itself provides a <code>properties</code> member that you can use to set producer specific properties:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Producer Properties with @KafkaClient</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.KafkaClient</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Property</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.producer.ProducerConfig</span>;
+
+<span class="annotation">@KafkaClient</span>(
+    id=<span class="string"><span class="delimiter">&quot;</span><span class="content">product-client</span><span class="delimiter">&quot;</span></span>,
+    acks = KafkaClient.Acknowledge.ALL,
+    properties = <span class="annotation">@Property</span>(name = ProducerConfig.RETRIES_CONFIG, value = <span class="string"><span class="delimiter">&quot;</span><span class="content">5</span><span class="delimiter">&quot;</span></span>)
+)
+<span class="directive">public</span> <span class="type">interface</span> <span class="class">ProductClient</span> {
+    ...
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_kafkaclient_and_serializers">@KafkaClient and Serializers</h3>
+<div class="paragraph">
+<p>When serializing keys and values Micronaut will by default attempt to automatically pick a <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/common/serialization/Serializer.html">Serializer</a> to use. This is done via the <a href="../api/io/micronaut/configuration/kafka/serde/CompositeSerdeRegistry.html">CompositeSerdeRegistry</a> bean.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can replace the default <a href="../api/io/micronaut/configuration/kafka/serde/SerdeRegistry.html">SerdeRegistry</a> bean with your own implementation by defining a bean that uses <code>@Replaces(CompositeSerdeRegistry.class)</code>. See the section on <a href="#replaces">Bean Replacement</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>All common <code>java.lang</code> types (<code>String</code>, <code>Integer</code>, primitives etc.) are supported and for POJOs by default a Jackson based JSON serializer is used.</p>
+</div>
+<div class="paragraph">
+<p>You can, however, explicitly override the <code>Serializer</code> used by providing the appropriate configuration in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Applying Default Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
+    <span class="key">producers</span>:
+        <span class="key">product-client</span>:
+            <span class="key">value</span>:
+                <span class="key">serializer</span>: <span class="string"><span class="content">org.apache.kafka.common.serialization.ByteArrayDeserializer</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You may want to do this if for example you choose an alternative serialization format such as Avro or Protobuf.</p>
+</div>
 </div>
 
 

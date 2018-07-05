@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>10.1.2.4 Kafka Batch Processing 1.0.0.BUILD-SNAPSHOT</title>
+    <title>10.1.3.4 Kafka Batch Processing 1.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -106,7 +106,7 @@ function addJsClass() {
 
 
                 <div class="project">
-                    <h1>10.1.2.4 Kafka Batch Processing</h1>
+                    <h1>10.1.3.4 Kafka Batch Processing</h1>
 
                     <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
                 </div>
@@ -115,7 +115,7 @@ function addJsClass() {
 
                 
 
-<h2 id="kafkaListenerBatch">10.1.2.4 Kafka Batch Processing</h2>
+<h2 id="kafkaListenerBatch">10.1.3.4 Kafka Batch Processing</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/messaging/kafka/kafkaListener/kafkaListenerBatch.adoc"'>
@@ -125,7 +125,141 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>TODO</p>
+<p>By default <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaListener.html">@KafkaListener</a> listener methods will receive each <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/consumer/ConsumerRecord.html">ConsumerRecord</a> one by one.</p>
+</div>
+<div class="paragraph">
+<p>There may be cases where you prefer to receive all of the <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/consumer/ConsumerRecord.html">ConsumerRecord</a> data from the <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/consumer/ConsumerRecords.html">ConsumerRecords</a> holder object in one go.</p>
+</div>
+<div class="paragraph">
+<p>To achieve this you can set the <code>batch</code> member of the <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaListener.html">@KafkaListener</a> to <code>true</code> and specify a container type (typically <code>List</code>) to receive all of the data:</p>
+</div>
+<div class="listingblock">
+<div class="title">Receiving a Batch of Records</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.KafkaConsumer</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.OffsetAndMetadata</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.common.TopicPartition</span>;
+<span class="keyword">import</span> <span class="include">reactor.core.publisher.Flux</span>;
+
+<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
+<span class="keyword">import</span> <span class="include">java.util.List</span>;
+
+<span class="annotation">@KafkaListener</span>(batch = <span class="predefined-constant">true</span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">BookListener</span> {
+
+  <span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">all-the-books</span><span class="delimiter">&quot;</span></span>)
+  <span class="directive">public</span> <span class="type">void</span> receiveList(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books) { <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="keyword">for</span> (<span class="predefined-type">Book</span> book : books) {
+          <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Book = </span><span class="delimiter">&quot;</span></span> + book.getTitle()); <i class="conum" data-value="3"></i><b>(3)</b>
+      }
+  }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaListener.html">@KafkaListener</a> annotation&#8217;s <code>batch</code> member is set to <code>true</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The method defines that it receives a list of <code>Book</code> instances</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The method processes the entire batch</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note in the previous case offsets will automatically be committed for the whole batch by default when the method returns without error.</p>
+</div>
+<div class="sect2">
+<h3 id="_manually_committing_offsets_with_batch">Manually Committing Offsets with Batch</h3>
+<div class="paragraph">
+<p>You can also take more control of committing offsets when doing batch processing by specifying a method that receives the offsets in addition to the batch:</p>
+</div>
+<div class="listingblock">
+<div class="title">Committing Offsets Manually with Batch</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">all-the-books</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">void</span> receive(
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books,
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Long</span>&gt; offsets,
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Integer</span>&gt; partitions,
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; topics,
+        KafkaConsumer kafkaConsumer) { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="integer">0</span>; i &lt; books.size(); i++) {
+
+        <span class="comment">// process the book</span>
+        <span class="predefined-type">Book</span> book = books.get(i); <i class="conum" data-value="2"></i><b>(2)</b>
+
+        <span class="comment">// commit offsets</span>
+        <span class="predefined-type">String</span> topic = topics.get(i);
+        <span class="type">int</span> partition = partitions.get(i);
+        <span class="type">long</span> offset = offsets.get(i); <i class="conum" data-value="3"></i><b>(3)</b>
+
+        kafkaConsumer.commitSync(<span class="predefined-type">Collections</span>.singletonMap( <i class="conum" data-value="4"></i><b>(4)</b>
+                <span class="keyword">new</span> TopicPartition(topic, partition),
+                <span class="keyword">new</span> OffsetAndMetadata(offset + <span class="integer">1</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">my metadata</span><span class="delimiter">&quot;</span></span>)
+        ));
+
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The method receives the batch of records as well as the offsets, partitions and topics</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Each record is processed</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The offset, partition and topic is read for the record</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Offsets are committed</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This example is fairly trivial in that it commits offsets after processing each record in a batch, but you can for example commit after processing every 10, or every 100 or whatever makes sense for your application.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_reactive_batch_processing">Reactive Batch Processing</h3>
+<div class="paragraph">
+<p>Batch listeners also support defining reactive types (either <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> or Reactor <code>Flux</code>) as the method argument.</p>
+</div>
+<div class="paragraph">
+<p>In this case the method will be passed a reactive type that can be returned from the method allowing non-blocking processing of the batch:</p>
+</div>
+<div class="listingblock">
+<div class="title">Reactive Processing of Batch Records</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">all-the-books</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> Flux&lt;<span class="predefined-type">Book</span>&gt; receiveFlux(Flux&lt;<span class="predefined-type">Book</span>&gt; books) {
+    <span class="keyword">return</span> books.doOnNext(book -&gt;
+            <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Book = </span><span class="delimiter">&quot;</span></span> + book.getTitle())
+    );
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Remember that as with non batch processing, the reactive type will be subscribed to on a different thread and offsets will be committed automatically likely prior to the point when the reactive type is subscribed to.</p>
+</div>
+<div class="paragraph">
+<p>This means that you should only use reactive processing if message durability is not a requirement and you may wish to implement message re-delivery upon failure.</p>
+</div>
 </div>
 
 
