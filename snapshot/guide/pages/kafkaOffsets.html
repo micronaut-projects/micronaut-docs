@@ -271,6 +271,76 @@ function addJsClass() {
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_manually_assigning_offsets_to_a_consumer_bean">Manually Assigning Offsets to a Consumer Bean</h3>
+<div class="paragraph">
+<p>Sometimes you may wish to control exactly the position you wish to resume consuming messages from.</p>
+</div>
+<div class="paragraph">
+<p>For example if you store offsets in a database you may wish to read the offsets from the database when the consumer starts and start reading from the position stored in the database.</p>
+</div>
+<div class="paragraph">
+<p>To support this use case your consumer bean can implement the <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/consumer/ConsumerRebalanceListener.html">ConsumerRebalanceListener</a> and <a href="../api/io/micronaut/configuration/kafka/KafkaConsumerAware.html">KafkaConsumerAware</a> interfaces:</p>
+</div>
+<div class="listingblock">
+<div class="title">Manually seeking offsets with the <code>KafkaConsumer</code> API</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.KafkaConsumerAware</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.ConsumerRebalanceListener</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.KafkaConsumer</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.common.TopicPartition</span>;
+
+<span class="keyword">import</span> <span class="include">javax.annotation.Nonnull</span>;
+<span class="keyword">import</span> <span class="include">java.util.Collection</span>;
+
+<span class="annotation">@KafkaListener</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">ProductListener</span> <span class="directive">implements</span> ConsumerRebalanceListener, KafkaConsumerAware {
+
+    <span class="directive">private</span> KafkaConsumer consumer;
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">void</span> setKafkaConsumer(<span class="annotation">@Nonnull</span> KafkaConsumer consumer) { <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="local-variable">this</span>.consumer = consumer;
+    }
+
+    <span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>)
+    <span class="type">void</span> receive(Product product) {
+        <span class="comment">// process product</span>
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">void</span> onPartitionsRevoked(<span class="predefined-type">Collection</span>&lt;TopicPartition&gt; partitions) { <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="comment">// save offsets here</span>
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">void</span> onPartitionsAssigned(<span class="predefined-type">Collection</span>&lt;TopicPartition&gt; partitions) { <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="comment">// seek to offset here</span>
+        <span class="keyword">for</span> (TopicPartition partition : partitions) {
+            consumer.seek(partition, <span class="integer">1</span>);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>setKafkaConsumer</code> of the <a href="../api/io/micronaut/configuration/kafka/KafkaConsumerAware.html">KafkaConsumerAware</a> allows access to the underlying producer</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>onPartitionsRevoked</code> can be used to save offsets</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>onPartitionsAssigned</code> can use used to read offsets and seek to a specific position. In this trivial example we just seek to the offset 1 (skipping the first record).</td>
+</tr>
+</table>
+</div>
+</div>
 
 
                 <div style="clear:both;margin-top:15px;"></div>

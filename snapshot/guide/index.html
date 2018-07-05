@@ -13177,6 +13177,76 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_manually_assigning_offsets_to_a_consumer_bean">Manually Assigning Offsets to a Consumer Bean</h3>
+<div class="paragraph">
+<p>Sometimes you may wish to control exactly the position you wish to resume consuming messages from.</p>
+</div>
+<div class="paragraph">
+<p>For example if you store offsets in a database you may wish to read the offsets from the database when the consumer starts and start reading from the position stored in the database.</p>
+</div>
+<div class="paragraph">
+<p>To support this use case your consumer bean can implement the <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/consumer/ConsumerRebalanceListener.html">ConsumerRebalanceListener</a> and <a href="../api/io/micronaut/configuration/kafka/KafkaConsumerAware.html">KafkaConsumerAware</a> interfaces:</p>
+</div>
+<div class="listingblock">
+<div class="title">Manually seeking offsets with the <code>KafkaConsumer</code> API</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.KafkaConsumerAware</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.ConsumerRebalanceListener</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.KafkaConsumer</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.common.TopicPartition</span>;
+
+<span class="keyword">import</span> <span class="include">javax.annotation.Nonnull</span>;
+<span class="keyword">import</span> <span class="include">java.util.Collection</span>;
+
+<span class="annotation">@KafkaListener</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">ProductListener</span> <span class="directive">implements</span> ConsumerRebalanceListener, KafkaConsumerAware {
+
+    <span class="directive">private</span> KafkaConsumer consumer;
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">void</span> setKafkaConsumer(<span class="annotation">@Nonnull</span> KafkaConsumer consumer) { <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="local-variable">this</span>.consumer = consumer;
+    }
+
+    <span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>)
+    <span class="type">void</span> receive(Product product) {
+        <span class="comment">// process product</span>
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">void</span> onPartitionsRevoked(<span class="predefined-type">Collection</span>&lt;TopicPartition&gt; partitions) { <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="comment">// save offsets here</span>
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">void</span> onPartitionsAssigned(<span class="predefined-type">Collection</span>&lt;TopicPartition&gt; partitions) { <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="comment">// seek to offset here</span>
+        <span class="keyword">for</span> (TopicPartition partition : partitions) {
+            consumer.seek(partition, <span class="integer">1</span>);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>setKafkaConsumer</code> of the <a href="../api/io/micronaut/configuration/kafka/KafkaConsumerAware.html">KafkaConsumerAware</a> allows access to the underlying producer</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>onPartitionsRevoked</code> can be used to save offsets</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>onPartitionsAssigned</code> can use used to read offsets and seek to a specific position. In this trivial example we just seek to the offset 1 (skipping the first record).</td>
+</tr>
+</table>
+</div>
+</div>
 
 
 <h2 id="kafkaListenerBatch">10.1.3.4 Kafka Batch Processing</h2>
@@ -13337,7 +13407,85 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 
 
 <div class="paragraph">
-<p>TODO</p>
+<p>On any <code>@KafkaListener</code> method that returns a value, you can use the <a href="../api/io/micronaut/messaging/annotation/SendTo.html">@SendTo</a> annotation to forward the return value to the topic or topics specified by the <code>@SendTo</code> annotation.</p>
+</div>
+<div class="paragraph">
+<p>The key of the original <code>ConsumerRecord</code> will be used as the key when forwarding the message.</p>
+</div>
+<div class="listingblock">
+<div class="title">Committing offsets with the <code>KafkaConsumer</code> API</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.docs.consumer.config.Product</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.messaging.annotation.SendTo</span>;
+<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
+<span class="keyword">import</span> <span class="include">io.reactivex.functions.Function</span>;
+
+<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@SendTo</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">product-quantities</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+<span class="directive">public</span> <span class="type">int</span> receive(
+        <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand,
+        Product product) {
+    <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Product - </span><span class="delimiter">&quot;</span></span> + product.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> by </span><span class="delimiter">&quot;</span></span> + brand);
+
+    <span class="keyword">return</span> product.getQuantity(); <i class="conum" data-value="3"></i><b>(3)</b>
+}
+<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@SendTo</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">product-quantities</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+<span class="directive">public</span> Single&lt;<span class="predefined-type">Integer</span>&gt; receiveProduct(
+        <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand,
+        Single&lt;Product&gt; productSingle) {
+
+    <span class="keyword">return</span> productSingle.map(product -&gt; {
+        <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Product - </span><span class="delimiter">&quot;</span></span> + product.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> by </span><span class="delimiter">&quot;</span></span> + brand);
+        <span class="keyword">return</span> product.getQuantity(); <i class="conum" data-value="3"></i><b>(3)</b>
+    });
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The topic subscribed to is <code>awesome-products</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The topic to send the result to is <code>product-quantities</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The return value is used to indicate the value to forward</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can also do the same reactively:</p>
+</div>
+<div class="listingblock">
+<div class="title">Committing offsets with the <code>KafkaConsumer</code> API</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The topic subscribed to is <code>awesome-products</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The topic to send the result to is <code>product-quantities</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The return is mapped from the single to the value of the quantity</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In the reactive case the <code>poll</code> loop will continue and will not wait for the record to be sent unless you specifically annotate the method with <a href="../api/io/micronaut/core/annotation/Blocking.html">@Blocking</a>.</p>
 </div>
 
 
@@ -19292,6 +19440,16 @@ The Spring ecosystem is very broad and there are many Spring libraries you can u
 
 <div class="paragraph">
 <p>This section will document breaking changes that may happen during milestone or release candidate releases, as well as major releases eg (1.x.x &#8594; 2.x.x).</p>
+</div>
+<div class="sect3">
+<h4 id="_1_0_0_m3">1.0.0.M3</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>The contract for <code>io.micronaut.http.codec.MediaTypeCodec</code> has changed to support multiple media types.</p>
+</li>
+</ul>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_1_0_0_m2">1.0.0.M2</h4>
