@@ -136,6 +136,9 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:20px"><a href="#kafkaClientScope"><strong>10.1.2.4</strong><span>Injecting Kafka Producer Beans</span></a>
                     </div>
                     
+                    <div class="toc-item" style="margin-left:20px"><a href="#kafkaEmbedded"><strong>10.1.2.5</strong><span>Embedding Kafka</span></a>
+                    </div>
+                    
                     <div class="toc-item" style="margin-left:10px"><a href="#kafkaListener"><strong>10.1.3</strong><span>Kafka Consumers Using @KafkaListener</span></a>
                     </div>
                     
@@ -411,19 +414,110 @@ client.sendProduct(<span class="string"><span class="delimiter">&quot;</span><sp
 <div class="sect2">
 <h3 id="_specifying_the_key_and_the_value">Specifying the Key and the Value</h3>
 <div class="paragraph">
-<p>TODO</p>
+<p>The Kafka key can be specified by providing a parameter annotated with <code>@KafkaKey</code>. If no such parameter is specified the record is ent with a <code>null</code> key.</p>
+</div>
+<div class="paragraph">
+<p>The value is send it resolved by selecting the argument annotated with nn:messaging.annotation.Body[], otherwise the first argument with no specific binding annotation is used. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">my-products</span><span class="delimiter">&quot;</span></span>)
+<span class="type">void</span> sendProduct(<span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand, <span class="predefined-type">String</span> name);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The method above will use the parameter <code>brand</code> as the key and the parameter <code>name</code> as the value.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_including_message_headers">Including Message Headers</h3>
 <div class="paragraph">
-<p>TODO</p>
+<p>There are a number of ways you can include message headers. One way is to annotate an argument with the <a href="../api/io/micronaut/messaging/annotation/Header.html">@Header</a> annotation and include a value when calling the method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">my-products</span><span class="delimiter">&quot;</span></span>)
+<span class="type">void</span> sendProduct(
+    <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand,
+    <span class="predefined-type">String</span> name,
+    <span class="annotation">@Header</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">My-Header</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> myHeader);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The example above will include the value of the <code>myHeader</code> argument as a header called <code>My-Header</code>.</p>
+</div>
+<div class="paragraph">
+<p>Another way to include headers is at the type level with the values driven from configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">Declaring @KafkaClient Headers</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.KafkaClient</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.messaging.annotation.Header</span>;
+
+<span class="annotation">@KafkaClient</span>(id=<span class="string"><span class="delimiter">&quot;</span><span class="content">product-client</span><span class="delimiter">&quot;</span></span>)
+<span class="annotation">@Header</span>(name = <span class="string"><span class="delimiter">&quot;</span><span class="content">X-Token</span><span class="delimiter">&quot;</span></span>, value = <span class="string"><span class="delimiter">&quot;</span><span class="content">${my.application.token}</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">interface</span> <span class="class">ProductClient</span> {
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example will send a header called <code>X-Token</code> with the value read from the setting <code>my.application.token</code> in <code>application.yml</code> (or the environnment variable <code>MY_APPLICATION_TOKEN</code>).</p>
+</div>
+<div class="paragraph">
+<p>If the <code>my.application.token</code> is not set then an error will occur creating the client.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_reactive_and_non_blocking_method_definitions">Reactive and Non-Blocking Method Definitions</h3>
 <div class="paragraph">
-<p>TODO</p>
+<p>The <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaClient.html">@KafkaClient</a> annotation supports the definition of reactive return types (such as <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> or Reactor <code>Flux</code>) as well as Futures.</p>
+</div>
+<div class="paragraph">
+<p>The following sections cover possible method signatures and behaviour:</p>
+</div>
+<div class="sect3">
+<h4 id="_single_value_and_return_type">Single Value and Return Type</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">Single&lt;<span class="predefined-type">Book</span>&gt; sendBook(
+    <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> author,
+    Single&lt;<span class="predefined-type">Book</span>&gt; book
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The implementation will return a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> that when subscribed to will subscribe to the passed <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> and send the emitted item as a <code>ProducerRecord</code> emitting the item again if successful or an error otherwise.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_flowable_value_and_return_type">Flowable Value and Return Type</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;<span class="predefined-type">Book</span>&gt; sendBooks(
+    <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> author,
+    Flowable&lt;<span class="predefined-type">Book</span>&gt; book
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The implementation will return a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> that when subscribed to will subscribe to the passed <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> and for each emitted item will send a <code>ProducerRecord</code> emitting the item again if successful or an error otherwise.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_flowable_value_and_return_type_2">Flowable Value and Return Type</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">Flux&lt;RecordMetadata&gt; sendBooks(
+    <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> author,
+    Flux&lt;<span class="predefined-type">Book</span>&gt; book
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The implementation will return a Reactor <code>Flux</code> that when subscribed to will subscribe to the passed <code>Flux</code> and for each emitted item will send a <code>ProducerRecord</code> emitting the resulting Kafka <code>RecordMetadata</code> if successful or an error otherwise.</p>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -592,7 +686,56 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 
 
 <div class="paragraph">
-<p>TODO</p>
+<p>By default if you define a method that takes a container type such as a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a> the list will be serialized using the specified <code>value.serializer</code> (the default will result in a JSON array).</p>
+</div>
+<div class="paragraph">
+<p>For example the following two methods will both send serialized arrays:</p>
+</div>
+<div class="listingblock">
+<div class="title">Sending Arrays and Lists</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
+<span class="type">void</span> sendList(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books);
+
+<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
+<span class="type">void</span> sendBooks(<span class="predefined-type">Book</span>...books);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Instead of a sending a serialized array you may wish to instead send batches of <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/producer/ProducerRecord.html">ProducerRecord</a> either synchronously or asynchronously.</p>
+</div>
+<div class="paragraph">
+<p>To do this you can specify a value of <code>true</code> to the <code>batch</code> member of the <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaClient.html">@KafkaClient</a> annotation:</p>
+</div>
+<div class="listingblock">
+<div class="title">Sending <code>ProducerRecord</code> batches</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaClient</span>(batch=<span class="predefined-constant">true</span>)
+<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
+<span class="type">void</span> send(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above case instead of sending a serialized array the client implementation will iterate over each item in the list and send a <code>ProducerRecord</code> for each. The previous example is blocking, however you can return a reactive type if desired:</p>
+</div>
+<div class="listingblock">
+<div class="title">Sending <code>ProducerRecord</code> batches Reactively</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaClient</span>(batch=<span class="predefined-constant">true</span>)
+<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
+Flowable&lt;RecordMetadata&gt; send(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also use an unbound reactive type such as <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> as the source of your batch data:</p>
+</div>
+<div class="listingblock">
+<div class="title">Sending <code>ProducerRecord</code> batches from a Flowable</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaClient</span>(batch=<span class="predefined-constant">true</span>)
+<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
+Flowable&lt;RecordMetadata&gt; send(Flowable&lt;<span class="predefined-type">Book</span>&gt; books);</code></pre>
+</div>
 </div>
 
 
@@ -606,7 +749,112 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 
 
 <div class="paragraph">
-<p>TODO</p>
+<p>If you need maximum flexibility and don&#8217;t want to use the <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaClient.html">@KafkaClient</a> support you can use the <code>@KafkaClient</code> annotation as qualifier for dependency injection of <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html">KafkaProducer</a> instances.</p>
+</div>
+<div class="paragraph">
+<p>Consider the following example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using a KafkaProducer directly</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.KafkaClient</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.producer</span>.*;
+
+<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
+<span class="keyword">import</span> <span class="include">java.util.concurrent.Future</span>;
+
+<span class="annotation">@Singleton</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">BookSender</span> {
+
+    <span class="directive">private</span> <span class="directive">final</span> KafkaProducer&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Book</span>&gt; kafkaProducer;
+
+    <span class="directive">public</span> BookSender(
+            <span class="annotation">@KafkaClient</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">book-producer</span><span class="delimiter">&quot;</span></span>) KafkaProducer&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Book</span>&gt; kafkaProducer) { <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="local-variable">this</span>.kafkaProducer = kafkaProducer;
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">Future</span>&lt;RecordMetadata&gt; send(<span class="predefined-type">String</span> author, <span class="predefined-type">Book</span> book) {
+        <span class="keyword">return</span> kafkaProducer.send(<span class="keyword">new</span> ProducerRecord&lt;&gt;(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>, author, book)); <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>KafkaProducer</code> is dependency injected into the constructor. If not specified in configuration, the key and value serializer are inferred from the generic type arguments.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>KafkaProducer</code> is used to send records</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note that there is no need to call the <code>close()</code> method to shut down the <code>KafkaProducer</code>, it is fully managed by Micronaut and will be shutdown when the application shuts down.</p>
+</div>
+<div class="paragraph">
+<p>The previous example can be tested in JUnit with the following test:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using a KafkaProducer directly</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Test</span>
+<span class="directive">public</span> <span class="type">void</span> testBookSender() <span class="directive">throws</span> <span class="exception">IOException</span> {
+    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; config = <span class="predefined-type">Collections</span>.singletonMap( <i class="conum" data-value="1"></i><b>(1)</b>
+            AbstractKafkaConfiguration.EMBEDDED, <span class="predefined-constant">true</span>
+    );
+
+    <span class="keyword">try</span> (ApplicationContext ctx = ApplicationContext.run(config)) {
+        BookSender bookSender = ctx.getBean(BookSender.class); <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>();
+        book.setTitle(<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>);
+        bookSender.send(<span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>, book);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>An embedded version of Kafka is used</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>BookSender</code> is retrieved from the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a> and a <code>ProducerRecord</code> sent</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>By using the <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html">KafkaProducer</a> API directly you open up even more options if you require transactions (exactly-once delivery) or want control over when records are flushed etc.</p>
+</div>
+
+
+<h2 id="kafkaEmbedded">10.1.2.5 Embedding Kafka</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/messaging/kafka/kafkaClient/kafkaEmbedded.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The previous section introduced the ability to embed Kafka for your tests. This is possible in Micronaut by specifying the <code>kafka.embedded.enabled</code> setting to <code>true</code> and adding the following dependencies to your test classpath:</p>
+</div>
+<div class="listingblock">
+<div class="title">Kafka Test Dependencies</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.apache.kafka:kafka-clients:1.1.0:test</span><span class="delimiter">'</span></span>
+testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.apache.kafka:kafka_2.12:1.1.0</span><span class="delimiter">'</span></span>
+testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.apache.kafka:kafka_2.12:1.1.0:test</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that because of the distributed nature of Kafka it is relatively slow to startup so it is generally better to do the initialization with <code>@BeforeClass</code> (or <code>setupSpec</code> in Spock) and have a large number of test methods rather than many test classes otherwise your test execution performance will suffer.</p>
 </div>
 
 
@@ -620,7 +868,7 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 
 
 <div class="paragraph">
-<p>The previous section presented a trivial example of what is possible with the <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaListener.html">@KafkaListener</a> annotation.</p>
+<p>The quick start section presented a trivial example of what is possible with the <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaListener.html">@KafkaListener</a> annotation.</p>
 </div>
 <div class="paragraph">
 <p>Using the <code>@KafkaListener</code> annotation Micronaut will build a <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html">KafkaConsumer</a> and start the <code>poll</code> loop by running the <code>KafkaConsumer</code> in a special <code>consumer</code> thread pool. You can re-configure the size of the thread pool based on the number of consumers in your application in <code>application.yml</code> as desired:</p>

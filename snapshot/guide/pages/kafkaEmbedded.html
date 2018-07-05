@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>10.1.2.4 Injecting Kafka Producer Beans 1.0.0.BUILD-SNAPSHOT</title>
+    <title>10.1.2.5 Embedding Kafka 1.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -106,7 +106,7 @@ function addJsClass() {
 
 
                 <div class="project">
-                    <h1>10.1.2.4 Injecting Kafka Producer Beans</h1>
+                    <h1>10.1.2.5 Embedding Kafka</h1>
 
                     <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
                 </div>
@@ -115,97 +115,28 @@ function addJsClass() {
 
                 
 
-<h2 id="kafkaClientScope">10.1.2.4 Injecting Kafka Producer Beans</h2>
+<h2 id="kafkaEmbedded">10.1.2.5 Embedding Kafka</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/messaging/kafka/kafkaClient/kafkaClientScope.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/messaging/kafka/kafkaClient/kafkaEmbedded.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
 
 
 <div class="paragraph">
-<p>If you need maximum flexibility and don&#8217;t want to use the <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaClient.html">@KafkaClient</a> support you can use the <code>@KafkaClient</code> annotation as qualifier for dependency injection of <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html">KafkaProducer</a> instances.</p>
-</div>
-<div class="paragraph">
-<p>Consider the following example:</p>
+<p>The previous section introduced the ability to embed Kafka for your tests. This is possible in Micronaut by specifying the <code>kafka.embedded.enabled</code> setting to <code>true</code> and adding the following dependencies to your test classpath:</p>
 </div>
 <div class="listingblock">
-<div class="title">Using a KafkaProducer directly</div>
+<div class="title">Kafka Test Dependencies</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.KafkaClient</span>;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.producer</span>.*;
-
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
-<span class="keyword">import</span> <span class="include">java.util.concurrent.Future</span>;
-
-<span class="annotation">@Singleton</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">BookSender</span> {
-
-    <span class="directive">private</span> <span class="directive">final</span> KafkaProducer&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Book</span>&gt; kafkaProducer;
-
-    <span class="directive">public</span> BookSender(
-            <span class="annotation">@KafkaClient</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">book-producer</span><span class="delimiter">&quot;</span></span>) KafkaProducer&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Book</span>&gt; kafkaProducer) { <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="local-variable">this</span>.kafkaProducer = kafkaProducer;
-    }
-
-    <span class="directive">public</span> <span class="predefined-type">Future</span>&lt;RecordMetadata&gt; send(<span class="predefined-type">String</span> author, <span class="predefined-type">Book</span> book) {
-        <span class="keyword">return</span> kafkaProducer.send(<span class="keyword">new</span> ProducerRecord&lt;&gt;(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>, author, book)); <i class="conum" data-value="2"></i><b>(2)</b>
-    }
-
-}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.apache.kafka:kafka-clients:1.1.0:test</span><span class="delimiter">'</span></span>
+testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.apache.kafka:kafka_2.12:1.1.0</span><span class="delimiter">'</span></span>
+testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.apache.kafka:kafka_2.12:1.1.0:test</span><span class="delimiter">'</span></span></code></pre>
 </div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <code>KafkaProducer</code> is dependency injected into the constructor. If not specified in configuration, the key and value serializer are inferred from the generic type arguments.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <code>KafkaProducer</code> is used to send records</td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
-<p>Note that there is no need to call the <code>close()</code> method to shut down the <code>KafkaProducer</code>, it is fully managed by Micronaut and will be shutdown when the application shuts down.</p>
-</div>
-<div class="paragraph">
-<p>The previous example can be tested in JUnit with the following test:</p>
-</div>
-<div class="listingblock">
-<div class="title">Using a KafkaProducer directly</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Test</span>
-<span class="directive">public</span> <span class="type">void</span> testBookSender() <span class="directive">throws</span> <span class="exception">IOException</span> {
-    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; config = <span class="predefined-type">Collections</span>.singletonMap( <i class="conum" data-value="1"></i><b>(1)</b>
-            AbstractKafkaConfiguration.EMBEDDED, <span class="predefined-constant">true</span>
-    );
-
-    <span class="keyword">try</span> (ApplicationContext ctx = ApplicationContext.run(config)) {
-        BookSender bookSender = ctx.getBean(BookSender.class); <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>();
-        book.setTitle(<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>);
-        bookSender.send(<span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>, book);
-    }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>An embedded version of Kafka is used</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <code>BookSender</code> is retrieved from the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a> and a <code>ProducerRecord</code> sent</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>By using the <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html">KafkaProducer</a> API directly you open up even more options if you require transactions (exactly-once delivery) or want control over when records are flushed etc.</p>
+<p>Note that because of the distributed nature of Kafka it is relatively slow to startup so it is generally better to do the initialization with <code>@BeforeClass</code> (or <code>setupSpec</code> in Spock) and have a large number of test methods rather than many test classes otherwise your test execution performance will suffer.</p>
 </div>
 
 
