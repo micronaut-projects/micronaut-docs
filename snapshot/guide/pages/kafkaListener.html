@@ -658,10 +658,10 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 <div class="sect2">
 <h3 id="_manually_committing_offsets">Manually Committing Offsets</h3>
 <div class="paragraph">
-<p>If you set the <code>OffsetStrategy</code> to configuration.kafka.annotation.OffsetStrategy#DISABLED[] it becomes your responsibility to commit offsets.</p>
+<p>If you set the <code>OffsetStrategy</code> to <a href="../api/io/micronaut/configuration/kafka/annotation/OffsetStrategy.html#DISABLED">DISABLED</a> it becomes your responsibility to commit offsets.</p>
 </div>
 <div class="paragraph">
-<p>There is a couple of ways that can be achieved.</p>
+<p>There are a couple of ways that can be achieved.</p>
 </div>
 <div class="paragraph">
 <p>The simplest way is to define an argument of type <a href="../api/io/micronaut/configuration/kafka/Acknowledgement.html">Acknowledgement</a> and call the <code>ack()</code> method to commit offsets synchronously:</p>
@@ -1003,17 +1003,6 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
     <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Product - </span><span class="delimiter">&quot;</span></span> + product.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> by </span><span class="delimiter">&quot;</span></span> + brand);
 
     <span class="keyword">return</span> product.getQuantity(); <i class="conum" data-value="3"></i><b>(3)</b>
-}
-<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="annotation">@SendTo</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">product-quantities</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
-<span class="directive">public</span> Single&lt;<span class="predefined-type">Integer</span>&gt; receiveProduct(
-        <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand,
-        Single&lt;Product&gt; productSingle) {
-
-    <span class="keyword">return</span> productSingle.map(product -&gt; {
-        <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Product - </span><span class="delimiter">&quot;</span></span> + product.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> by </span><span class="delimiter">&quot;</span></span> + brand);
-        <span class="keyword">return</span> product.getQuantity(); <i class="conum" data-value="3"></i><b>(3)</b>
-    });
 }</code></pre>
 </div>
 </div>
@@ -1034,12 +1023,22 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 </table>
 </div>
 <div class="paragraph">
-<p>You can also do the same reactively:</p>
+<p>You can also do the same using Reactive programming:</p>
 </div>
 <div class="listingblock">
 <div class="title">Committing offsets with the <code>KafkaConsumer</code> API</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"></code></pre>
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@SendTo</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">product-quantities</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+<span class="directive">public</span> Single&lt;<span class="predefined-type">Integer</span>&gt; receiveProduct(
+        <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand,
+        Single&lt;Product&gt; productSingle) {
+
+    <span class="keyword">return</span> productSingle.map(product -&gt; {
+        <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Product - </span><span class="delimiter">&quot;</span></span> + product.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> by </span><span class="delimiter">&quot;</span></span> + brand);
+        <span class="keyword">return</span> product.getQuantity(); <i class="conum" data-value="3"></i><b>(3)</b>
+    });
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1073,7 +1072,16 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 
 
 <div class="paragraph">
-<p>TODO</p>
+<p>When an exception occurs in a <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaListener.html">@KafkaListener</a> method by default the exception is simply logged. This is handled by <a href="../api/io/micronaut/configuration/kafka/exceptions/DefaultKafkaListenerExceptionHandler.html">DefaultKafkaListenerExceptionHandler</a>.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to replace this default exception handling with another implementation you can use the Micronaut&#8217;s <a href="#replaces">Bean Replacement</a> feature to define a bean that replaces it: <code>@Replaces(DefaultKafkaListenerExceptionHandler.class)</code>.</p>
+</div>
+<div class="paragraph">
+<p>You can also define per bean exception handling logic by implementation the <a href="../api/io/micronaut/configuration/kafka/exceptions/KafkaListenerExceptionHandler.html">KafkaListenerExceptionHandler</a> interface in your <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaListener.html">@KafkaListener</a> class.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/configuration/kafka/exceptions/KafkaListenerExceptionHandler.html">KafkaListenerExceptionHandler</a> receives an exception of type <a href="../api/io/micronaut/configuration/kafka/exceptions/KafkaListenerException.html">KafkaListenerException</a> which allows access to the original <code>ConsumerRecord</code>, if available.</p>
 </div>
 
 
