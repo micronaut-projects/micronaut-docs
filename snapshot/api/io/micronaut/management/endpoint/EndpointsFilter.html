@@ -121,7 +121,7 @@ var activeTableTab = "activeTableTab";
  <a href="../../../../io/micronaut/http/annotation/Filter.html" title="annotation in io.micronaut.http.annotation">@Filter</a>(<a href="../../../../io/micronaut/http/annotation/Filter.html#value--">value</a>="/**")
 public class <span class="typeNameLabel">EndpointsFilter</span>
 extends <a href="../../../../io/micronaut/http/filter/OncePerRequestHttpServerFilter.html" title="class in io.micronaut.http.filter">OncePerRequestHttpServerFilter</a></pre>
-<div class="block">Returns 401 for <a href="../../../../io/micronaut/management/endpoint/Endpoint.html" title="annotation in io.micronaut.management.endpoint"><code>Endpoint</code></a> requests which have sensitive false. Disabled if micronaut.security is enabled.</div>
+<div class="block">Returns 401 for <a href="../../../../io/micronaut/management/endpoint/Endpoint.html" title="annotation in io.micronaut.management.endpoint"><code>Endpoint</code></a> requests which have sensitive true (except /health). Disabled if micronaut.security is enabled.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.0</dd>
@@ -150,6 +150,10 @@ extends <a href="../../../../io/micronaut/http/filter/OncePerRequestHttpServerFi
 <td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util">Map</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Method.html?is-external=true" title="class or interface in java.lang.reflect">Method</a>,<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang">Boolean</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/management/endpoint/EndpointsFilter.html#endpointMethods">endpointMethods</a></span></code>&nbsp;</td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected <a href="../../../../io/micronaut/management/endpoint/processors/ReadEndpointRouteBuilder.html" title="class in io.micronaut.management.endpoint.processors">ReadEndpointRouteBuilder</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/management/endpoint/EndpointsFilter.html#readEndpointRouteBuilder">readEndpointRouteBuilder</a></span></code>&nbsp;</td>
+</tr>
 </table>
 <ul class="blockList">
 <li class="blockList"><a name="fields.inherited.from.class.io.micronaut.core.order.Ordered">
@@ -172,7 +176,8 @@ extends <a href="../../../../io/micronaut/http/filter/OncePerRequestHttpServerFi
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/micronaut/management/endpoint/EndpointsFilter.html#EndpointsFilter-io.micronaut.management.endpoint.EndpointSensitivityProcessor-">EndpointsFilter</a></span>(<a href="../../../../io/micronaut/management/endpoint/EndpointSensitivityProcessor.html" title="class in io.micronaut.management.endpoint">EndpointSensitivityProcessor</a>&nbsp;endpointSensitivityProcessor)</code>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/micronaut/management/endpoint/EndpointsFilter.html#EndpointsFilter-io.micronaut.management.endpoint.EndpointSensitivityProcessor-io.micronaut.management.endpoint.processors.ReadEndpointRouteBuilder-">EndpointsFilter</a></span>(<a href="../../../../io/micronaut/management/endpoint/EndpointSensitivityProcessor.html" title="class in io.micronaut.management.endpoint">EndpointSensitivityProcessor</a>&nbsp;endpointSensitivityProcessor,
+               <a href="../../../../io/micronaut/management/endpoint/processors/ReadEndpointRouteBuilder.html" title="class in io.micronaut.management.endpoint.processors">ReadEndpointRouteBuilder</a>&nbsp;readEndpointRouteBuilder)</code>
 <div class="block">Constructor.</div>
 </td>
 </tr>
@@ -244,10 +249,19 @@ extends <a href="../../../../io/micronaut/http/filter/OncePerRequestHttpServerFi
 <a name="endpointMethods">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>endpointMethods</h4>
 <pre>protected final&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util">Map</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Method.html?is-external=true" title="class or interface in java.lang.reflect">Method</a>,<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang">Boolean</a>&gt; endpointMethods</pre>
+</li>
+</ul>
+<a name="readEndpointRouteBuilder">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>readEndpointRouteBuilder</h4>
+<pre>protected final&nbsp;<a href="../../../../io/micronaut/management/endpoint/processors/ReadEndpointRouteBuilder.html" title="class in io.micronaut.management.endpoint.processors">ReadEndpointRouteBuilder</a> readEndpointRouteBuilder</pre>
 </li>
 </ul>
 </li>
@@ -258,16 +272,18 @@ extends <a href="../../../../io/micronaut/http/filter/OncePerRequestHttpServerFi
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="EndpointsFilter-io.micronaut.management.endpoint.EndpointSensitivityProcessor-">
+<a name="EndpointsFilter-io.micronaut.management.endpoint.EndpointSensitivityProcessor-io.micronaut.management.endpoint.processors.ReadEndpointRouteBuilder-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>EndpointsFilter</h4>
-<pre>public&nbsp;EndpointsFilter(<a href="../../../../io/micronaut/management/endpoint/EndpointSensitivityProcessor.html" title="class in io.micronaut.management.endpoint">EndpointSensitivityProcessor</a>&nbsp;endpointSensitivityProcessor)</pre>
+<pre>public&nbsp;EndpointsFilter(<a href="../../../../io/micronaut/management/endpoint/EndpointSensitivityProcessor.html" title="class in io.micronaut.management.endpoint">EndpointSensitivityProcessor</a>&nbsp;endpointSensitivityProcessor,
+                       <a href="../../../../io/micronaut/management/endpoint/processors/ReadEndpointRouteBuilder.html" title="class in io.micronaut.management.endpoint.processors">ReadEndpointRouteBuilder</a>&nbsp;readEndpointRouteBuilder)</pre>
 <div class="block">Constructor.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>readEndpointRouteBuilder</code> - The routeBuilder which it is used to resolve if the request matches the <a href="../../../../io/micronaut/management/endpoint/health/HealthEndpoint.html" title="class in io.micronaut.management.endpoint.health"><code>HealthEndpoint</code></a></dd>
 <dd><code>endpointSensitivityProcessor</code> - The processor that resolves endpoint sensitivity</dd>
 </dl>
 </li>
