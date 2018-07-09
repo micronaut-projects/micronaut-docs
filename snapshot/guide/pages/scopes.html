@@ -194,6 +194,27 @@ function addJsClass() {
 <div class="paragraph">
 <p>Additional scopes can be added by defining a <code>@Singleton</code> bean that implements the <a href="../api/io/micronaut/context/scope/CustomScope.html">CustomScope</a> interface.</p>
 </div>
+<div class="paragraph">
+<p>Note that with Micronaut when starting a <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a> by default <code>@Singleton</code> scoped beans are created lazily and on demand. This is by design and to optimize startup time.</p>
+</div>
+<div class="paragraph">
+<p>If this is presents are problem for your use case you have the option of using the <a href="../api/io/micronaut/context/annotation/Context.html">@Context</a> annotation which binds the lifecycle of your object to the lifecycle of the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a>. In other words when the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a> is started your bean will be created.</p>
+</div>
+<div class="paragraph">
+<p>Alternatively you can annotate any <code>@Singleton</code> scoped bean with <a href="../api/io/micronaut/context/annotation/Parallel.html">@Parallel</a> which allows parallel initialization of your bean without impacting overall startup time.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If your bean fails to initialize in parallel then the application will be automatically shutdown.
+</td>
+</tr>
+</table>
+</div>
 
 
 <h2 id="refreshable">3.6.2 Refreshable Scope</h2>
