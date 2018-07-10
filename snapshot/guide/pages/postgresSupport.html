@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>11.1.7 Configuring Cassandra 1.0.0.BUILD-SNAPSHOT</title>
+    <title>11.1.5 Configuring Postgres 1.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -106,7 +106,7 @@ function addJsClass() {
 
 
                 <div class="project">
-                    <h1>11.1.7 Configuring Cassandra</h1>
+                    <h1>11.1.5 Configuring Postgres</h1>
 
                     <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
                 </div>
@@ -115,61 +115,99 @@ function addJsClass() {
 
                 
 
-<h2 id="cassandraSupport">11.1.7 Configuring Cassandra</h2>
+<h2 id="postgresSupport">11.1.5 Configuring Postgres</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/configurations/dataAccess/cassandraSupport.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/configurations/dataAccess/postgresSupport.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
 
 
 <div class="paragraph">
-<p>Add the following to the <code>build.gradle</code>:</p>
+<p>Micronaut supports reactive and non-blocking client to connect to Postgres using <a href="https://github.com/reactiverse/reactive-pg-client">reactive-pg-client</a>, allowing  to handle many database connections with a single thread.</p>
+</div>
+<div class="sect1">
+<h2 id="_configuring_the_reactive_postgres_client">Configuring the Reactive Postgres Client</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To configure the Reactive Postgres you should first add <code>postgres-reactive</code> module to your classpath:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:cassandra</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">testCompile project(<span class="string"><span class="delimiter">&quot;</span><span class="content">:configurations:postgres-reactive</span><span class="delimiter">&quot;</span></span>)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Micronaut supports Cassandra configuration by using the <a href="https://docs.datastax.com/en/developer/java-driver/">Datastax Java Driver</a>.
-Configuration values can be supplied a property source such as below. The property name is derived from the builder methods in
-<a href="https://docs.datastax.com/en/drivers/java/3.1/com/datastax/driver/core/Cluster.Builder.html">Cluster.Builder</a> (without the prefix).
-Micronaut will create a <a href="https://docs.datastax.com/en/drivers/java/3.1/com/datastax/driver/core/Cluster.html">Cluster</a> bean. This bean
-can be then injected into any other Micronaut bean.</p>
+<p>You should then configure the URI or <a href="https://reactiverse.io/reactive-pg-client/apidocs/index.html"><code>PoolOptions</code></a> of the Postgres server you wish to communicate with in <code>application.yml</code>:</p>
 </div>
 <div class="listingblock">
-<div class="title">Supply Single Configuration</div>
+<div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext applicationContext = <span class="keyword">new</span> DefaultApplicationContext(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
-applicationContext.environment.addPropertySource(MapPropertySource.of(
-        <span class="string"><span class="delimiter">'</span><span class="content">test</span><span class="delimiter">'</span></span>,
-        [<span class="string"><span class="delimiter">'</span><span class="content">cassandra.default.clusterName</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">ociCluster</span><span class="delimiter">&quot;</span></span>,
-         <span class="string"><span class="delimiter">'</span><span class="content">cassandra.default.contactPoint</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">localhost</span><span class="delimiter">&quot;</span></span>,
-         <span class="string"><span class="delimiter">'</span><span class="content">cassandra.default.port</span><span class="delimiter">'</span></span>: <span class="integer">9042</span>,
-         <span class="string"><span class="delimiter">'</span><span class="content">cassandra.default.maxSchemaAgreementWaitSeconds</span><span class="delimiter">'</span></span>: <span class="integer">20</span>,
-         <span class="string"><span class="delimiter">'</span><span class="content">cassandra.default.ssl</span><span class="delimiter">'</span></span>: <span class="predefined-constant">true</span>]
-))
-applicationContext.start()</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">postgres</span>:
+<span class="error">        </span><span class="key">reactive</span>:
+<span class="error">        </span><span class="error">        </span><span class="key">port</span>: <span class="string"><span class="content">5432</span></span>
+<span class="error">        </span><span class="error">        </span><span class="key">host</span>: <span class="string"><span class="content">the-host</span></span>
+<span class="error">        </span><span class="error">        </span><span class="key">database</span>: <span class="string"><span class="content">the-db</span></span>
+<span class="error">        </span><span class="error">        </span><span class="key">user</span>: <span class="string"><span class="content">test</span></span>
+<span class="error">        </span><span class="error">        </span><span class="key">password</span>: <span class="string"><span class="content">test</span></span>
+<span class="error">        </span><span class="error">        </span><span class="key">maxSize</span>: <span class="string"><span class="content">5</span></span></code></pre>
 </div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can also connect to Postgres using <code>connectionUri</code>.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>Multiple Cluster instances can be configured as follows:</p>
+<p>Once you have the above configuration in place then you can inject instance of the <code>io.reactiverse.reactivex.pgclient.PgPool</code> bean. Following is the simplest way to connect, query:</p>
 </div>
 <div class="listingblock">
-<div class="title">Supply Multiple Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext applicationContext = <span class="keyword">new</span> DefaultApplicationContext(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
-applicationContext.environment.addPropertySource(MapPropertySource.of(
-        <span class="string"><span class="delimiter">'</span><span class="content">test</span><span class="delimiter">'</span></span>,
-        [<span class="string"><span class="delimiter">'</span><span class="content">cassandra.default.contactPoint</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">localhost</span><span class="delimiter">&quot;</span></span>,
-         <span class="string"><span class="delimiter">'</span><span class="content">cassandra.default.port</span><span class="delimiter">'</span></span>: <span class="integer">9042</span>,
-         <span class="string"><span class="delimiter">'</span><span class="content">cassandra.secondary.contactPoint</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">127.0.0.2</span><span class="delimiter">&quot;</span></span>,
-         <span class="string"><span class="delimiter">'</span><span class="content">cassandra.secondary.port</span><span class="delimiter">'</span></span>: <span class="integer">9043</span>]
-))
-applicationContext.start()</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">result = Single.create({emitter-&gt;
+    client.query(<span class="string"><span class="delimiter">'</span><span class="content">SELECT * FROM pg_stat_database</span><span class="delimiter">'</span></span>, {ar-&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="keyword">if</span> (ar.succeeded()) {
+            emitter.onSuccess(<span class="string"><span class="delimiter">&quot;</span><span class="content">Size: </span><span class="delimiter">&quot;</span></span> + ar.result().size())
+        } <span class="keyword">else</span> {
+            emitter.onSuccess(ar.cause().getMessage())
+        }
+    })
+}).toFlowable().blockingFirst()</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>client</code> is an instance of the <code>io.reactiverse.reactivex.pgclient.PgPool</code> bean.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For more information on running queries on Postgres using the reactive client please read the "Running quries" section in the documentation of <a href="https://reactiverse.io/reactive-pg-client/guide/groovy/index.html">reactive-pg-client</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_postgres_health_checks">Postgres Health Checks</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When the <code>postgres-reactive</code> module is activated a <a href="../api/io/micronaut/configuration/postgres/reactive/health/PgPoolHealthIndicator.html">PgPoolHealthIndicator</a> is activated resulting in the <code>/health</code> endpoint and <a href="../api/io/micronaut/health/CurrentHealthStatus.html">CurrentHealthStatus</a> interface resolving the health of the Postgres connection.</p>
+</div>
+<div class="paragraph">
+<p>The only configuration option supported is to enable or disable the indicator by the <code>endpoints.health.postgres.reactive.enabled</code> key.</p>
+</div>
+<div class="paragraph">
+<p>See the section on the <a href="#healthEndpoint">Health Endpoint</a> for more information.</p>
+</div>
 </div>
 </div>
 
