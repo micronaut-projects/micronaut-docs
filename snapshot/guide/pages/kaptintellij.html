@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>6.21.1 Configuring Server Thread Pools 1.0.0.BUILD-SNAPSHOT</title>
+    <title>12.3.1 Kotlin, Kapt and IntelliJ 1.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -95,18 +95,18 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/configurations.html">&lt;&lt; <strong>11</strong><span>Configurations</span></a></div>
                 
 
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span> >></a></div>
                 
 
 
                 <div class="project">
-                    <h1>6.21.1 Configuring Server Thread Pools</h1>
+                    <h1>12.3.1 Kotlin, Kapt and IntelliJ</h1>
 
                     <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
                 </div>
@@ -115,66 +115,44 @@ function addJsClass() {
 
                 
 
-<h2 id="threadPools">6.21.1 Configuring Server Thread Pools</h2>
+<h2 id="kaptintellij">12.3.1 Kotlin, Kapt and IntelliJ</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration/threadPools.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/languageSupport/kotlin/kaptintellij.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
 
 
 <div class="paragraph">
-<p>The HTTP server is built on <a href="http://netty.io">Netty</a> which is designed as a non-blocking I/O toolkit in an event loop model.</p>
+<p>As of this writing IntelliJ&#8217;s built-in compiler does not directly support Kapt and annotation processing. You must instead configure Intellij to run Gradle (or Maven) compilation as a build step before running your tests or application class.</p>
 </div>
 <div class="paragraph">
-<p>To configure the number of threads used by the Netty <a href="https://netty.io/4.0/api/io/netty/channel/EventLoop.html">EventLoop</a>, you can use <code>application.yml</code>:</p>
+<p>First edit the run configuration for tests or for the application and select "Run Gradle task" as a build step:</p>
 </div>
-<div class="listingblock">
-<div class="title">Configuring Netty Event Loop Threads</div>
+<div class="imageblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">server</span>:
-        <span class="key">netty</span>:
-           <span class="key">worker</span>:
-              <span class="key">threads</span>: <span class="string"><span class="content">8</span></span> <span class="comment"># number of netty worker threads</span></code></pre>
+<img src="../img/kotlin-run-1.png" alt="Intellij Settings" width="1024" height="768">
 </div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The default value is the value of the system property <code>io.netty.eventLoopThreads</code> or if not specified the available processors x 2
-</td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
-<p>When dealing with blocking operations, Micronaut will shift the blocking operations to an unbound, caching I/O thread pool by default. You can configure the I/O thread pool using the <a href="../api/io/micronaut/scheduling/executor/ExecutorConfiguration.html">ExecutorConfiguration</a> named <code>io</code>. For example:</p>
+<p>Then add the <code>classes</code> task as task to execute for the application or for tests the <code>testClasses</code> task:</p>
 </div>
-<div class="listingblock">
-<div class="title">Configuring the Server I/O Thread Pool</div>
+<div class="imageblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">executors</span>:
-        <span class="key">io</span>:
-           <span class="key">type</span>: <span class="string"><span class="content">fixed</span></span>
-           <span class="key">nThreads</span>: <span class="string"><span class="content">75</span></span></code></pre>
+<img src="../img/kotlin-run-2.png" alt="Intellij Settings" width="1024" height="768">
 </div>
 </div>
 <div class="paragraph">
-<p>The above configuration will create a fixed thread pool with 75 threads.</p>
+<p>Now whenever you run tests or the application Micronaut classes will be generated at compilation time.</p>
 </div>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/configurations.html">&lt;&lt; <strong>11</strong><span>Configurations</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

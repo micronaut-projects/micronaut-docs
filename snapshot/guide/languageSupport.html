@@ -124,6 +124,15 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0px"><a href="#kotlin"><strong>12.3</strong><span>Micronaut for Kotlin</span></a>
                     </div>
                     
+                    <div class="toc-item" style="margin-left:10px"><a href="#kaptintellij"><strong>12.3.1</strong><span>Kotlin, Kapt and IntelliJ</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#openandaop"><strong>12.3.2</strong><span>Kotlin and AOP Advice</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#kotlinretainparamnames"><strong>12.3.3</strong><span>Kotlin and Retaining Parameter Names</span></a>
+                    </div>
+                    
                 </div>
                 
 
@@ -756,9 +765,17 @@ class HelloController {
 }</code></pre>
 </div>
 </div>
-<div class="sect1">
-<h2 id="_kotlin_kapt_and_intellij">Kotlin, Kapt and IntelliJ</h2>
-<div class="sectionbody">
+
+
+<h2 id="kaptintellij">12.3.1 Kotlin, Kapt and IntelliJ</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/languageSupport/kotlin/kaptintellij.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
 <div class="paragraph">
 <p>As of this writing IntelliJ&#8217;s built-in compiler does not directly support Kapt and annotation processing. You must instead configure Intellij to run Gradle (or Maven) compilation as a build step before running your tests or application class.</p>
 </div>
@@ -781,11 +798,61 @@ class HelloController {
 <div class="paragraph">
 <p>Now whenever you run tests or the application Micronaut classes will be generated at compilation time.</p>
 </div>
+
+
+<h2 id="openandaop">12.3.2 Kotlin and AOP Advice</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/languageSupport/kotlin/openandaop.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut provides a compile-time AOP API that does not use reflection. When you use any Micronaut&#8217;s <a href="#aop">AOP Advice</a>,
+it creates a subclass at compile-time to provide the AOP behaviour. Kotlin classes are final by default. Thus, you need to annotate them as <code>open</code>
+so that the generated subclasses can extend them.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>
+<span class="include">import</span> <span class="include">io.micronaut.http.annotation.Get</span>
+<span class="include">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
+<span class="include">import</span> <span class="include">io.micronaut.validation.Validated</span>
+<span class="include">import</span> <span class="include">javax.validation.constraints.NotBlank</span>
+
+<span class="annotation">@Validated</span>
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/email</span><span class="delimiter">&quot;</span></span>)
+<span class="include">open</span> <span class="include">class</span> <span class="include">EmailController</span> { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/send</span><span class="delimiter">&quot;</span></span>)
+    <span class="include">open</span> <span class="include">fun</span> <span class="include">index</span>(<span class="annotation">@NotBlank</span> <span class="include">recipient</span>: <span class="include">String</span>, <i class="conum" data-value="1"></i><b>(1)</b>
+                   <span class="annotation">@NotBlank</span> <span class="include">subject</span>: <span class="include">String</span>): <span class="include">HttpStatus</span> {
+        <span class="include">return</span> <span class="include">HttpStatus.OK</span>
+    }
+}</code></pre>
 </div>
 </div>
-<div class="sect1">
-<h2 id="_kotlin_and_retaining_parameter_names">Kotlin and Retaining Parameter Names</h2>
-<div class="sectionbody">
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>if you use <code>@Validated</code> AOP Advice, you need to use <code>open</code> at class and method level.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="kotlinretainparamnames">12.3.3 Kotlin and Retaining Parameter Names</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/languageSupport/kotlin/kotlinretainparamnames.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
 <div class="paragraph">
 <p>Like with Java, the parameter name data for method parameters is not retained at compile time when using Kotlin. This can be a problem for Micronaut if you do not define parameter names explicitly and depend on an external JAR that is already compiled.</p>
 </div>
@@ -801,8 +868,6 @@ class HelloController {
             javaParameters = <span class="predefined-constant">true</span>
         }
 }</code></pre>
-</div>
-</div>
 </div>
 </div>
 

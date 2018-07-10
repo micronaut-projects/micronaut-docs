@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>6.21.1 Configuring Server Thread Pools 1.0.0.BUILD-SNAPSHOT</title>
+    <title>15.5.2 Spring-Loaded 1.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -95,18 +95,18 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/security.html">&lt;&lt; <strong>14</strong><span>Security</span></a></div>
                 
 
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span> >></a></div>
                 
 
 
                 <div class="project">
-                    <h1>6.21.1 Configuring Server Thread Pools</h1>
+                    <h1>15.5.2 Spring-Loaded</h1>
 
                     <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
                 </div>
@@ -115,66 +115,105 @@ function addJsClass() {
 
                 
 
-<h2 id="threadPools">6.21.1 Configuring Server Thread Pools</h2>
+<h2 id="springloaded">15.5.2 Spring-Loaded</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration/threadPools.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/cli/reloading/springloaded.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
 
 
 <div class="paragraph">
-<p>The HTTP server is built on <a href="http://netty.io">Netty</a> which is designed as a non-blocking I/O toolkit in an event loop model.</p>
+<p>"Spring Loaded is a JVM agent for reloading class file changes whilst a JVM is running." (via the <a href="https://github.com/spring-projects/spring-loaded">official README</a>).</p>
 </div>
-<div class="paragraph">
-<p>To configure the number of threads used by the Netty <a href="https://netty.io/4.0/api/io/netty/channel/EventLoop.html">EventLoop</a>, you can use <code>application.yml</code>:</p>
-</div>
-<div class="listingblock">
-<div class="title">Configuring Netty Event Loop Threads</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">server</span>:
-        <span class="key">netty</span>:
-           <span class="key">worker</span>:
-              <span class="key">threads</span>: <span class="string"><span class="content">8</span></span> <span class="comment"># number of netty worker threads</span></code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
+<div class="admonitionblock warning">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-note" title="Note"></i>
+<i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-The default value is the value of the system property <code>io.netty.eventLoopThreads</code> or if not specified the available processors x 2
+Spring-Loaded is not actively maintained and currently only supports Java versions &lt; 9.
 </td>
 </tr>
 </table>
 </div>
+<div class="sect1">
+<h2 id="_cli_feature">CLI Feature</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>When dealing with blocking operations, Micronaut will shift the blocking operations to an unbound, caching I/O thread pool by default. You can configure the I/O thread pool using the <a href="../api/io/micronaut/scheduling/executor/ExecutorConfiguration.html">ExecutorConfiguration</a> named <code>io</code>. For example:</p>
+<p>You can create a new application with Spring-Loaded preconfigured, using the CLI (for supported Java versions). To do this, use the <code>springloaded</code> feature.</p>
 </div>
 <div class="listingblock">
-<div class="title">Configuring the Server I/O Thread Pool</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">executors</span>:
-        <span class="key">io</span>:
-           <span class="key">type</span>: <span class="string"><span class="content">fixed</span></span>
-           <span class="key">nThreads</span>: <span class="string"><span class="content">75</span></span></code></pre>
+<pre>&gt; mn create-app my-reloading-app --features springloaded</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The above configuration will create a fixed thread pool with 75 threads.</p>
+<p>This feature will include the Spring-Loaded agent JAR in your project, and provide the appropriate build tool config for Gradle or Maven to load the agent.</p>
+</div>
+<div class="paragraph">
+<p>You can start the application with <code>./gradlew run</code> (Gradle) or <code>./mvnw compile exec:exec</code> (Maven).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_manual_configuration">Manual Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Configuring Spring-Loaded requires the agent JAR file to be downloaded on your system, and configured to be loaded as a <code>javaagent</code> by the build tool (or IDE).</p>
+</div>
+<div class="listingblock">
+<div class="title">Gradle build.gradle example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">run.jvmArgs(<span class="string"><span class="delimiter">'</span><span class="content">-noverify</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">-javaagent:/usr/local/libs/springloaded/springloaded-1.2.8.RELEASE.jar</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Maven pom.xml example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;project&gt;</span>
+    <span class="comment">&lt;!-- --&gt;</span>
+    <span class="tag">&lt;build&gt;</span>
+        <span class="tag">&lt;plugins&gt;</span>
+
+            <span class="tag">&lt;plugin&gt;</span>
+                <span class="tag">&lt;groupId&gt;</span>org.codehaus.mojo<span class="tag">&lt;/groupId&gt;</span>
+                <span class="tag">&lt;artifactId&gt;</span>exec-maven-plugin<span class="tag">&lt;/artifactId&gt;</span>
+                <span class="tag">&lt;version&gt;</span>1.6.0<span class="tag">&lt;/version&gt;</span>
+                <span class="tag">&lt;configuration&gt;</span>
+                    <span class="tag">&lt;executable&gt;</span>java<span class="tag">&lt;/executable&gt;</span>
+                    <span class="tag">&lt;arguments&gt;</span>
+                        <span class="tag">&lt;argument&gt;</span>-noverify<span class="tag">&lt;/argument&gt;</span> <span class="comment">&lt;!-- 1 --&gt;</span>
+                        <span class="tag">&lt;argument&gt;</span>-javaagent:/usr/local/libs/springloaded/springloaded-1.2.8.RELEASE.jar<span class="tag">&lt;/argument&gt;</span> <span class="comment">&lt;!-- 2 --&gt;</span>
+                    <span class="tag">&lt;/arguments&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Add <code>noverify</code> argument</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Add <code>javaagent</code> argument</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can now start the application with <code>./gradlew run</code> (Gradle) or <code>./mvnw compile exec:exec</code> (Maven).</p>
+</div>
+</div>
 </div>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/security.html">&lt;&lt; <strong>14</strong><span>Security</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

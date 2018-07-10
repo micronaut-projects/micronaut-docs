@@ -148,46 +148,49 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0px"><a href="#jsonBinding"><strong>6.9</strong><span>JSON Binding with Jackson</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#staticResources"><strong>6.10</strong><span>Serving Static Resources</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#datavalidation"><strong>6.10</strong><span>Data Validation</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#errorHandling"><strong>6.11</strong><span>Error Handling</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#staticResources"><strong>6.11</strong><span>Serving Static Resources</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#formData"><strong>6.12</strong><span>Handling Form Data</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#errorHandling"><strong>6.12</strong><span>Error Handling</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#serverIO"><strong>6.13</strong><span>Writing Response Data</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#formData"><strong>6.13</strong><span>Handling Form Data</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#uploads"><strong>6.14</strong><span>File Uploads</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#serverIO"><strong>6.14</strong><span>Writing Response Data</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#transfers"><strong>6.15</strong><span>File Transfers</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#uploads"><strong>6.15</strong><span>File Uploads</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#sse"><strong>6.16</strong><span>Server Sent Events</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#transfers"><strong>6.16</strong><span>File Transfers</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#filters"><strong>6.17</strong><span>HTTP Filters</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#sse"><strong>6.17</strong><span>Server Sent Events</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#sessions"><strong>6.18</strong><span>HTTP Sessions</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#filters"><strong>6.18</strong><span>HTTP Filters</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#serverEvents"><strong>6.19</strong><span>Server Events</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#sessions"><strong>6.19</strong><span>HTTP Sessions</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#serverConfiguration"><strong>6.20</strong><span>Configuring the HTTP Server</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#serverEvents"><strong>6.20</strong><span>Server Events</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:10px"><a href="#threadPools"><strong>6.20.1</strong><span>Configuring Server Thread Pools</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#serverConfiguration"><strong>6.21</strong><span>Configuring the HTTP Server</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:10px"><a href="#cors"><strong>6.20.2</strong><span>Configuring CORS</span></a>
+                    <div class="toc-item" style="margin-left:10px"><a href="#threadPools"><strong>6.21.1</strong><span>Configuring Server Thread Pools</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:10px"><a href="#https"><strong>6.20.3</strong><span>Securing the Server with HTTPS</span></a>
+                    <div class="toc-item" style="margin-left:10px"><a href="#cors"><strong>6.21.2</strong><span>Configuring CORS</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#https"><strong>6.21.3</strong><span>Securing the Server with HTTPS</span></a>
                     </div>
                     
                 </div>
@@ -1562,7 +1565,204 @@ The output produced by Jackson can be customized in a variety of manners, from d
 </div>
 
 
-<h2 id="staticResources">6.10 Serving Static Resources</h2>
+<h2 id="datavalidation">6.10 Data Validation</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/datavalidation.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>It is easy to validate incoming data with Micronaut&#8217;s controllers with the
+<a href="#validation">Validation Advice</a>.</p>
+</div>
+<div class="paragraph">
+<p>First, add the Hibernate Validator configuration to your application:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:hibernate-validator</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can validate parameters using <code>javax.validation</code> annotations and the <a href="../api/io/micronaut/validation/Validated.html">Validated</a> annotation at the class level.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.validation.Validated</span>;
+<span class="keyword">import</span> <span class="include">javax.validation.constraints.NotBlank</span>;
+<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
+
+<span class="annotation">@Validated</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/email</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">EmailController</span> {
+
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/send</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> HttpResponse send(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> recipient, <i class="conum" data-value="2"></i><b>(2)</b>
+                             <span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> subject) { <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">return</span> HttpResponse.ok(<span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">msg</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">OK</span><span class="delimiter">&quot;</span></span>));
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Annotate controller with <a href="../api/io/micronaut/validation/Validated.html">Validated</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>subject</code> and <code>recipient</code> cannot be blank.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The validation behaviour is shown in the following test:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">invoking /email/send validates parameters</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">when</span>:
+    client.toBlocking().retrieve(<span class="string"><span class="delimiter">'</span><span class="content">/email/send?subject=Hi&amp;recipient=</span><span class="delimiter">'</span></span>)
+
+    <span class="key">then</span>:
+    <span class="keyword">def</span> e = thrown(HttpClientResponseException)
+
+    <span class="key">when</span>:
+    <span class="keyword">def</span> response = e.response
+
+    <span class="key">then</span>:
+    response.status == HttpStatus.BAD_REQUEST
+
+    <span class="key">when</span>:
+    client.toBlocking().retrieve(<span class="string"><span class="delimiter">'</span><span class="content">/email/send?subject=Hi&amp;recipient=me@micronaut.example</span><span class="delimiter">'</span></span>)
+
+    <span class="key">then</span>:
+    noExceptionThrown()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Often, you may want to use POJOs as controller method parameters.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">io.micronaut.docs.datavalidation.pogo</span>;
+
+<span class="keyword">import</span> <span class="include">javax.validation.constraints.NotBlank</span>;
+
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Email</span> {
+
+    <span class="annotation">@NotBlank</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">String</span> subject;
+
+    <span class="annotation">@NotBlank</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">String</span> recipient;
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getSubject() {
+        <span class="keyword">return</span> subject;
+    }
+
+    <span class="directive">public</span> <span class="type">void</span> setSubject(<span class="predefined-type">String</span> subject) {
+        <span class="local-variable">this</span>.subject = subject;
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getRecipient() {
+        <span class="keyword">return</span> recipient;
+    }
+
+    <span class="directive">public</span> <span class="type">void</span> setRecipient(<span class="predefined-type">String</span> recipient) {
+        <span class="local-variable">this</span>.recipient = recipient;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>You can use <code>javax.validation</code> annotations in your POJOs.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You need to annotate your controller with <a href="../api/io/micronaut/validation/Validated.html">Validated</a>. Also, you need to annotate the binding POJO with <code>@Valid</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Body</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Post</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.validation.Validated</span>;
+<span class="keyword">import</span> <span class="include">javax.validation.Valid</span>;
+<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
+
+<span class="annotation">@Validated</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/email</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">EmailController</span> {
+
+    <span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/send</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> HttpResponse send(<span class="annotation">@Body</span> <span class="annotation">@Valid</span> Email email) { <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">return</span> HttpResponse.ok(<span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">msg</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">OK</span><span class="delimiter">&quot;</span></span>));    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Annotate controller with <a href="../api/io/micronaut/validation/Validated.html">Validated</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Annotate the POJO which you wish to validate with <code>@Valid</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The validation of POJOs is shown in the following test:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">invoking /email/send parse parameters in a POJO and validates</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">when</span>:
+    Email email = <span class="keyword">new</span> Email()
+    email.subject = <span class="string"><span class="delimiter">'</span><span class="content">Hi</span><span class="delimiter">'</span></span>
+    email.recipient = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+    client.toBlocking().exchange(HttpRequest.POST(<span class="string"><span class="delimiter">'</span><span class="content">/email/send</span><span class="delimiter">'</span></span>, email))
+
+    <span class="key">then</span>:
+    <span class="keyword">def</span> e = thrown(HttpClientResponseException)
+
+    <span class="key">when</span>:
+    <span class="keyword">def</span> response = e.response
+
+    <span class="key">then</span>:
+    response.status == HttpStatus.BAD_REQUEST
+
+    <span class="key">when</span>:
+    email = <span class="keyword">new</span> Email()
+    email.subject = <span class="string"><span class="delimiter">'</span><span class="content">Hi</span><span class="delimiter">'</span></span>
+    email.recipient = <span class="string"><span class="delimiter">'</span><span class="content">me@micronaut.example</span><span class="delimiter">'</span></span>
+    client.toBlocking().exchange(HttpRequest.POST(<span class="string"><span class="delimiter">'</span><span class="content">/email/send</span><span class="delimiter">'</span></span>, email))
+
+    <span class="key">then</span>:
+    noExceptionThrown()
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="staticResources">6.11 Serving Static Resources</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/staticResources.adoc"'>
@@ -1629,7 +1829,7 @@ The output produced by Jackson can be customized in a variety of manners, from d
 </div>
 
 
-<h2 id="errorHandling">6.11 Error Handling</h2>
+<h2 id="errorHandling">6.12 Error Handling</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/errorHandling.adoc"'>
@@ -1641,8 +1841,9 @@ The output produced by Jackson can be customized in a variety of manners, from d
 <div class="paragraph">
 <p>Sometimes with distributing applications, bad things happen. Thus having a good way to handle errors is important.</p>
 </div>
-<div class="sect2">
-<h3 id="_status_handlers">Status Handlers</h3>
+<div class="sect1">
+<h2 id="_status_handlers">Status Handlers</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>The <a href="../api/io/micronaut/http/annotation/Error.html">Error</a> annotation supports defining either an exception class or an HTTP status. Methods decorated with the annotation will be invoked as the result of other controller methods. The annotation also supports the notion of global and local, local being the default.</p>
 </div>
@@ -1662,8 +1863,10 @@ When defining an error handler for an exception, you can specify the exception i
 </table>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_local_error_handling">Local Error Handling</h3>
+</div>
+<div class="sect1">
+<h2 id="_local_error_handling">Local Error Handling</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>For example the following method will handling JSON parse exceptions from Jackson for the scope of the declaring controller:</p>
 </div>
@@ -1726,8 +1929,10 @@ When defining an error handler for an exception, you can specify the exception i
 </table>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_global_error_handling">Global Error Handling</h3>
+</div>
+<div class="sect1">
+<h2 id="_global_error_handling">Global Error Handling</h2>
+<div class="sectionbody">
 <div class="listingblock">
 <div class="title">Global error handler</div>
 <div class="content">
@@ -1801,9 +2006,10 @@ If an <code>@Error</code> annotation with the same parameter exists as global an
 </table>
 </div>
 </div>
+</div>
 
 
-<h2 id="formData">6.12 Handling Form Data</h2>
+<h2 id="formData">6.13 Handling Form Data</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/formData.adoc"'>
@@ -1863,7 +2069,7 @@ To avoid denial of service attacks, collection types and arrays created during b
 </div>
 
 
-<h2 id="serverIO">6.13 Writing Response Data</h2>
+<h2 id="serverIO">6.14 Writing Response Data</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverIO.adoc"'>
@@ -2007,7 +2213,7 @@ See the section on configuring <a href="#threadPools">Server Thread Pools</a> fo
 </div>
 
 
-<h2 id="uploads">6.14 File Uploads</h2>
+<h2 id="uploads">6.15 File Uploads</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/uploads.adoc"'>
@@ -2227,7 +2433,7 @@ HttpResponse upload(Publisher&lt;Publisher&lt;PartData&gt;&gt; files)</code></pr
 </div>
 
 
-<h2 id="transfers">6.15 File Transfers</h2>
+<h2 id="transfers">6.16 File Transfers</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/transfers.adoc"'>
@@ -2307,7 +2513,7 @@ The <code>Content-Type</code> header of file responses will be calculated based 
 </div>
 
 
-<h2 id="sse">6.16 Server Sent Events</h2>
+<h2 id="sse">6.17 Server Sent Events</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/sse.adoc"'>
@@ -2431,7 +2637,7 @@ The <code>Content-Type</code> header of file responses will be calculated based 
 </div>
 
 
-<h2 id="filters">6.17 HTTP Filters</h2>
+<h2 id="filters">6.18 HTTP Filters</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/filters.adoc"'>
@@ -2617,7 +2823,7 @@ The examples use RxJava, however you can use any reactive framework that support
 </div>
 
 
-<h2 id="sessions">6.18 HTTP Sessions</h2>
+<h2 id="sessions">6.19 HTTP Sessions</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/sessions.adoc"'>
@@ -2981,7 +3187,7 @@ The <a href="../api/io/micronaut/configuration/lettuce/session/RedisSessionStore
 </div>
 
 
-<h2 id="serverEvents">6.19 Server Events</h2>
+<h2 id="serverEvents">6.20 Server Events</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverEvents.adoc"'>
@@ -3056,7 +3262,7 @@ If you do significant work within a listener for a <a href="../api/io/micronaut/
 </div>
 
 
-<h2 id="serverConfiguration">6.20 Configuring the HTTP Server</h2>
+<h2 id="serverConfiguration">6.21 Configuring the HTTP Server</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration.adoc"'>
@@ -3090,7 +3296,7 @@ If you do significant work within a listener for a <a href="../api/io/micronaut/
 </div>
 
 
-<h2 id="threadPools">6.20.1 Configuring Server Thread Pools</h2>
+<h2 id="threadPools">6.21.1 Configuring Server Thread Pools</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration/threadPools.adoc"'>
@@ -3145,7 +3351,7 @@ The default value is the value of the system property <code>io.netty.eventLoopTh
 </div>
 
 
-<h2 id="cors">6.20.2 Configuring CORS</h2>
+<h2 id="cors">6.21.2 Configuring CORS</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration/cors.adoc"'>
@@ -3339,7 +3545,7 @@ The default value is the value of the system property <code>io.netty.eventLoopTh
 </div>
 
 
-<h2 id="https">6.20.3 Securing the Server with HTTPS</h2>
+<h2 id="https">6.21.3 Securing the Server with HTTPS</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/serverConfiguration/https.adoc"'>
