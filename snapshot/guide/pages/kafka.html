@@ -163,6 +163,9 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:10px"><a href="#kafkaHealth"><strong>10.4.1</strong><span>Kafka Health Checks</span></a>
                     </div>
                     
+                    <div class="toc-item" style="margin-left:0px"><a href="#kafkaStream"><strong>10.5</strong><span>Building Kafka Stream Applications</span></a>
+                    </div>
+                    
                 </div>
                 
 
@@ -1849,6 +1852,227 @@ The <code>/health</code> endpoint is secured by default. You may need to set <co
 </td>
 </tr>
 </table>
+</div>
+
+
+<h2 id="kafkaStream">10.1.5 Building Kafka Stream Applications</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/messaging/kafka/kafkaStream.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="https://kafka.apache.org/documentation/streams/">Kafka Streams</a> is a platform for building real time streaming applications.</p>
+</div>
+<div class="paragraph">
+<p>When using Micronaut with Kafka Stream, your application gains all of the features from Micronaut (configuration management, AOP, DI, health checks etc.), simplifying the construction of Kafka Stream applications.</p>
+</div>
+<div class="paragraph">
+<p>Since Micronaut&#8217;s DI and AOP is compile time, you can build low overhead stream applications with ease.</p>
+</div>
+<div class="sect2">
+<h3 id="_defining_kafka_streams">Defining Kafka Streams</h3>
+<div class="paragraph">
+<p>To define Kafka Streams you should first add the <code>kafka-streams</code> configuration to your build.</p>
+</div>
+<div class="paragraph">
+<p>For example in Gradle:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:kafka-streams</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or with Maven:</p>
+</div>
+<div class="listingblock">
+<div class="title">Maven</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>io.micronaut.configuration<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>kafka-streams<span class="tag">&lt;/artifactId&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The minimum configuration required is to set the Kafka bootstrap servers:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Kafka</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
+    <span class="key">bootstrap</span>:
+        <span class="key">servers</span>: <span class="string"><span class="content">localhost:9092</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should then define a <a href="../api/io/micronaut/context/annotation/Factory.html">@Factory</a> for your streams that defines beans that return a <code>KStream</code>. For example to implement the Word Count example from the Kafka Streams documentation:</p>
+</div>
+<div class="listingblock">
+<div class="title">Kafka Streams Word Count</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Factory</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.ConsumerConfig</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.common.serialization.Serdes</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.streams.StreamsConfig</span>;
+<span class="keyword">import</span> <span class="include">org.apache.kafka.streams.kstream</span>.*;
+
+<span class="keyword">import</span> <span class="include">javax.inject.Named</span>;
+<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
+<span class="keyword">import</span> <span class="include">java.util</span>.*;
+
+<span class="annotation">@Factory</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">WordCountStream</span> {
+
+    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> INPUT = <span class="string"><span class="delimiter">&quot;</span><span class="content">streams-plaintext-input</span><span class="delimiter">&quot;</span></span>; <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> OUTPUT = <span class="string"><span class="delimiter">&quot;</span><span class="content">streams-wordcount-output</span><span class="delimiter">&quot;</span></span>; <i class="conum" data-value="2"></i><b>(2)</b>
+
+
+    <span class="annotation">@Singleton</span>
+    KStream&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; wordCountStream(ConfiguredStreamBuilder builder) { <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="comment">// set default serdes</span>
+        <span class="predefined-type">Properties</span> props = builder.getConfiguration();
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, <span class="string"><span class="delimiter">&quot;</span><span class="content">earliest</span><span class="delimiter">&quot;</span></span>);
+
+        KStream&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; source = builder.stream(INPUT);
+        KTable&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Long</span>&gt; counts = source
+                .flatMapValues( value -&gt; <span class="predefined-type">Arrays</span>.asList(value.toLowerCase(<span class="predefined-type">Locale</span>.getDefault()).split(<span class="string"><span class="delimiter">&quot;</span><span class="content"> </span><span class="delimiter">&quot;</span></span>)))
+                .groupBy((key, value) -&gt; value)
+                .count();
+
+        <span class="comment">// need to override value serde to Long type</span>
+        counts.toStream().to(OUTPUT, Produced.with(Serdes.String(), Serdes.Long()));
+        <span class="keyword">return</span> source;
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The input topic</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The output topic</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>An instance of <a href="../api/io/micronaut/configuration/kafka/streams/ConfiguredStreamBuilder.html">ConfiguredStreamBuilder</a> is injected that allows mutating the configuration</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+With Kafka streams the key and value <code>Serdes</code> (serializer/deserializer) must be classes with a zero argument constructor. If you wish to use JSON (de)serialization you can subclass <a href="../api/io/micronaut/configuration/kafka/serde/JsonSerde.html">JsonSerde</a> to define your <code>Serdes</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can use the <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaClient.html">@KafkaClient</a> annotation to send a sentence to be processed by the above stream:</p>
+</div>
+<div class="listingblock">
+<div class="title">Defining a Kafka Client</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">io.micronaut.configuration.kafka.streams</span>;
+
+<span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.KafkaClient</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.Topic</span>;
+
+<span class="annotation">@KafkaClient</span>
+<span class="directive">public</span> <span class="type">interface</span> <span class="class">WordCountClient</span> {
+
+    <span class="annotation">@Topic</span>(WordCountStream.INPUT)
+    <span class="type">void</span> publishSentence(<span class="predefined-type">String</span> sentence);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also define a <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaListener.html">@KafkaListener</a> to listen for the result of the word count stream:</p>
+</div>
+<div class="listingblock">
+<div class="title">Defining a Kafka Listener</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">io.micronaut.configuration.kafka.streams</span>;
+
+<span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation</span>.*;
+
+<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
+<span class="keyword">import</span> <span class="include">java.util.Map</span>;
+<span class="keyword">import</span> <span class="include">java.util.concurrent.ConcurrentHashMap</span>;
+
+<span class="annotation">@KafkaListener</span>(offsetReset = OffsetReset.EARLIEST)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">WordCountListener</span> {
+
+    <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Long</span>&gt; wordCounts = <span class="keyword">new</span> <span class="predefined-type">ConcurrentHashMap</span>&lt;&gt;();
+
+    <span class="annotation">@Topic</span>(WordCountStream.OUTPUT)
+    <span class="type">void</span> count(<span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> word, <span class="type">long</span> count) {
+        wordCounts.put(word, count);
+    }
+
+    <span class="directive">public</span> <span class="type">long</span> getCount(<span class="predefined-type">String</span> word) {
+        <span class="predefined-type">Long</span> num = wordCounts.get(word);
+        <span class="keyword">if</span> (num != <span class="predefined-constant">null</span>) {
+            <span class="keyword">return</span> num;
+        }
+        <span class="keyword">return</span> <span class="integer">0</span>;
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Long</span>&gt; getWordCounts() {
+        <span class="keyword">return</span> <span class="predefined-type">Collections</span>.unmodifiableMap(wordCounts);
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configuring_kafka_streams">Configuring Kafka Streams</h3>
+<div class="paragraph">
+<p>You can define multiple Kafka streams each with their own unique configuration. To do this you should define the configuration with <code>kafka.streams.[STREAM-NAME]</code>. For example in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Defining Per Stream Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
+    <span class="key">streams</span>:
+        <span class="key">my-stream</span>:
+            <span class="key">num</span>:
+                <span class="key">stream</span>:
+                    <span class="key">threads</span>: <span class="string"><span class="content">10</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above configuration sets the <code>num.stream.threads</code> setting of the Kafka <code>StreamsConfig</code> to <code>10</code> for a stream named <code>my-stream</code>.</p>
+</div>
+<div class="paragraph">
+<p>You can then inject a <a href="../api/io/micronaut/configuration/kafka/streams/ConfiguredStreamBuilder.html">ConfiguredStreamBuilder</a> specfically for the above configuration using <code>javax.inject.Named</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Kafka Streams Word Count</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Singleton</span>
+KStream&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; myStream(
+        <span class="annotation">@Named</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">my-stream</span><span class="delimiter">&quot;</span></span>) ConfiguredStreamBuilder builder) {
+
+}</code></pre>
+</div>
+</div>
 </div>
 
 
