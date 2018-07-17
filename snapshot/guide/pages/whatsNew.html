@@ -123,109 +123,52 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>Apart from <a href="https://github.com/micronaut-projects/micronaut-core/milestone/2?closed=1">issues resolved and minor enhancements</a> since the last release of Micronaut, this section covers significant new features.</p>
+<p>Apart from <a href="https://github.com/micronaut-projects/micronaut-core/milestone/3?closed=1">issues resolved and minor enhancements</a> since the last release of Micronaut, this section covers significant new features.</p>
 </div>
 <div class="sect2">
-<h3 id="_metrics_support">Metrics Support</h3>
+<h3 id="_improved_metrics_support">Improved Metrics Support</h3>
 <div class="paragraph">
-<p>The first version of support for Metrics via <a href="http://micrometer.io">Micrometer</a> is now available. Metrics are exposed via the <a href="#metricsEndpoint">Metrics Endpoint</a> and can be extensively customized.</p>
+<p>Metrics support has been improved with support for metrics for:</p>
 </div>
-<div class="paragraph">
-<p>Metrics support includes support for Statsd, Atlas, Graphite and Prometheus with more Metrics backends coming in the future.</p>
-</div>
-<div class="paragraph">
-<p>See the section on the <a href="#metricsEndpoint">Metrics Endpoint</a> for more information. Special thanks to <a href="https://github.com/ctoestreich">Christian Oestreich</a> for significant contributions in this area.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_server_sent_event_sse_client">Server Sent Event (SSE) Client</h3>
-<div class="paragraph">
-<p>A new <a href="../api/io/micronaut/http/client/sse/SseClient.html">SseClient</a> interface has been introduced that provides a client for streaming Server Sent Events (SSE) on the server. The client can also be used for testing SSE controllers.</p>
-</div>
-<div class="paragraph">
-<p>In additional the <code>@Client</code> annotation has been updated to add support for automatically implementing streaming interfaces for both JSON and SSE streaming.</p>
-</div>
-<div class="paragraph">
-<p>See the section on <a href="#clientAnnotationStreaming">Client Streaming</a> for more information.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Micronaut Thread Pools</p>
+</li>
+<li>
+<p>Kafka Metrics</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_improved_blocking_i_o_support">Improved Blocking I/O Support</h3>
+<h3 id="_apache_kafka_support">Apache Kafka Support</h3>
 <div class="paragraph">
-<p>It is now possible to return a <a href="../api/io/micronaut/core/io/Writable.html">Writable</a> and have the operation offloaded to a the I/O thread pool, thus improving the ability to interface with APIs that do not yet support non-blocking I/O:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>(uri = <span class="string"><span class="delimiter">&quot;</span><span class="content">/welcome</span><span class="delimiter">&quot;</span></span>, produces = MediaType.TEXT_PLAIN)
-Writable render() { <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="keyword">return</span> writer -&gt; template.make( <i class="conum" data-value="3"></i><b>(3)</b>
-        CollectionUtils.mapOf(
-                <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>,
-                <span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Flintstone</span><span class="delimiter">&quot;</span></span>
-        )
-    ).writeTo(writer);
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>See the section on <a href="#serverIO">Writing Response Data</a> for more information.</p>
+<p>Micronaut can now be used to build Message-Driven Microservices with Apache Kafka. See the <a href="#kafka">Kafka</a> section of the documentation for more information.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_support_for_openfaas">Support for OpenFaaS</h3>
+<h3 id="_annotation_metadata_processing_support_improved">Annotation Metadata Processing Support Improved</h3>
 <div class="paragraph">
-<p>Micronaut functions can now be executed from the CLI and will read from <code>System.in</code> the data required to execute a function.</p>
-</div>
-<div class="paragraph">
-<p>This means it is possible to deploy functions developed with Micronaut to Serverless platforms that package functions within containers such as OpenFaaS, Fn etc.</p>
+<p>All annotation metadata in Micronaut is produced as compile time, resulting in significant improvements to startup time and memory consumption over traditional frameworks.</p>
 </div>
 <div class="paragraph">
-<p>The command line has also been updated with a <code>openfaas</code> feature which will create the necessary <code>Dockerfile</code> ready for deployment to OpenFaaS:</p>
+<p>This support has been enhanced to better support repeated annotations such that repeated annotations are normalized at compile time, avoiding the need to process them and compensate for the difference between a single annotation definition and multiple.</p>
 </div>
-<div class="listingblock">
-<div class="title">Creating an OpenFaaS Function</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-function foo --features openfaas</code></pre>
-</div>
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/core/annotation/AnnotationMetadata.html">AnnotationMetadata</a> interface now includes methods such as <code>getAnnotationValuesByType</code> and <code>getDeclaredAnnotationValuesByType</code> that allow the retrieval of the repeated annotation values that are computed at compile time.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_kotlin_optional_type_support">Kotlin Optional Type Support</h3>
+<h3 id="_reactive_postgres_driver_support">Reactive Postgres Driver Support</h3>
 <div class="paragraph">
-<p>Beans can now be injected optionally using Kotlin nullable types without the need for the <code>@Nullable</code> annotation.</p>
+<p>Support has been added for the <a href="https://github.com/reactiverse/reactive-pg-client">Postgres Reactive Client</a> project allowing building non-blocking, reactive applications with Postgres SQL and Micronaut. See the documentation on <a href="#postgresSupport">Postgres Reactive Client Support</a> for more information.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_cli_improvements">CLI Improvements</h3>
 <div class="paragraph">
-<p>A new flag has been added to the <code>create-app</code> command: <code>lang</code>.</p>
-</div>
-<div class="paragraph">
-<p>The <code>lang</code> flag accepts any of the three supported languages: <code>java</code>, <code>groovy</code>, or <code>kotlin</code> (<code>java</code> is default when no flag is supplied). This selection will determine the language used for the <code>Application</code> class as well as other code artifacts generated using CLI commands (such as <code>create-controller</code>, <code>create-job</code>, etc).</p>
-</div>
-<div class="listingblock">
-<div class="title">Creating a Groovy application</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-app bar --lang groovy</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Creating a Kotlin application</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-app baz --lang kotlin</code></pre>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_default_dockerfile">Default Dockerfile  </h4>
-<div class="paragraph">
-<p>Applications generated with <code>create-app</code> now include a default <code>Dockerfile</code>.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_java_9_improvements">Java 9+ Improvements</h4>
-<div class="paragraph">
-<p>The CLI has been improved to provide a better experience for Java 9 and above.</p>
-</div>
+<p>Thanks to a contribution from <a href="https://github.com/remkop">Remko Popma</a> the CLI has been re-written on top of <a href="https://github.com/remkop/picocli">PicoCLI</a> resulting in improvements to documentation, TAB completion and code maintainability.</p>
 </div>
 </div>
 
