@@ -10358,7 +10358,7 @@ EOF</code></pre>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Using the Micronaut CLI you can quickly create a new service setup with Consul using: <code>mn create-app my-app -features discovery-consul</code>
+Using the Micronaut CLI you can quickly create a new service setup with Consul using: <code>mn create-app my-app --features discovery-consul</code>
 </td>
 </tr>
 </table>
@@ -10896,7 +10896,7 @@ compile <span class="string"><span class="delimiter">'</span><span class="conten
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Or alternatively if you have the Micronaut CLI installed you can configure Zipkin when creating your service with: <code>mn create-app hello-world -features tracing-zipkin</code>
+Or alternatively if you have the Micronaut CLI installed you can configure Zipkin when creating your service with: <code>mn create-app hello-world --features tracing-zipkin</code>
 </td>
 </tr>
 </table>
@@ -11040,7 +11040,7 @@ In production, setting <code>TRACING_ZIPKIN_URLS</code> environment variable wit
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Or alternatively if you have the Micronaut CLI installed you can configure Zipkin when creating your service with: <code>mn create-app hello-world -features tracing-jaeger</code>
+Or alternatively if you have the Micronaut CLI installed you can configure Zipkin when creating your service with: <code>mn create-app hello-world --features tracing-jaeger</code>
 </td>
 </tr>
 </table>
@@ -11230,7 +11230,7 @@ This section applies to Java &amp; Kotlin functions - for functions written in G
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-If you have the Micronaut CLI installed you can quickly create a Java function with <code>mn create-function hello-world</code> or <code>mn create-function hello-world -lang kotlin</code> for Kotlin
+If you have the Micronaut CLI installed you can quickly create a Java function with <code>mn create-function hello-world</code> or <code>mn create-function hello-world --lang kotlin</code> for Kotlin
 </td>
 </tr>
 </table>
@@ -11362,7 +11362,7 @@ class HelloKotlinFunction : Supplier&lt;String&gt; {
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-If you have the Micronaut CLI installed you can quickly create a Groovy function with <code>mn create-function hello-world -lang groovy</code>
+If you have the Micronaut CLI installed you can quickly create a Groovy function with <code>mn create-function hello-world --lang groovy</code>
 </td>
 </tr>
 </table>
@@ -15532,7 +15532,7 @@ In both cases (Gradle and Maven) the Micronaut processor should be configured af
 <div class="listingblock">
 <div class="title">Create a Micronaut Groovy application</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-app hello-world -lang groovy</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-app hello-world --lang groovy</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -15831,7 +15831,7 @@ The <a href="#cli">Command Line Interface</a> for Micronaut includes special sup
 <div class="listingblock">
 <div class="title">Create a Micronaut Kotlin application</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-app hello-world -lang kotlin</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-app hello-world --lang kotlin</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -16422,8 +16422,17 @@ Message deleted</code></pre>
 <div class="paragraph">
 <p>If the endpoint <code>id</code> is set through configuration, the URL where the endpoint is accessible also changes to reflect the value. For example if the <code>foo</code> endpoint id was changed to <code>bar</code>, the foo endpoint would be executed through <code><a href="http://localhost:&lt;port&gt;/bar" class="bare">http://localhost:&lt;port&gt;/bar</a></code>.</p>
 </div>
-<div class="paragraph">
-<p>By deafult, the endpoints' base path is set to <code>/</code>. You can change it. If you set <code>endpoints.all.path=/admin</code> the foo endpoint would be executed through <code><a href="http://localhost:&lt;port&gt;/admin/bar" class="bare">http://localhost:&lt;port&gt;/admin/bar</a></code>.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The base path for all endpoints is <code>/</code> by default. If you prefer the endpoints to be available under a different base path, configure <code>endpoints.all.path</code>. For example, if the value is set to <code>/endpoints</code>, the foo endpoint will be accessible at <code>/endpoints/foo</code>.
+</td>
+</tr>
+</table>
 </div>
 
 
@@ -20158,7 +20167,7 @@ Provided Features:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-job UpdateFeeds -lang groovy
+<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-job UpdateFeeds --lang groovy
 | Rendered template Job.groovy to destination src/main/groovy/example/UpdateFeedsJob.groovy</code></pre>
 </div>
 </div>
@@ -20762,7 +20771,7 @@ The Spring ecosystem is very broad and there are many Spring libraries you can u
 <p>The CLI options have been standardized to use two leading dashes for long options (like <code>--stacktrace</code>) and one for shortcuts (like <code>-h</code>). That means that some options no longer work. For example, this command used to work with M2: <code>create-app -lang groovy myapp</code>. From M3, you will see this error: <code>Could not convert 'ang' to SupportedLanguage for option '--lang'</code>. Specifying either <code>-l LANG</code> or <code>--lang LANG</code> works as expected.</p>
 </li>
 <li>
-<p>The following packages have been renamed for consistency:</p>
+<p>The following packages have been renamed:</p>
 <div class="ulist">
 <ul>
 <li>
@@ -20773,6 +20782,9 @@ The Spring ecosystem is very broad and there are many Spring libraries you can u
 </li>
 <li>
 <p><code>io.micronaut.configurations.aws</code> &#8594; <code>io.micronaut.configuration.aws</code></p>
+</li>
+<li>
+<p><code>io.micronaut.http.netty.buffer</code> &#8594; <code>io.micronaut.buffer.netty</code></p>
 </li>
 </ul>
 </div>
