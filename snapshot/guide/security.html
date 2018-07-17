@@ -184,7 +184,10 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:10px"><a href="#refresh"><strong>14.4.3</strong><span>Refresh Controller</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#securityEvents"><strong>14.5</strong><span>Security Events</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#retrievingAuthenticatedUser"><strong>14.5</strong><span>Retrieve the authenticated user</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#securityEvents"><strong>14.6</strong><span>Security Events</span></a>
                     </div>
                     
                 </div>
@@ -1552,7 +1555,80 @@ See <a href="https://tools.ietf.org/html/rfc6749#section-10.4">section 10.4 of t
 </div>
 
 
-<h2 id="securityEvents">14.5 Security Events</h2>
+<h2 id="retrievingAuthenticatedUser">14.5 Retrieve the authenticated user</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/retrievingAuthenticatedUser.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Often you may want to retrieve the authenticated user.</p>
+</div>
+<div class="paragraph">
+<p>You can bind <code>java.security.Principal</code> as a method&#8217;s parameter in a controller.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Requires</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.core.util.CollectionUtils</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.security.Secured</span>;
+<span class="keyword">import</span> <span class="include">javax.annotation.Nullable</span>;
+<span class="keyword">import</span> <span class="include">java.security.Principal</span>;
+
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/user</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">UserController</span> {
+
+    <span class="annotation">@Secured</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">isAnonymous()</span><span class="delimiter">&quot;</span></span>)
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/myinfo</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> <span class="predefined-type">Map</span> myinfo(<span class="annotation">@Nullable</span> <span class="predefined-type">Principal</span> principal) {
+        <span class="keyword">if</span> (principal == <span class="predefined-constant">null</span>) {
+            <span class="keyword">return</span> <span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">false</span>);
+        }
+        <span class="keyword">return</span> CollectionUtils.mapOf(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>, principal.getName());
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you need a greater level of detail, you can bind <a href="../api/io/micronaut/security/authentication/Authentication.html">Authentication</a>  as a method&#8217;s parameter in a controller.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Requires</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.core.util.CollectionUtils</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.security.Secured</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.security.authentication.Authentication</span>;
+<span class="keyword">import</span> <span class="include">javax.annotation.Nullable</span>;
+<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
+<span class="keyword">import</span> <span class="include">java.util.Map</span>;
+
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/user</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">UserController</span> {
+
+    <span class="annotation">@Secured</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">isAnonymous()</span><span class="delimiter">&quot;</span></span>)
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/myinfo</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> <span class="predefined-type">Map</span> myinfo(<span class="annotation">@Nullable</span> Authentication authentication) {
+        <span class="keyword">if</span> (authentication == <span class="predefined-constant">null</span>) {
+            <span class="keyword">return</span> <span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">false</span>);
+        }
+        <span class="keyword">return</span> CollectionUtils.mapOf(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>,
+                <span class="string"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>, authentication.getName(),
+                <span class="string"><span class="delimiter">&quot;</span><span class="content">roles</span><span class="delimiter">&quot;</span></span>, authentication.getAttributes().get(<span class="string"><span class="delimiter">&quot;</span><span class="content">roles</span><span class="delimiter">&quot;</span></span>)
+        );
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="securityEvents">14.6 Security Events</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/securityEvents.adoc"'>
