@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>12 Language Support 1.0.0.M2</title>
+    <title>12 Language Support 1.0.0.M3</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -56,10 +56,10 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/otherConfigurations.html"><strong>11</strong><span>Other Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
                         </div>
                         
                         <div class="toc-item" style="margin-left:0"><a href="../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
@@ -74,13 +74,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/faq.html"><strong>16</strong><span>Frequently Asked Questions (FAQ)</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/problems.html"><strong>17</strong><span>Common Problems</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/breaks.html"><strong>18</strong><span>Breaking Changes</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -101,7 +95,7 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../guide/otherConfigurations.html">&lt;&lt; <strong>11</strong><span>Other Configurations</span></a></div>
+                    <div class="toc-item prev-left"><a href="../guide/configurations.html">&lt;&lt; <strong>11</strong><span>Configurations</span></a></div>
                 
 
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
@@ -114,7 +108,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>12 Language Support</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M2</p>
+                    <p><strong>Version:</strong> 1.0.0.M3</p>
                 </div>
 
                 
@@ -128,6 +122,15 @@ function addJsClass() {
                     </div>
                     
                     <div class="toc-item" style="margin-left:0px"><a href="#kotlin"><strong>12.3</strong><span>Micronaut for Kotlin</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#kaptintellij"><strong>12.3.1</strong><span>Kotlin, Kapt and IntelliJ</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#openandaop"><strong>12.3.2</strong><span>Kotlin and AOP Advice</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#kotlinretainparamnames"><strong>12.3.3</strong><span>Kotlin and Retaining Parameter Names</span></a>
                     </div>
                     
                 </div>
@@ -309,7 +312,7 @@ In both cases (Gradle and Maven) the Micronaut processor should be configured af
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="type">interface</span> <span class="class">HelloOperations</span> {
     <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/{name}</span><span class="delimiter">&quot;</span></span>)
-    <span class="predefined-type">String</span> hello(<span class="annotation">@Parameter</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> name);
+    <span class="predefined-type">String</span> hello(<span class="annotation">@QueryValue</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> name);
 }</code></pre>
 </div>
 </div>
@@ -385,7 +388,7 @@ In both cases (Gradle and Maven) the Micronaut processor should be configured af
 <div class="listingblock">
 <div class="title">Create a Micronaut Groovy application</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-app hello-world -lang groovy</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-app hello-world --lang groovy</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -432,7 +435,7 @@ mn&gt; create-bean helloBean
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-Groovy automatically imports <code>groovy.lang.Singleton</code> which can be confusing as it conflicts with <code>javax.inject.Singleton</code>. Make sure you include the <code>javax.inject.Singleton</code> import when declaring a singleton bean!
+Groovy automatically imports <code>groovy.lang.Singleton</code> which can be confusing as it conflicts with <code>javax.inject.Singleton</code>. Make sure you include the <code>javax.inject.Singleton</code> import when declaring a singleton bean to avoid a compilation error.
 </td>
 </tr>
 </table>
@@ -684,7 +687,7 @@ The <a href="#cli">Command Line Interface</a> for Micronaut includes special sup
 <div class="listingblock">
 <div class="title">Create a Micronaut Kotlin application</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-app hello-world -lang kotlin</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-app hello-world --lang kotlin</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -762,9 +765,17 @@ class HelloController {
 }</code></pre>
 </div>
 </div>
-<div class="sect1">
-<h2 id="_kotlin_kapt_and_intellij">Kotlin, Kapt and IntelliJ</h2>
-<div class="sectionbody">
+
+
+<h2 id="kaptintellij">12.3.1 Kotlin, Kapt and IntelliJ</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/languageSupport/kotlin/kaptintellij.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
 <div class="paragraph">
 <p>As of this writing IntelliJ&#8217;s built-in compiler does not directly support Kapt and annotation processing. You must instead configure Intellij to run Gradle (or Maven) compilation as a build step before running your tests or application class.</p>
 </div>
@@ -787,11 +798,61 @@ class HelloController {
 <div class="paragraph">
 <p>Now whenever you run tests or the application Micronaut classes will be generated at compilation time.</p>
 </div>
+
+
+<h2 id="openandaop">12.3.2 Kotlin and AOP Advice</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/languageSupport/kotlin/openandaop.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut provides a compile-time AOP API that does not use reflection. When you use any Micronaut&#8217;s <a href="#aop">AOP Advice</a>,
+it creates a subclass at compile-time to provide the AOP behaviour. Kotlin classes are final by default. Thus, you need to annotate them as <code>open</code>
+so that the generated subclasses can extend them.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>
+<span class="include">import</span> <span class="include">io.micronaut.http.annotation.Get</span>
+<span class="include">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
+<span class="include">import</span> <span class="include">io.micronaut.validation.Validated</span>
+<span class="include">import</span> <span class="include">javax.validation.constraints.NotBlank</span>
+
+<span class="annotation">@Validated</span>
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/email</span><span class="delimiter">&quot;</span></span>)
+<span class="include">open</span> <span class="include">class</span> <span class="include">EmailController</span> { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/send</span><span class="delimiter">&quot;</span></span>)
+    <span class="include">open</span> <span class="include">fun</span> <span class="include">index</span>(<span class="annotation">@NotBlank</span> <span class="include">recipient</span>: <span class="include">String</span>, <i class="conum" data-value="1"></i><b>(1)</b>
+                   <span class="annotation">@NotBlank</span> <span class="include">subject</span>: <span class="include">String</span>): <span class="include">HttpStatus</span> {
+        <span class="include">return</span> <span class="include">HttpStatus.OK</span>
+    }
+}</code></pre>
 </div>
 </div>
-<div class="sect1">
-<h2 id="_kotlin_and_retaining_parameter_names">Kotlin and Retaining Parameter Names</h2>
-<div class="sectionbody">
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>if you use <code>@Validated</code> AOP Advice, you need to use <code>open</code> at class and method level.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="kotlinretainparamnames">12.3.3 Kotlin and Retaining Parameter Names</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/languageSupport/kotlin/kotlinretainparamnames.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
 <div class="paragraph">
 <p>Like with Java, the parameter name data for method parameters is not retained at compile time when using Kotlin. This can be a problem for Micronaut if you do not define parameter names explicitly and depend on an external JAR that is already compiled.</p>
 </div>
@@ -809,13 +870,11 @@ class HelloController {
 }</code></pre>
 </div>
 </div>
-</div>
-</div>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../guide/otherConfigurations.html">&lt;&lt; <strong>11</strong><span>Other Configurations</span></a></div>
+                    <div class="toc-item prev-left"><a href="../guide/configurations.html">&lt;&lt; <strong>11</strong><span>Configurations</span></a></div>
                 
                     <div class="toc-item next-right"><a href="../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span> >></a></div>
                 

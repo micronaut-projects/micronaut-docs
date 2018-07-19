@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.14 Micronaut Beans And Spring 1.0.0.M2</title>
+    <title>3.14 Micronaut Beans And Spring 1.0.0.M3</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -56,10 +56,10 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/otherConfigurations.html"><strong>11</strong><span>Other Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
                         </div>
                         
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
@@ -74,13 +74,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/faq.html"><strong>16</strong><span>Frequently Asked Questions (FAQ)</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/problems.html"><strong>17</strong><span>Common Problems</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/breaks.html"><strong>18</strong><span>Breaking Changes</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -114,7 +108,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>3.14 Micronaut Beans And Spring</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M2</p>
+                    <p><strong>Version:</strong> 1.0.0.M3</p>
                 </div>
 
                 
@@ -135,8 +129,8 @@ function addJsClass() {
 class is a <code>BeanFactoryPostProcessor</code> which will add Micronaut beans to a
 Spring Application Context.  An instance of <code>MicronautBeanProcessor</code> should
 be added to the Spring Application Context.  <code>MicronautBeanProcessor</code> requires
-a constructor parameter which represents the stereotype annotation for
-the Micronaut beans which should be added the Spring Application Context.  The
+a constructor parameter which represents a list of the types of
+Micronaut beans which should be added the Spring Application Context.  The
 processor may be used in any Spring application.  As an example, a Grails 3
 application could take advantage of <code>MicronautBeanProcessor</code> to add all of the
 Micronaut HTTP Client beans to the Spring Application Context with something
@@ -150,6 +144,37 @@ like the folowing:</p>
 
 beans = {
     httpClientBeanProcessor MicronautBeanProcessor, Client
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Multiple types may be specified:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// grails-app/conf/spring/resources.groovy</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.spring.beans.MicronautBeanProcessor</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.Client</span>
+<span class="keyword">import</span> <span class="include">com.sample.Widget</span>
+
+beans = {
+    httpClientBeanProcessor MicronautBeanProcessor, [Client, Widget]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In a non-Grails application something similar may be specified using
+any of Spring&#8217;s bean definition styles:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Configuration</span>
+<span class="type">class</span> <span class="class">ByAnnotationTypeConfig</span> {
+
+    <span class="annotation">@Bean</span>
+    MicronautBeanProcessor beanProcessor() {
+        <span class="keyword">new</span> MicronautBeanProcessor(Prototype, Singleton)
+    }
 }</code></pre>
 </div>
 </div>

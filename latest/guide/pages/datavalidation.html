@@ -1,0 +1,346 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>6.10 Data Validation 1.0.0.M3</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/quickStart.html"><strong>2</strong><span>Quick Start</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/ioc.html"><strong>3</strong><span>Inversion of Control</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/config.html"><strong>4</strong><span>Application Configuration</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/aop.html"><strong>5</strong><span>Aspect Oriented Programming</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpServer.html"><strong>6</strong><span>The HTTP Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>6.10 Data Validation</h1>
+
+                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                </div>
+
+                
+
+                
+
+<h2 id="datavalidation">6.10 Data Validation</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/datavalidation.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>It is easy to validate incoming data with Micronaut&#8217;s controllers with the
+<a href="#validation">Validation Advice</a>.</p>
+</div>
+<div class="paragraph">
+<p>First, add the Hibernate Validator configuration to your application:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:hibernate-validator</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can validate parameters using <code>javax.validation</code> annotations and the <a href="../api/io/micronaut/validation/Validated.html">Validated</a> annotation at the class level.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.validation.Validated</span>;
+<span class="keyword">import</span> <span class="include">javax.validation.constraints.NotBlank</span>;
+<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
+
+<span class="annotation">@Validated</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/email</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">EmailController</span> {
+
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/send</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> HttpResponse send(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> recipient, <i class="conum" data-value="2"></i><b>(2)</b>
+                             <span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> subject) { <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">return</span> HttpResponse.ok(<span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">msg</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">OK</span><span class="delimiter">&quot;</span></span>));
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Annotate controller with <a href="../api/io/micronaut/validation/Validated.html">Validated</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>subject</code> and <code>recipient</code> cannot be blank.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The validation behaviour is shown in the following test:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">invoking /email/send validates parameters</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">when</span>:
+    client.toBlocking().retrieve(<span class="string"><span class="delimiter">'</span><span class="content">/email/send?subject=Hi&amp;recipient=</span><span class="delimiter">'</span></span>)
+
+    <span class="key">then</span>:
+    <span class="keyword">def</span> e = thrown(HttpClientResponseException)
+
+    <span class="key">when</span>:
+    <span class="keyword">def</span> response = e.response
+
+    <span class="key">then</span>:
+    response.status == HttpStatus.BAD_REQUEST
+
+    <span class="key">when</span>:
+    client.toBlocking().retrieve(<span class="string"><span class="delimiter">'</span><span class="content">/email/send?subject=Hi&amp;recipient=me@micronaut.example</span><span class="delimiter">'</span></span>)
+
+    <span class="key">then</span>:
+    noExceptionThrown()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Often, you may want to use POJOs as controller method parameters.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">io.micronaut.docs.datavalidation.pogo</span>;
+
+<span class="keyword">import</span> <span class="include">javax.validation.constraints.NotBlank</span>;
+
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Email</span> {
+
+    <span class="annotation">@NotBlank</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">String</span> subject;
+
+    <span class="annotation">@NotBlank</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">String</span> recipient;
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getSubject() {
+        <span class="keyword">return</span> subject;
+    }
+
+    <span class="directive">public</span> <span class="type">void</span> setSubject(<span class="predefined-type">String</span> subject) {
+        <span class="local-variable">this</span>.subject = subject;
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getRecipient() {
+        <span class="keyword">return</span> recipient;
+    }
+
+    <span class="directive">public</span> <span class="type">void</span> setRecipient(<span class="predefined-type">String</span> recipient) {
+        <span class="local-variable">this</span>.recipient = recipient;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>You can use <code>javax.validation</code> annotations in your POJOs.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You need to annotate your controller with <a href="../api/io/micronaut/validation/Validated.html">Validated</a>. Also, you need to annotate the binding POJO with <code>@Valid</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Body</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Post</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.validation.Validated</span>;
+<span class="keyword">import</span> <span class="include">javax.validation.Valid</span>;
+<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
+
+<span class="annotation">@Validated</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/email</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">EmailController</span> {
+
+    <span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/send</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> HttpResponse send(<span class="annotation">@Body</span> <span class="annotation">@Valid</span> Email email) { <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">return</span> HttpResponse.ok(<span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">msg</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">OK</span><span class="delimiter">&quot;</span></span>));    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Annotate controller with <a href="../api/io/micronaut/validation/Validated.html">Validated</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Annotate the POJO which you wish to validate with <code>@Valid</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The validation of POJOs is shown in the following test:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">invoking /email/send parse parameters in a POJO and validates</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">when</span>:
+    Email email = <span class="keyword">new</span> Email()
+    email.subject = <span class="string"><span class="delimiter">'</span><span class="content">Hi</span><span class="delimiter">'</span></span>
+    email.recipient = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+    client.toBlocking().exchange(HttpRequest.POST(<span class="string"><span class="delimiter">'</span><span class="content">/email/send</span><span class="delimiter">'</span></span>, email))
+
+    <span class="key">then</span>:
+    <span class="keyword">def</span> e = thrown(HttpClientResponseException)
+
+    <span class="key">when</span>:
+    <span class="keyword">def</span> response = e.response
+
+    <span class="key">then</span>:
+    response.status == HttpStatus.BAD_REQUEST
+
+    <span class="key">when</span>:
+    email = <span class="keyword">new</span> Email()
+    email.subject = <span class="string"><span class="delimiter">'</span><span class="content">Hi</span><span class="delimiter">'</span></span>
+    email.recipient = <span class="string"><span class="delimiter">'</span><span class="content">me@micronaut.example</span><span class="delimiter">'</span></span>
+    client.toBlocking().exchange(HttpRequest.POST(<span class="string"><span class="delimiter">'</span><span class="content">/email/send</span><span class="delimiter">'</span></span>, email))
+
+    <span class="key">then</span>:
+    noExceptionThrown()
+}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/aop.html">&lt;&lt; <strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

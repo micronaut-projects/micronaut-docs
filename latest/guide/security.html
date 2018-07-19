@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>14 Security 1.0.0.M2</title>
+    <title>14 Security 1.0.0.M3</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -56,10 +56,10 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/otherConfigurations.html"><strong>11</strong><span>Other Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
                         </div>
                         
                         <div class="toc-item" style="margin-left:0"><a href="../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
@@ -74,13 +74,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/faq.html"><strong>16</strong><span>Frequently Asked Questions (FAQ)</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/problems.html"><strong>17</strong><span>Common Problems</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/breaks.html"><strong>18</strong><span>Breaking Changes</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -114,7 +108,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>14 Security</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M2</p>
+                    <p><strong>Version:</strong> 1.0.0.M3</p>
                 </div>
 
                 
@@ -190,7 +184,10 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:10px"><a href="#refresh"><strong>14.4.3</strong><span>Refresh Controller</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#securityEvents"><strong>14.5</strong><span>Security Events</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#retrievingAuthenticatedUser"><strong>14.5</strong><span>Retrieve the authenticated user</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#securityEvents"><strong>14.6</strong><span>Security Events</span></a>
                     </div>
                     
                 </div>
@@ -1558,7 +1555,80 @@ See <a href="https://tools.ietf.org/html/rfc6749#section-10.4">section 10.4 of t
 </div>
 
 
-<h2 id="securityEvents">14.5 Security Events</h2>
+<h2 id="retrievingAuthenticatedUser">14.5 Retrieve the authenticated user</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/retrievingAuthenticatedUser.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Often you may want to retrieve the authenticated user.</p>
+</div>
+<div class="paragraph">
+<p>You can bind <code>java.security.Principal</code> as a method&#8217;s parameter in a controller.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Requires</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.core.util.CollectionUtils</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.security.Secured</span>;
+<span class="keyword">import</span> <span class="include">javax.annotation.Nullable</span>;
+<span class="keyword">import</span> <span class="include">java.security.Principal</span>;
+
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/user</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">UserController</span> {
+
+    <span class="annotation">@Secured</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">isAnonymous()</span><span class="delimiter">&quot;</span></span>)
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/myinfo</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> <span class="predefined-type">Map</span> myinfo(<span class="annotation">@Nullable</span> <span class="predefined-type">Principal</span> principal) {
+        <span class="keyword">if</span> (principal == <span class="predefined-constant">null</span>) {
+            <span class="keyword">return</span> <span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">false</span>);
+        }
+        <span class="keyword">return</span> CollectionUtils.mapOf(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>, principal.getName());
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you need a greater level of detail, you can bind <a href="../api/io/micronaut/security/authentication/Authentication.html">Authentication</a>  as a method&#8217;s parameter in a controller.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Requires</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.core.util.CollectionUtils</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.security.Secured</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.security.authentication.Authentication</span>;
+<span class="keyword">import</span> <span class="include">javax.annotation.Nullable</span>;
+<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
+<span class="keyword">import</span> <span class="include">java.util.Map</span>;
+
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/user</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">UserController</span> {
+
+    <span class="annotation">@Secured</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">isAnonymous()</span><span class="delimiter">&quot;</span></span>)
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/myinfo</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> <span class="predefined-type">Map</span> myinfo(<span class="annotation">@Nullable</span> Authentication authentication) {
+        <span class="keyword">if</span> (authentication == <span class="predefined-constant">null</span>) {
+            <span class="keyword">return</span> <span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">false</span>);
+        }
+        <span class="keyword">return</span> CollectionUtils.mapOf(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>,
+                <span class="string"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>, authentication.getName(),
+                <span class="string"><span class="delimiter">&quot;</span><span class="content">roles</span><span class="delimiter">&quot;</span></span>, authentication.getAttributes().get(<span class="string"><span class="delimiter">&quot;</span><span class="content">roles</span><span class="delimiter">&quot;</span></span>)
+        );
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="securityEvents">14.6 Security Events</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/securityEvents.adoc"'>

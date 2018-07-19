@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>13 Management &amp; Monitoring 1.0.0.M2</title>
+    <title>13 Management &amp; Monitoring 1.0.0.M3</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -56,10 +56,10 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/otherConfigurations.html"><strong>11</strong><span>Other Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
                         </div>
                         
                         <div class="toc-item" style="margin-left:0"><a href="../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
@@ -74,13 +74,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/faq.html"><strong>16</strong><span>Frequently Asked Questions (FAQ)</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/problems.html"><strong>17</strong><span>Common Problems</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/breaks.html"><strong>18</strong><span>Breaking Changes</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -114,7 +108,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>13 Management &amp; Monitoring</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M2</p>
+                    <p><strong>Version:</strong> 1.0.0.M3</p>
                 </div>
 
                 
@@ -568,6 +562,18 @@ Message deleted</code></pre>
 <div class="paragraph">
 <p>If the endpoint <code>id</code> is set through configuration, the URL where the endpoint is accessible also changes to reflect the value. For example if the <code>foo</code> endpoint id was changed to <code>bar</code>, the foo endpoint would be executed through <code><a href="http://localhost:&lt;port&gt;/bar" class="bare">http://localhost:&lt;port&gt;/bar</a></code>.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The base path for all endpoints is <code>/</code> by default. If you prefer the endpoints to be available under a different base path, configure <code>endpoints.all.path</code>. For example, if the value is set to <code>/endpoints</code>, the foo endpoint will be accessible at <code>/endpoints/foo</code>.
+</td>
+</tr>
+</table>
+</div>
 
 
 <h2 id="providedEndpoints">13.2 Built-In Endpoints</h2>
@@ -611,6 +617,11 @@ Message deleted</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/management/endpoint/health/HealthEndpoint.html">HealthEndpoint</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>/health</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Returns information about the "health" of the application (see <a href="#healthEndpoint">HealthEndpoint</a>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/configuration/metrics/management/endpoint/MetricsEndpoint.html">MetricsEndpoint</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/metrics</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Return the <a href="#metricsEndpoint">application metrics</a>. Requires the <code>micrometer-core</code> configuration on the classpath.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/management/endpoint/refresh/RefreshEndpoint.html">RefreshEndpoint</a></p></td>
@@ -853,8 +864,81 @@ info.demo.map = [<span class="key">key</span>: <span class="string"><span class=
     <span class="key">health</span>:
         <span class="key">enabled</span>: <span class="string"><span class="content">Boolean</span></span>
         <span class="key">sensitive</span>: <span class="string"><span class="content">Boolean</span></span>
-        <span class="key">id</span>: <span class="string"><span class="content">String</span></span></code></pre>
+        <span class="key">id</span>: <span class="string"><span class="content">String</span></span>
+        <span class="key">details-visible</span>: <span class="string"><span class="content">String </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="key">status</span>:
+            <span class="key">http-mapping</span>: <span class="string"><span class="content">Map&lt;String, HttpStatus&gt;</span></span></code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>One of <a href="../api/io/micronaut/management/endpoint/health/DetailsVisibility.html">DetailsVisibility</a></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>details-visible</code> setting is used to control whether health detail should be exposed to users who are not authenticated.</p>
+</div>
+<div class="paragraph">
+<p>For example setting:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using <code>details-visible</code></div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">endpoints</span>:
+    <span class="key">health</span>:
+        <span class="key">details-visible</span>: <span class="string"><span class="content">ANONYMOUS</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Will expose detailed information read from the various health indicators about the health status of the application to anonymous unauthenticated users.</p>
+</div>
+<div class="paragraph">
+<p>The <code>endpoints.health.status.http-mapping</code> setting can be used to control what status codes are returned for each health status. The defaults are described in the table below:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Status</th>
+<th class="tableblock halign-left valign-top">HTTP Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/health/HealthStatus.html#UP">UP</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpStatus.html#OK">OK</a> (200)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/health/HealthStatus.html#UNKNOWN">UNKNOWN</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpStatus.html#OK">OK</a> (200)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/health/HealthStatus.html#DOWN">DOWN</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpStatus.html#SERVICE_UNAVAILABLE">SERVICE_UNAVAILABLE</a> (503)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>You can provide custom mappings in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Custom Health Status Codes</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">endpoints</span>:
+    <span class="key">health</span>:
+        <span class="key">status</span>:
+            <span class="key">http-mapping</span>:
+                <span class="key">DOWN</span>: <span class="string"><span class="content">200</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above will return <a href="../api/io/micronaut/http/HttpStatus.html#OK">OK</a> (200) even when the <a href="../api/io/micronaut/health/HealthStatus.html">HealthStatus</a> is <a href="../api/io/micronaut/health/HealthStatus.html#DOWN">DOWN</a>.</p>
 </div>
 </div>
 </div>
@@ -928,6 +1012,12 @@ info.demo.map = [<span class="key">key</span>: <span class="string"><span class=
 <p>The JDBC health indicator determines the health of your application based on the ability to successfully create connections to datasources in the application context. The only configuration option supported is to enable or disable the indicator by the <code>endpoints.health.jdbc.enabled</code> key.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_discovery_client">Discovery Client</h3>
+<div class="paragraph">
+<p>If your application is using service discovery, a health indicator will be included to monitor the health of the discovery client. The data returned can include a list of the services available.</p>
+</div>
+</div>
 </div>
 </div>
 
@@ -979,21 +1069,21 @@ info.demo.map = [<span class="key">key</span>: <span class="string"><span class=
 <div class="title">Maven</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-        <span class="tag">&lt;groupId&gt;</span>io.micronaut.configuration<span class="tag">&lt;/groupId&gt;</span>
-        <span class="tag">&lt;artifactId&gt;</span>micrometer-core<span class="tag">&lt;/artifactId&gt;</span>
-        <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>io.micronaut.configuration<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>micrometer-core<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span>
 <span class="comment">&lt;!-- micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example --&gt;</span>
 <span class="tag">&lt;dependency&gt;</span>
-        <span class="tag">&lt;groupId&gt;</span>io.micronaut.configuration<span class="tag">&lt;/groupId&gt;</span>
-        <span class="tag">&lt;artifactId&gt;</span>micrometer-registry-statsd<span class="tag">&lt;/artifactId&gt;</span>
-        <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>io.micronaut.configuration<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>micrometer-registry-statsd<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span>
 <span class="comment">&lt;!-- Also required to enable endpoint --&gt;</span>
 <span class="tag">&lt;dependency&gt;</span>
-        <span class="tag">&lt;groupId&gt;</span>io.micronaut<span class="tag">&lt;/groupId&gt;</span>
-        <span class="tag">&lt;artifactId&gt;</span>management<span class="tag">&lt;/artifactId&gt;</span>
-        <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>io.micronaut<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>management<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -1024,27 +1114,24 @@ meters. A <a href="http://micrometer.io/docs/concepts#_meters">Meter</a> is some
 <p>A MeterRegistry can have some customizations automatically applied.</p>
 </div>
 <div class="sect2">
-<h3 id="_meterregistrycustomizer">MeterRegistryCustomizer</h3>
+<h3 id="_meter_registry_configurer">Meter Registry Configurer</h3>
 <div class="ulist">
 <ul>
 <li>
-<p>Any bean that implements MeterRegistryCustomizer gets applied to every <em>applicable</em> MeterRegistry bean on creation</p>
+<p>Any bean that implements <code>MeterRegistryConfigurer</code> gets applied to every <em>applicable</em> MeterRegistry bean on creation</p>
 </li>
 <li>
-<p>These beans should be declared with <code>@Context</code> to ensure they are available when the bean context is built</p>
-</li>
-<li>
-<p>The implementation of the MeterRegistryCustomizer <code>supports()</code> method determines if the customizer is applied to a particular registry</p>
+<p>The implementation of the MeterRegistryConfigurer <code>supports()</code> method determines if the configurer is applied to a particular registry</p>
 <div class="ulist">
 <ul>
 <li>
 <p>If you want all registries to get the customization, simply return return <code>true</code></p>
 </li>
 <li>
-<p>Otherwize, you can evaluate the registry for its class type, its class hierarchy, or other criteria.</p>
+<p>Otherwise, you can evaluate the registry for its class type, its class hierarchy, or other criteria.</p>
 </li>
 <li>
-<p>Rememebr you only get one shot for autoconfiguration; i.e. when the bean context is started.</p>
+<p>Remember you only get one shot for autoconfiguration; i.e. when the bean context is started.</p>
 </li>
 <li>
 <p>However, in code, you can apply additional customizations to the registry config</p>
@@ -1055,61 +1142,85 @@ meters. A <a href="http://micrometer.io/docs/concepts#_meters">Meter</a> is some
 </ul>
 </div>
 <div class="listingblock">
+<div class="title">MeterRegistryConfigurer Interface</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="comment">/*
-* Copyright 2017-2018 original authors
-*
-* Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/</span>
+ * Copyright 2017-2018 original authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
 
- <span class="keyword">package</span> <span class="namespace">io.micronaut.configuration.metrics.aggregator</span>;
+<span class="keyword">package</span> <span class="namespace">io.micronaut.configuration.metrics.aggregator</span>;
 
- <span class="keyword">import</span> <span class="include">io.micrometer.core.instrument.MeterRegistry</span>;
+<span class="keyword">import</span> <span class="include">io.micrometer.core.instrument.MeterRegistry</span>;
 
- <span class="comment">/**
-  * Class that will configure meter registries.  This is done on bean added event so that
-  * composite registry can be skipped and non-composite registries can be added to composite.
-  *
-  * @author Christian Oestreich
-  * @param &lt;T&gt; an instance of a meter registry that will be configured
-  * @since 1.0
-  */</span>
- <span class="directive">public</span> <span class="type">interface</span> <span class="class">MeterRegistryConfigurer</span>&lt;T <span class="directive">extends</span> MeterRegistry&gt; {
+<span class="comment">/**
+ * Class that will configure meter registries.  This is done on bean added event so that
+ * composite registry can be skipped and non-composite registries can be added to composite.
+ *
+ * @author Christian Oestreich
+ * @param &lt;T&gt; an instance of a meter registry that will be configured
+ * @since 1.0
+ */</span>
+<span class="directive">public</span> <span class="type">interface</span> <span class="class">MeterRegistryConfigurer</span>&lt;T <span class="directive">extends</span> MeterRegistry&gt; {
 
-     <span class="comment">/**
-      * Method to configure a meter registry with binders, filters, etc.
-      *
-      * @param meterRegistry Meter Registry
-      */</span>
-     <span class="type">void</span> configure(T meterRegistry);
+    <span class="comment">/**
+     * Method to configure a meter registry with binders, filters, etc.
+     *
+     * @param meterRegistry Meter Registry
+     */</span>
+    <span class="type">void</span> configure(T meterRegistry);
 
-     <span class="comment">/**
-      * Method to determine if this configurer supports the meter registry type.
-      *
-      * @param meterRegistry a meter registry
-      * @return boolean whether is supported
-      */</span>
-     <span class="type">boolean</span> supports(T meterRegistry);
+    <span class="comment">/**
+     * Method to determine if this configurer supports the meter registry type.
+     *
+     * @param meterRegistry a meter registry
+     * @return boolean whether is supported
+     */</span>
+    <span class="type">boolean</span> supports(T meterRegistry);
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">io.micronaut.docs</span>;
+
+<span class="keyword">import</span> <span class="include">io.micrometer.core.instrument.MeterRegistry</span>;
+<span class="keyword">import</span> <span class="include">io.micrometer.core.instrument.simple.SimpleMeterRegistry</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer</span>;
+
+<span class="directive">public</span> <span class="type">class</span> <span class="class">SimpleMeterRegistryConfigurer</span> <span class="directive">implements</span> MeterRegistryConfigurer {
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">void</span> configure(MeterRegistry meterRegistry) {
+        meterRegistry.config().commonTags(<span class="string"><span class="delimiter">&quot;</span><span class="content">key</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">value</span><span class="delimiter">&quot;</span></span>);
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="type">boolean</span> supports(MeterRegistry meterRegistry) {
+        <span class="keyword">return</span> meterRegistry <span class="keyword">instanceof</span> SimpleMeterRegistry;
+    }
 }</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_meterfilter">MeterFilter</h3>
+<h3 id="_meter_filter">Meter Filter</h3>
 <div class="ulist">
 <ul>
 <li>
-<p>A MeterFilter can be used to determine if a Meter is to be added to the registry. See <a href="http://micrometer.io/docs/concepts#_meter_filters">Meter Filters</a></p>
+<p>A meter filter can be used to determine if a Meter is to be added to the registry. See <a href="http://micrometer.io/docs/concepts#_meter_filters">Meter Filters</a></p>
 </li>
 <li>
 <p>Any bean that implements MeterFilter will be applied to all registries when the registry is first created</p>
@@ -1120,8 +1231,11 @@ meters. A <a href="http://micrometer.io/docs/concepts#_meters">Meter</a> is some
 <p>You can create custom filters similar to the following inside your application.  Micrometer&#8217;s <code>MeterFilter</code> class provides several convenience methods to help with the creation of these filters.</p>
 </div>
 <div class="listingblock">
+<div class="title">Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micrometer.core.instrument.Tag</span>;
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">io.micronaut.docs</span>;
+
+<span class="keyword">import</span> <span class="include">io.micrometer.core.instrument.Tag</span>;
 <span class="keyword">import</span> <span class="include">io.micrometer.core.instrument.config.MeterFilter</span>;
 <span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Bean</span>;
 <span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Factory</span>;
@@ -1174,10 +1288,9 @@ meters. A <a href="http://micrometer.io/docs/concepts#_meters">Meter</a> is some
 </div>
 </div>
 <div class="sect2">
-<h3 id="_meterbinder">MeterBinder</h3>
+<h3 id="_meter_binder">Meter Binder</h3>
 <div class="paragraph">
-<p>Meter Binders get applied to Meter Registry to <em>mix in</em> metrics producers. Micrometer.io defines
-several of these for cross-cutting meterics related to JVM metrics, caches, classloaders, etc.</p>
+<p>Meter Binders get applied to Meter Registry to <em>mix in</em> metrics producers. Micrometer.io defines several of these for cross-cutting metrics related to JVM metrics, caches, classloaders, etc. These all extend a simple interface MeterBinder, but these are not auto wired as beans and manual wiring is required given how micrometer is currently implemented.</p>
 </div>
 <div class="sect3">
 <h4 id="_provided_binders">Provided Binders</h4>
@@ -1408,19 +1521,16 @@ several of these for cross-cutting meterics related to JVM metrics, caches, clas
 <div class="listingblock">
 <div class="title">Custom Metrics Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micrometer.core.instrument.Counter</span>;
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">io.micronaut.docs</span>;
+
 <span class="keyword">import</span> <span class="include">io.micrometer.core.instrument.MeterRegistry</span>;
 <span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
 <span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.QueryValue</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.validation.Validated</span>;
 <span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
 
-<span class="keyword">import</span> <span class="include">javax.annotation.Nullable</span>;
 <span class="keyword">import</span> <span class="include">javax.validation.constraints.NotBlank</span>;
 
 <span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@Validated</span>
 <span class="directive">public</span> <span class="type">class</span> <span class="class">IndexController</span> {
 
     <span class="directive">private</span> MeterRegistry meterRegistry;
@@ -1457,9 +1567,9 @@ several of these for cross-cutting meterics related to JVM metrics, caches, clas
 <div class="title">Maven</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-        <span class="tag">&lt;groupId&gt;</span>io.micronaut.configuration<span class="tag">&lt;/groupId&gt;</span>
-        <span class="tag">&lt;artifactId&gt;</span>micrometer-registry-statsd<span class="tag">&lt;/artifactId&gt;</span>
-        <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>io.micronaut.configuration<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>micrometer-registry-statsd<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -1523,9 +1633,9 @@ several of these for cross-cutting meterics related to JVM metrics, caches, clas
 <div class="title">Maven</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-        <span class="tag">&lt;groupId&gt;</span>io.micronaut.configuration<span class="tag">&lt;/groupId&gt;</span>
-        <span class="tag">&lt;artifactId&gt;</span>micrometer-registry-graphite<span class="tag">&lt;/artifactId&gt;</span>
-        <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>io.micronaut.configuration<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>micrometer-registry-graphite<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -1584,9 +1694,9 @@ several of these for cross-cutting meterics related to JVM metrics, caches, clas
 <div class="title">Maven</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-        <span class="tag">&lt;groupId&gt;</span>io.micronaut.configuration<span class="tag">&lt;/groupId&gt;</span>
-        <span class="tag">&lt;artifactId&gt;</span>micrometer-registry-atlas<span class="tag">&lt;/artifactId&gt;</span>
-        <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>io.micronaut.configuration<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>micrometer-registry-atlas<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -1640,9 +1750,9 @@ several of these for cross-cutting meterics related to JVM metrics, caches, clas
 <div class="title">Maven</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-        <span class="tag">&lt;groupId&gt;</span>io.micronaut.configuration<span class="tag">&lt;/groupId&gt;</span>
-        <span class="tag">&lt;artifactId&gt;</span>micrometer-registry-prometheus<span class="tag">&lt;/artifactId&gt;</span>
-        <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>io.micronaut.configuration<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>micrometer-registry-prometheus<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${micronaut.version}<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>

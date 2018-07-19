@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>6.3 HTTP Routing 1.0.0.M2</title>
+    <title>6.3 HTTP Routing 1.0.0.M3</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -56,10 +56,10 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/otherConfigurations.html"><strong>11</strong><span>Other Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
                         </div>
                         
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
@@ -74,13 +74,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/faq.html"><strong>16</strong><span>Frequently Asked Questions (FAQ)</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/problems.html"><strong>17</strong><span>Common Problems</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/breaks.html"><strong>18</strong><span>Breaking Changes</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -114,7 +108,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>6.3 HTTP Routing</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M2</p>
+                    <p><strong>Version:</strong> 1.0.0.M3</p>
                 </div>
 
                 
@@ -193,10 +187,42 @@ Many other frameworks, including Spring, implement the URI template specificatio
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>The actual implementation is handled by the <a href="../api/io/micronaut/http/uri/UriMatchTemplate.html">UriMatchTemplate</a> class, which extends <a href="../api/io/micronaut/http/uri/UriTemplate.html">UriTemplate</a>.</p>
+</div>
+<div class="paragraph">
+<p>You can use this class explicitly within your application to build URIs. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using a UriTemplate</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">UriMatchTemplate template = UriMatchTemplate.of(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/{name}</span><span class="delimiter">&quot;</span></span>);
+
+assertTrue(template.match(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/John</span><span class="delimiter">&quot;</span></span>).isPresent()); <i class="conum" data-value="1"></i><b>(1)</b>
+assertEquals(template.expand(  <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">John</span><span class="delimiter">&quot;</span></span>)
+), <span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/John</span><span class="delimiter">&quot;</span></span>);</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>match</code> method can be used to match a path</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>expand</code> method can be used to expand a template into a URI.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you have a requirement to build paths to include in your responses you can use <a href="../api/io/micronaut/http/uri/UriTemplate.html">UriTemplate</a> to do so.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_uri_variables">URI Variables</h2>
+<h2 id="_uri_path_variables">URI Path Variables</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>URI variables can be referenced via method arguments. For example:</p>
@@ -372,6 +398,20 @@ Many other frameworks, including Spring, implement the URI template specificatio
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_uri_reserved_character_matching">URI Reserved Character Matching</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default URI variables as defined by the <a href="https://tools.ietf.org/html/rfc6570">RFC-6570 URI template</a> spec cannot include reserved characters such as <code>/</code>, <code>?</code> etc.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to match or expand entire paths then this can be problematic. As per <a href="https://tools.ietf.org/html/rfc6570#section-3.2.3">section 3.2.3 of the specification</a>, you can use reserved expansion or matching using the <code>+</code> operator.</p>
+</div>
+<div class="paragraph">
+<p>For example the URI <code>/books/{+path}</code> will match both <code>/books/foo</code> and <code>/books/foo/bar</code> since the <code>+</code> indicates that the variable <code>path</code> should include reserved characters (in this case <code>/</code>).</p>
+</div>
 </div>
 </div>
 <div class="sect1">

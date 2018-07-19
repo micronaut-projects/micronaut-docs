@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3 Inversion of Control 1.0.0.M2</title>
+    <title>3 Inversion of Control 1.0.0.M3</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -56,10 +56,10 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/dataAccess.html"><strong>10</strong><span>Configurations for Data Access</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/otherConfigurations.html"><strong>11</strong><span>Other Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
                         </div>
                         
                         <div class="toc-item" style="margin-left:0"><a href="../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
@@ -74,13 +74,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/faq.html"><strong>16</strong><span>Frequently Asked Questions (FAQ)</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/problems.html"><strong>17</strong><span>Common Problems</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/breaks.html"><strong>18</strong><span>Breaking Changes</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -114,7 +108,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>3 Inversion of Control</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M2</p>
+                    <p><strong>Version:</strong> 1.0.0.M3</p>
                 </div>
 
                 
@@ -157,7 +151,7 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0px"><a href="#replaces"><strong>3.9</strong><span>Bean Replacement</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#configurations"><strong>3.10</strong><span>Bean Configurations</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#beanConfigurations"><strong>3.10</strong><span>Bean Configurations</span></a>
                     </div>
                     
                     <div class="toc-item" style="margin-left:0px"><a href="#lifecycle"><strong>3.11</strong><span>Life-Cycle Methods</span></a>
@@ -705,6 +699,27 @@ println( vehicle.start() )</code></pre>
 <div class="paragraph">
 <p>Additional scopes can be added by defining a <code>@Singleton</code> bean that implements the <a href="../api/io/micronaut/context/scope/CustomScope.html">CustomScope</a> interface.</p>
 </div>
+<div class="paragraph">
+<p>Note that with Micronaut when starting a <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a> by default <code>@Singleton</code> scoped beans are created lazily and on demand. This is by design and to optimize startup time.</p>
+</div>
+<div class="paragraph">
+<p>If this is presents are problem for your use case you have the option of using the <a href="../api/io/micronaut/context/annotation/Context.html">@Context</a> annotation which binds the lifecycle of your object to the lifecycle of the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a>. In other words when the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a> is started your bean will be created.</p>
+</div>
+<div class="paragraph">
+<p>Alternatively you can annotate any <code>@Singleton</code> scoped bean with <a href="../api/io/micronaut/context/annotation/Parallel.html">@Parallel</a> which allows parallel initialization of your bean without impacting overall startup time.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If your bean fails to initialize in parallel then the application will be automatically shutdown.
+</td>
+</tr>
+</table>
+</div>
 
 
 <h2 id="refreshable">3.6.2 Refreshable Scope</h2>
@@ -966,6 +981,18 @@ If you take this approach, then you should not invoke other methods annotated wi
 <div class="paragraph">
 <p>The above bean defines two requirements. The first indicates that a <code>DataSource</code> bean must be present for the bean to load. The second requirement ensures that the <code>datasource.url</code> property is set before loading the <code>JdbcBookService</code> bean.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Kotlin currently does not support repeatable annotations. Use the <code>@Requirements</code> annotation when multiple requires are needed. For example, <code>@Requirements(Requires(&#8230;&#8203;), Requires(&#8230;&#8203;))</code>. See <a href="https://youtrack.jetbrains.com/issue/KT-12794" class="bare">https://youtrack.jetbrains.com/issue/KT-12794</a> to track this feature.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>If you have multiple requirements that you find you may need to repeat on multiple beans then you can define a meta-annotation with the requirements:</p>
 </div>
@@ -1207,10 +1234,10 @@ If you take this approach, then you should not invoke other methods annotated wi
 </div>
 
 
-<h2 id="configurations">3.10 Bean Configurations</h2>
+<h2 id="beanConfigurations">3.10 Bean Configurations</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/ioc/configurations.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/ioc/beanConfigurations.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -1458,8 +1485,8 @@ Collection&lt;BeanDefinition&gt; definitions =
 class is a <code>BeanFactoryPostProcessor</code> which will add Micronaut beans to a
 Spring Application Context.  An instance of <code>MicronautBeanProcessor</code> should
 be added to the Spring Application Context.  <code>MicronautBeanProcessor</code> requires
-a constructor parameter which represents the stereotype annotation for
-the Micronaut beans which should be added the Spring Application Context.  The
+a constructor parameter which represents a list of the types of
+Micronaut beans which should be added the Spring Application Context.  The
 processor may be used in any Spring application.  As an example, a Grails 3
 application could take advantage of <code>MicronautBeanProcessor</code> to add all of the
 Micronaut HTTP Client beans to the Spring Application Context with something
@@ -1473,6 +1500,37 @@ like the folowing:</p>
 
 beans = {
     httpClientBeanProcessor MicronautBeanProcessor, Client
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Multiple types may be specified:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// grails-app/conf/spring/resources.groovy</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.spring.beans.MicronautBeanProcessor</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.Client</span>
+<span class="keyword">import</span> <span class="include">com.sample.Widget</span>
+
+beans = {
+    httpClientBeanProcessor MicronautBeanProcessor, [Client, Widget]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In a non-Grails application something similar may be specified using
+any of Spring&#8217;s bean definition styles:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Configuration</span>
+<span class="type">class</span> <span class="class">ByAnnotationTypeConfig</span> {
+
+    <span class="annotation">@Bean</span>
+    MicronautBeanProcessor beanProcessor() {
+        <span class="keyword">new</span> MicronautBeanProcessor(Prototype, Singleton)
+    }
 }</code></pre>
 </div>
 </div>
@@ -1507,8 +1565,8 @@ beans = {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
     ...
-    annotationProcessor "io.micronaut:inject-java:1.0.0.M2"
-    compileOnly "io.micronaut:inject-java:1.0.0.M2"
+    annotationProcessor "io.micronaut:inject-java:1.0.0.M3"
+    compileOnly "io.micronaut:inject-java:1.0.0.M3"
     ...
 }</code></pre>
 </div>
