@@ -860,7 +860,9 @@ info.demo.map = [<span class="key">key</span>: <span class="string"><span class=
         <span class="key">enabled</span>: <span class="string"><span class="content">Boolean</span></span>
         <span class="key">sensitive</span>: <span class="string"><span class="content">Boolean</span></span>
         <span class="key">id</span>: <span class="string"><span class="content">String</span></span>
-        <span class="key">detailsVisible</span>: <span class="string"><span class="content">String </span></span><i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+        <span class="key">details-visible</span>: <span class="string"><span class="content">String </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="key">status</span>:
+            <span class="key">http-mapping</span>: <span class="string"><span class="content">Map&lt;String, HttpStatus&gt;</span></span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -870,6 +872,68 @@ info.demo.map = [<span class="key">key</span>: <span class="string"><span class=
 <td>One of <a href="../api/io/micronaut/management/endpoint/health/DetailsVisibility.html">DetailsVisibility</a></td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>The <code>details-visible</code> setting is used to control whether health detail should be exposed to users who are not authenticated.</p>
+</div>
+<div class="paragraph">
+<p>For example setting:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using <code>details-visible</code></div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">endpoints</span>:
+    <span class="key">health</span>:
+        <span class="key">details-visible</span>: <span class="string"><span class="content">ANONYMOUS</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Will expose detailed information read from the various health indicators about the health status of the application to anonymous unauthenticated users.</p>
+</div>
+<div class="paragraph">
+<p>The <code>endpoints.health.status.http-mapping</code> setting can be used to control what status codes are returned for each health status. The defaults are described in the table below:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Status</th>
+<th class="tableblock halign-left valign-top">HTTP Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/health/HealthStatus.html#UP">UP</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpStatus.html#OK">OK</a> (200)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/health/HealthStatus.html#UNKNOWN">UNKNOWN</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpStatus.html#OK">OK</a> (200)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/health/HealthStatus.html#DOWN">DOWN</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpStatus.html#SERVICE_UNAVAILABLE">SERVICE_UNAVAILABLE</a> (503)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>You can provide custom mappings in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Custom Health Status Codes</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">endpoints</span>:
+    <span class="key">health</span>:
+        <span class="key">status</span>:
+            <span class="key">http-mapping</span>:
+                <span class="key">DOWN</span>: <span class="string"><span class="content">200</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above will return <a href="../api/io/micronaut/http/HttpStatus.html#OK">OK</a> (200) even when the <a href="../api/io/micronaut/health/HealthStatus.html">HealthStatus</a> is <a href="../api/io/micronaut/health/HealthStatus.html#DOWN">DOWN</a>.</p>
 </div>
 </div>
 </div>
