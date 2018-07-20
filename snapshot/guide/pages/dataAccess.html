@@ -958,7 +958,7 @@ You can also create a <a href="../api/io/micronaut/context/event/BeanCreatedEven
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">testCompile project(<span class="string"><span class="delimiter">&quot;</span><span class="content">:configurations:postgres-reactive</span><span class="delimiter">&quot;</span></span>)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:postgres-reactive</span><span class="delimiter">&quot;</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -969,12 +969,13 @@ You can also create a <a href="../api/io/micronaut/context/event/BeanCreatedEven
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">postgres</span>:
 <span class="error">        </span><span class="key">reactive</span>:
-<span class="error">        </span><span class="error">        </span><span class="key">port</span>: <span class="string"><span class="content">5432</span></span>
-<span class="error">        </span><span class="error">        </span><span class="key">host</span>: <span class="string"><span class="content">the-host</span></span>
-<span class="error">        </span><span class="error">        </span><span class="key">database</span>: <span class="string"><span class="content">the-db</span></span>
-<span class="error">        </span><span class="error">        </span><span class="key">user</span>: <span class="string"><span class="content">test</span></span>
-<span class="error">        </span><span class="error">        </span><span class="key">password</span>: <span class="string"><span class="content">test</span></span>
-<span class="error">        </span><span class="error">        </span><span class="key">maxSize</span>: <span class="string"><span class="content">5</span></span></code></pre>
+<span class="error">        </span>    <span class="key">client</span>:
+            <span class="key">port</span>: <span class="string"><span class="content">5432</span></span>
+            <span class="key">host</span>: <span class="string"><span class="content">the-host</span></span>
+            <span class="key">database</span>: <span class="string"><span class="content">the-db</span></span>
+            <span class="key">user</span>: <span class="string"><span class="content">test</span></span>
+            <span class="key">password</span>: <span class="string"><span class="content">test</span></span>
+            <span class="key">maxSize</span>: <span class="string"><span class="content">5</span></span></code></pre>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -984,25 +985,25 @@ You can also create a <a href="../api/io/micronaut/context/event/BeanCreatedEven
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-You can also connect to Postgres using <code>connectionUri</code>.
+You can also connect to Postgres using <code>uri</code> instead of the other properties.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Once you have the above configuration in place then you can inject instance of the <code>io.reactiverse.reactivex.pgclient.PgPool</code> bean. Following is the simplest way to connect, query:</p>
+<p>Once you have the above configuration in place then you can inject the <code>io.reactiverse.reactivex.pgclient.PgPool</code> bean. The following is the simplest way to connect:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">result = Single.create({emitter-&gt;
-    client.query(<span class="string"><span class="delimiter">'</span><span class="content">SELECT * FROM pg_stat_database</span><span class="delimiter">'</span></span>, {ar-&gt; <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="keyword">if</span> (ar.succeeded()) {
-            emitter.onSuccess(<span class="string"><span class="delimiter">&quot;</span><span class="content">Size: </span><span class="delimiter">&quot;</span></span> + ar.result().size())
-        } <span class="keyword">else</span> {
-            emitter.onSuccess(ar.cause().getMessage())
-        }
-    })
-}).toFlowable().blockingFirst()</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">result = client.rxQuery(<span class="string"><span class="delimiter">'</span><span class="content">SELECT * FROM pg_stat_database</span><span class="delimiter">'</span></span>).map({ PgRowSet pgRowSet -&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="type">int</span> size = <span class="integer">0</span>
+    PgIterator iterator = pgRowSet.iterator()
+    <span class="keyword">while</span> (iterator.hasNext()) {
+        iterator.next()
+        size++
+    }
+    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Size: </span><span class="inline"><span class="inline-delimiter">${</span>size<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}).blockingGet()</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1014,7 +1015,7 @@ You can also connect to Postgres using <code>connectionUri</code>.
 </table>
 </div>
 <div class="paragraph">
-<p>For more information on running queries on Postgres using the reactive client please read the "Running quries" section in the documentation of <a href="https://reactiverse.io/reactive-pg-client/guide/groovy/index.html">reactive-pg-client</a>.</p>
+<p>For more information on running queries on Postgres using the reactive client please read the "Running queries" section in the documentation of <a href="https://reactiverse.io/reactive-pg-client/guide/groovy/index.html">reactive-pg-client</a>.</p>
 </div>
 </div>
 </div>
