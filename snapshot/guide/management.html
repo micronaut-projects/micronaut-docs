@@ -148,7 +148,10 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:10px"><a href="#routesEndpoint"><strong>13.2.6</strong><span>The Routes Endpoint</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:10px"><a href="#stopEndpoint"><strong>13.2.7</strong><span>The Server Stop Endpoint</span></a>
+                    <div class="toc-item" style="margin-left:10px"><a href="#loggersEndpoint"><strong>13.2.7</strong><span>The Loggers Endpoint</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#stopEndpoint"><strong>13.2.8</strong><span>The Server Stop Endpoint</span></a>
                     </div>
                     
                 </div>
@@ -632,6 +635,11 @@ The base path for all endpoints is <code>/</code> by default. If you prefer the 
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/management/endpoint/routes/RoutesEndpoint.html">RoutesEndpoint</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>/routes</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Returns information about URIs available to be called for your application (see <a href="#routesEndpoint">RoutesEndpoint</a>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/management/endpoint/loggers/LoggersEndpoint.html">LoggersEndpoint</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/loggers</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Returns information about available loggers and permits changing the configured log level (see <a href="#loggersEndpoint">LoggersEndpoint</a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1895,7 +1903,156 @@ meters. A <a href="http://micrometer.io/docs/concepts#_meters">Meter</a> is some
 </div>
 
 
-<h2 id="stopEndpoint">13.2.7 The Server Stop Endpoint</h2>
+<h2 id="loggersEndpoint">13.2.7 The Loggers Endpoint</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/management/providedEndpoints/loggersEndpoint.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The loggers endpoint returns information about the available loggers in the application and
+permits configuring the their log level.</p>
+</div>
+<div class="paragraph">
+<p>To get a collection of all loggers by name with their configured and effective log levels,
+send a GET request to /loggers. This will also provide a list of the available log levels.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl http://localhost:8080/loggers
+
+{
+    &quot;levels&quot;: [
+        &quot;ALL&quot;, &quot;TRACE&quot;, &quot;DEBUG&quot;, &quot;INFO&quot;, &quot;WARN&quot;, &quot;ERROR&quot;, &quot;OFF&quot;, &quot;NOT_SPECIFIED&quot;
+    ],
+    &quot;loggers&quot;: {
+        &quot;ROOT&quot;: {
+            &quot;configuredLevel&quot;: &quot;INFO&quot;,
+            &quot;effectiveLevel&quot;: &quot;INFO&quot;
+        },
+        &quot;io&quot;: {
+            &quot;configuredLevel&quot;: &quot;NOT_SPECIFIED&quot;,
+            &quot;effectiveLevel&quot;: &quot;INFO&quot;
+        },
+        &quot;io.micronaut&quot;: {
+            &quot;configuredLevel&quot;: &quot;NOT_SPECIFIED&quot;,
+            &quot;effectiveLevel&quot;: &quot;INFO&quot;
+        },
+        // etc...
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To get the log levels of a particular logger, include the logger name in your GET request. For
+example, to access the log levels of the logger 'io.micronaut.http':</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl http://localhost:8080/loggers/io.micronaut.http
+
+{
+    &quot;configuredLevel&quot;: &quot;NOT_SPECIFIED&quot;,
+    &quot;effectiveLevel&quot;: &quot;INFO&quot;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the named logger does not exist, it will be created with an unspecified (i.e. <code>NOT_SPECIFIED</code>)
+configured log level. (It&#8217;s effective log level will usually be that of the root logger.)</p>
+</div>
+<div class="paragraph">
+<p>To update the log level of a single logger, send a POST request to the named logger URL and include
+a body providing the log level to configure.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -i -X POST
+       -H &quot;Content-Type: application/json&quot; \
+       -d '{ &quot;configuredLevel&quot;: &quot;ERROR&quot; }' \
+       http://localhost:8080/loggers/ROOT
+
+HTTP/1.1 200 OK
+
+$ curl http://localhost:8080/loggers/ROOT
+
+{
+    &quot;configuredLevel&quot;: &quot;ERROR&quot;,
+    &quot;effectiveLevel&quot;: &quot;ERROR&quot;
+}</code></pre>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configuration">Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To configure the loggers endpoint, supply configuration through <code>endpoints.loggers</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Loggers Endpoint Configuration Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">endpoints</span>:
+    <span class="key">loggers</span>:
+        <span class="key">enabled</span>: <span class="string"><span class="content">Boolean</span></span>
+        <span class="key">sensitive</span>: <span class="string"><span class="content">Boolean</span></span>
+        <span class="key">id</span>: <span class="string"><span class="content">String</span></span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_customization">Customization</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The loggers endpoint is composed of two customizable parts: a loggers manager and a logging system.</p>
+</div>
+<div class="paragraph">
+<p>The loggers manager
+(<a href="../api/io/micronaut/management/endpoint/loggers/LoggersManager.html">LoggersManager</a>)
+is responsible for returning a Publisher that will return data collected and transformed for the response,
+and it is also responsible for updating a logger with a new log level.</p>
+</div>
+<div class="paragraph">
+<p>To override the default behavior for the loggers manager, either extend the default implementation
+(<a href="../api/io/micronaut/management/endpoint/loggers/impl/DefaultLoggersManager.html">DefaultLoggersManager</a>)
+or implement the <a href="../api/io/micronaut/management/endpoint/loggers/LoggersManager.html">LoggersManager</a>
+interface directly. To ensure your implementation is used instead of the default, add the
+<a href="../api/io/micronaut/context/annotation/Replaces.html">@Replaces</a> annotation to your class with the
+value being the default implementation.</p>
+</div>
+<div class="paragraph">
+<p>The logging system
+(<a href="../api/io/micronaut/management/endpoint/loggers/LoggingSystem.html">LoggingSystem</a>)
+is responsible for processing requests from the loggers manager against a particular logging
+library (e.g. logback, log4j, etc.)</p>
+</div>
+<div class="paragraph">
+<p>The current default implementation for the logging system is
+<a href="../api/io/micronaut/management/endpoint/loggers/impl/LogbackLoggingSystem.html">LogbackLoggingSystem</a>,
+which works with the <a href="https://logback.qos.ch/">logback</a> logging framework. Additional logging systems will
+be implemented in future revisions of Micronaut. For custom logging system behavior, implement
+the <a href="../api/io/micronaut/management/endpoint/loggers/LoggingSystem.html">LoggingSystem</a> interface directly.
+To ensure your implementation is used instead of the default, add the
+<a href="../api/io/micronaut/context/annotation/Replaces.html">@Replaces</a> annotation to your class with the
+value being the default implementation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Singleton</span>
+<span class="annotation">@Replaces</span>(LogbackLoggingSystem.class)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">CustomLoggingSystem</span> <span class="directive">implements</span> LoggingSystem {
+    <span class="comment">// ...</span>
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<h2 id="stopEndpoint">13.2.8 The Server Stop Endpoint</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/management/providedEndpoints/stopEndpoint.adoc"'>
