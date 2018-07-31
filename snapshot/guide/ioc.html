@@ -157,16 +157,19 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0px"><a href="#lifecycle"><strong>3.11</strong><span>Life-Cycle Methods</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#events"><strong>3.12</strong><span>Bean Events</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#contextEvents"><strong>3.12</strong><span>Context Events</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#annotationMetadata"><strong>3.13</strong><span>Bean Annotation Metadata</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#events"><strong>3.13</strong><span>Bean Events</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#springBeans"><strong>3.14</strong><span>Micronaut Beans And Spring</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#annotationMetadata"><strong>3.14</strong><span>Bean Annotation Metadata</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#android"><strong>3.15</strong><span>Android Support</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#springBeans"><strong>3.15</strong><span>Micronaut Beans And Spring</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#android"><strong>3.16</strong><span>Android Support</span></a>
                     </div>
                     
                 </div>
@@ -1330,7 +1333,86 @@ Kotlin currently does not support repeatable annotations. Use the <code>@Require
 </div>
 
 
-<h2 id="events">3.12 Bean Events</h2>
+<h2 id="contextEvents">3.12 Context Events</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/ioc/contextEvents.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut supports a general event system through the context. The <a href="../api/io/micronaut/context/event/ApplicationEventPublisher.html">ApplicationEventPublisher</a> API is used to publish events and the <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> API is used to listen to events. The event system is not limited to the events that Micronaut publishes and can be used for custom events created by the users.</p>
+</div>
+<div class="sect2">
+<h3 id="_publishing">Publishing</h3>
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/context/event/ApplicationEventPublisher.html">ApplicationEventPublisher</a> API supports events of any type, however all events that Micronaut publishes extend <a href="../api/io/micronaut/context/event/ApplicationEvent.html">ApplicationEvent</a>.</p>
+</div>
+<div class="paragraph">
+<p>To publish an event, obtain an instance of <a href="../api/io/micronaut/context/event/ApplicationEventPublisher.html">ApplicationEventPublisher</a> either directly from the context or through dependency injection, and execute the <code>publishEvent</code> method with your event object.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Singleton</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">MyBean</span> {
+
+    <span class="annotation">@Inject</span> ApplicationEventPublisher eventPublisher;
+
+    <span class="type">void</span> doSomething() {
+        eventPublisher.publishEvent(...);
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Publishing an event is <strong>synchronous</strong>! The <code>publishEvent</code> method will not return until all listeners have been executed. Move this work off to a thread pool if it is time intensive.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_listening">Listening</h3>
+<div class="paragraph">
+<p>To listen to an event, register a bean that implements <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> where the generic type is the type of event the listener should be executed for.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Singleton</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">DoOnStartup</span> <span class="directive">implements</span> ApplicationEventListener&lt;ServiceStartedEvent&gt; {
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> onApplicationEvent(ServiceStartedEvent event) {
+        ...
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <a href="../api/io/micronaut/context/event/ApplicationEventListener.html#supports-E-">supports</a> method can be overridden to further clarify events that should be processed.
+</td>
+</tr>
+</table>
+</div>
+</div>
+
+
+<h2 id="events">3.13 Bean Events</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/ioc/events.adoc"'>
@@ -1426,7 +1508,7 @@ Kotlin currently does not support repeatable annotations. Use the <code>@Require
 </div>
 
 
-<h2 id="annotationMetadata">3.13 Bean Annotation Metadata</h2>
+<h2 id="annotationMetadata">3.14 Bean Annotation Metadata</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/ioc/annotationMetadata.adoc"'>
@@ -1471,7 +1553,7 @@ Collection&lt;BeanDefinition&gt; definitions =
 </div>
 
 
-<h2 id="springBeans">3.14 Micronaut Beans And Spring</h2>
+<h2 id="springBeans">3.15 Micronaut Beans And Spring</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/ioc/springBeans.adoc"'>
@@ -1536,7 +1618,7 @@ any of Spring&#8217;s bean definition styles:</p>
 </div>
 
 
-<h2 id="android">3.15 Android Support</h2>
+<h2 id="android">3.16 Android Support</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/ioc/android.adoc"'>
