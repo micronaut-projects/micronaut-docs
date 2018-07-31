@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>6.14 Handling Form Data 1.0.0.BUILD-SNAPSHOT</title>
+    <title>6.5 Simple 404 responses 1.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -109,7 +109,7 @@ function addJsClass() {
 
 
                 <div class="project">
-                    <h1>6.14 Handling Form Data</h1>
+                    <h1>6.5 Simple 404 responses</h1>
 
                     <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
                 </div>
@@ -118,63 +118,57 @@ function addJsClass() {
 
                 
 
-<h2 id="formData">6.14 Handling Form Data</h2>
+<h2 id="respondingnotfound">6.5 Simple 404 responses</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/formData.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/respondingnotfound.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
 
 
 <div class="paragraph">
-<p>In order to make data binding model customizations consistent between form data and JSON, Micronaut uses Jackson to implement binding data from form submissions.</p>
+<p>Often, you want to respond 404 (Not Found) when you don&#8217;t find an item in your persistence layer or in similar scenarios.</p>
 </div>
 <div class="paragraph">
-<p>The advantage of this approach is that the same Jackson annotations used for customizing JSON binding can be used for form submissions too.</p>
-</div>
-<div class="paragraph">
-<p>What this means in practise is that in order to bind regular form data the only change required to the previous JSON binding code is updating the <a href="../api/io/micronaut/http/MediaType.html">MediaType</a> consumed:</p>
+<p>To simplify this scenario, a 404 is returned if your controller method returns null. See the following example:</p>
 </div>
 <div class="listingblock">
-<div class="title">Binding Form Data to POJOs</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(uri=<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>, consumes=MediaType.APPLICATION_FORM_URLENCODED)
-<span class="directive">public</span> HttpResponse&lt;Person&gt; save(<span class="annotation">@Body</span> Person person) {
-    inMemoryDatastore.put(person.getFirstName(), person);
-    <span class="keyword">return</span> HttpResponse.created(person);
-}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/books</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">BooksController</span> {
+    <span class="annotation">@Produces</span>(MediaType.TEXT_PLAIN)
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/stock/{isbn}</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> <span class="predefined-type">Boolean</span> stock(<span class="predefined-type">String</span> isbn) {
+        Optional&lt;<span class="predefined-type">Integer</span>&gt; bookInventoryOptional = bookInventoryByIsbn(isbn);
+        <span class="keyword">if</span> (!bookInventoryOptional.isPresent()) {
+            <span class="keyword">return</span> <span class="predefined-constant">null</span>; <i class="conum" data-value="1"></i><b>(1)</b>
+        }
+        <span class="predefined-type">Integer</span> stock = bookInventoryOptional.get();
+        <span class="keyword">return</span> stock&gt; <span class="integer">0</span> ? <span class="predefined-type">Boolean</span>.TRUE : <span class="predefined-type">Boolean</span>.FALSE;
+    }
+    <span class="directive">private</span> Optional&lt;<span class="predefined-type">Integer</span>&gt; bookInventoryByIsbn(<span class="predefined-type">String</span> isbn) {
+        <span class="keyword">if</span>(isbn.equals(<span class="string"><span class="delimiter">&quot;</span><span class="content">1491950358</span><span class="delimiter">&quot;</span></span>)) {
+            <span class="keyword">return</span> Optional.of(<span class="integer">4</span>);
+
+        } <span class="keyword">else</span> <span class="keyword">if</span>(isbn.equals(<span class="string"><span class="delimiter">&quot;</span><span class="content">1680502395</span><span class="delimiter">&quot;</span></span>)) {
+            <span class="keyword">return</span> Optional.of(<span class="integer">0</span>);
+        }
+        <span class="keyword">return</span> Optional.empty();
+    }</code></pre>
 </div>
 </div>
-<div class="admonitionblock tip">
+<div class="colist arabic">
 <table>
 <tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-To avoid denial of service attacks, collection types and arrays created during binding are limited by the setting <code>jackson.arraySizeThreshold</code> in <code>application.yml</code>
-</td>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Returning <code>null</code> triggers a 404 (Not Found) response.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Alternatively, instead of using a POJO you can bind form data directly to method parameters (which works with JSON too!):</p>
-</div>
-<div class="listingblock">
-<div class="title">Binding Form Data to Parameters</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(uri=<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>, consumes=MediaType.APPLICATION_FORM_URLENCODED)
-<span class="directive">public</span> HttpResponse&lt;Person&gt; save(<span class="predefined-type">String</span> firstName, <span class="predefined-type">String</span> lastName, Optional&lt;<span class="predefined-type">Integer</span>&gt; age) {
-    Person p = <span class="keyword">new</span> Person(firstName, lastName);
-    age.ifPresent(p::setAge);
-    inMemoryDatastore.put(p.getFirstName(), p);
-    <span class="keyword">return</span> HttpResponse.created(p);
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As you can see from the example above, this approach allows you to use features such as support for <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a> types and restrict the parameters to be bound (When using POJOs you must be careful to use Jackson annotations to exclude properties that should not be bound).</p>
+<p>You can do the same if you return reactive type such as <code>Maybe</code>. For example,
+if you return <code>Maybe.empty()</code> a 404 is returned since an item is not emitted.</p>
 </div>
 
 

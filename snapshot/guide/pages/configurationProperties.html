@@ -158,6 +158,7 @@ function addJsClass() {
     <span class="directive">static</span> <span class="type">class</span> <span class="class">CrankShaft</span> { <i class="conum" data-value="4"></i><b>(4)</b>
         Optional&lt;<span class="predefined-type">Double</span>&gt; rodLength = Optional.empty() <i class="conum" data-value="5"></i><b>(5)</b>
     }
+
 }</code></pre>
 </div>
 </div>
@@ -201,7 +202,7 @@ function addJsClass() {
 
     <span class="annotation">@Override</span>
     <span class="type">int</span> getCylinders() {
-        <span class="keyword">return</span> config.cylinders
+        config.cylinders
     }
 
     <span class="predefined-type">String</span> start() { <i class="conum" data-value="2"></i><b>(2)</b>
@@ -229,7 +230,7 @@ function addJsClass() {
 <div class="title">Supply Configuration</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
-        [<span class="string"><span class="delimiter">'</span><span class="content">my.engine.cylinders</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">8</span><span class="delimiter">'</span></span>],
+        [<span class="string"><span class="delimiter">'</span><span class="content">my.engine.cylinders</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">8</span><span class="delimiter">'</span></span>],
         <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
 )
 
@@ -355,6 +356,80 @@ println(vehicle.start())</code></pre>
 </div>
 <div class="paragraph">
 <p>The above example prints: <code>"Subaru Engine Starting V4 [rodLength=4.0]"</code></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_mapformat">MapFormat</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For some use cases it may be desirable to accept a map of arbitrary configuration properties that can be supplied to a bean, especially if the bean represents a third-party API where not all of the possible configuration properties are known by the developer. For example, a datasource may accept a map of configuration properties specific to a particular database driver, allowing the user to specify any desired options in the map without coding every single property explicitly.</p>
+</div>
+<div class="paragraph">
+<p>For this purpose, the <a href="../api/io/micronaut/core/convert/format/MapFormat.html">MapFormat</a> annotation allows you to bind a map to a single configuration property, and specify whether to accept a flat map of keys to values, or a nested map (where the values may be additional maps].</p>
+</div>
+<div class="listingblock">
+<div class="title">@MapFormat Example</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.core.convert.format.MapFormat</span>
+
+<span class="annotation">@ConfigurationProperties</span>(<span class="string"><span class="delimiter">'</span><span class="content">my.engine</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">EngineConfig</span> {
+
+    <span class="annotation">@Min</span>(<span class="integer">1L</span>)
+    <span class="type">int</span> cylinders
+
+    <span class="annotation">@MapFormat</span>(transformation = MapFormat.MapTransformation.FLAT) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">Integer</span>, <span class="predefined-type">String</span>&gt; sensors
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Note the <code>transformation</code> argument to the annotation; possible values are <code>MapTransformation.FLAT</code> (for flat maps) and <code>MapTransformation.NESTED</code> (for nested maps)</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">EngineImpl</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Singleton</span>
+<span class="type">class</span> <span class="class">EngineImpl</span> <span class="directive">implements</span> Engine {
+
+    <span class="annotation">@Inject</span> EngineConfig config
+
+    <span class="annotation">@Override</span>
+    <span class="predefined-type">Map</span> getSensors() {
+        config.sensors
+    }
+
+    <span class="predefined-type">String</span> start() {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Engine Starting V</span><span class="inline"><span class="inline-delimiter">${</span>config.cylinders<span class="inline-delimiter">}</span></span><span class="content"> [sensors=</span><span class="inline"><span class="inline-delimiter">${</span>sensors.size()<span class="inline-delimiter">}</span></span><span class="content">]</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now a map of properties can be supplied to the <code>my.engine.sensors</code> configuration property.</p>
+</div>
+<div class="listingblock">
+<div class="title">Use Map Configuration</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
+        [<span class="string"><span class="delimiter">'</span><span class="content">my.engine.cylinders</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">8</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">my.engine.sensors</span><span class="delimiter">'</span></span>: [<span class="integer">0</span>: <span class="string"><span class="delimiter">'</span><span class="content">thermostat</span><span class="delimiter">'</span></span>, <span class="integer">1</span>: <span class="string"><span class="delimiter">'</span><span class="content">fuel pressure</span><span class="delimiter">'</span></span>]],
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
+)
+
+Vehicle vehicle = applicationContext
+        .getBean(Vehicle)
+println(vehicle.start())</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example prints: <code>"Engine Starting V8 [sensors=2]"</code></p>
 </div>
 </div>
 </div>
