@@ -18,7 +18,7 @@
     </script>
     <style type="text/css">
         @media screen and (min-width: 961px) {
-            #main > div:nth-child(-n+99.5) {
+            #main > div:nth-child(-n+100.5) {
                 max-width: 62%;
             }
         }
@@ -172,15 +172,17 @@
     
     <div class="toc-item" style="margin-left:10px"><a href="#introductionAdvice"><strong>5.2</strong><span>Introduction Advice</span></a></div>
     
-    <div class="toc-item" style="margin-left:10px"><a href="#validation"><strong>5.3</strong><span>Validation Advice</span></a></div>
+    <div class="toc-item" style="margin-left:10px"><a href="#adapterAdvice"><strong>5.3</strong><span>Method Adapter Advice</span></a></div>
     
-    <div class="toc-item" style="margin-left:10px"><a href="#caching"><strong>5.4</strong><span>Cache Advice</span></a></div>
+    <div class="toc-item" style="margin-left:10px"><a href="#validation"><strong>5.4</strong><span>Validation Advice</span></a></div>
     
-    <div class="toc-item" style="margin-left:10px"><a href="#retry"><strong>5.5</strong><span>Retry Advice</span></a></div>
+    <div class="toc-item" style="margin-left:10px"><a href="#caching"><strong>5.5</strong><span>Cache Advice</span></a></div>
     
-    <div class="toc-item" style="margin-left:10px"><a href="#scheduling"><strong>5.6</strong><span>Scheduled Tasks</span></a></div>
+    <div class="toc-item" style="margin-left:10px"><a href="#retry"><strong>5.6</strong><span>Retry Advice</span></a></div>
     
-    <div class="toc-item" style="margin-left:10px"><a href="#springAop"><strong>5.7</strong><span>Bridging Spring AOP</span></a></div>
+    <div class="toc-item" style="margin-left:10px"><a href="#scheduling"><strong>5.7</strong><span>Scheduled Tasks</span></a></div>
+    
+    <div class="toc-item" style="margin-left:10px"><a href="#springAop"><strong>5.8</strong><span>Bridging Spring AOP</span></a></div>
     
     <div class="toc-item" style="margin-left:0px"><a href="#httpServer"><strong>6</strong><span>The HTTP Server</span></a></div>
     
@@ -2372,7 +2374,7 @@ Kotlin currently does not support repeatable annotations. Use the <code>@Require
 <p>Micronaut supports a general event system through the context. The <a href="../api/io/micronaut/context/event/ApplicationEventPublisher.html">ApplicationEventPublisher</a> API is used to publish events and the <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> API is used to listen to events. The event system is not limited to the events that Micronaut publishes and can be used for custom events created by the users.</p>
 </div>
 <div class="sect2">
-<h3 id="_publishing">Publishing</h3>
+<h3 id="_event_publishing">Event Publishing</h3>
 <div class="paragraph">
 <p>The <a href="../api/io/micronaut/context/event/ApplicationEventPublisher.html">ApplicationEventPublisher</a> API supports events of any type, however all events that Micronaut publishes extend <a href="../api/io/micronaut/context/event/ApplicationEvent.html">ApplicationEvent</a>.</p>
 </div>
@@ -2407,11 +2409,12 @@ Publishing an event is <strong>synchronous</strong>! The <code>publishEvent</cod
 </div>
 </div>
 <div class="sect2">
-<h3 id="_listening">Listening</h3>
+<h3 id="_event_listening">Event Listening</h3>
 <div class="paragraph">
 <p>To listen to an event, register a bean that implements <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> where the generic type is the type of event the listener should be executed for.</p>
 </div>
 <div class="listingblock">
+<div class="title">Listening for Events with <code>ApplicationEventListener</code></div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Singleton</span>
 <span class="directive">public</span> <span class="type">class</span> <span class="class">DoOnStartup</span> <span class="directive">implements</span> ApplicationEventListener&lt;ServiceStartedEvent&gt; {
@@ -2434,6 +2437,24 @@ The <a href="../api/io/micronaut/context/event/ApplicationEventListener.html#sup
 </td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>Alternatively you can use the <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> annotation if you do not wish to specifically implement an interface:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listening for Events with <code>@EventListener</code></div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.runtime.event.annotation.EventListener</span>;
+...
+<span class="annotation">@Singleton</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">DoOnStartup</span>  {
+
+    <span class="annotation">@EventListener</span>
+    <span class="type">void</span> onStartup(ServiceStartedEvent event) {
+        ...
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 
@@ -2566,13 +2587,28 @@ Collection&lt;BeanDefinition&gt; definitions =
     beanContext.getBeanDefinitions(Qualifiers.byStereotype(Controller.class))
 
 <span class="keyword">for</span>(BeanDefinition definition : definitions) {
-    Controller controllerAnn = definition.synthesize(Controller.class);
+    AnnotationValue&lt;Controller&gt; controllerAnn = definition.getAnnotation(Controller.class);
     <span class="comment">// do something with the annotation</span>
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The above example will find all <a href="../api/io/micronaut/inject/BeanDefinition.html">BeanDefinition</a> annotated with <code>@Controller</code> regardless whether <code>@Controller</code> is used directly or inherited via an annotation stereotype.</p>
+</div>
+<div class="paragraph">
+<p>Note that the <code>getAnnotation</code> method and the variations of the method return a <a href="../api/io/micronaut/core/annotation/AnnotationValue.html">AnnotationValue</a> type and not a Java annotation. This is by design, and you should generally try to work with this API when reading annotation values.</p>
+</div>
+<div class="paragraph">
+<p>If you absolutely require a reference to an annotation instance you can use the <code>synthesize</code> method, which will create a runtime proxy that implements the annotation interface:</p>
+</div>
+<div class="listingblock">
+<div class="title">Synthesizing Annotation Instances</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">Controller controllerAnn = definition.synthesize(Controller.class);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This approach is not recommended however, as it requires reflection and increases memory consumption due to the use of runtime created proxies and should be used as a last resort (for example if you need to an instance of the annotation to integrate with a third party library).</p>
 </div>
 <div class="paragraph">
 <p>Like Spring, Micronaut also supports an <a href="../api/io/micronaut/context/annotation/AliasFor.html">@AliasFor</a> annotation that allows an annotation member to represent the value of another annotation member.</p>
@@ -4009,7 +4045,81 @@ assertNull(stubExample.getDate());</code></pre>
 </div>
 
 
-<h2 id="validation">5.3 Validation Advice</h2>
+<h2 id="adapterAdvice">5.3 Method Adapter Advice</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/aop/adapterAdvice.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>There are sometimes cases where you want to introduce a new bean based on the presence of an annotation on a method. An example of this case is the <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> annotation which for each method annotated with <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> produces an implementation of <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> that invokes the annotated method.</p>
+</div>
+<div class="paragraph">
+<p>For example the following snippet will run the logic contained within the method when the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a> starts up:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.event.StartupEvent</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.runtime.event.annotation.EventListener</span>;
+...
+
+<span class="annotation">@EventListener</span>
+<span class="type">void</span> onStartup(StartupEvent event) {
+    <span class="comment">// startup logic here</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The presence of the <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> annotation causes Micronaut to create a new class that implements the <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> and invokes the <code>onStartup</code> method defined in the bean above.</p>
+</div>
+<div class="paragraph">
+<p>The actual implementation of the <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> is trivial, it simply uses the <a href="../api/io/micronaut/aop/Adapter.html">@Adapter</a> annotation to specify which SAM (single abstract method) type is adapts:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.aop.Adapter</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.context.event.ApplicationEventListener</span>;
+<span class="keyword">import</span> <span class="include">java.lang.annotation</span>.*;
+
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">java.lang.annotation.RetentionPolicy.RUNTIME</span>;
+
+<span class="annotation">@Documented</span>
+<span class="annotation">@Retention</span>(RUNTIME)
+<span class="annotation">@Target</span>({<span class="predefined-type">ElementType</span>.ANNOTATION_TYPE, <span class="predefined-type">ElementType</span>.METHOD})
+<span class="annotation">@Adapter</span>(ApplicationEventListener.class) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="directive">public</span> <span class="annotation">@interface</span> <span class="predefined-type">EventListener</span> {
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/aop/Adapter.html">@Adapter</a> annotation is used to indicate which SAM type to adapt. In this case <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a>.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Micronaut will also automatically align the generic types for the SAM interface if they are specified.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Using this mechanism you can define custom annotations that use the <a href="../api/io/micronaut/aop/Adapter.html">@Adapter</a> annotation and a SAM interface to automatically implement beans for you at compile time.</p>
+</div>
+
+
+<h2 id="validation">5.4 Validation Advice</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/aop/validation.adoc"'>
@@ -4101,7 +4211,7 @@ with a built-in configuration to use Hibernate Validator.</p>
 </div>
 
 
-<h2 id="caching">5.4 Cache Advice</h2>
+<h2 id="caching">5.5 Cache Advice</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/aop/caching.adoc"'>
@@ -4206,7 +4316,7 @@ with a built-in configuration to use Hibernate Validator.</p>
 </div>
 
 
-<h2 id="retry">5.5 Retry Advice</h2>
+<h2 id="retry">5.6 Retry Advice</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/aop/retry.adoc"'>
@@ -4374,7 +4484,7 @@ with a built-in configuration to use Hibernate Validator.</p>
 </div>
 
 
-<h2 id="scheduling">5.6 Scheduled Tasks</h2>
+<h2 id="scheduling">5.7 Scheduled Tasks</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/aop/scheduling.adoc"'>
@@ -4514,7 +4624,7 @@ Remember that the scope of the bean has an impact on behaviour. a <code>@Singlet
 </div>
 
 
-<h2 id="springAop">5.7 Bridging Spring AOP</h2>
+<h2 id="springAop">5.8 Bridging Spring AOP</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/aop/springAop.adoc"'>

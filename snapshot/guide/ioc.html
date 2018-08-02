@@ -1349,7 +1349,7 @@ Kotlin currently does not support repeatable annotations. Use the <code>@Require
 <p>Micronaut supports a general event system through the context. The <a href="../api/io/micronaut/context/event/ApplicationEventPublisher.html">ApplicationEventPublisher</a> API is used to publish events and the <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> API is used to listen to events. The event system is not limited to the events that Micronaut publishes and can be used for custom events created by the users.</p>
 </div>
 <div class="sect2">
-<h3 id="_publishing">Publishing</h3>
+<h3 id="_event_publishing">Event Publishing</h3>
 <div class="paragraph">
 <p>The <a href="../api/io/micronaut/context/event/ApplicationEventPublisher.html">ApplicationEventPublisher</a> API supports events of any type, however all events that Micronaut publishes extend <a href="../api/io/micronaut/context/event/ApplicationEvent.html">ApplicationEvent</a>.</p>
 </div>
@@ -1384,11 +1384,12 @@ Publishing an event is <strong>synchronous</strong>! The <code>publishEvent</cod
 </div>
 </div>
 <div class="sect2">
-<h3 id="_listening">Listening</h3>
+<h3 id="_event_listening">Event Listening</h3>
 <div class="paragraph">
 <p>To listen to an event, register a bean that implements <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> where the generic type is the type of event the listener should be executed for.</p>
 </div>
 <div class="listingblock">
+<div class="title">Listening for Events with <code>ApplicationEventListener</code></div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Singleton</span>
 <span class="directive">public</span> <span class="type">class</span> <span class="class">DoOnStartup</span> <span class="directive">implements</span> ApplicationEventListener&lt;ServiceStartedEvent&gt; {
@@ -1411,6 +1412,24 @@ The <a href="../api/io/micronaut/context/event/ApplicationEventListener.html#sup
 </td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>Alternatively you can use the <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> annotation if you do not wish to specifically implement an interface:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listening for Events with <code>@EventListener</code></div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.runtime.event.annotation.EventListener</span>;
+...
+<span class="annotation">@Singleton</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">DoOnStartup</span>  {
+
+    <span class="annotation">@EventListener</span>
+    <span class="type">void</span> onStartup(ServiceStartedEvent event) {
+        ...
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 
@@ -1543,13 +1562,28 @@ Collection&lt;BeanDefinition&gt; definitions =
     beanContext.getBeanDefinitions(Qualifiers.byStereotype(Controller.class))
 
 <span class="keyword">for</span>(BeanDefinition definition : definitions) {
-    Controller controllerAnn = definition.synthesize(Controller.class);
+    AnnotationValue&lt;Controller&gt; controllerAnn = definition.getAnnotation(Controller.class);
     <span class="comment">// do something with the annotation</span>
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The above example will find all <a href="../api/io/micronaut/inject/BeanDefinition.html">BeanDefinition</a> annotated with <code>@Controller</code> regardless whether <code>@Controller</code> is used directly or inherited via an annotation stereotype.</p>
+</div>
+<div class="paragraph">
+<p>Note that the <code>getAnnotation</code> method and the variations of the method return a <a href="../api/io/micronaut/core/annotation/AnnotationValue.html">AnnotationValue</a> type and not a Java annotation. This is by design, and you should generally try to work with this API when reading annotation values.</p>
+</div>
+<div class="paragraph">
+<p>If you absolutely require a reference to an annotation instance you can use the <code>synthesize</code> method, which will create a runtime proxy that implements the annotation interface:</p>
+</div>
+<div class="listingblock">
+<div class="title">Synthesizing Annotation Instances</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">Controller controllerAnn = definition.synthesize(Controller.class);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This approach is not recommended however, as it requires reflection and increases memory consumption due to the use of runtime created proxies and should be used as a last resort (for example if you need to an instance of the annotation to integrate with a third party library).</p>
 </div>
 <div class="paragraph">
 <p>Like Spring, Micronaut also supports an <a href="../api/io/micronaut/context/annotation/AliasFor.html">@AliasFor</a> annotation that allows an annotation member to represent the value of another annotation member.</p>

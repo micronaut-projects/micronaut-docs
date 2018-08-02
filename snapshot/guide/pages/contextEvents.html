@@ -131,7 +131,7 @@ function addJsClass() {
 <p>Micronaut supports a general event system through the context. The <a href="../api/io/micronaut/context/event/ApplicationEventPublisher.html">ApplicationEventPublisher</a> API is used to publish events and the <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> API is used to listen to events. The event system is not limited to the events that Micronaut publishes and can be used for custom events created by the users.</p>
 </div>
 <div class="sect2">
-<h3 id="_publishing">Publishing</h3>
+<h3 id="_event_publishing">Event Publishing</h3>
 <div class="paragraph">
 <p>The <a href="../api/io/micronaut/context/event/ApplicationEventPublisher.html">ApplicationEventPublisher</a> API supports events of any type, however all events that Micronaut publishes extend <a href="../api/io/micronaut/context/event/ApplicationEvent.html">ApplicationEvent</a>.</p>
 </div>
@@ -166,11 +166,12 @@ Publishing an event is <strong>synchronous</strong>! The <code>publishEvent</cod
 </div>
 </div>
 <div class="sect2">
-<h3 id="_listening">Listening</h3>
+<h3 id="_event_listening">Event Listening</h3>
 <div class="paragraph">
 <p>To listen to an event, register a bean that implements <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> where the generic type is the type of event the listener should be executed for.</p>
 </div>
 <div class="listingblock">
+<div class="title">Listening for Events with <code>ApplicationEventListener</code></div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Singleton</span>
 <span class="directive">public</span> <span class="type">class</span> <span class="class">DoOnStartup</span> <span class="directive">implements</span> ApplicationEventListener&lt;ServiceStartedEvent&gt; {
@@ -193,6 +194,24 @@ The <a href="../api/io/micronaut/context/event/ApplicationEventListener.html#sup
 </td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>Alternatively you can use the <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> annotation if you do not wish to specifically implement an interface:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listening for Events with <code>@EventListener</code></div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.runtime.event.annotation.EventListener</span>;
+...
+<span class="annotation">@Singleton</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">DoOnStartup</span>  {
+
+    <span class="annotation">@EventListener</span>
+    <span class="type">void</span> onStartup(ServiceStartedEvent event) {
+        ...
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 

@@ -150,13 +150,28 @@ Collection&lt;BeanDefinition&gt; definitions =
     beanContext.getBeanDefinitions(Qualifiers.byStereotype(Controller.class))
 
 <span class="keyword">for</span>(BeanDefinition definition : definitions) {
-    Controller controllerAnn = definition.synthesize(Controller.class);
+    AnnotationValue&lt;Controller&gt; controllerAnn = definition.getAnnotation(Controller.class);
     <span class="comment">// do something with the annotation</span>
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The above example will find all <a href="../api/io/micronaut/inject/BeanDefinition.html">BeanDefinition</a> annotated with <code>@Controller</code> regardless whether <code>@Controller</code> is used directly or inherited via an annotation stereotype.</p>
+</div>
+<div class="paragraph">
+<p>Note that the <code>getAnnotation</code> method and the variations of the method return a <a href="../api/io/micronaut/core/annotation/AnnotationValue.html">AnnotationValue</a> type and not a Java annotation. This is by design, and you should generally try to work with this API when reading annotation values.</p>
+</div>
+<div class="paragraph">
+<p>If you absolutely require a reference to an annotation instance you can use the <code>synthesize</code> method, which will create a runtime proxy that implements the annotation interface:</p>
+</div>
+<div class="listingblock">
+<div class="title">Synthesizing Annotation Instances</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">Controller controllerAnn = definition.synthesize(Controller.class);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This approach is not recommended however, as it requires reflection and increases memory consumption due to the use of runtime created proxies and should be used as a last resort (for example if you need to an instance of the annotation to integrate with a third party library).</p>
 </div>
 <div class="paragraph">
 <p>Like Spring, Micronaut also supports an <a href="../api/io/micronaut/context/annotation/AliasFor.html">@AliasFor</a> annotation that allows an annotation member to represent the value of another annotation member.</p>
