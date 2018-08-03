@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>7.1.5 Configuring HTTP clients 1.0.0.BUILD-SNAPSHOT</title>
+    <title>8.2.4 Manual Service Discovery Configuration 1.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -98,18 +98,18 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../../guide/httpServer.html">&lt;&lt; <strong>6</strong><span>The HTTP Server</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/httpClient.html">&lt;&lt; <strong>7</strong><span>The HTTP Client</span></a></div>
                 
 
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span> >></a></div>
                 
 
 
                 <div class="project">
-                    <h1>7.1.5 Configuring HTTP clients</h1>
+                    <h1>8.2.4 Manual Service Discovery Configuration</h1>
 
                     <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
                 </div>
@@ -118,76 +118,90 @@ function addJsClass() {
 
                 
 
-<h2 id="clientConfiguration">7.1.5 Configuring HTTP clients</h2>
+<h2 id="serviceDiscoveryManual">8.2.4 Manual Service Discovery Configuration</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpClient/lowLevelHttpClient/clientConfiguration.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/cloud/serviceDiscovery/serviceDiscoveryManual.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
 
 
 <div class="paragraph">
-<p>The default HTTP client configuration is a <a href="#configurationProperties">Configuration Properties</a> called <a href="../api/io/micronaut/http/client/DefaultHttpClientConfiguration.html">DefaultHttpClientConfiguration</a> that allows configuring the default behaviour for all HTTP clients. For example, in <code>application.yml</code>:</p>
+<p>If you do not wish to involve a service discovery server like Consul or you are interacting with a third-party service that cannot register with Consul you can instead manually configure services that are available via Service discovery.</p>
+</div>
+<div class="paragraph">
+<p>To do this you should use the <code>micronaut.http.services</code> setting. The following is an example configuration:</p>
 </div>
 <div class="listingblock">
-<div class="title">Altering default HTTP client configuration</div>
+<div class="title">Manually configuring services</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
     <span class="key">http</span>:
-        <span class="key">client</span>:
-            <span class="key">readTimeout</span>: <span class="string"><span class="content">5s</span></span></code></pre>
+        <span class="key">services</span>:
+            <span class="key">foo</span>:
+                <span class="key">urls</span>:
+                    - <span class="string"><span class="content">http://foo1</span></span>
+                    - <span class="string"><span class="content">http://foo2</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The above example sets of <code>readTimeout</code> property of the <a href="../api/io/micronaut/http/client/HttpClientConfiguration.html">HttpClientConfiguration</a> class.</p>
+<p>You can then inject a client with <code>@Client("foo")</code> and it will use the above configuration to load balance between the two configured servers.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can override this configuration in production by specifying an environment variable such as <code>MICRONAUT_HTTP_SERVICES_FOO_URLS=http://prod1,http://prod2</code>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>If you wish to have a separate configuration per client then there are a couple of options. An option that fits nicely with <a href="#serviceDiscovery">Service Discovery</a> is to define a named bean that is a subclass of <a href="../api/io/micronaut/http/client/HttpClientConfiguration.html">HttpClientConfiguration</a>.</p>
-</div>
-<div class="paragraph">
-<p>You can do that by simply defining a bean that extends from <a href="../api/io/micronaut/http/client/HttpClientConfiguration.html">HttpClientConfiguration</a> and ensuring that the <code>javax.inject.Named</code> annotation is used to name it appropriately:</p>
+<p>Note that by default no health checking will happen to assert that the referenced services are operational. You can alter that by enabling health checking and optionally specifying a health check path (the default is <code>/heath</code>):</p>
 </div>
 <div class="listingblock">
-<div class="title">Defining an HTTP client configuration bean</div>
+<div class="title">Enabling Health Checking</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Named</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">HelloConfiguration</span> <span class="directive">extends</span> HttpClientConfiguration {
-   <span class="directive">public</span> HelloConfiguration(ApplicationConfiguration applicationConfiguration) {
-        <span class="local-variable">super</span>(applicationConfiguration);
-    }
-}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">http</span>:
+        <span class="key">services</span>:
+            <span class="key">foo</span>:
+                <span class="error">...</span>
+                <span class="key">health-check</span>: <span class="string"><span class="content">true </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+                <span class="key">health-check-interval</span>: <span class="string"><span class="content">15s </span></span><i class="conum" data-value="2"></i><b>(2)</b>
+                <span class="key">health-check-uri</span>: <span class="string"><span class="content">/health </span></span><i class="conum" data-value="3"></i><b>(3)</b></code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Whether to health check the service</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The interval to wait between checks</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The URI to send the health check request to</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>This configuration will then be picked up if you inject a service called <code>hello</code> using <code>@Client</code> using <a href="#serviceDiscovery">Service Discovery</a>:</p>
-</div>
-<div class="listingblock">
-<div class="title">Injecting an HTTP client</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>) <span class="annotation">@Inject</span> RxHttpClient httpClient;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Alternatively if you are not using service discovery then you can use the <code>configuration</code> member of <code>@Client</code> to refer to a specific type:</p>
-</div>
-<div class="listingblock">
-<div class="title">Injecting an HTTP client</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(value=<span class="string"><span class="delimiter">&quot;</span><span class="content">https://api.twitter.com/1.1</span><span class="delimiter">&quot;</span></span>,
-        configuration=TwitterHttpClientConfiguration.class)
-<span class="annotation">@Inject</span>
-RxHttpClient httpClient;</code></pre>
-</div>
+<p>Micronaut will start a background thread to check the health status of the service and if any of the configured services respond with an error code, they will be removed from the list of available services.</p>
 </div>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../../guide/httpServer.html">&lt;&lt; <strong>6</strong><span>The HTTP Server</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/httpClient.html">&lt;&lt; <strong>7</strong><span>The HTTP Client</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

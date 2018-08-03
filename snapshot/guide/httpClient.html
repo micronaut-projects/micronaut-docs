@@ -982,16 +982,7 @@ headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline
 <p>If you wish to have a separate configuration per client then there are a couple of options. An option that fits nicely with <a href="#serviceDiscovery">Service Discovery</a> is to define a named bean that is a subclass of <a href="../api/io/micronaut/http/client/HttpClientConfiguration.html">HttpClientConfiguration</a>.</p>
 </div>
 <div class="paragraph">
-<p>For example given an injected client for a service called <code>hello</code> using <code>@Client</code>:</p>
-</div>
-<div class="listingblock">
-<div class="title">Injecting an HTTP client</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>) <span class="annotation">@Inject</span> RxHttpClient httpClient;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To configure the property of the HTTP client you can define the following bean:</p>
+<p>You can do that by simply defining a bean that extends from <a href="../api/io/micronaut/http/client/HttpClientConfiguration.html">HttpClientConfiguration</a> and ensuring that the <code>javax.inject.Named</code> annotation is used to name it appropriately:</p>
 </div>
 <div class="listingblock">
 <div class="title">Defining an HTTP client configuration bean</div>
@@ -1003,6 +994,15 @@ headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline
         <span class="local-variable">super</span>(applicationConfiguration);
     }
 }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This configuration will then be picked up if you inject a service called <code>hello</code> using <code>@Client</code> using <a href="#serviceDiscovery">Service Discovery</a>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Injecting an HTTP client</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>) <span class="annotation">@Inject</span> RxHttpClient httpClient;</code></pre>
 </div>
 </div>
 <div class="paragraph">

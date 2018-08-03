@@ -139,6 +139,9 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:10px"><a href="#serviceDiscoveryKubernetes"><strong>8.2.3</strong><span>Kubernetes Support</span></a>
                     </div>
                     
+                    <div class="toc-item" style="margin-left:10px"><a href="#serviceDiscoveryManual"><strong>8.2.4</strong><span>Manual Service Discovery Configuration</span></a>
+                    </div>
+                    
                     <div class="toc-item" style="margin-left:0px"><a href="#clientSideLoadBalancing"><strong>8.3</strong><span>Client Side Load Balancing</span></a>
                     </div>
                     
@@ -1064,6 +1067,85 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 </div>
 <div class="paragraph">
 <p>Since Kubernetes itself assumes responsibility for tasks such as health checks, load balancing and so on there is no need to send <a href="../api/io/micronaut/health/HeartbeatEvent.html">HeartbeatEvent</a> instances and so on.</p>
+</div>
+
+
+<h2 id="serviceDiscoveryManual">8.2.4 Manual Service Discovery Configuration</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/cloud/serviceDiscovery/serviceDiscoveryManual.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you do not wish to involve a service discovery server like Consul or you are interacting with a third-party service that cannot register with Consul you can instead manually configure services that are available via Service discovery.</p>
+</div>
+<div class="paragraph">
+<p>To do this you should use the <code>micronaut.http.services</code> setting. The following is an example configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">Manually configuring services</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">http</span>:
+        <span class="key">services</span>:
+            <span class="key">foo</span>:
+                <span class="key">urls</span>:
+                    - <span class="string"><span class="content">http://foo1</span></span>
+                    - <span class="string"><span class="content">http://foo2</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can then inject a client with <code>@Client("foo")</code> and it will use the above configuration to load balance between the two configured servers.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can override this configuration in production by specifying an environment variable such as <code>MICRONAUT_HTTP_SERVICES_FOO_URLS=http://prod1,http://prod2</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note that by default no health checking will happen to assert that the referenced services are operational. You can alter that by enabling health checking and optionally specifying a health check path (the default is <code>/heath</code>):</p>
+</div>
+<div class="listingblock">
+<div class="title">Enabling Health Checking</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">http</span>:
+        <span class="key">services</span>:
+            <span class="key">foo</span>:
+                <span class="error">...</span>
+                <span class="key">health-check</span>: <span class="string"><span class="content">true </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+                <span class="key">health-check-interval</span>: <span class="string"><span class="content">15s </span></span><i class="conum" data-value="2"></i><b>(2)</b>
+                <span class="key">health-check-uri</span>: <span class="string"><span class="content">/health </span></span><i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Whether to health check the service</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The interval to wait between checks</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The URI to send the health check request to</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Micronaut will start a background thread to check the health status of the service and if any of the configured services respond with an error code, they will be removed from the list of available services.</p>
 </div>
 
 
