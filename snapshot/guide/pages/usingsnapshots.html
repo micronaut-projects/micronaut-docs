@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>17.4 Breaking Changes 1.0.0.BUILD-SNAPSHOT</title>
+    <title>17.2 Using Snapshots 1.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -107,7 +107,7 @@ function addJsClass() {
 
 
                 <div class="project">
-                    <h1>17.4 Breaking Changes</h1>
+                    <h1>17.2 Using Snapshots</h1>
 
                     <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
                 </div>
@@ -116,123 +116,50 @@ function addJsClass() {
 
                 
 
-<h2 id="breaks">17.4 Breaking Changes</h2>
+<h2 id="usingsnapshots">17.2 Using Snapshots</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/appendix/breaks.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/appendix/usingsnapshots.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
 
 
 <div class="paragraph">
-<p>This section will document breaking changes that may happen during milestone or release candidate releases, as well as major releases eg (1.x.x &#8594; 2.x.x).</p>
+<p>Micronaut milestone and stable releases are distributed to <a href="https://bintray.com/micronaut">Bintray</a>.</p>
 </div>
-<div class="sect3">
-<h4 id="_1_0_0_m4">1.0.0.M4</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Libraries compiled against earlier versions of Micronaut are not binary compatible with this release.</p>
-</li>
-<li>
-<p>The Java module names generated in previous versions were invalid because they contained a <code>-</code>. Module names with dashes were converted to an underscore. For example: <code>io.micronaut.inject-java</code> &#8594; <code>io.micronaut.inject_java</code>.</p>
-</li>
-<li>
-<p>The annotation metadata API has been changed to no longer use reflective proxies for annotations. The methods that used to return the proxies now return an <code>AnnotationValue</code> that contains all of the data that existed in the proxy. The methods to create the proxies now exist under <code>synthesize..</code>.</p>
-</li>
-<li>
-<p>Many classes no longer implement <code>AnnotatedElement</code>.</p>
-</li>
-<li>
-<p><code>AnnotationUtil</code> has seen significant changes and is now marked as an internal class.</p>
-</li>
-<li>
-<p><code>BeanContext.getBeanRegistrations</code> has been renamed to <code>BeanContext.getActiveBeanRegistrations</code>.</p>
-</li>
-<li>
-<p>Endpoint annotations have moved packages: <code>io.micronaut.management.endpoint</code> &#8594; <code>io.micronaut.management.endpoint.annotation</code>.</p>
-</li>
-<li>
-<p>Endpoint method arguments were previously included in the route URI by default. Now endpoint arguments are <strong>not</strong> included in the route URI by default. An annotation, <code>@Selector</code> has been added to indicate an endpoint argument <strong>should</strong> be included in the URI.</p>
-</li>
-<li>
-<p>The <code>@Controller</code> annotation now requires a value. Previously a convention was used to determine the URI.</p>
-</li>
-<li>
-<p>The <code>HttpMethodMapping</code> annotations (<code>@Get</code>, <code>@Put</code>, etc) have changed their default behavior. They no longer use a convention based off the method name if the URI was not provided. The URI is still not required, however it now defaults to <code>/</code>. The new default means the method will be accessible from the controller URI.</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>The following snippet shows how to use Micronaut <code>BUILD-SNAPSHOT</code> with Gradle:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">ext {
+  micronautVersion = <span class="string"><span class="delimiter">'</span><span class="content">1.0.0.BUILD-SNAPSHOT</span><span class="delimiter">'</span></span>
+}
+repositories {
+  mavenLocal()
+  mavenCentral()
+  jcenter() <i class="conum" data-value="1"></i><b>(1)</b>
+  maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://oss.sonatype.org/content/repositories/snapshots/</span><span class="delimiter">&quot;</span></span> } <i class="conum" data-value="2"></i><b>(2)</b>
+}
+dependencyManagement {
+  imports {
+      mavenBom <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:bom:</span><span class="inline"><span class="inline-delimiter">$</span>micronautVersion</span><span class="delimiter">&quot;</span></span>
+  }
+}</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_1_0_0_m3">1.0.0.M3</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>The contract for <code>io.micronaut.http.codec.MediaTypeCodec</code> has changed to support multiple media types.</p>
-</li>
-<li>
-<p>To reduce confusion around <code>@Parameter</code>, it can no longer be used to denote an argument should be bound from the request url. Its sole purpose is defining arguments for parameterized beans. Use <code>@QueryValue</code> instead.</p>
-</li>
-<li>
-<p>The health endpoint will now only report details when the user is authenticated. To revert to the previous behavior, set <code>endpoints.health.detailsVisible: ANONYMOUS</code>.</p>
-</li>
-<li>
-<p>The CLI options have been standardized to use two leading dashes for long options (like <code>--stacktrace</code>) and one for shortcuts (like <code>-h</code>). That means that some options no longer work. For example, this command used to work with M2: <code>create-app -lang groovy myapp</code>. From M3, you will see this error: <code>Could not convert 'ang' to SupportedLanguage for option '--lang'</code>. Specifying either <code>-l LANG</code> or <code>--lang LANG</code> works as expected.</p>
-</li>
-<li>
-<p>The following packages have been renamed:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><code>io.micronaut.configurations.ribbon</code> &#8594; <code>io.micronaut.configuration.ribbon</code></p>
-</li>
-<li>
-<p><code>io.micronaut.configurations.hystrix</code> &#8594; <code>io.micronaut.configuration.hystrix</code></p>
-</li>
-<li>
-<p><code>io.micronaut.configurations.aws</code> &#8594; <code>io.micronaut.configuration.aws</code></p>
-</li>
-<li>
-<p><code>io.micronaut.http.netty.buffer</code> &#8594; <code>io.micronaut.buffer.netty</code></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>The default Consul configuration prefix has been changed to reflect changes in the latest version of Consul. Previously a leading slash was expected and the default value was <code>/config/</code>. The new default value is <code>config/</code>. To restore the previous behavior, set <code>consul.client.config.path = /config/</code></p>
-</li>
-<li>
-<p>The <code>session</code> module will now serialize POJOs to JSON using Jackson by default instead of Java Serialization. This change is because Java serialization will be removed and deprecated in a future version of the JDK.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_1_0_0_m2">1.0.0.M2</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>The constructor signature for DefaultHttpClient has changed to include an extra argument. This change should not impact existing uses.</p>
-</li>
-<li>
-<p>Libraries compiled against M1 are not binary compatible with M2.</p>
-</li>
-<li>
-<p>For Java 9+ automatic module name has been set to <code>&lt;groupId&gt;.&lt;name&gt;</code>. Previously if you have been using the "inject-java" module, the module is now named "io.micronaut.inject-java".</p>
-</li>
-<li>
-<p>When an HttpClientResponseException is thrown, the body of the response will be set to the exception message for responses with a text media type. Previously the status description was returned.</p>
-</li>
-<li>
-<p>Mongo configurations were updated to a new version of the driver (3.6.1 &#8594; 3.7.1), which may break existing uses. See their <a href="http://mongodb.github.io/mongo-java-driver/3.7/upgrading/">upgrading</a> page for more information.</p>
-</li>
-<li>
-<p>The <code>router</code> configuration key was changed to be <code>micronaut.router</code>. Static resource configuration is affected by this change. Please update your configuration: <code>router.static.resources</code> &#8594; <code>micronaut.router.static.resources</code>.</p>
-</li>
-</ul>
-</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Micronaut releases are available on jcenter</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Micronaut snapshots are available on sonatype</td>
+</tr>
+</table>
 </div>
 
 
