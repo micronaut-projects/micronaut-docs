@@ -134,48 +134,6 @@ function addJsClass() {
 <h2 id="_uri_paths">URI Paths</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In the previous example a value of <code>/hello</code> was specified as the path to the controller. If no value is specified to the <code>@Controller</code> action then the URI is formulated from the class name.</p>
-</div>
-<div class="paragraph">
-<p>The following table summarizes values for the <code>@Controller</code> annotation and the calculated base paths:</p>
-</div>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Class Name</th>
-<th class="tableblock halign-left valign-top">Annotation</th>
-<th class="tableblock halign-left valign-top">Path</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HelloController</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Controller</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/hello</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HelloWorldController</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Controller</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/hello-world</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HelloController</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Controller("/somepath")</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/somepath</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HelloController</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Controller("/")</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/</code></p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
 <p>The value of the <code>@Controller</code> annotation is a <a href="https://tools.ietf.org/html/rfc6570">RFC-6570 URI template</a> you can therefore embed URI variables within the path using the syntax defined by the URI template specification.</p>
 </div>
 <div class="admonitionblock note">
@@ -235,7 +193,7 @@ assertEquals(template.expand(  <i class="conum" data-value="2"></i><b>(2)</b>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
 
-<span class="annotation">@Controller</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/issues</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
 <span class="directive">public</span> <span class="type">class</span> <span class="class">IssuesController</span> {
 
     <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/{number}</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
@@ -470,21 +428,17 @@ assertEquals(template.expand(  <i class="conum" data-value="2"></i><b>(2)</b>
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>If no URI path is specified to any of the annotations then the method name is used as the URI. In other words both of the following methods are essentially equivalent and map to the <code>/hello</code> URI:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello</span><span class="delimiter">&quot;</span></span>)
-<span class="predefined-type">String</span> hello() {
-    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello World</span><span class="delimiter">&quot;</span></span>;
-}
-
-<span class="annotation">@Get</span>
-<span class="predefined-type">String</span> hello() {
-    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello World</span><span class="delimiter">&quot;</span></span>;
-}</code></pre>
-</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+All of the method annotations default to <code>/</code>.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
