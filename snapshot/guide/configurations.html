@@ -512,6 +512,25 @@ For GORM for Hibernate you should not have both the <code>hibernate-jpa</code> a
 </div>
 </div>
 <div class="sect3">
+<h4 id="_injecting_an_entitymanager_or_hibernate_session">Injecting an EntityManager or Hibernate Session</h4>
+<div class="paragraph">
+<p>You can use the <code>javax.persistence.PersistenceContext</code> annotation to inject an <code>EntityManager</code> (or Hibernate <code>Session</code>):</p>
+</div>
+<div class="listingblock">
+<div class="title">Using <code>@PersistenceContext</code></div>
+<div class="content">
+<pre>@PersistenceContext
+EntityManager entityManager;
+
+@PersistenceContext(name = "other")
+EntityManager otherManager;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Micronaut will inject a compile time scoped proxy that retrieves the <code>EntityManager</code> associated with the current transaction when using <a href="../api/io/micronaut/spring/tx/Transactional.html">@Transactional</a> (see "Using Spring Transaction Management" below).</p>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_customizing_hibernate_jpa_configuration">Customizing Hibernate / JPA Configuration</h4>
 <div class="paragraph">
 <p>There are several different ways you can customize and configure how the <code>SessionFactory</code> is built. The easiest way is via configuration in <code>application.yml</code>. The following configuration demonstrates an example:</p>
@@ -562,7 +581,7 @@ For GORM for Hibernate you should not have both the <code>hibernate-jpa</code> a
 <p>When using <a href="../api/io/micronaut/spring/tx/annotation/Transactional.html">@Transactional</a> the Hibernate <code>Session</code> will only be open for the duration of this method execution and then will automatically be closed. This ensures that the blocking operation is kept as short as possible.</p>
 </div>
 <div class="paragraph">
-<p>There is no notion of OpenSessionInView (OSIV) in Micronaut and never will be, since it is <a href="https://vladmihalcea.com/the-open-session-in-view-anti-pattern/">sub-optimal and not recommended</a>. You should optimize the queries that you write to return all the necessary data Micronaut will need to encode your objects into JSON.</p>
+<p>There is no notion of OpenSessionInView (OSIV) in Micronaut and never will be, since it is <a href="https://vladmihalcea.com/the-open-session-in-view-anti-pattern/">sub-optimal and not recommended</a>. You should optimize the queries that you write to return all the necessary data Micronaut will need to encode your objects into JSON either by using the appropriate join queries or using a <a href="https://vladmihalcea.com/the-best-way-to-map-a-projection-query-to-a-dto-with-jpa-and-hibernate/">data transfer object (DTO)</a>.</p>
 </div>
 <div class="paragraph">
 <p>If you encounter a <code>LazyInitializationException</code> when returning a Hibernate entity from a method it is an indication that your query is suboptimal and you should perform a join.</p>
@@ -571,7 +590,7 @@ For GORM for Hibernate you should not have both the <code>hibernate-jpa</code> a
 <div class="sect3">
 <h4 id="_using_gorm_for_hibernate">Using GORM for Hibernate</h4>
 <div class="paragraph">
-<p>For Groovy users and users familiar with Grails framework special support for <a href="http://gorm.grails.org">GORM for Hibernate</a> is available. To use GORM for Hibernate you should not include Micronaut&#8217;s built in <a href="#sqlSupport">SQL Support</a> or the <code>hibernate-jpa</code> dependency since GORM itself takes responsibility for creating the <code>DataSource</code>, <code>SessionFactory</code> etc.</p>
+<p>For Groovy users and users familiar with Grails framework special support for <a href="http://gorm.grails.org">GORM for Hibernate</a> is available. To use GORM for Hibernate you <strong>should not</strong> include Micronaut&#8217;s built in <a href="#sqlSupport">SQL Support</a> or the <code>hibernate-jpa</code> dependency since GORM itself takes responsibility for creating the <code>DataSource</code>, <code>SessionFactory</code> etc.</p>
 </div>
 <div class="paragraph">
 <p>Instead you should only define the <code>hibernate-gorm</code> dependency, a connection pool implementation and the necessary JDBC driver. For example:</p>
