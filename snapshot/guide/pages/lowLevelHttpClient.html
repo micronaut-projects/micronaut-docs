@@ -895,6 +895,8 @@ headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline
 </div>
 
 
+<div class="sect2">
+<h3 id="_global_configuration_for_all_clients">Global Configuration for All Clients</h3>
 <div class="paragraph">
 <p>The default HTTP client configuration is a <a href="#configurationProperties">Configuration Properties</a> called <a href="../api/io/micronaut/http/client/DefaultHttpClientConfiguration.html">DefaultHttpClientConfiguration</a> that allows configuring the default behaviour for all HTTP clients. For example, in <code>application.yml</code>:</p>
 </div>
@@ -904,37 +906,70 @@ headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline
 <pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
     <span class="key">http</span>:
         <span class="key">client</span>:
-            <span class="key">readTimeout</span>: <span class="string"><span class="content">5s</span></span></code></pre>
+            <span class="key">read-timeout</span>: <span class="string"><span class="content">5s</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The above example sets of <code>readTimeout</code> property of the <a href="../api/io/micronaut/http/client/HttpClientConfiguration.html">HttpClientConfiguration</a> class.</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_client_specific_configuration">Client Specific Configuration</h3>
 <div class="paragraph">
-<p>If you wish to have a separate configuration per client then there are a couple of options. An option that fits nicely with <a href="#serviceDiscovery">Service Discovery</a> is to define a named bean that is a subclass of <a href="../api/io/micronaut/http/client/HttpClientConfiguration.html">HttpClientConfiguration</a>.</p>
+<p>If you wish to have a separate configuration per client then there a couple of options. You can configure <a href="#serviceDiscoveryManual">Service Discovery</a> manually in <code>application.yml</code> and apply per-client configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">Manually configuring HTTP services</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">http</span>:
+        <span class="key">services</span>:
+            <span class="key">foo</span>:
+                <span class="key">urls</span>:
+                    - <span class="string"><span class="content">http://foo1</span></span>
+                    - <span class="string"><span class="content">http://foo2</span></span>
+                <span class="key">read-timeout</span>: <span class="string"><span class="content">5s </span></span><i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The read timeout is applied to the <code>foo</code> client.</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>You can do that by simply defining a bean that extends from <a href="../api/io/micronaut/http/client/HttpClientConfiguration.html">HttpClientConfiguration</a> and ensuring that the <code>javax.inject.Named</code> annotation is used to name it appropriately:</p>
+<p>Then simply inject the named client configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">Injecting an HTTP client</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">foo</span><span class="delimiter">&quot;</span></span>) <span class="annotation">@Inject</span> RxHttpClient httpClient;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also simply define a bean that extends from <a href="../api/io/micronaut/http/client/HttpClientConfiguration.html">HttpClientConfiguration</a> and ensuring that the <code>javax.inject.Named</code> annotation is used to name it appropriately:</p>
 </div>
 <div class="listingblock">
 <div class="title">Defining an HTTP client configuration bean</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Named</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>)
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Named</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">twitter</span><span class="delimiter">&quot;</span></span>)
 <span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">HelloConfiguration</span> <span class="directive">extends</span> HttpClientConfiguration {
-   <span class="directive">public</span> HelloConfiguration(ApplicationConfiguration applicationConfiguration) {
+<span class="type">class</span> <span class="class">TwitterHttpClientConfiguration</span> <span class="directive">extends</span> HttpClientConfiguration {
+   <span class="directive">public</span> TwitterHttpClientConfiguration(ApplicationConfiguration applicationConfiguration) {
         <span class="local-variable">super</span>(applicationConfiguration);
     }
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This configuration will then be picked up if you inject a service called <code>hello</code> using <code>@Client</code> using <a href="#serviceDiscovery">Service Discovery</a>:</p>
+<p>This configuration will then be picked up if you inject a service called <code>twitter</code> using <code>@Client</code> using <a href="#serviceDiscovery">Service Discovery</a>:</p>
 </div>
 <div class="listingblock">
 <div class="title">Injecting an HTTP client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>) <span class="annotation">@Inject</span> RxHttpClient httpClient;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">twitter</span><span class="delimiter">&quot;</span></span>) <span class="annotation">@Inject</span> RxHttpClient httpClient;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -947,6 +982,43 @@ headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline
         configuration=TwitterHttpClientConfiguration.class)
 <span class="annotation">@Inject</span>
 RxHttpClient httpClient;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_using_http_client_connection_pooling">Using HTTP Client Connection Pooling</h3>
+<div class="paragraph">
+<p>If you have a client that needs to handle a significant number of requests then you can benefit from enabling HTTP client connection pooling. The following configuration will enable pooling for the <code>foo</code> client:</p>
+</div>
+<div class="listingblock">
+<div class="title">Manually configuring HTTP services</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">http</span>:
+        <span class="key">services</span>:
+            <span class="key">foo</span>:
+                <span class="key">urls</span>:
+                    - <span class="string"><span class="content">http://foo1</span></span>
+                    - <span class="string"><span class="content">http://foo2</span></span>
+                <span class="key">pool</span>:
+                    <span class="key">enabled</span>: <span class="string"><span class="content">true </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+                    <span class="key">max-connections</span>: <span class="string"><span class="content">50 </span></span><i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Enables the pool</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Sets the maximum number of connections in the pool</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>See the API for <a href="../api/io/micronaut/http/client/HttpClientConfiguration.ConnectionPoolConfiguration.html">ConnectionPoolConfiguration</a> for details on available options to configure the pool.</p>
 </div>
 </div>
 
