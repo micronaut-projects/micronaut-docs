@@ -244,6 +244,14 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-https"><a href="#https"><strong>6.21.3</strong><span>Securing the Server with HTTPS</span></a></div>
         
+        <div class="toc-item" style="margin-left:10px" id="toc-item-views"><a href="#views"><strong>6.22</strong><span>Server Side View Rendering</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-thymeleaf"><a href="#thymeleaf"><strong>6.22.1</strong><span>Thymeleaf</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-handlebars"><a href="#handlebars"><strong>6.22.2</strong><span>Handlebars.java</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-velocity"><a href="#velocity"><strong>6.22.3</strong><span>Apache Velocity</span></a></div>
+        
         <div class="toc-item" style="margin-left:0px" id="toc-item-httpClient"><a href="#httpClient"><strong>7</strong><span>The HTTP Client</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-lowLevelHttpClient"><a href="#lowLevelHttpClient"><strong>7.1</strong><span>Using the Low-Level HTTP Client</span></a></div>
@@ -617,7 +625,7 @@
 
 
 <div class="paragraph">
-<p>Apart from <a href="https://github.com/micronaut-projects/micronaut-core/milestone/3?closed=1">issues resolved and minor enhancements</a> since the last release of Micronaut, this section covers significant new features.</p>
+<p>Apart from <a href="https://github.com/micronaut-projects/micronaut-core/milestone/4?closed=1">issues resolved and minor enhancements</a> since the last release of Micronaut, this section covers significant new features.</p>
 </div>
 <div class="sect2">
 <h3 id="_bean_generics_computed_at_compile_time">Bean Generics Computed at Compile Time</h3>
@@ -8105,6 +8113,26 @@ If you do significant work within a listener for a <a href="../api/io/micronaut/
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Alternatively, you can also use the <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> annotation on a method of any existing bean that accepts <code>ServerStartupEvent</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using <code>@EventListener</code> with <code>ServerStartupEvent</code></div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.runtime.server.event</span>.*;
+<span class="keyword">import</span> <span class="include">io.micronaut.runtime.event.annotation</span>.*;
+...
+<span class="annotation">@Singleton</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">MyBean</span> {
+
+    <span class="annotation">@EventListener</span>
+    <span class="directive">public</span> <span class="type">void</span> onStartup(ServerStartupEvent event) {
+        <span class="comment">// logic here</span>
+        ...
+    }
+}</code></pre>
+</div>
+</div>
 
 
 <h2 id="serverConfiguration">6.21 Configuring the HTTP Server</h2>
@@ -8618,6 +8646,273 @@ If either <code>srcstorepass</code> or <code>alias</code> are not the same as de
 <div class="paragraph">
 <p>Start Micronaut and the application is running on <code><a href="https://localhost:8443" class="bare">https://localhost:8443</a></code> using the certificate in the keystore.</p>
 </div>
+</div>
+</div>
+
+
+<h2 id="views">6.22 Server Side View Rendering</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/views.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Although Micronaut is primarily designed around message encoding / decoding there are occasions where it is convenient to render a view on the server side.</p>
+</div>
+<div class="paragraph">
+<p>The <code>views</code> module provides support for view rendering on the server side and does so by rendering views on the I/O thread pool in order to avoid blocking the Netty event loop.</p>
+</div>
+<div class="paragraph">
+<p>To use the view rendering features described in this section, add the following dependency on your classpath. For example, in <code>build.gradle</code></p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:views</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Views and templates can then be placed in the <code>src/main/resource/views</code> directory of your project.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to use a different folder instead of <code>views</code>, set the property <code>micronaut.views.folder</code>.</p>
+</div>
+<div class="paragraph">
+<p>Your controller&#8217;s method can render the response with a template with the the <a href="../api/io/micronaut/views/View.html">View</a> annotation.</p>
+</div>
+<div class="paragraph">
+<p>The following is an example of a controller which renders a template by passing a model as a <code>java.util.Map</code> via the returned response object.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/java/myapp/ViewsController.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/views</span><span class="delimiter">&quot;</span></span>)
+<span class="type">class</span> <span class="class">ViewsController</span> {
+
+    <span class="annotation">@View</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">home</span><span class="delimiter">&quot;</span></span>)
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> HttpResponse index() {
+        <span class="keyword">return</span> HttpResponse.ok(CollectionUtils.mapOf(<span class="string"><span class="delimiter">&quot;</span><span class="content">loggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">sdelamo</span><span class="delimiter">&quot;</span></span>));
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use <code>@View</code> annotation to indicate the view name which should be used to render a view for the route.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In addition, you can return any POJO object and the properties of the POJO will be exposed to the view for rendering:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/java/myapp/ViewsController.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/views</span><span class="delimiter">&quot;</span></span>)
+<span class="type">class</span> <span class="class">ViewsController</span> {
+
+    <span class="annotation">@View</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">home</span><span class="delimiter">&quot;</span></span>)
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pogo</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> HttpResponse&lt;Person&gt; pogo() {
+        <span class="keyword">return</span> HttpResponse.ok(<span class="keyword">new</span> Person(<span class="string"><span class="delimiter">&quot;</span><span class="content">sdelamo</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>));
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use <code>@View</code> annotation to indicate the view name which should be used to render the POJO responded by the controller.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can also return a <a href="../api/io/micronaut/views/ModelAndView.html">ModelAndView</a> and skip specifying the <a href="../api/io/micronaut/views/View.html">View</a> annotation.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/java/myapp/ViewsController.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/views</span><span class="delimiter">&quot;</span></span>)
+<span class="type">class</span> <span class="class">ViewsController</span> {
+
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/modelAndView</span><span class="delimiter">&quot;</span></span>)
+    ModelAndView modelAndView() {
+        <span class="keyword">return</span> <span class="keyword">new</span> ModelAndView(<span class="string"><span class="delimiter">&quot;</span><span class="content">home</span><span class="delimiter">&quot;</span></span>,
+                <span class="keyword">new</span> Person(loggedIn: <span class="predefined-constant">true</span>, username: <span class="string"><span class="delimiter">'</span><span class="content">sdelamo</span><span class="delimiter">'</span></span>))
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following sections show different template engines integrations.</p>
+</div>
+<div class="paragraph">
+<p>To create your own implementation create a class which implements <a href="../api/io/micronaut/views/ViewRenderer.html">ViewRenderer</a> and annotate it with <a href="../api/io/micronaut/http/annotation/Produces.html">@Produces</a> to the media types the view rendering supports producing.</p>
+</div>
+
+
+<h2 id="thymeleaf">6.22.1 Thymeleaf</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/views/thymeleaf.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut includes <a href="../api/io/micronaut/views/thymeleaf/ThymeleafViewsRenderer.html">ThymeleafViewsRenderer</a> which uses
+the <a href="https://www.thymeleaf.org">Thymeleaf</a> Java template engine.</p>
+</div>
+<div class="paragraph">
+<p>In addition to the <a href="#views">Views</a> dependency, add the following dependency on your classpath. For example, in <code>build.gradle</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.thymeleaf:thymeleaf:3.0.9.RELEASE</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Thymeleaf integration instantiates a <code>ClassLoaderTemplateResolver</code>.
+The properties used can be customized by overriding the values of <a href="../api/io/micronaut/views/ThymeleafConfigurationProperties.html">ThymeleafConfigurationProperties</a>.</p>
+</div>
+<div class="paragraph">
+<p>The example shown in the <a href="#views">Views</a> section, could be rendered with the following Thymeleaf template:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/resources/views/home.html</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attribute-name">th:replace</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">~{layoutFile :: layout(~{::title}, ~{::section})}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;title&gt;</span>Home<span class="tag">&lt;/title&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+<span class="tag">&lt;section&gt;</span>
+    <span class="tag">&lt;h1</span> <span class="attribute-name">th:if</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${loggedIn}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>username: <span class="tag">&lt;span</span> <span class="attribute-name">th:text</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${username}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/span&gt;</span><span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;h1</span> <span class="attribute-name">th:unless</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${loggedIn}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>You are not logged in<span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;/section&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and layout:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/resources/views/layoutFile.html</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attribute-name">th:fragment</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout (title, content)</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">xmlns:th</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.thymeleaf.org</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;title</span> <span class="attribute-name">th:replace</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${title}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>Layout Title<span class="tag">&lt;/title&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+<span class="tag">&lt;h1&gt;</span>Layout H1<span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;div</span> <span class="attribute-name">th:replace</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${content}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;p&gt;</span>Layout content<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;footer&gt;</span>
+    Layout footer
+<span class="tag">&lt;/footer&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+</div>
+</div>
+
+
+<h2 id="handlebars">6.22.2 Handlebars.java</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/views/handlebars.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut includes <a href="../api/io/micronaut/views/handlebars/HandlebarsViewsRenderer.html">HandlebarsViewsRenderer</a> which uses
+the <a href="http://jknack.github.io/handlebars.java/">Handlebars.java</a> project.</p>
+</div>
+<div class="paragraph">
+<p>In addition to the <a href="#views">Views</a> dependency, add the following dependency on your classpath. For example, in <code>build.gradle</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.github.jknack:handlebars:4.1.0</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The example shown in the <a href="#views">Views</a> section, could be rendered with the following Handlebars template:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/resources/views/home.hbs</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;title&gt;</span>Home<span class="tag">&lt;/title&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+    {{#if loggedIn}}
+    <span class="tag">&lt;h1&gt;</span>username: <span class="tag">&lt;span&gt;</span>{{username}}<span class="tag">&lt;/span&gt;</span><span class="tag">&lt;/h1&gt;</span>
+    {{else}}
+    <span class="tag">&lt;h1&gt;</span>You are not logged in<span class="tag">&lt;/h1&gt;</span>
+    {{/if}}
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+</div>
+</div>
+
+
+<h2 id="velocity">6.22.3 Apache Velocity</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpServer/views/velocity.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut includes <a href="../api/io/micronaut/views/velocity/VelocityViewsRenderer.html">VelocityViewsRenderer</a> which uses
+the <a href="http://velocity.apache.org">Apache Velocity</a> Java-based template engine.</p>
+</div>
+<div class="paragraph">
+<p>In addition to the <a href="#views">Views</a> dependency, add the following dependency on your classpath. For example, in <code>build.gradle</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.apache.velocity:velocity-engine-core:2.0</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The example shown in the <a href="#views">Views</a> section, could be rendered with the following Velocity template:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/resources/views/home.vm</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;title&gt;</span>Home<span class="tag">&lt;/title&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+    #if( $loggedIn )
+    <span class="tag">&lt;h1&gt;</span>username: <span class="tag">&lt;span&gt;</span>$username<span class="tag">&lt;/span&gt;</span><span class="tag">&lt;/h1&gt;</span>
+    #else
+    <span class="tag">&lt;h1&gt;</span>You are not logged in<span class="tag">&lt;/h1&gt;</span>
+    #end
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
 </div>
 </div>
 
