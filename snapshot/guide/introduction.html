@@ -261,6 +261,9 @@ function addJsClass() {
 <div class="paragraph">
 <p>The above example will create a new bean at compile time that implements the <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> interface and delegates to the <code>onStartup</code> method of <code>MyBean</code>. Micronaut will automatically align the generic type arguments (if the SAM type features any) and will also perform checks at compile time to verify the method is a valid candidate, failing compilation if it isn&#8217;t.</p>
 </div>
+<div class="paragraph">
+<p>For more information see the section on <a href="#adapterAdvice">Adapter Advice</a> in the documentation.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_improved_events_api">Improved Events API</h3>
@@ -316,6 +319,9 @@ function addJsClass() {
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>For more information, see the section on <a href="#contextEvents">Application Context Events</a>.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_support_for_persistencecontext_in_jpa">Support for @PersistenceContext in JPA</h3>
@@ -334,6 +340,66 @@ EntityManager otherManager;</pre>
 </div>
 <div class="paragraph">
 <p>Micronaut will inject a compile time scoped proxy that retrieves the <code>EntityManager</code> associated with the current transaction when using <a href="../api/io/micronaut/spring/tx/Transactional.html">@Transactional</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_manual_service_discovery_configuration">Manual Service Discovery Configuration</h3>
+<div class="paragraph">
+<p>If you do not wish to use a service discovery server like Consul or Eureka and instead prefer environment variables or DNS you can manually configure service discovery in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Manually configuring services</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">http</span>:
+        <span class="key">services</span>:
+            <span class="key">foo</span>:
+                <span class="key">urls</span>:
+                    - <span class="string"><span class="content">http://foo1</span></span>
+                    - <span class="string"><span class="content">http://foo2</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With the above configuration you can inject a <a href="#httpClient">HTTP Client</a> using the <a href="../api/io/micronaut/http/client/Client.html">@Client</a> annotation and the service name <code>foo</code>. For example: <code>@Client("foo")</code> and Micronaut will automatically load balance between the configured servers.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can override this configuration in production by specifying an environment variable such as <code>MICRONAUT_HTTP_SERVICES_FOO_URLS=http://prod1,http://prod2</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For more information see the section on <a href="#serviceDiscoveryManual">Manual Service Discovery</a> configuration.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_support_for_http_client_connection_pooling">Support for HTTP Client Connection Pooling</h3>
+<div class="paragraph">
+<p>For clients that need to deal with high volumes of requests you can now enable connection pooling:</p>
+</div>
+<div class="listingblock">
+<div class="title">Enabling Connection Pooling for a Client</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
+    <span class="key">http</span>:
+        <span class="key">services</span>:
+            <span class="key">foo</span>:
+                <span class="key">pool</span>:
+                    <span class="key">enabled</span>: <span class="string"><span class="content">true </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+                    <span class="key">max-connections</span>: <span class="string"><span class="content">50 </span></span><i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above configuration will enable connection pooling for the service named <code>foo</code>.</p>
+</div>
+<div class="paragraph">
+<p>For more information see the section on <a href="#clientConfiguration">HTTP Client</a> configuration.</p>
 </div>
 </div>
 
