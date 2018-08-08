@@ -223,6 +223,84 @@ function addJsClass() {
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>Note that the IoC part of Micronaut can be used completely independently of Micronaut itself for whatever application type you may wish to build. To do so all you need to is configure your build appropriately to include the <code>inject-java</code> dependency as an annotation processor. For example with Gradle:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">plugins {
+  id "net.ltgt.apt" version "0.18" // <1>
+}
+
+...
+dependencies {
+    annotationProcessor "io.micronaut:inject-java:1.0.0.BUILD-SNAPSHOT" // <2>
+    compile "io.micronaut:inject:1.0.0.BUILD-SNAPSHOT"
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Apply the Annotation Processing plugin</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Include the minimal dependencies required to perform dependency injection</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+For the Groovy language you should include <code>inject-groovy</code> in the <code>compileOnly</code> scope.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The entry point for IoC is then the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a> interface, which includes a <code>run</code> method. The following example demonstrates using it:</p>
+</div>
+<div class="listingblock">
+<div class="title">Running the <code>ApplicationContext</code></div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">try</span> (ApplicationContext context = ApplicationContext.run()) { <i class="conum" data-value="1"></i><b>(1)</b>
+    MyBean myBean = context.getBean(MyBean.class); <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="comment">// do something with your bean</span>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Run the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Retrieve a bean that has been dependency injected</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The example uses Java&#8217;s <a href="https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html">try-with-resources</a> syntax to ensure the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a> is cleanly shutdown when the application exits.
+</td>
+</tr>
+</table>
+</div>
 
 
 <h2 id="beans">3.1 Defining Beans</h2>
@@ -1432,7 +1510,7 @@ The <a href="../api/io/micronaut/context/event/ApplicationEventListener.html#sup
 </div>
 </div>
 <div class="paragraph">
-<p>If you listener performs work that could take a while then you can use the <a href="../api/io/micronaut/scheduling/annotation/Async.html">@Async</a> annotation to run the operation on a separate thread:</p>
+<p>If your listener performs work that could take a while then you can use the <a href="../api/io/micronaut/scheduling/annotation/Async.html">@Async</a> annotation to run the operation on a separate thread:</p>
 </div>
 <div class="listingblock">
 <div class="title">Asynchronously listening for Events with <code>@EventListener</code></div>

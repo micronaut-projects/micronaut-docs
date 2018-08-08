@@ -21,6 +21,9 @@
 
 <body class="body" onload="addJsClass();" onhashchange="highlightMenu()">
 
+<div id="table-of-content-nav-link" class="desktop">
+    <a title="Collapse/Open Table of contents" title="Hide Table of Contents" href="javascript:hideTableOfContents();" class="button">[ + ]</a>
+</div>
 
 <div id="main">
     <div id="navigation">
@@ -29,9 +32,49 @@
         </div>
         <div class="navLinks">
             <ul>
-                <li id="table-of-content-nav-link" class="desktop">
-                    <a title="Collapse/Open Table of contents" href="javascript:hideTableOfContents();" class="button">Table of Contents</a>
-                </li>
+                    <li>
+                        <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)" class="desktop">
+                            <a href="../guide/index.html" class="button">Table of contents</a>
+                            <div id="nav-summary-childs" style="display:none;">
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#quickStart"><strong>2</strong><span>Quick Start</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#ioc"><strong>3</strong><span>Inversion of Control</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#config"><strong>4</strong><span>Application Configuration</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#aop"><strong>5</strong><span>Aspect Oriented Programming</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#httpServer"><strong>6</strong><span>The HTTP Server</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#httpClient"><strong>7</strong><span>The HTTP Client</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#cloud"><strong>8</strong><span>Cloud Native Features</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#serverlessFunctions"><strong>9</strong><span>Serverless Functions</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#messaging"><strong>10</strong><span>Message-Driven Microservices</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#commandLineApps"><strong>11</strong><span>Standalone Command Line Applications</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#configurations"><strong>12</strong><span>Configurations</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#languageSupport"><strong>13</strong><span>Language Support</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#management"><strong>14</strong><span>Management &amp; Monitoring</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#security"><strong>15</strong><span>Security</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#cli"><strong>16</strong><span>Micronaut CLI</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#appendix"><strong>17</strong><span>Appendices</span></a></div>
+                                
+                            </div>
+                        </div>
+                    </li>
+
                 <li id="table-of-content-nav-link-mobile" class="mobile">
                     <a title="Scroll to Table of contents" href="javascript:scrollToTop();" class="button">Toc</a>
                 </li>
@@ -1372,6 +1415,84 @@ Hello World</code></pre>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>Note that the IoC part of Micronaut can be used completely independently of Micronaut itself for whatever application type you may wish to build. To do so all you need to is configure your build appropriately to include the <code>inject-java</code> dependency as an annotation processor. For example with Gradle:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">plugins {
+  id "net.ltgt.apt" version "0.18" // <1>
+}
+
+...
+dependencies {
+    annotationProcessor "io.micronaut:inject-java:1.0.0.BUILD-SNAPSHOT" // <2>
+    compile "io.micronaut:inject:1.0.0.BUILD-SNAPSHOT"
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Apply the Annotation Processing plugin</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Include the minimal dependencies required to perform dependency injection</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+For the Groovy language you should include <code>inject-groovy</code> in the <code>compileOnly</code> scope.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The entry point for IoC is then the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a> interface, which includes a <code>run</code> method. The following example demonstrates using it:</p>
+</div>
+<div class="listingblock">
+<div class="title">Running the <code>ApplicationContext</code></div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">try</span> (ApplicationContext context = ApplicationContext.run()) { <i class="conum" data-value="1"></i><b>(1)</b>
+    MyBean myBean = context.getBean(MyBean.class); <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="comment">// do something with your bean</span>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Run the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Retrieve a bean that has been dependency injected</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The example uses Java&#8217;s <a href="https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html">try-with-resources</a> syntax to ensure the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a> is cleanly shutdown when the application exits.
+</td>
+</tr>
+</table>
+</div>
 
 
 <h2 id="beans">3.1 Defining Beans</h2>
@@ -2581,7 +2702,7 @@ The <a href="../api/io/micronaut/context/event/ApplicationEventListener.html#sup
 </div>
 </div>
 <div class="paragraph">
-<p>If you listener performs work that could take a while then you can use the <a href="../api/io/micronaut/scheduling/annotation/Async.html">@Async</a> annotation to run the operation on a separate thread:</p>
+<p>If your listener performs work that could take a while then you can use the <a href="../api/io/micronaut/scheduling/annotation/Async.html">@Async</a> annotation to run the operation on a separate thread:</p>
 </div>
 <div class="listingblock">
 <div class="title">Asynchronously listening for Events with <code>@EventListener</code></div>
@@ -22683,7 +22804,8 @@ dependencyManagement {
     function hideTableOfContents() {
         document.getElementById(tocId).style.display = "none";
         document.getElementById(mainId).style.paddingLeft = "0";
-        document.getElementById(tocLink).getElementsByTagName("a")[0].setAttribute("href", "javascript:showTableOfContents();");
+        var aEl = document.getElementById(tocLink).getElementsByTagName("a")[0];
+        replaceLink(aEl, "javascript:showTableOfContents();", "[ - ]", 'Show Table of Contents');
         goToLocation();
     }
 
@@ -22693,10 +22815,17 @@ dependencyManagement {
         }
     }
 
+    function replaceLink(anchorElement, href, text, titleAttr) {
+        anchorElement.setAttribute("href", href);
+        anchorElement.setAttribute("title", titleAttr);
+        anchorElement.innerText = text;
+    }
+
     function showTableOfContents() {
         document.getElementById(tocId).style.display = "block";
         document.getElementById(mainId).style.paddingLeft = "25em";
-        document.getElementById(tocLink).getElementsByTagName("a")[0].setAttribute("href", "javascript:hideTableOfContents();");
+        var aEl = document.getElementById(tocLink).getElementsByTagName("a")[0];
+        replaceLink(aEl, "javascript:hideTableOfContents();", "[ + ]", 'Hide Table of Contents');
         goToLocation();
     }
 
