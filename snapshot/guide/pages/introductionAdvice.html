@@ -145,25 +145,25 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Introduction Advice Annotation Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">static</span> <span class="include">java.lang.annotation.RetentionPolicy.RUNTIME</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-<span class="keyword">import</span> <span class="include">io.micronaut.aop.Introduction</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Bean</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Type</span>;
+import io.micronaut.aop.Introduction;
+import io.micronaut.context.annotation.Bean;
+import io.micronaut.context.annotation.Type;
 
-<span class="keyword">import</span> <span class="include">java.lang.annotation.Documented</span>;
-<span class="keyword">import</span> <span class="include">java.lang.annotation.ElementType</span>;
-<span class="keyword">import</span> <span class="include">java.lang.annotation.Retention</span>;
-<span class="keyword">import</span> <span class="include">java.lang.annotation.Target</span>;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-<span class="annotation">@Introduction</span> <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="annotation">@Type</span>(StubIntroduction.class) <i class="conum" data-value="2"></i><b>(2)</b>
-<span class="annotation">@Bean</span> <i class="conum" data-value="3"></i><b>(3)</b>
-<span class="annotation">@Documented</span>
-<span class="annotation">@Retention</span>(RUNTIME)
-<span class="annotation">@Target</span>({<span class="predefined-type">ElementType</span>.TYPE, <span class="predefined-type">ElementType</span>.ANNOTATION_TYPE, <span class="predefined-type">ElementType</span>.METHOD})
-<span class="directive">public</span> <span class="annotation">@interface</span> <span class="predefined-type">Stub</span> {
-    <span class="predefined-type">String</span> value() <span class="keyword">default</span> <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>;
+@Introduction <i class="conum" data-value="1"></i><b>(1)</b>
+@Type(StubIntroduction.class) <i class="conum" data-value="2"></i><b>(2)</b>
+@Bean <i class="conum" data-value="3"></i><b>(3)</b>
+@Documented
+@Retention(RUNTIME)
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE, ElementType.METHOD})
+public @interface Stub {
+    String value() default "";
 }</code></pre>
 </div>
 </div>
@@ -192,18 +192,18 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">StubIntroduction.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.aop</span>.*;
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.aop.*;
+import javax.inject.Singleton;
 
-<span class="annotation">@Singleton</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">StubIntroduction</span> <span class="directive">implements</span> MethodInterceptor&lt;<span class="predefined-type">Object</span>,<span class="predefined-type">Object</span>&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+@Singleton
+public class StubIntroduction implements MethodInterceptor&lt;Object,Object&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="predefined-type">Object</span> intercept(MethodInvocationContext&lt;<span class="predefined-type">Object</span>, <span class="predefined-type">Object</span>&gt; context) {
-        <span class="keyword">return</span> context.getValue( <i class="conum" data-value="2"></i><b>(2)</b>
-                <span class="predefined-type">Stub</span>.class,
+    @Override
+    public Object intercept(MethodInvocationContext&lt;Object, Object&gt; context) {
+        return context.getValue( <i class="conum" data-value="2"></i><b>(2)</b>
+                Stub.class,
                 context.getReturnType().getType()
-        ).orElse(<span class="predefined-constant">null</span>); <i class="conum" data-value="3"></i><b>(3)</b>
+        ).orElse(null); <i class="conum" data-value="3"></i><b>(3)</b>
     }
 }</code></pre>
 </div>
@@ -230,11 +230,11 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">StubExample.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Stub</span>
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">StubExample</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Stub
+public interface StubExample {
 
-    <span class="annotation">@Stub</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">10</span><span class="delimiter">&quot;</span></span>)
-    <span class="type">int</span> getNumber();
+    @Stub("10")
+    int getNumber();
 
     LocalDateTime getDate();
 }</code></pre>
@@ -249,9 +249,9 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Testing Introduction Advice</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">StubExample stubExample = applicationContext.getBean(StubExample.class);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">StubExample stubExample = applicationContext.getBean(StubExample.class);
 
-assertEquals(<span class="integer">10</span>, stubExample.getNumber());
+assertEquals(10, stubExample.getNumber());
 assertNull(stubExample.getDate());</code></pre>
 </div>
 </div>

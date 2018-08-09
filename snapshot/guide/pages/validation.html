@@ -147,7 +147,7 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:hibernate-validator</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut.configuration:hibernate-validator"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -156,22 +156,22 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">BookService.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.validation.Validated</span>;
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
-<span class="keyword">import</span> <span class="include">javax.validation.constraints.NotBlank</span>;
-<span class="keyword">import</span> <span class="include">java.util</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.validation.Validated;
+import javax.inject.Singleton;
+import javax.validation.constraints.NotBlank;
+import java.util.*;
 
-<span class="annotation">@Singleton</span>
-<span class="annotation">@Validated</span> <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">BookService</span> {
+@Singleton
+@Validated <i class="conum" data-value="1"></i><b>(1)</b>
+public class BookService {
 
-    <span class="directive">private</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; authorsByTitle = <span class="keyword">new</span> <span class="predefined-type">LinkedHashMap</span>&lt;&gt;();
+    private Map&lt;String, String&gt; authorsByTitle = new LinkedHashMap&lt;&gt;();
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getAuthor(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> title) { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="keyword">return</span> authorsByTitle.get(title);
+    public String getAuthor(@NotBlank String title) { <i class="conum" data-value="2"></i><b>(2)</b>
+        return authorsByTitle.get(title);
     }
 
-    <span class="directive">public</span> <span class="type">void</span> addBook(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> author, <span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> title) {
+    public void addBook(@NotBlank String author, @NotBlank String title) {
         authorsByTitle.put(title, author);
     }
 }</code></pre>
@@ -195,16 +195,16 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">Testing Validation</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test validate book service</span><span class="delimiter">&quot;</span></span>() {
-    <span class="key">given</span>:
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">void "test validate book service"() {
+    given:
     BookService bookService = applicationContext.getBean(BookService)
 
-    <span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">An invalid title is passed</span><span class="delimiter">&quot;</span></span>
-    bookService.getAuthor(<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>)
+    when:"An invalid title is passed"
+    bookService.getAuthor("")
 
-    <span class="key">then</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">A constraint violation occurred</span><span class="delimiter">&quot;</span></span>
-    <span class="keyword">def</span> e = thrown(ConstraintViolationException)
-    e.message == <span class="string"><span class="delimiter">'</span><span class="content">getAuthor.title: must not be blank</span><span class="delimiter">'</span></span>
+    then:"A constraint violation occurred"
+    def e = thrown(ConstraintViolationException)
+    e.message == 'getAuthor.title: must not be blank'
 }</code></pre>
 </div>
 </div>

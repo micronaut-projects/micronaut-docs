@@ -177,7 +177,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Create a Micronaut Groovy application</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-app hello-world --lang groovy</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ mn create-app hello-world --lang groovy</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -189,7 +189,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Create a bean</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ mn
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ mn
 | Starting interactive mode...
 | Enter a command name to run. Use TAB for completion:
 mn&gt;
@@ -207,12 +207,12 @@ mn&gt; create-bean helloBean
 <div class="listingblock">
 <div class="title">Micronaut Bean</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> hello.world
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">package hello.world
 
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>
+import javax.inject.Singleton
 
-<span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">HelloBean</span> {
+@Singleton
+class HelloBean {
 
 }</code></pre>
 </div>
@@ -235,23 +235,23 @@ Groovy automatically imports <code>groovy.lang.Singleton</code> which can be con
 <div class="listingblock">
 <div class="title">Create a client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">mn&gt; create-client helloClient
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mn&gt; create-client helloClient
 | Rendered template Client.groovy to destination src/main/groovy/hello/world/HelloClient.groovy</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Micronaut Client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> hello.world
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">package hello.world
 
-<span class="keyword">import</span> <span class="include">io.micronaut.http.client.Client</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
+import io.micronaut.http.client.Client
+import io.micronaut.http.annotation.Get
+import io.micronaut.http.HttpStatus
 
-<span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>)
-<span class="type">interface</span> HelloClient {
+@Client("hello")
+interface HelloClient {
 
-    <span class="annotation">@Get</span>
+    @Get
     HttpStatus index()
 }</code></pre>
 </div>
@@ -262,7 +262,7 @@ Groovy automatically imports <code>groovy.lang.Singleton</code> which can be con
 <div class="listingblock">
 <div class="title">Create a controller</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">mn&gt; create-controller helloController
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mn&gt; create-controller helloController
 | Rendered template Controller.groovy to destination src/main/groovy/hello/world/HelloController.groovy
 | Rendered template ControllerSpec.groovy to destination src/test/groovy/hello/world/HelloControllerSpec.groovy
 mn&gt;</code></pre>
@@ -271,19 +271,19 @@ mn&gt;</code></pre>
 <div class="listingblock">
 <div class="title">Micronaut Controller</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> hello.world
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">package hello.world
 
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
+import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Get
+import io.micronaut.http.HttpStatus
 
 
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello</span><span class="delimiter">&quot;</span></span>)
-<span class="type">class</span> <span class="class">HelloController</span> {
+@Controller("/hello")
+class HelloController {
 
-    <span class="annotation">@Get</span>
+    @Get
     HttpStatus index() {
-        <span class="keyword">return</span> HttpStatus.OK
+        return HttpStatus.OK
     }
 }</code></pre>
 </div>
@@ -294,12 +294,12 @@ mn&gt;</code></pre>
 <div class="listingblock">
 <div class="title">HelloControllerSpec.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">...
-    void <span class="string"><span class="delimiter">&quot;</span><span class="content">test index</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">given</span>:
-        HttpResponse response = client.toBlocking().exchange(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello</span><span class="delimiter">&quot;</span></span>)
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">...
+    void "test index"() {
+        given:
+        HttpResponse response = client.toBlocking().exchange("/hello")
 
-        <span class="key">expect</span>:
+        expect:
         response.status == HttpStatus.OK
     }
 ...</code></pre>
@@ -322,17 +322,17 @@ mn&gt;</code></pre>
 <div class="listingblock">
 <div class="title">Using GroovyRouteBuilder</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Singleton</span>
-<span class="directive">static</span> <span class="type">class</span> <span class="class">MyRoutes</span> <span class="directive">extends</span> GroovyRouteBuilder {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Singleton
+static class MyRoutes extends GroovyRouteBuilder {
 
     MyRoutes(ApplicationContext beanContext) {
-        <span class="local-variable">super</span>(beanContext)
+        super(beanContext)
     }
 
-    <span class="annotation">@Inject</span>
-    <span class="type">void</span> bookResources(BookController bookController, AuthorController authorController) {
+    @Inject
+    void bookResources(BookController bookController, AuthorController authorController) {
         GET(bookController) {
-            POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello{/message}</span><span class="delimiter">&quot;</span></span>, bookController.&amp;hello) <i class="conum" data-value="1"></i><b>(1)</b>
+            POST("/hello{/message}", bookController.&amp;hello) <i class="conum" data-value="1"></i><b>(1)</b>
         }
         GET(bookController, ID) { <i class="conum" data-value="2"></i><b>(2)</b>
             GET(authorController)
@@ -416,17 +416,17 @@ mn&gt;</code></pre>
 <div class="listingblock">
 <div class="title">GORM Data Service VehicleService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(Vehicle)
-<span class="directive">abstract</span> <span class="type">class</span> <span class="class">VehicleService</span> {
-    <span class="annotation">@PostConstruct</span>
-    <span class="type">void</span> init() {
-       <span class="comment">// do something on initialization</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Service(Vehicle)
+abstract class VehicleService {
+    @PostConstruct
+    void init() {
+       // do something on initialization
 
     }
 
-    <span class="directive">abstract</span> Vehicle findVehicle(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> name)
+    abstract Vehicle findVehicle(@NotBlank String name)
 
-    <span class="directive">abstract</span> Vehicle saveVehicle(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> name)
+    abstract Vehicle saveVehicle(@NotBlank String name)
 
 }</code></pre>
 </div>

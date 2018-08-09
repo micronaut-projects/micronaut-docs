@@ -157,12 +157,12 @@ Many other frameworks, including Spring, implement the URI template specificatio
 <div class="listingblock">
 <div class="title">Using a UriTemplate</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">UriMatchTemplate template = UriMatchTemplate.of(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/{name}</span><span class="delimiter">&quot;</span></span>);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">UriMatchTemplate template = UriMatchTemplate.of("/hello/{name}");
 
-assertTrue(template.match(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/John</span><span class="delimiter">&quot;</span></span>).isPresent()); <i class="conum" data-value="1"></i><b>(1)</b>
+assertTrue(template.match("/hello/John").isPresent()); <i class="conum" data-value="1"></i><b>(1)</b>
 assertEquals(template.expand(  <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">John</span><span class="delimiter">&quot;</span></span>)
-), <span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/John</span><span class="delimiter">&quot;</span></span>);</code></pre>
+        Collections.singletonMap("name", "John")
+), "/hello/John");</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -191,14 +191,14 @@ assertEquals(template.expand(  <i class="conum" data-value="2"></i><b>(2)</b>
 <div class="listingblock">
 <div class="title">URI Variables Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.annotation.*;
 
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/issues</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">IssuesController</span> {
+@Controller("/issues") <i class="conum" data-value="1"></i><b>(1)</b>
+public class IssuesController {
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/{number}</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="predefined-type">String</span> issue(<span class="predefined-type">Integer</span> number) {
-        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Issue # </span><span class="delimiter">&quot;</span></span> + number + <span class="string"><span class="delimiter">&quot;</span><span class="content">!</span><span class="delimiter">&quot;</span></span>; <i class="conum" data-value="3"></i><b>(3)</b>
+    @Get("/{number}") <i class="conum" data-value="2"></i><b>(2)</b>
+    String issue(Integer number) {
+        return "Issue # " + number + "!"; <i class="conum" data-value="3"></i><b>(3)</b>
     }
 }</code></pre>
 </div>
@@ -225,41 +225,41 @@ assertEquals(template.expand(  <i class="conum" data-value="2"></i><b>(2)</b>
 <div class="listingblock">
 <div class="title">Testing URI Variables</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.ApplicationContext</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>;
-<span class="keyword">import</span> <span class="include">org.junit</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.runtime.server.EmbeddedServer</span>;
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.junit.Assert</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.ApplicationContext;
+import io.micronaut.http.client.HttpClient;
+import org.junit.*;
+import io.micronaut.runtime.server.EmbeddedServer;
+import static org.junit.Assert.*;
 
-<span class="directive">public</span> <span class="type">class</span> <span class="class">IssuesControllerTest</span> {
-    <span class="directive">private</span> <span class="directive">static</span> EmbeddedServer server;
-    <span class="directive">private</span> <span class="directive">static</span> HttpClient client;
+public class IssuesControllerTest {
+    private static EmbeddedServer server;
+    private static HttpClient client;
 
-    <span class="annotation">@BeforeClass</span> <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> setupServer() {
+    @BeforeClass <i class="conum" data-value="1"></i><b>(1)</b>
+    public static void setupServer() {
         server = ApplicationContext.run(EmbeddedServer.class);
         client = server
                     .getApplicationContext()
                     .createBean(HttpClient.class, server.getURL());
     }
 
-    <span class="annotation">@AfterClass</span> <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> stopServer() {
-        <span class="keyword">if</span>(server != <span class="predefined-constant">null</span>) {
+    @AfterClass <i class="conum" data-value="1"></i><b>(1)</b>
+    public static void stopServer() {
+        if(server != null) {
             server.stop();
         }
-        <span class="keyword">if</span>(client != <span class="predefined-constant">null</span>) {
+        if(client != null) {
             client.stop();
         }
     }
 
-    <span class="annotation">@Test</span>
-    <span class="directive">public</span> <span class="type">void</span> testIssue() <span class="directive">throws</span> <span class="exception">Exception</span> {
-        <span class="predefined-type">String</span> body = client.toBlocking().retrieve(<span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/12</span><span class="delimiter">&quot;</span></span>); <i class="conum" data-value="2"></i><b>(2)</b>
+    @Test
+    public void testIssue() throws Exception {
+        String body = client.toBlocking().retrieve("/issues/12"); <i class="conum" data-value="2"></i><b>(2)</b>
         assertNotNull(body);
         assertEquals( <i class="conum" data-value="3"></i><b>(3)</b>
                 body,
-                <span class="string"><span class="delimiter">&quot;</span><span class="content">Issue # 12!</span><span class="delimiter">&quot;</span></span>
+                "Issue # 12!"
         );
     }
 }</code></pre>
@@ -287,22 +287,22 @@ assertEquals(template.expand(  <i class="conum" data-value="2"></i><b>(2)</b>
 <div class="listingblock">
 <div class="title">Testing for Response Errors</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/show/{number} with an invalid Integer number responds 400</span><span class="delimiter">&quot;</span></span>() {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">void "/issues/show/{number} with an invalid Integer number responds 400"() {
     when:
-    client.toBlocking().exchange(<span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/hello</span><span class="delimiter">&quot;</span></span>)
+    client.toBlocking().exchange("/issues/hello")
 
     then:
     HttpClientResponseException e = thrown(HttpClientResponseException)
-    e.status.code == <span class="integer">400</span>
+    e.status.code == 400
 }
 
-<span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/show/{number} without number responds 404</span><span class="delimiter">&quot;</span></span>() {
+void "/issues/show/{number} without number responds 404"() {
     when:
-    client.toBlocking().exchange(<span class="string"><span class="delimiter">&quot;</span><span class="content">/issues/</span><span class="delimiter">&quot;</span></span>)
+    client.toBlocking().exchange("/issues/")
 
     then:
     HttpClientResponseException e = thrown(HttpClientResponseException)
-    e.status.code == <span class="integer">404</span>
+    e.status.code == 404
 }</code></pre>
 </div>
 </div>
@@ -454,20 +454,20 @@ All of the method annotations default to <code>/</code>.
 <div class="listingblock">
 <div class="title">RouteBuilder Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.ExecutionHandleLocator</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.web.router.DefaultRouteBuilder</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.ExecutionHandleLocator;
+import io.micronaut.web.router.DefaultRouteBuilder;
 
-<span class="keyword">import</span> <span class="include">javax.inject</span>.*;
+import javax.inject.*;
 
-<span class="annotation">@Singleton</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">MyRoutes</span> <span class="directive">extends</span> DefaultRouteBuilder { <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="directive">public</span> MyRoutes(ExecutionHandleLocator executionHandleLocator, UriNamingStrategy uriNamingStrategy) {
-        <span class="local-variable">super</span>(executionHandleLocator, uriNamingStrategy);
+@Singleton
+public class MyRoutes extends DefaultRouteBuilder { <i class="conum" data-value="1"></i><b>(1)</b>
+    public MyRoutes(ExecutionHandleLocator executionHandleLocator, UriNamingStrategy uriNamingStrategy) {
+        super(executionHandleLocator, uriNamingStrategy);
     }
 
-    <span class="annotation">@Inject</span>
-    <span class="type">void</span> issuesRoutes(IssuesController issuesController) { <i class="conum" data-value="2"></i><b>(2)</b>
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/show/{name}</span><span class="delimiter">&quot;</span></span>, issuesController, <span class="string"><span class="delimiter">&quot;</span><span class="content">issue</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">Integer</span>.class); <i class="conum" data-value="3"></i><b>(3)</b>
+    @Inject
+    void issuesRoutes(IssuesController issuesController) { <i class="conum" data-value="2"></i><b>(2)</b>
+        GET("/show/{name}", issuesController, "issue", Integer.class); <i class="conum" data-value="3"></i><b>(3)</b>
     }
 }</code></pre>
 </div>

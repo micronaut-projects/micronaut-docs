@@ -182,11 +182,11 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Initializing the Environment</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">ApplicationContext applicationContext = ApplicationContext.run(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">android</span><span class="delimiter">&quot;</span></span>);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ApplicationContext applicationContext = ApplicationContext.run("test", "android");
 Environment environment = applicationContext.getEnvironment();
 
-assertTrue(environment.getActiveNames().contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>));
-assertTrue(environment.getActiveNames().contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">android</span><span class="delimiter">&quot;</span></span>));</code></pre>
+assertTrue(environment.getActiveNames().contains("test"));
+assertTrue(environment.getActiveNames().contains("android"));</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -201,7 +201,7 @@ assertTrue(environment.getActiveNames().contains(<span class="string"><span clas
 <div class="listingblock">
 <div class="title">Specifying environments</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ java -Dmicronaut.environments=foo,bar -jar myapp.jar</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ java -Dmicronaut.environments=foo,bar -jar myapp.jar</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -227,20 +227,20 @@ assertTrue(environment.getActiveNames().contains(<span class="string"><span clas
 <div class="listingblock">
 <div class="title">Initializing the Environment</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">ApplicationContext applicationContext = ApplicationContext.run(
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ApplicationContext applicationContext = ApplicationContext.run(
         PropertySource.of(
-                <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>,
+                "test",
                 CollectionUtils.mapOf(
-                    <span class="string"><span class="delimiter">&quot;</span><span class="content">micronaut.server.host</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">foo</span><span class="delimiter">&quot;</span></span>,
-                    <span class="string"><span class="delimiter">&quot;</span><span class="content">micronaut.server.port</span><span class="delimiter">&quot;</span></span>, <span class="integer">8080</span>
+                    "micronaut.server.host", "foo",
+                    "micronaut.server.port", 8080
                 )
         ),
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">android</span><span class="delimiter">&quot;</span></span>);
+        "test", "android");
 Environment environment = applicationContext.getEnvironment();
 
 assertEquals(
-        environment.getProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">micronaut.server.host</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">String</span>.class).orElse(<span class="string"><span class="delimiter">&quot;</span><span class="content">localhost</span><span class="delimiter">&quot;</span></span>),
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">foo</span><span class="delimiter">&quot;</span></span>
+        environment.getProperty("micronaut.server.host", String.class).orElse("localhost"),
+        "foo"
 );</code></pre>
 </div>
 </div>
@@ -284,11 +284,11 @@ assertEquals(
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-  <span class="key">application</span>:
-    <span class="key">name</span>: <span class="string"><span class="content">myapplication</span></span>
-    <span class="key">instance</span>:
-      <span class="key">id</span>: <span class="string"><span class="content">${random.shortuuid}</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  application:
+    name: myapplication
+    instance:
+      id: ${random.shortuuid}</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all spread">
@@ -358,22 +358,22 @@ assertEquals(
 <div class="listingblock">
 <div class="title">@Value Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Value</span>
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Value
+import javax.inject.Singleton
 
-<span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">EngineImpl</span> <span class="directive">implements</span> Engine {
+@Singleton
+class EngineImpl implements Engine {
 
-    <span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${my.engine.cylinders:6}</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="directive">protected</span> <span class="type">int</span> cylinders
+    @Value('${my.engine.cylinders:6}') <i class="conum" data-value="1"></i><b>(1)</b>
+    protected int cylinders
 
-    <span class="annotation">@Override</span>
-    <span class="type">int</span> getCylinders() {
-        <span class="local-variable">this</span>.cylinders
+    @Override
+    int getCylinders() {
+        this.cylinders
     }
 
-    <span class="predefined-type">String</span> start() { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">Starting V</span><span class="inline"><span class="inline-delimiter">${</span>cylinders<span class="inline-delimiter">}</span></span><span class="content"> Engine</span><span class="delimiter">&quot;</span></span>
+    String start() { <i class="conum" data-value="2"></i><b>(2)</b>
+        "Starting V${cylinders} Engine"
     }
 }</code></pre>
 </div>
@@ -398,8 +398,8 @@ assertEquals(
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">${hello.controller.path:/hello}</span><span class="delimiter">&quot;</span></span>)
-<span class="type">class</span> <span class="class">HelloController</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Controller("${hello.controller.path:/hello}")
+class HelloController {
     ...
 }</code></pre>
 </div>
@@ -430,24 +430,24 @@ assertEquals(
 <div class="listingblock">
 <div class="title">@ConfigurationProperties Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.hibernate.validator.constraints.NotBlank</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.ConfigurationProperties</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import org.hibernate.validator.constraints.NotBlank
+import io.micronaut.context.annotation.ConfigurationProperties
 
-<span class="keyword">import</span> <span class="include">javax.validation.constraints.Min</span>
+import javax.validation.constraints.Min
 
-<span class="annotation">@ConfigurationProperties</span>(<span class="string"><span class="delimiter">'</span><span class="content">my.engine</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="type">class</span> <span class="class">EngineConfig</span> {
+@ConfigurationProperties('my.engine') <i class="conum" data-value="1"></i><b>(1)</b>
+class EngineConfig {
 
-    <span class="annotation">@NotBlank</span> <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="predefined-type">String</span> manufacturer = <span class="string"><span class="delimiter">&quot;</span><span class="content">Ford</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+    @NotBlank <i class="conum" data-value="2"></i><b>(2)</b>
+    String manufacturer = "Ford" <i class="conum" data-value="3"></i><b>(3)</b>
 
-    <span class="annotation">@Min</span>(<span class="integer">1L</span>)
-    <span class="type">int</span> cylinders
-    CrankShaft crankShaft = <span class="keyword">new</span> CrankShaft()
+    @Min(1L)
+    int cylinders
+    CrankShaft crankShaft = new CrankShaft()
 
-    <span class="annotation">@ConfigurationProperties</span>(<span class="string"><span class="delimiter">'</span><span class="content">crank-shaft</span><span class="delimiter">'</span></span>)
-    <span class="directive">static</span> <span class="type">class</span> <span class="class">CrankShaft</span> { <i class="conum" data-value="4"></i><b>(4)</b>
-        Optional&lt;<span class="predefined-type">Double</span>&gt; rodLength = Optional.empty() <i class="conum" data-value="5"></i><b>(5)</b>
+    @ConfigurationProperties('crank-shaft')
+    static class CrankShaft { <i class="conum" data-value="4"></i><b>(4)</b>
+        Optional&lt;Double&gt; rodLength = Optional.empty() <i class="conum" data-value="5"></i><b>(5)</b>
     }
 
 }</code></pre>
@@ -483,21 +483,21 @@ assertEquals(
 <div class="listingblock">
 <div class="title">@ConfigurationProperties Dependency Injection</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">EngineImpl</span> <span class="directive">implements</span> Engine {
-    <span class="directive">final</span> EngineConfig config
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Singleton
+class EngineImpl implements Engine {
+    final EngineConfig config
 
     EngineImpl(EngineConfig config) { <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="local-variable">this</span>.config = config
+        this.config = config
     }
 
-    <span class="annotation">@Override</span>
-    <span class="type">int</span> getCylinders() {
+    @Override
+    int getCylinders() {
         config.cylinders
     }
 
-    <span class="predefined-type">String</span> start() { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>config.manufacturer<span class="inline-delimiter">}</span></span><span class="content"> Engine Starting V</span><span class="inline"><span class="inline-delimiter">${</span>config.cylinders<span class="inline-delimiter">}</span></span><span class="content"> [rodLength=</span><span class="inline"><span class="inline-delimiter">${</span>config.crankShaft.rodLength.orElse(<span class="float">6.0d</span>)<span class="inline-delimiter">}</span></span><span class="content">]</span><span class="delimiter">&quot;</span></span>
+    String start() { <i class="conum" data-value="2"></i><b>(2)</b>
+        "${config.manufacturer} Engine Starting V${config.cylinders} [rodLength=${config.crankShaft.rodLength.orElse(6.0d)}]"
     }
 }</code></pre>
 </div>
@@ -520,9 +520,9 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Supply Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
-        [<span class="string"><span class="delimiter">'</span><span class="content">my.engine.cylinders</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">8</span><span class="delimiter">'</span></span>],
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
+        ['my.engine.cylinders': '8'],
+        "test"
 )
 
 Vehicle vehicle = applicationContext
@@ -560,16 +560,16 @@ println(vehicle.start())</code></pre>
 <div class="listingblock">
 <div class="title">@ConfigurationBuilder Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.ConfigurationBuilder</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.ConfigurationProperties</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.ConfigurationBuilder
+import io.micronaut.context.annotation.ConfigurationProperties
 
-<span class="annotation">@ConfigurationProperties</span>(<span class="string"><span class="delimiter">'</span><span class="content">my.engine</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="type">class</span> <span class="class">EngineConfig</span> {
+@ConfigurationProperties('my.engine') <i class="conum" data-value="1"></i><b>(1)</b>
+class EngineConfig {
 
-    <span class="annotation">@ConfigurationBuilder</span>(prefixes = <span class="string"><span class="delimiter">&quot;</span><span class="content">with</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    @ConfigurationBuilder(prefixes = "with") <i class="conum" data-value="2"></i><b>(2)</b>
     EngineImpl.Builder builder = EngineImpl.builder()
 
-    <span class="annotation">@ConfigurationBuilder</span>(prefixes = <span class="string"><span class="delimiter">&quot;</span><span class="content">with</span><span class="delimiter">&quot;</span></span>, configurationPrefix = <span class="string"><span class="delimiter">&quot;</span><span class="content">crankShaft</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+    @ConfigurationBuilder(prefixes = "with", configurationPrefix = "crankShaft") <i class="conum" data-value="3"></i><b>(3)</b>
     CrankShaft.Builder crankShaft = CrankShaft.builder()
 }</code></pre>
 </div>
@@ -608,16 +608,16 @@ By default, only builder methods that take a single argument are supported. To s
 <div class="listingblock">
 <div class="title">Factory Bean</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Bean</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Factory</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Bean
+import io.micronaut.context.annotation.Factory
 
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>
+import javax.inject.Singleton
 
-<span class="annotation">@Factory</span>
-<span class="type">class</span> <span class="class">EngineFactory</span> {
+@Factory
+class EngineFactory {
 
-    <span class="annotation">@Bean</span>
-    <span class="annotation">@Singleton</span>
+    @Bean
+    @Singleton
     EngineImpl buildEngine(EngineConfig engineConfig) {
         engineConfig.builder.build(engineConfig.crankShaft)
     }
@@ -633,11 +633,11 @@ By default, only builder methods that take a single argument are supported. To s
 <div class="listingblock">
 <div class="title">Supply Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
-        [<span class="string"><span class="delimiter">'</span><span class="content">my.engine.cylinders</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">4</span><span class="delimiter">'</span></span>,
-         <span class="string"><span class="delimiter">'</span><span class="content">my.engine.manufacturer</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">Subaru</span><span class="delimiter">'</span></span>,
-         <span class="string"><span class="delimiter">'</span><span class="content">my.engine.crankShaft.rodLength</span><span class="delimiter">'</span></span>: <span class="integer">4</span>],
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
+        ['my.engine.cylinders':'4',
+         'my.engine.manufacturer': 'Subaru',
+         'my.engine.crankShaft.rodLength': 4],
+        "test"
 )
 
 Vehicle vehicle = applicationContext
@@ -662,16 +662,16 @@ println(vehicle.start())</code></pre>
 <div class="listingblock">
 <div class="title">@MapFormat Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.core.convert.format.MapFormat</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.convert.format.MapFormat
 
-<span class="annotation">@ConfigurationProperties</span>(<span class="string"><span class="delimiter">'</span><span class="content">my.engine</span><span class="delimiter">'</span></span>)
-<span class="type">class</span> <span class="class">EngineConfig</span> {
+@ConfigurationProperties('my.engine')
+class EngineConfig {
 
-    <span class="annotation">@Min</span>(<span class="integer">1L</span>)
-    <span class="type">int</span> cylinders
+    @Min(1L)
+    int cylinders
 
-    <span class="annotation">@MapFormat</span>(transformation = MapFormat.MapTransformation.FLAT) <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">Integer</span>, <span class="predefined-type">String</span>&gt; sensors
+    @MapFormat(transformation = MapFormat.MapTransformation.FLAT) <i class="conum" data-value="1"></i><b>(1)</b>
+    Map&lt;Integer, String&gt; sensors
 
 }</code></pre>
 </div>
@@ -687,18 +687,18 @@ println(vehicle.start())</code></pre>
 <div class="listingblock">
 <div class="title">EngineImpl</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">EngineImpl</span> <span class="directive">implements</span> Engine {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Singleton
+class EngineImpl implements Engine {
 
-    <span class="annotation">@Inject</span> EngineConfig config
+    @Inject EngineConfig config
 
-    <span class="annotation">@Override</span>
-    <span class="predefined-type">Map</span> getSensors() {
+    @Override
+    Map getSensors() {
         config.sensors
     }
 
-    <span class="predefined-type">String</span> start() {
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">Engine Starting V</span><span class="inline"><span class="inline-delimiter">${</span>config.cylinders<span class="inline-delimiter">}</span></span><span class="content"> [sensors=</span><span class="inline"><span class="inline-delimiter">${</span>sensors.size()<span class="inline-delimiter">}</span></span><span class="content">]</span><span class="delimiter">&quot;</span></span>
+    String start() {
+        "Engine Starting V${config.cylinders} [sensors=${sensors.size()}]"
     }
 }</code></pre>
 </div>
@@ -709,9 +709,9 @@ println(vehicle.start())</code></pre>
 <div class="listingblock">
 <div class="title">Use Map Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
-        [<span class="string"><span class="delimiter">'</span><span class="content">my.engine.cylinders</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">8</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">my.engine.sensors</span><span class="delimiter">'</span></span>: [<span class="integer">0</span>: <span class="string"><span class="delimiter">'</span><span class="content">thermostat</span><span class="delimiter">'</span></span>, <span class="integer">1</span>: <span class="string"><span class="delimiter">'</span><span class="content">fuel pressure</span><span class="delimiter">'</span></span>]],
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
+        ['my.engine.cylinders': '8', 'my.engine.sensors': [0: 'thermostat', 1: 'fuel pressure']],
+        "test"
 )
 
 Vehicle vehicle = applicationContext
@@ -746,13 +746,13 @@ println(vehicle.start())</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@ConfigurationProperties</span>(MyConfigurationProperties.PREFIX)
-<span class="type">class</span> <span class="class">MyConfigurationProperties</span> {
-    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> PREFIX = <span class="string"><span class="delimiter">&quot;</span><span class="content">myapp</span><span class="delimiter">&quot;</span></span>
-    <span class="directive">protected</span> LocalDate updatedAt
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@ConfigurationProperties(MyConfigurationProperties.PREFIX)
+class MyConfigurationProperties {
+    public static final String PREFIX = "myapp"
+    protected LocalDate updatedAt
 
     LocalDate getUpdatedAt() {
-        <span class="keyword">return</span> <span class="local-variable">this</span>.updatedAt
+        return this.updatedAt
     }
 }</code></pre>
 </div>
@@ -765,8 +765,8 @@ println(vehicle.start())</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext ctx = ApplicationContext.run(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">myapp.updatedAt</span><span class="delimiter">&quot;</span></span>: [<span class="key">day</span>: <span class="integer">28</span>, <span class="key">month</span>: <span class="integer">10</span>, <span class="key">year</span>: <span class="integer">1982</span>]  <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext ctx = ApplicationContext.run(
+        "myapp.updatedAt": [day: 28, month: 10, year: 1982]  <i class="conum" data-value="1"></i><b>(1)</b>
 )</code></pre>
 </div>
 </div>
@@ -775,26 +775,26 @@ println(vehicle.start())</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.core.convert.*</span>
-<span class="keyword">import</span> <span class="include">java.time.*</span>
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.convert.*
+import java.time.*
+import javax.inject.Singleton
 
-<span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">MapToLocalDateConverter</span> <span class="directive">implements</span> TypeConverter&lt;<span class="predefined-type">Map</span>, LocalDate&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="annotation">@Override</span>
-    Optional&lt;LocalDate&gt; convert(<span class="predefined-type">Map</span> object, <span class="predefined-type">Class</span>&lt;LocalDate&gt; targetType, ConversionContext context) {
-        Optional&lt;<span class="predefined-type">Integer</span>&gt; day = ConversionService.SHARED.convert(object.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">day</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">Integer</span>.class)
-        Optional&lt;<span class="predefined-type">Integer</span>&gt; month = ConversionService.SHARED.convert(object.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">month</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">Integer</span>.class)
-        Optional&lt;<span class="predefined-type">Integer</span>&gt; year = ConversionService.SHARED.convert(object.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">year</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">Integer</span>.class)
-        <span class="keyword">if</span> (day.isPresent() &amp;&amp; month.isPresent() &amp;&amp; year.isPresent()) {
-            <span class="keyword">try</span> {
-                <span class="keyword">return</span> Optional.of(LocalDate.of(year.get(), month.get(), day.get())) <i class="conum" data-value="2"></i><b>(2)</b>
-            } <span class="keyword">catch</span> (DateTimeException e) {
+@Singleton
+class MapToLocalDateConverter implements TypeConverter&lt;Map, LocalDate&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+    @Override
+    Optional&lt;LocalDate&gt; convert(Map object, Class&lt;LocalDate&gt; targetType, ConversionContext context) {
+        Optional&lt;Integer&gt; day = ConversionService.SHARED.convert(object.get("day"), Integer.class)
+        Optional&lt;Integer&gt; month = ConversionService.SHARED.convert(object.get("month"), Integer.class)
+        Optional&lt;Integer&gt; year = ConversionService.SHARED.convert(object.get("year"), Integer.class)
+        if (day.isPresent() &amp;&amp; month.isPresent() &amp;&amp; year.isPresent()) {
+            try {
+                return Optional.of(LocalDate.of(year.get(), month.get(), day.get())) <i class="conum" data-value="2"></i><b>(2)</b>
+            } catch (DateTimeException e) {
                 context.reject(object, e) <i class="conum" data-value="3"></i><b>(3)</b>
-                <span class="keyword">return</span> Optional.empty()
+                return Optional.empty()
             }
         }
-        <span class="keyword">return</span> Optional.empty()
+        return Optional.empty()
     }
 }</code></pre>
 </div>
@@ -835,30 +835,30 @@ println(vehicle.start())</code></pre>
 <div class="listingblock">
 <div class="title">Using @EachProperty</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Parameter</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.EachProperty</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Parameter;
+import io.micronaut.context.annotation.EachProperty;
 
-<span class="annotation">@EachProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">test.datasource</span><span class="delimiter">&quot;</span></span>)  <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">DataSourceConfiguration</span> {
+@EachProperty("test.datasource")  <i class="conum" data-value="1"></i><b>(1)</b>
+public class DataSourceConfiguration {
 
-    <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">String</span> name;
-    <span class="directive">private</span> <span class="predefined-type">URI</span> url = <span class="keyword">new</span> <span class="predefined-type">URI</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">localhost</span><span class="delimiter">&quot;</span></span>);
+    private final String name;
+    private URI url = new URI("localhost");
 
-    <span class="directive">public</span> DataSourceConfiguration(<span class="annotation">@Parameter</span> <span class="predefined-type">String</span> name) <i class="conum" data-value="2"></i><b>(2)</b>
-            <span class="directive">throws</span> <span class="exception">URISyntaxException</span> {
-        <span class="local-variable">this</span>.name = name;
+    public DataSourceConfiguration(@Parameter String name) <i class="conum" data-value="2"></i><b>(2)</b>
+            throws URISyntaxException {
+        this.name = name;
     }
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getName() {
-        <span class="keyword">return</span> name;
+    public String getName() {
+        return name;
     }
 
-    <span class="directive">public</span> <span class="predefined-type">URI</span> getUrl() { <i class="conum" data-value="3"></i><b>(3)</b>
-        <span class="keyword">return</span> url;
+    public URI getUrl() { <i class="conum" data-value="3"></i><b>(3)</b>
+        return url;
     }
 
-    <span class="directive">public</span> <span class="type">void</span> setUrl(<span class="predefined-type">URI</span> url) {
-        <span class="local-variable">this</span>.url = url;
+    public void setUrl(URI url) {
+        this.url = url;
     }
 }</code></pre>
 </div>
@@ -885,11 +885,11 @@ println(vehicle.start())</code></pre>
 <div class="listingblock">
 <div class="title">Providing Configuration to @EachProperty</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">ApplicationContext applicationContext = ApplicationContext.run(PropertySource.of(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>,
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ApplicationContext applicationContext = ApplicationContext.run(PropertySource.of(
+        "test",
         CollectionUtils.mapOf(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">test.datasource.one.url</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">jdbc:mysql://localhost/one</span><span class="delimiter">&quot;</span></span>,
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">test.datasource.two.url</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">jdbc:mysql://localhost/two</span><span class="delimiter">&quot;</span></span>)
+        "test.datasource.one.url", "jdbc:mysql://localhost/one",
+        "test.datasource.two.url", "jdbc:mysql://localhost/two")
 ));</code></pre>
 </div>
 </div>
@@ -899,17 +899,17 @@ println(vehicle.start())</code></pre>
 <div class="listingblock">
 <div class="title">Evaluating Beans Built by @EachProperty</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">Collection</span>&lt;DataSourceConfiguration&gt; beansOfType = applicationContext.getBeansOfType(DataSourceConfiguration.class);
-assertEquals(beansOfType.size(), <span class="integer">2</span>); <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Collection&lt;DataSourceConfiguration&gt; beansOfType = applicationContext.getBeansOfType(DataSourceConfiguration.class);
+assertEquals(beansOfType.size(), 2); <i class="conum" data-value="1"></i><b>(1)</b>
 
 DataSourceConfiguration firstConfig = applicationContext.getBean(
         DataSourceConfiguration.class,
-        Qualifiers.byName(<span class="string"><span class="delimiter">&quot;</span><span class="content">one</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+        Qualifiers.byName("one") <i class="conum" data-value="2"></i><b>(2)</b>
 );
 
 assertEquals(
         firstConfig.getUrl(),
-        <span class="keyword">new</span> <span class="predefined-type">URI</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">jdbc:mysql://localhost/one</span><span class="delimiter">&quot;</span></span>)
+        new URI("jdbc:mysql://localhost/one")
 );</code></pre>
 </div>
 </div>
@@ -942,13 +942,13 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Using @EachBean</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Factory</span> <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">DataSourceFactory</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Factory <i class="conum" data-value="1"></i><b>(1)</b>
+public class DataSourceFactory {
 
-    <span class="annotation">@EachBean</span>(DataSourceConfiguration.class) <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="predefined-type">DataSource</span> dataSource(DataSourceConfiguration configuration) { <i class="conum" data-value="3"></i><b>(3)</b>
-        <span class="predefined-type">URI</span> url = configuration.getUrl();
-        <span class="keyword">return</span> <span class="keyword">new</span> <span class="predefined-type">DataSource</span>(url);
+    @EachBean(DataSourceConfiguration.class) <i class="conum" data-value="2"></i><b>(2)</b>
+    DataSource dataSource(DataSourceConfiguration configuration) { <i class="conum" data-value="3"></i><b>(3)</b>
+        URI url = configuration.getUrl();
+        return new DataSource(url);
     }
 
 }</code></pre>
@@ -979,9 +979,9 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Using a Qualifier</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">DataSource</span> firstDataSource = applicationContext.getBean(
-        <span class="predefined-type">DataSource</span>.class,
-        Qualifiers.byName(<span class="string"><span class="delimiter">&quot;</span><span class="content">one</span><span class="delimiter">&quot;</span></span>)
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">DataSource firstDataSource = applicationContext.getBean(
+        DataSource.class,
+        Qualifiers.byName("one")
 );</code></pre>
 </div>
 </div>

@@ -136,30 +136,30 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Using @EachProperty</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Parameter</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.EachProperty</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Parameter;
+import io.micronaut.context.annotation.EachProperty;
 
-<span class="annotation">@EachProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">test.datasource</span><span class="delimiter">&quot;</span></span>)  <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">DataSourceConfiguration</span> {
+@EachProperty("test.datasource")  <i class="conum" data-value="1"></i><b>(1)</b>
+public class DataSourceConfiguration {
 
-    <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">String</span> name;
-    <span class="directive">private</span> <span class="predefined-type">URI</span> url = <span class="keyword">new</span> <span class="predefined-type">URI</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">localhost</span><span class="delimiter">&quot;</span></span>);
+    private final String name;
+    private URI url = new URI("localhost");
 
-    <span class="directive">public</span> DataSourceConfiguration(<span class="annotation">@Parameter</span> <span class="predefined-type">String</span> name) <i class="conum" data-value="2"></i><b>(2)</b>
-            <span class="directive">throws</span> <span class="exception">URISyntaxException</span> {
-        <span class="local-variable">this</span>.name = name;
+    public DataSourceConfiguration(@Parameter String name) <i class="conum" data-value="2"></i><b>(2)</b>
+            throws URISyntaxException {
+        this.name = name;
     }
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getName() {
-        <span class="keyword">return</span> name;
+    public String getName() {
+        return name;
     }
 
-    <span class="directive">public</span> <span class="predefined-type">URI</span> getUrl() { <i class="conum" data-value="3"></i><b>(3)</b>
-        <span class="keyword">return</span> url;
+    public URI getUrl() { <i class="conum" data-value="3"></i><b>(3)</b>
+        return url;
     }
 
-    <span class="directive">public</span> <span class="type">void</span> setUrl(<span class="predefined-type">URI</span> url) {
-        <span class="local-variable">this</span>.url = url;
+    public void setUrl(URI url) {
+        this.url = url;
     }
 }</code></pre>
 </div>
@@ -186,11 +186,11 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Providing Configuration to @EachProperty</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">ApplicationContext applicationContext = ApplicationContext.run(PropertySource.of(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>,
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ApplicationContext applicationContext = ApplicationContext.run(PropertySource.of(
+        "test",
         CollectionUtils.mapOf(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">test.datasource.one.url</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">jdbc:mysql://localhost/one</span><span class="delimiter">&quot;</span></span>,
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">test.datasource.two.url</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">jdbc:mysql://localhost/two</span><span class="delimiter">&quot;</span></span>)
+        "test.datasource.one.url", "jdbc:mysql://localhost/one",
+        "test.datasource.two.url", "jdbc:mysql://localhost/two")
 ));</code></pre>
 </div>
 </div>
@@ -200,17 +200,17 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Evaluating Beans Built by @EachProperty</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">Collection</span>&lt;DataSourceConfiguration&gt; beansOfType = applicationContext.getBeansOfType(DataSourceConfiguration.class);
-assertEquals(beansOfType.size(), <span class="integer">2</span>); <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Collection&lt;DataSourceConfiguration&gt; beansOfType = applicationContext.getBeansOfType(DataSourceConfiguration.class);
+assertEquals(beansOfType.size(), 2); <i class="conum" data-value="1"></i><b>(1)</b>
 
 DataSourceConfiguration firstConfig = applicationContext.getBean(
         DataSourceConfiguration.class,
-        Qualifiers.byName(<span class="string"><span class="delimiter">&quot;</span><span class="content">one</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+        Qualifiers.byName("one") <i class="conum" data-value="2"></i><b>(2)</b>
 );
 
 assertEquals(
         firstConfig.getUrl(),
-        <span class="keyword">new</span> <span class="predefined-type">URI</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">jdbc:mysql://localhost/one</span><span class="delimiter">&quot;</span></span>)
+        new URI("jdbc:mysql://localhost/one")
 );</code></pre>
 </div>
 </div>

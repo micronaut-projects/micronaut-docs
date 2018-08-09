@@ -145,16 +145,16 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Using RxJava 2 to Read the JSON</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/people</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">PersonController</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Controller("/people")
+public class PersonController {
 
-    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, Person&gt; inMemoryDatastore = <span class="keyword">new</span> <span class="predefined-type">LinkedHashMap</span>&lt;&gt;();
+    Map&lt;String, Person&gt; inMemoryDatastore = new LinkedHashMap&lt;&gt;();
 
-    <span class="annotation">@Post</span>
-    <span class="directive">public</span> Single&lt;HttpResponse&lt;Person&gt;&gt; save(<span class="annotation">@Body</span> Single&lt;Person&gt; person) { <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="keyword">return</span> person.map(p -&gt; {
+    @Post
+    public Single&lt;HttpResponse&lt;Person&gt;&gt; save(@Body Single&lt;Person&gt; person) { <i class="conum" data-value="1"></i><b>(1)</b>
+        return person.map(p -&gt; {
                     inMemoryDatastore.put(p.getFirstName(), p); <i class="conum" data-value="2"></i><b>(2)</b>
-                    <span class="keyword">return</span> HttpResponse.created(p); <i class="conum" data-value="3"></i><b>(3)</b>
+                    return HttpResponse.created(p); <i class="conum" data-value="3"></i><b>(3)</b>
                 }
         );
     }
@@ -197,10 +197,10 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Using CompletableFuture to Read the JSON</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> CompletableFuture&lt;HttpResponse&lt;Person&gt;&gt; save(<span class="annotation">@Body</span> CompletableFuture&lt;Person&gt; person) {
-    <span class="keyword">return</span> person.thenApply(p -&gt; {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public CompletableFuture&lt;HttpResponse&lt;Person&gt;&gt; save(@Body CompletableFuture&lt;Person&gt; person) {
+    return person.thenApply(p -&gt; {
                 inMemoryDatastore.put(p.getFirstName(), p);
-                <span class="keyword">return</span> HttpResponse.created(p);
+                return HttpResponse.created(p);
             }
     );
 }</code></pre>
@@ -220,9 +220,9 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Binding JSON POJOs</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> HttpResponse&lt;Person&gt; save(<span class="annotation">@Body</span> Person person) {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public HttpResponse&lt;Person&gt; save(@Body Person person) {
     inMemoryDatastore.put(person.getFirstName(), person);
-    <span class="keyword">return</span> HttpResponse.created(person);
+    return HttpResponse.created(person);
 }</code></pre>
 </div>
 </div>
@@ -328,13 +328,13 @@ The output produced by Jackson can be customized in a variety of manners, from d
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">jackson</span>:
-    <span class="key">serialization</span>:
-        <span class="key">indentOutput</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">writeDatesAsTimestamps</span>: <span class="string"><span class="content">false</span></span>
-    <span class="key">deserialization</span>:
-        <span class="key">useBigIntegerForInts</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">failOnUnknownProperties</span>: <span class="string"><span class="content">false</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">jackson:
+    serialization:
+        indentOutput: true
+        writeDatesAsTimestamps: false
+    deserialization:
+        useBigIntegerForInts: true
+        failOnUnknownProperties: false</code></pre>
 </div>
 </div>
 </div>

@@ -139,24 +139,24 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">@ConfigurationProperties Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.hibernate.validator.constraints.NotBlank</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.ConfigurationProperties</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import org.hibernate.validator.constraints.NotBlank
+import io.micronaut.context.annotation.ConfigurationProperties
 
-<span class="keyword">import</span> <span class="include">javax.validation.constraints.Min</span>
+import javax.validation.constraints.Min
 
-<span class="annotation">@ConfigurationProperties</span>(<span class="string"><span class="delimiter">'</span><span class="content">my.engine</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="type">class</span> <span class="class">EngineConfig</span> {
+@ConfigurationProperties('my.engine') <i class="conum" data-value="1"></i><b>(1)</b>
+class EngineConfig {
 
-    <span class="annotation">@NotBlank</span> <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="predefined-type">String</span> manufacturer = <span class="string"><span class="delimiter">&quot;</span><span class="content">Ford</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+    @NotBlank <i class="conum" data-value="2"></i><b>(2)</b>
+    String manufacturer = "Ford" <i class="conum" data-value="3"></i><b>(3)</b>
 
-    <span class="annotation">@Min</span>(<span class="integer">1L</span>)
-    <span class="type">int</span> cylinders
-    CrankShaft crankShaft = <span class="keyword">new</span> CrankShaft()
+    @Min(1L)
+    int cylinders
+    CrankShaft crankShaft = new CrankShaft()
 
-    <span class="annotation">@ConfigurationProperties</span>(<span class="string"><span class="delimiter">'</span><span class="content">crank-shaft</span><span class="delimiter">'</span></span>)
-    <span class="directive">static</span> <span class="type">class</span> <span class="class">CrankShaft</span> { <i class="conum" data-value="4"></i><b>(4)</b>
-        Optional&lt;<span class="predefined-type">Double</span>&gt; rodLength = Optional.empty() <i class="conum" data-value="5"></i><b>(5)</b>
+    @ConfigurationProperties('crank-shaft')
+    static class CrankShaft { <i class="conum" data-value="4"></i><b>(4)</b>
+        Optional&lt;Double&gt; rodLength = Optional.empty() <i class="conum" data-value="5"></i><b>(5)</b>
     }
 
 }</code></pre>
@@ -192,21 +192,21 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">@ConfigurationProperties Dependency Injection</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">EngineImpl</span> <span class="directive">implements</span> Engine {
-    <span class="directive">final</span> EngineConfig config
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Singleton
+class EngineImpl implements Engine {
+    final EngineConfig config
 
     EngineImpl(EngineConfig config) { <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="local-variable">this</span>.config = config
+        this.config = config
     }
 
-    <span class="annotation">@Override</span>
-    <span class="type">int</span> getCylinders() {
+    @Override
+    int getCylinders() {
         config.cylinders
     }
 
-    <span class="predefined-type">String</span> start() { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>config.manufacturer<span class="inline-delimiter">}</span></span><span class="content"> Engine Starting V</span><span class="inline"><span class="inline-delimiter">${</span>config.cylinders<span class="inline-delimiter">}</span></span><span class="content"> [rodLength=</span><span class="inline"><span class="inline-delimiter">${</span>config.crankShaft.rodLength.orElse(<span class="float">6.0d</span>)<span class="inline-delimiter">}</span></span><span class="content">]</span><span class="delimiter">&quot;</span></span>
+    String start() { <i class="conum" data-value="2"></i><b>(2)</b>
+        "${config.manufacturer} Engine Starting V${config.cylinders} [rodLength=${config.crankShaft.rodLength.orElse(6.0d)}]"
     }
 }</code></pre>
 </div>
@@ -229,9 +229,9 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Supply Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
-        [<span class="string"><span class="delimiter">'</span><span class="content">my.engine.cylinders</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">8</span><span class="delimiter">'</span></span>],
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
+        ['my.engine.cylinders': '8'],
+        "test"
 )
 
 Vehicle vehicle = applicationContext
@@ -269,16 +269,16 @@ println(vehicle.start())</code></pre>
 <div class="listingblock">
 <div class="title">@ConfigurationBuilder Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.ConfigurationBuilder</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.ConfigurationProperties</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.ConfigurationBuilder
+import io.micronaut.context.annotation.ConfigurationProperties
 
-<span class="annotation">@ConfigurationProperties</span>(<span class="string"><span class="delimiter">'</span><span class="content">my.engine</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="type">class</span> <span class="class">EngineConfig</span> {
+@ConfigurationProperties('my.engine') <i class="conum" data-value="1"></i><b>(1)</b>
+class EngineConfig {
 
-    <span class="annotation">@ConfigurationBuilder</span>(prefixes = <span class="string"><span class="delimiter">&quot;</span><span class="content">with</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    @ConfigurationBuilder(prefixes = "with") <i class="conum" data-value="2"></i><b>(2)</b>
     EngineImpl.Builder builder = EngineImpl.builder()
 
-    <span class="annotation">@ConfigurationBuilder</span>(prefixes = <span class="string"><span class="delimiter">&quot;</span><span class="content">with</span><span class="delimiter">&quot;</span></span>, configurationPrefix = <span class="string"><span class="delimiter">&quot;</span><span class="content">crankShaft</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+    @ConfigurationBuilder(prefixes = "with", configurationPrefix = "crankShaft") <i class="conum" data-value="3"></i><b>(3)</b>
     CrankShaft.Builder crankShaft = CrankShaft.builder()
 }</code></pre>
 </div>
@@ -317,16 +317,16 @@ By default, only builder methods that take a single argument are supported. To s
 <div class="listingblock">
 <div class="title">Factory Bean</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Bean</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Factory</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Bean
+import io.micronaut.context.annotation.Factory
 
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>
+import javax.inject.Singleton
 
-<span class="annotation">@Factory</span>
-<span class="type">class</span> <span class="class">EngineFactory</span> {
+@Factory
+class EngineFactory {
 
-    <span class="annotation">@Bean</span>
-    <span class="annotation">@Singleton</span>
+    @Bean
+    @Singleton
     EngineImpl buildEngine(EngineConfig engineConfig) {
         engineConfig.builder.build(engineConfig.crankShaft)
     }
@@ -342,11 +342,11 @@ By default, only builder methods that take a single argument are supported. To s
 <div class="listingblock">
 <div class="title">Supply Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
-        [<span class="string"><span class="delimiter">'</span><span class="content">my.engine.cylinders</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">4</span><span class="delimiter">'</span></span>,
-         <span class="string"><span class="delimiter">'</span><span class="content">my.engine.manufacturer</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">Subaru</span><span class="delimiter">'</span></span>,
-         <span class="string"><span class="delimiter">'</span><span class="content">my.engine.crankShaft.rodLength</span><span class="delimiter">'</span></span>: <span class="integer">4</span>],
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
+        ['my.engine.cylinders':'4',
+         'my.engine.manufacturer': 'Subaru',
+         'my.engine.crankShaft.rodLength': 4],
+        "test"
 )
 
 Vehicle vehicle = applicationContext
@@ -371,16 +371,16 @@ println(vehicle.start())</code></pre>
 <div class="listingblock">
 <div class="title">@MapFormat Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.core.convert.format.MapFormat</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.convert.format.MapFormat
 
-<span class="annotation">@ConfigurationProperties</span>(<span class="string"><span class="delimiter">'</span><span class="content">my.engine</span><span class="delimiter">'</span></span>)
-<span class="type">class</span> <span class="class">EngineConfig</span> {
+@ConfigurationProperties('my.engine')
+class EngineConfig {
 
-    <span class="annotation">@Min</span>(<span class="integer">1L</span>)
-    <span class="type">int</span> cylinders
+    @Min(1L)
+    int cylinders
 
-    <span class="annotation">@MapFormat</span>(transformation = MapFormat.MapTransformation.FLAT) <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">Integer</span>, <span class="predefined-type">String</span>&gt; sensors
+    @MapFormat(transformation = MapFormat.MapTransformation.FLAT) <i class="conum" data-value="1"></i><b>(1)</b>
+    Map&lt;Integer, String&gt; sensors
 
 }</code></pre>
 </div>
@@ -396,18 +396,18 @@ println(vehicle.start())</code></pre>
 <div class="listingblock">
 <div class="title">EngineImpl</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">EngineImpl</span> <span class="directive">implements</span> Engine {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Singleton
+class EngineImpl implements Engine {
 
-    <span class="annotation">@Inject</span> EngineConfig config
+    @Inject EngineConfig config
 
-    <span class="annotation">@Override</span>
-    <span class="predefined-type">Map</span> getSensors() {
+    @Override
+    Map getSensors() {
         config.sensors
     }
 
-    <span class="predefined-type">String</span> start() {
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">Engine Starting V</span><span class="inline"><span class="inline-delimiter">${</span>config.cylinders<span class="inline-delimiter">}</span></span><span class="content"> [sensors=</span><span class="inline"><span class="inline-delimiter">${</span>sensors.size()<span class="inline-delimiter">}</span></span><span class="content">]</span><span class="delimiter">&quot;</span></span>
+    String start() {
+        "Engine Starting V${config.cylinders} [sensors=${sensors.size()}]"
     }
 }</code></pre>
 </div>
@@ -418,9 +418,9 @@ println(vehicle.start())</code></pre>
 <div class="listingblock">
 <div class="title">Use Map Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
-        [<span class="string"><span class="delimiter">'</span><span class="content">my.engine.cylinders</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">8</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">my.engine.sensors</span><span class="delimiter">'</span></span>: [<span class="integer">0</span>: <span class="string"><span class="delimiter">'</span><span class="content">thermostat</span><span class="delimiter">'</span></span>, <span class="integer">1</span>: <span class="string"><span class="delimiter">'</span><span class="content">fuel pressure</span><span class="delimiter">'</span></span>]],
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext applicationContext = ApplicationContext.run(
+        ['my.engine.cylinders': '8', 'my.engine.sensors': [0: 'thermostat', 1: 'fuel pressure']],
+        "test"
 )
 
 Vehicle vehicle = applicationContext

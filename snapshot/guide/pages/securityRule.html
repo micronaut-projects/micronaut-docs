@@ -168,12 +168,12 @@ you can implement your own <a href="../api/io/micronaut/security/rules/SecurityR
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-  <span class="key">security</span>:
-    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">ipPatterns</span>:
-      - <span class="string"><span class="content">127.0.0.1</span></span>
-      - <span class="string"><span class="content">192.168.1.*</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  security:
+    enabled: true
+    ipPatterns:
+      - 127.0.0.1
+      - 192.168.1.*</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -197,25 +197,25 @@ access at <a href="../api/io/micronaut/http/annotation/Controller.html">Controll
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/example</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@Secured</span>(SecurityRule.IS_AUTHENTICATED) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">ExampleController</span> {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Controller("/example")
+@Secured(SecurityRule.IS_AUTHENTICATED) <i class="conum" data-value="1"></i><b>(1)</b>
+public class ExampleController {
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/admin</span><span class="delimiter">&quot;</span></span>)
-    <span class="annotation">@Secured</span>([<span class="string"><span class="delimiter">&quot;</span><span class="content">ROLE_ADMIN</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">ROLE_X</span><span class="delimiter">&quot;</span></span>]) <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="directive">public</span> <span class="predefined-type">String</span> withroles() {
-        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">You have ROLE_ADMIN or ROLE_X roles</span><span class="delimiter">&quot;</span></span>;
+    @Get("/admin")
+    @Secured(["ROLE_ADMIN", "ROLE_X"]) <i class="conum" data-value="2"></i><b>(2)</b>
+    public String withroles() {
+        return "You have ROLE_ADMIN or ROLE_X roles";
     }
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">'</span><span class="content">/anonymous</span><span class="delimiter">'</span></span>)
-    <span class="annotation">@Secured</span>(SecurityRule.IS_ANONYMOUS)  <i class="conum" data-value="3"></i><b>(3)</b>
-    <span class="directive">public</span> <span class="predefined-type">String</span> anonymous() {
-        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">You are anonymous</span><span class="delimiter">&quot;</span></span>;
+    @Get('/anonymous')
+    @Secured(SecurityRule.IS_ANONYMOUS)  <i class="conum" data-value="3"></i><b>(3)</b>
+    public String anonymous() {
+        return "You are anonymous";
     }
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/authenticated</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="directive">public</span> <span class="predefined-type">String</span> authenticated(Authentication authentication) {
-        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>authentication.name<span class="inline-delimiter">}</span></span><span class="content"> is authenticated</span><span class="delimiter">&quot;</span></span>;
+    @Get("/authenticated") <i class="conum" data-value="1"></i><b>(1)</b>
+    public String authenticated(Authentication authentication) {
+        return "${authentication.name} is authenticated";
     }
 }</code></pre>
 </div>
@@ -252,25 +252,25 @@ access at <a href="../api/io/micronaut/http/annotation/Controller.html">Controll
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-  <span class="key">security</span>:
-    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">interceptUrlMap</span>:
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  security:
+    enabled: true
+    interceptUrlMap:
       -
-        <span class="key">pattern</span>: <span class="string"><span class="content">/images/*</span></span>
-        <span class="key">httpMethod</span>: <span class="string"><span class="content">GET</span></span>
-        <span class="key">access</span>:
-          - <span class="string"><span class="content">isAnonymous() </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+        pattern: /images/*
+        httpMethod: GET
+        access:
+          - isAnonymous() <i class="conum" data-value="1"></i><b>(1)</b>
       -
-        <span class="key">pattern</span>: <span class="string"><span class="content">/books</span></span>
-        <span class="key">access</span>:
-          - <span class="string"><span class="content">isAuthenticated() </span></span><i class="conum" data-value="2"></i><b>(2)</b>
+        pattern: /books
+        access:
+          - isAuthenticated() <i class="conum" data-value="2"></i><b>(2)</b>
       -
-        <span class="key">pattern</span>: <span class="string"><span class="content">/books/grails</span></span>
-        <span class="key">httpMethod</span>: <span class="string"><span class="content">GET</span></span>
-        <span class="key">access</span>:
-          - <span class="string"><span class="content">ROLE_GRAILS </span></span><i class="conum" data-value="3"></i><b>(3)</b>
-          - <span class="string"><span class="content">ROLE_GROOVY</span></span></code></pre>
+        pattern: /books/grails
+        httpMethod: GET
+        access:
+          - ROLE_GRAILS <i class="conum" data-value="3"></i><b>(3)</b>
+          - ROLE_GROOVY</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -309,13 +309,13 @@ and an optional HTTP Method</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">endpoints</span>:
-  <span class="key">beans</span>:
-    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">sensitive</span>: <span class="string"><span class="content">true </span></span><i class="conum" data-value="1"></i><b>(1)</b>
-  <span class="key">info</span>:
-    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">sensitive</span>: <span class="string"><span class="content">false  </span></span><i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">endpoints:
+  beans:
+    enabled: true
+    sensitive: true <i class="conum" data-value="1"></i><b>(1)</b>
+  info:
+    enabled: true
+    sensitive: false  <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">

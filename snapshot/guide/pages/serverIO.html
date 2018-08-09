@@ -201,44 +201,44 @@ See the section on configuring <a href="#threadPools">Server Thread Pools</a> fo
 <div class="listingblock">
 <div class="title">Performing Blocking I/O</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">groovy.text.SimpleTemplateEngine</span>;
-<span class="keyword">import</span> <span class="include">groovy.text.Template</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.core.io.Writable</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.core.util.CollectionUtils</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.MediaType</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.server.exceptions.HttpServerException</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import groovy.text.SimpleTemplateEngine;
+import groovy.text.Template;
+import io.micronaut.core.io.Writable;
+import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.*;
+import io.micronaut.http.server.exceptions.HttpServerException;
 
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/template</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">TemplateController</span> {
+@Controller("/template")
+public class TemplateController {
 
-    <span class="directive">private</span> <span class="directive">final</span> SimpleTemplateEngine templateEngine = <span class="keyword">new</span> SimpleTemplateEngine();
-    <span class="directive">private</span> <span class="directive">final</span> Template template;
+    private final SimpleTemplateEngine templateEngine = new SimpleTemplateEngine();
+    private final Template template;
 
-    <span class="directive">public</span> TemplateController() {
+    public TemplateController() {
         template = initTemplate(); <i class="conum" data-value="1"></i><b>(1)</b>
     }
 
-    <span class="annotation">@Get</span>(value = <span class="string"><span class="delimiter">&quot;</span><span class="content">/welcome</span><span class="delimiter">&quot;</span></span>, produces = MediaType.TEXT_PLAIN)
+    @Get(value = "/welcome", produces = MediaType.TEXT_PLAIN)
     Writable render() { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="keyword">return</span> writer -&gt; template.make( <i class="conum" data-value="3"></i><b>(3)</b>
+        return writer -&gt; template.make( <i class="conum" data-value="3"></i><b>(3)</b>
             CollectionUtils.mapOf(
-                    <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>,
-                    <span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Flintstone</span><span class="delimiter">&quot;</span></span>
+                    "firstName", "Fred",
+                    "lastName", "Flintstone"
             )
         ).writeTo(writer);
     }
 
-    <span class="directive">private</span> Template initTemplate() {
+    private Template initTemplate() {
         Template template;
-        <span class="keyword">try</span> {
+        try {
             template = templateEngine.createTemplate(
-                    <span class="string"><span class="delimiter">&quot;</span><span class="content">Dear $firstName $lastName. Nice to meet you.</span><span class="delimiter">&quot;</span></span>
+                    "Dear $firstName $lastName. Nice to meet you."
             );
-        } <span class="keyword">catch</span> (<span class="exception">Exception</span> e) {
-            <span class="keyword">throw</span> <span class="keyword">new</span> HttpServerException(<span class="string"><span class="delimiter">&quot;</span><span class="content">Cannot create template</span><span class="delimiter">&quot;</span></span>);
+        } catch (Exception e) {
+            throw new HttpServerException("Cannot create template");
         }
-        <span class="keyword">return</span> template;
+        return template;
     }
 }</code></pre>
 </div>
@@ -270,17 +270,17 @@ See the section on configuring <a href="#threadPools">Server Thread Pools</a> fo
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/books</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">BooksController</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Controller("/books")
+public class BooksController {
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/stock/{isbn}</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> <span class="predefined-type">Map</span> stock(<span class="predefined-type">String</span> isbn) {
-        <span class="keyword">return</span> <span class="predefined-constant">null</span>; <i class="conum" data-value="1"></i><b>(1)</b>
+    @Get("/stock/{isbn}")
+    public Map stock(String isbn) {
+        return null; <i class="conum" data-value="1"></i><b>(1)</b>
     }
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/maybestock/{isbn}</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> Maybe&lt;<span class="predefined-type">Map</span>&gt; maybestock(<span class="predefined-type">String</span> isbn) {
-        <span class="keyword">return</span> Maybe.empty(); <i class="conum" data-value="2"></i><b>(2)</b>
+    @Get("/maybestock/{isbn}")
+    public Maybe&lt;Map&gt; maybestock(String isbn) {
+        return Maybe.empty(); <i class="conum" data-value="2"></i><b>(2)</b>
     }
 }</code></pre>
 </div>

@@ -139,28 +139,28 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">MethodInterceptor Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.aop</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.core.type.MutableArgumentValue</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.aop.*;
+import io.micronaut.core.type.MutableArgumentValue;
 
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
-<span class="keyword">import</span> <span class="include">java.util</span>.*;
+import javax.inject.Singleton;
+import java.util.*;
 
-<span class="annotation">@Singleton</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">NotNullInterceptor</span> <span class="directive">implements</span> MethodInterceptor&lt;<span class="predefined-type">Object</span>, <span class="predefined-type">Object</span>&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="predefined-type">Object</span> intercept(MethodInvocationContext&lt;<span class="predefined-type">Object</span>, <span class="predefined-type">Object</span>&gt; context) {
-        Optional&lt;<span class="predefined-type">Map</span>.Entry&lt;<span class="predefined-type">String</span>, MutableArgumentValue&lt;?&gt;&gt;&gt; nullParam = context.getParameters()
+@Singleton
+public class NotNullInterceptor implements MethodInterceptor&lt;Object, Object&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+    @Override
+    public Object intercept(MethodInvocationContext&lt;Object, Object&gt; context) {
+        Optional&lt;Map.Entry&lt;String, MutableArgumentValue&lt;?&gt;&gt;&gt; nullParam = context.getParameters()
             .entrySet()
             .stream()
             .filter(entry -&gt; {
                 MutableArgumentValue&lt;?&gt; argumentValue = entry.getValue();
-                <span class="keyword">return</span> Objects.isNull(argumentValue.getValue());
+                return Objects.isNull(argumentValue.getValue());
             })
             .findFirst(); <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="keyword">if</span> (nullParam.isPresent()) {
-            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="exception">IllegalArgumentException</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">Null parameter [</span><span class="delimiter">&quot;</span></span> + nullParam.get().getKey() + <span class="string"><span class="delimiter">&quot;</span><span class="content">] not allowed</span><span class="delimiter">&quot;</span></span>); <i class="conum" data-value="3"></i><b>(3)</b>
-        } <span class="keyword">else</span> {
-            <span class="keyword">return</span> context.proceed(); <i class="conum" data-value="4"></i><b>(4)</b>
+        if (nullParam.isPresent()) {
+            throw new IllegalArgumentException("Null parameter [" + nullParam.get().getKey() + "] not allowed"); <i class="conum" data-value="3"></i><b>(3)</b>
+        } else {
+            return context.proceed(); <i class="conum" data-value="4"></i><b>(4)</b>
         }
     }
 }</code></pre>
@@ -204,17 +204,17 @@ Micronaut AOP interceptors use no reflection which improves performance and redu
 <div class="listingblock">
 <div class="title">Around Advice Annotation Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Type</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.aop.Around</span>;
-<span class="keyword">import</span> <span class="include">java.lang.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">java.lang.annotation.RetentionPolicy.RUNTIME</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Type;
+import io.micronaut.aop.Around;
+import java.lang.annotation.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-<span class="annotation">@Documented</span>
-<span class="annotation">@Retention</span>(RUNTIME) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="annotation">@Target</span>({<span class="predefined-type">ElementType</span>.TYPE, <span class="predefined-type">ElementType</span>.METHOD}) <i class="conum" data-value="2"></i><b>(2)</b>
-<span class="annotation">@Around</span> <i class="conum" data-value="3"></i><b>(3)</b>
-<span class="annotation">@Type</span>(NotNullInterceptor.class) <i class="conum" data-value="4"></i><b>(4)</b>
-<span class="directive">public</span> <span class="annotation">@interface</span> NotNull {
+@Documented
+@Retention(RUNTIME) <i class="conum" data-value="1"></i><b>(1)</b>
+@Target({ElementType.TYPE, ElementType.METHOD}) <i class="conum" data-value="2"></i><b>(2)</b>
+@Around <i class="conum" data-value="3"></i><b>(3)</b>
+@Type(NotNullInterceptor.class) <i class="conum" data-value="4"></i><b>(4)</b>
+public @interface NotNull {
 }</code></pre>
 </div>
 </div>
@@ -244,12 +244,12 @@ Micronaut AOP interceptors use no reflection which improves performance and redu
 <div class="listingblock">
 <div class="title">Around Advice Usage Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Singleton</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">NotNullExample</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Singleton
+public class NotNullExample {
 
-    <span class="annotation">@NotNull</span>
-    <span class="type">void</span> doWork(<span class="predefined-type">String</span> taskName) {
-        <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Doing job: </span><span class="delimiter">&quot;</span></span> + taskName);
+    @NotNull
+    void doWork(String taskName) {
+        System.out.println("Doing job: " + taskName);
     }
 }</code></pre>
 </div>
@@ -260,18 +260,18 @@ Micronaut AOP interceptors use no reflection which improves performance and redu
 <div class="listingblock">
 <div class="title">Around Advice Test</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Rule</span>
-<span class="directive">public</span> ExpectedException thrown = ExpectedException.none();
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Rule
+public ExpectedException thrown = ExpectedException.none();
 
-<span class="annotation">@Test</span>
-<span class="directive">public</span> <span class="type">void</span> testNotNull() {
+@Test
+public void testNotNull() {
     ApplicationContext applicationContext = ApplicationContext.run();
     NotNullExample exampleBean = applicationContext.getBean(NotNullExample.class);
 
-    thrown.expect(<span class="exception">IllegalArgumentException</span>.class);
-    thrown.expectMessage(<span class="string"><span class="delimiter">&quot;</span><span class="content">Null parameter [taskName] not allowed</span><span class="delimiter">&quot;</span></span>);
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("Null parameter [taskName] not allowed");
 
-    exampleBean.doWork(<span class="predefined-constant">null</span>);
+    exampleBean.doWork(null);
 }</code></pre>
 </div>
 </div>

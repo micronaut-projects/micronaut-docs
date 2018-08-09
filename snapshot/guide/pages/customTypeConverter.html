@@ -138,13 +138,13 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@ConfigurationProperties</span>(MyConfigurationProperties.PREFIX)
-<span class="type">class</span> <span class="class">MyConfigurationProperties</span> {
-    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> PREFIX = <span class="string"><span class="delimiter">&quot;</span><span class="content">myapp</span><span class="delimiter">&quot;</span></span>
-    <span class="directive">protected</span> LocalDate updatedAt
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@ConfigurationProperties(MyConfigurationProperties.PREFIX)
+class MyConfigurationProperties {
+    public static final String PREFIX = "myapp"
+    protected LocalDate updatedAt
 
     LocalDate getUpdatedAt() {
-        <span class="keyword">return</span> <span class="local-variable">this</span>.updatedAt
+        return this.updatedAt
     }
 }</code></pre>
 </div>
@@ -157,8 +157,8 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext ctx = ApplicationContext.run(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">myapp.updatedAt</span><span class="delimiter">&quot;</span></span>: [<span class="key">day</span>: <span class="integer">28</span>, <span class="key">month</span>: <span class="integer">10</span>, <span class="key">year</span>: <span class="integer">1982</span>]  <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext ctx = ApplicationContext.run(
+        "myapp.updatedAt": [day: 28, month: 10, year: 1982]  <i class="conum" data-value="1"></i><b>(1)</b>
 )</code></pre>
 </div>
 </div>
@@ -167,26 +167,26 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.core.convert.*</span>
-<span class="keyword">import</span> <span class="include">java.time.*</span>
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.convert.*
+import java.time.*
+import javax.inject.Singleton
 
-<span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">MapToLocalDateConverter</span> <span class="directive">implements</span> TypeConverter&lt;<span class="predefined-type">Map</span>, LocalDate&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="annotation">@Override</span>
-    Optional&lt;LocalDate&gt; convert(<span class="predefined-type">Map</span> object, <span class="predefined-type">Class</span>&lt;LocalDate&gt; targetType, ConversionContext context) {
-        Optional&lt;<span class="predefined-type">Integer</span>&gt; day = ConversionService.SHARED.convert(object.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">day</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">Integer</span>.class)
-        Optional&lt;<span class="predefined-type">Integer</span>&gt; month = ConversionService.SHARED.convert(object.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">month</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">Integer</span>.class)
-        Optional&lt;<span class="predefined-type">Integer</span>&gt; year = ConversionService.SHARED.convert(object.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">year</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">Integer</span>.class)
-        <span class="keyword">if</span> (day.isPresent() &amp;&amp; month.isPresent() &amp;&amp; year.isPresent()) {
-            <span class="keyword">try</span> {
-                <span class="keyword">return</span> Optional.of(LocalDate.of(year.get(), month.get(), day.get())) <i class="conum" data-value="2"></i><b>(2)</b>
-            } <span class="keyword">catch</span> (DateTimeException e) {
+@Singleton
+class MapToLocalDateConverter implements TypeConverter&lt;Map, LocalDate&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+    @Override
+    Optional&lt;LocalDate&gt; convert(Map object, Class&lt;LocalDate&gt; targetType, ConversionContext context) {
+        Optional&lt;Integer&gt; day = ConversionService.SHARED.convert(object.get("day"), Integer.class)
+        Optional&lt;Integer&gt; month = ConversionService.SHARED.convert(object.get("month"), Integer.class)
+        Optional&lt;Integer&gt; year = ConversionService.SHARED.convert(object.get("year"), Integer.class)
+        if (day.isPresent() &amp;&amp; month.isPresent() &amp;&amp; year.isPresent()) {
+            try {
+                return Optional.of(LocalDate.of(year.get(), month.get(), day.get())) <i class="conum" data-value="2"></i><b>(2)</b>
+            } catch (DateTimeException e) {
                 context.reject(object, e) <i class="conum" data-value="3"></i><b>(3)</b>
-                <span class="keyword">return</span> Optional.empty()
+                return Optional.empty()
             }
         }
-        <span class="keyword">return</span> Optional.empty()
+        return Optional.empty()
     }
 }</code></pre>
 </div>

@@ -174,8 +174,8 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">my-products</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> sendProduct(<span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand, <span class="predefined-type">String</span> name);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic("my-products")
+void sendProduct(@KafkaKey String brand, String name);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -189,11 +189,11 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">my-products</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> sendProduct(
-    <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand,
-    <span class="predefined-type">String</span> name,
-    <span class="annotation">@Header</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">My-Header</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> myHeader);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic("my-products")
+void sendProduct(
+    @KafkaKey String brand,
+    String name,
+    @Header("My-Header") String myHeader);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -205,12 +205,12 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Declaring @KafkaClient Headers</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.KafkaClient</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.messaging.annotation.Header</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.configuration.kafka.annotation.KafkaClient;
+import io.micronaut.messaging.annotation.Header;
 
-<span class="annotation">@KafkaClient</span>(id=<span class="string"><span class="delimiter">&quot;</span><span class="content">product-client</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@Header</span>(name = <span class="string"><span class="delimiter">&quot;</span><span class="content">X-Token</span><span class="delimiter">&quot;</span></span>, value = <span class="string"><span class="delimiter">&quot;</span><span class="content">${my.application.token}</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">ProductClient</span> {
+@KafkaClient(id="product-client")
+@Header(name = "X-Token", value = "${my.application.token}")
+public interface ProductClient {
     ...
 }</code></pre>
 </div>
@@ -234,9 +234,9 @@ function addJsClass() {
 <h4 id="_single_value_and_return_type">Single Value and Return Type</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Single&lt;<span class="predefined-type">Book</span>&gt; sendBook(
-    <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> author,
-    Single&lt;<span class="predefined-type">Book</span>&gt; book
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Single&lt;Book&gt; sendBook(
+    @KafkaKey String author,
+    Single&lt;Book&gt; book
 );</code></pre>
 </div>
 </div>
@@ -248,9 +248,9 @@ function addJsClass() {
 <h4 id="_flowable_value_and_return_type">Flowable Value and Return Type</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;<span class="predefined-type">Book</span>&gt; sendBooks(
-    <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> author,
-    Flowable&lt;<span class="predefined-type">Book</span>&gt; book
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;Book&gt; sendBooks(
+    @KafkaKey String author,
+    Flowable&lt;Book&gt; book
 );</code></pre>
 </div>
 </div>
@@ -262,9 +262,9 @@ function addJsClass() {
 <h4 id="_flowable_value_and_return_type_2">Flowable Value and Return Type</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flux&lt;RecordMetadata&gt; sendBooks(
-    <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> author,
-    Flux&lt;<span class="predefined-type">Book</span>&gt; book
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flux&lt;RecordMetadata&gt; sendBooks(
+    @KafkaKey String author,
+    Flux&lt;Book&gt; book
 );</code></pre>
 </div>
 </div>
@@ -336,10 +336,10 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Applying Default Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
-    <span class="key">producers</span>:
-        <span class="key">default</span>:
-            <span class="key">retries</span>: <span class="string"><span class="content">5</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">kafka:
+    producers:
+        default:
+            retries: 5</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -354,7 +354,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Using a Client ID</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaClient</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">product-client</span><span class="delimiter">&quot;</span></span>)</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@KafkaClient("product-client")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -363,10 +363,10 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Applying Default Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
-    <span class="key">producers</span>:
-        <span class="key">product-client</span>:
-            <span class="key">retries</span>: <span class="string"><span class="content">5</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">kafka:
+    producers:
+        product-client:
+            retries: 5</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -375,16 +375,16 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Configuring Producer Properties with @KafkaClient</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.KafkaClient</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Property</span>;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.producer.ProducerConfig</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.configuration.kafka.annotation.KafkaClient;
+import io.micronaut.context.annotation.Property;
+import org.apache.kafka.clients.producer.ProducerConfig;
 
-<span class="annotation">@KafkaClient</span>(
-    id=<span class="string"><span class="delimiter">&quot;</span><span class="content">product-client</span><span class="delimiter">&quot;</span></span>,
+@KafkaClient(
+    id="product-client",
     acks = KafkaClient.Acknowledge.ALL,
-    properties = <span class="annotation">@Property</span>(name = ProducerConfig.RETRIES_CONFIG, value = <span class="string"><span class="delimiter">&quot;</span><span class="content">5</span><span class="delimiter">&quot;</span></span>)
+    properties = @Property(name = ProducerConfig.RETRIES_CONFIG, value = "5")
 )
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">ProductClient</span> {
+public interface ProductClient {
     ...
 }</code></pre>
 </div>
@@ -416,11 +416,11 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 <div class="listingblock">
 <div class="title">Applying Default Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
-    <span class="key">producers</span>:
-        <span class="key">product-client</span>:
-            <span class="key">value</span>:
-                <span class="key">serializer</span>: <span class="string"><span class="content">org.apache.kafka.common.serialization.ByteArrayDeserializer</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">kafka:
+    producers:
+        product-client:
+            value:
+                serializer: org.apache.kafka.common.serialization.ByteArrayDeserializer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -447,11 +447,11 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 <div class="listingblock">
 <div class="title">Sending Arrays and Lists</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> sendList(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic("books")
+void sendList(List&lt;Book&gt; books);
 
-<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> sendBooks(<span class="predefined-type">Book</span>...books);</code></pre>
+@Topic("books")
+void sendBooks(Book...books);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -463,9 +463,9 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 <div class="listingblock">
 <div class="title">Sending <code>ProducerRecord</code> batches</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaClient</span>(batch=<span class="predefined-constant">true</span>)
-<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> send(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@KafkaClient(batch=true)
+@Topic("books")
+void send(List&lt;Book&gt; books);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -474,9 +474,9 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 <div class="listingblock">
 <div class="title">Sending <code>ProducerRecord</code> batches Reactively</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaClient</span>(batch=<span class="predefined-constant">true</span>)
-<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
-Flowable&lt;RecordMetadata&gt; send(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@KafkaClient(batch=true)
+@Topic("books")
+Flowable&lt;RecordMetadata&gt; send(List&lt;Book&gt; books);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -485,9 +485,9 @@ Flowable&lt;RecordMetadata&gt; send(<span class="predefined-type">List</span>&lt
 <div class="listingblock">
 <div class="title">Sending <code>ProducerRecord</code> batches from a Flowable</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaClient</span>(batch=<span class="predefined-constant">true</span>)
-<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
-Flowable&lt;RecordMetadata&gt; send(Flowable&lt;<span class="predefined-type">Book</span>&gt; books);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@KafkaClient(batch=true)
+@Topic("books")
+Flowable&lt;RecordMetadata&gt; send(Flowable&lt;Book&gt; books);</code></pre>
 </div>
 </div>
 
@@ -510,24 +510,24 @@ Flowable&lt;RecordMetadata&gt; send(Flowable&lt;<span class="predefined-type">Bo
 <div class="listingblock">
 <div class="title">Using a KafkaProducer directly</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.KafkaClient</span>;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.producer</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.configuration.kafka.annotation.KafkaClient;
+import org.apache.kafka.clients.producer.*;
 
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
-<span class="keyword">import</span> <span class="include">java.util.concurrent.Future</span>;
+import javax.inject.Singleton;
+import java.util.concurrent.Future;
 
-<span class="annotation">@Singleton</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">BookSender</span> {
+@Singleton
+public class BookSender {
 
-    <span class="directive">private</span> <span class="directive">final</span> KafkaProducer&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Book</span>&gt; kafkaProducer;
+    private final KafkaProducer&lt;String, Book&gt; kafkaProducer;
 
-    <span class="directive">public</span> BookSender(
-            <span class="annotation">@KafkaClient</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">book-producer</span><span class="delimiter">&quot;</span></span>) KafkaProducer&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Book</span>&gt; kafkaProducer) { <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="local-variable">this</span>.kafkaProducer = kafkaProducer;
+    public BookSender(
+            @KafkaClient("book-producer") KafkaProducer&lt;String, Book&gt; kafkaProducer) { <i class="conum" data-value="1"></i><b>(1)</b>
+        this.kafkaProducer = kafkaProducer;
     }
 
-    <span class="directive">public</span> <span class="predefined-type">Future</span>&lt;RecordMetadata&gt; send(<span class="predefined-type">String</span> author, <span class="predefined-type">Book</span> book) {
-        <span class="keyword">return</span> kafkaProducer.send(<span class="keyword">new</span> ProducerRecord&lt;&gt;(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>, author, book)); <i class="conum" data-value="2"></i><b>(2)</b>
+    public Future&lt;RecordMetadata&gt; send(String author, Book book) {
+        return kafkaProducer.send(new ProducerRecord&lt;&gt;("books", author, book)); <i class="conum" data-value="2"></i><b>(2)</b>
     }
 
 }</code></pre>
@@ -554,17 +554,17 @@ Flowable&lt;RecordMetadata&gt; send(Flowable&lt;<span class="predefined-type">Bo
 <div class="listingblock">
 <div class="title">Using a KafkaProducer directly</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Test</span>
-<span class="directive">public</span> <span class="type">void</span> testBookSender() <span class="directive">throws</span> <span class="exception">IOException</span> {
-    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; config = <span class="predefined-type">Collections</span>.singletonMap( <i class="conum" data-value="1"></i><b>(1)</b>
-            AbstractKafkaConfiguration.EMBEDDED, <span class="predefined-constant">true</span>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
+public void testBookSender() throws IOException {
+    Map&lt;String, Object&gt; config = Collections.singletonMap( <i class="conum" data-value="1"></i><b>(1)</b>
+            AbstractKafkaConfiguration.EMBEDDED, true
     );
 
-    <span class="keyword">try</span> (ApplicationContext ctx = ApplicationContext.run(config)) {
+    try (ApplicationContext ctx = ApplicationContext.run(config)) {
         BookSender bookSender = ctx.getBean(BookSender.class); <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>();
-        book.setTitle(<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>);
-        bookSender.send(<span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>, book);
+        Book book = new Book();
+        book.setTitle("The Stand");
+        bookSender.send("Stephen King", book);
     }
 }</code></pre>
 </div>
@@ -601,9 +601,9 @@ Flowable&lt;RecordMetadata&gt; send(Flowable&lt;<span class="predefined-type">Bo
 <div class="listingblock">
 <div class="title">Kafka Test Dependencies</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.apache.kafka:kafka-clients:1.1.0:test</span><span class="delimiter">'</span></span>
-testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.apache.kafka:kafka_2.12:1.1.0</span><span class="delimiter">'</span></span>
-testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.apache.kafka:kafka_2.12:1.1.0:test</span><span class="delimiter">'</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">testCompile 'org.apache.kafka:kafka-clients:1.1.0:test'
+testCompile 'org.apache.kafka:kafka_2.12:1.1.0'
+testCompile 'org.apache.kafka:kafka_2.12:1.1.0:test'</code></pre>
 </div>
 </div>
 <div class="paragraph">

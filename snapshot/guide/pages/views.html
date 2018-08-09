@@ -153,7 +153,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:views</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:views"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -171,13 +171,13 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">src/main/java/myapp/ViewsController.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/views</span><span class="delimiter">&quot;</span></span>)
-<span class="type">class</span> <span class="class">ViewsController</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Controller("/views")
+class ViewsController {
 
-    <span class="annotation">@View</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">home</span><span class="delimiter">&quot;</span></span>)
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> HttpResponse index() {
-        <span class="keyword">return</span> HttpResponse.ok(CollectionUtils.mapOf(<span class="string"><span class="delimiter">&quot;</span><span class="content">loggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">sdelamo</span><span class="delimiter">&quot;</span></span>));
+    @View("home")
+    @Get("/")
+    public HttpResponse index() {
+        return HttpResponse.ok(CollectionUtils.mapOf("loggedIn", true, "username", "sdelamo"));
     }
 
 }</code></pre>
@@ -197,13 +197,13 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">src/main/java/myapp/ViewsController.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/views</span><span class="delimiter">&quot;</span></span>)
-<span class="type">class</span> <span class="class">ViewsController</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Controller("/views")
+class ViewsController {
 
-    <span class="annotation">@View</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">home</span><span class="delimiter">&quot;</span></span>)
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pogo</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> HttpResponse&lt;Person&gt; pogo() {
-        <span class="keyword">return</span> HttpResponse.ok(<span class="keyword">new</span> Person(<span class="string"><span class="delimiter">&quot;</span><span class="content">sdelamo</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>));
+    @View("home")
+    @Get("/pogo")
+    public HttpResponse&lt;Person&gt; pogo() {
+        return HttpResponse.ok(new Person("sdelamo", true));
     }
 
 }</code></pre>
@@ -223,13 +223,13 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">src/main/java/myapp/ViewsController.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/views</span><span class="delimiter">&quot;</span></span>)
-<span class="type">class</span> <span class="class">ViewsController</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Controller("/views")
+class ViewsController {
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/modelAndView</span><span class="delimiter">&quot;</span></span>)
+    @Get("/modelAndView")
     ModelAndView modelAndView() {
-        <span class="keyword">return</span> <span class="keyword">new</span> ModelAndView(<span class="string"><span class="delimiter">&quot;</span><span class="content">home</span><span class="delimiter">&quot;</span></span>,
-                <span class="keyword">new</span> Person(loggedIn: <span class="predefined-constant">true</span>, username: <span class="string"><span class="delimiter">'</span><span class="content">sdelamo</span><span class="delimiter">'</span></span>))
+        return new ModelAndView("home",
+                new Person(loggedIn: true, username: 'sdelamo'))
     }</code></pre>
 </div>
 </div>
@@ -259,7 +259,7 @@ the <a href="https://www.thymeleaf.org">Thymeleaf</a> Java template engine.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.thymeleaf:thymeleaf:3.0.9.RELEASE</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">runtime "org.thymeleaf:thymeleaf:3.0.9.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -272,18 +272,18 @@ The properties used can be customized by overriding the values of <a href="../ap
 <div class="listingblock">
 <div class="title">src/main/resources/views/home.html</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="html"><span class="doctype">&lt;!DOCTYPE html&gt;</span>
-<span class="tag">&lt;html</span> <span class="attribute-name">th:replace</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">~{layoutFile :: layout(~{::title}, ~{::section})}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
-<span class="tag">&lt;head&gt;</span>
-    <span class="tag">&lt;title&gt;</span>Home<span class="tag">&lt;/title&gt;</span>
-<span class="tag">&lt;/head&gt;</span>
-<span class="tag">&lt;body&gt;</span>
-<span class="tag">&lt;section&gt;</span>
-    <span class="tag">&lt;h1</span> <span class="attribute-name">th:if</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${loggedIn}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>username: <span class="tag">&lt;span</span> <span class="attribute-name">th:text</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${username}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/span&gt;</span><span class="tag">&lt;/h1&gt;</span>
-    <span class="tag">&lt;h1</span> <span class="attribute-name">th:unless</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${loggedIn}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>You are not logged in<span class="tag">&lt;/h1&gt;</span>
-<span class="tag">&lt;/section&gt;</span>
-<span class="tag">&lt;/body&gt;</span>
-<span class="tag">&lt;/html&gt;</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-html hljs" data-lang="html">&lt;!DOCTYPE html&gt;
+&lt;html th:replace="~{layoutFile :: layout(~{::title}, ~{::section})}"&gt;
+&lt;head&gt;
+    &lt;title&gt;Home&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;section&gt;
+    &lt;h1 th:if="${loggedIn}"&gt;username: &lt;span th:text="${username}"&gt;&lt;/span&gt;&lt;/h1&gt;
+    &lt;h1 th:unless="${loggedIn}"&gt;You are not logged in&lt;/h1&gt;
+&lt;/section&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -292,21 +292,21 @@ The properties used can be customized by overriding the values of <a href="../ap
 <div class="listingblock">
 <div class="title">src/main/resources/views/layoutFile.html</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="html"><span class="doctype">&lt;!DOCTYPE html&gt;</span>
-<span class="tag">&lt;html</span> <span class="attribute-name">th:fragment</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout (title, content)</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">xmlns:th</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.thymeleaf.org</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
-<span class="tag">&lt;head&gt;</span>
-    <span class="tag">&lt;title</span> <span class="attribute-name">th:replace</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${title}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>Layout Title<span class="tag">&lt;/title&gt;</span>
-<span class="tag">&lt;/head&gt;</span>
-<span class="tag">&lt;body&gt;</span>
-<span class="tag">&lt;h1&gt;</span>Layout H1<span class="tag">&lt;/h1&gt;</span>
-<span class="tag">&lt;div</span> <span class="attribute-name">th:replace</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${content}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
-    <span class="tag">&lt;p&gt;</span>Layout content<span class="tag">&lt;/p&gt;</span>
-<span class="tag">&lt;/div&gt;</span>
-<span class="tag">&lt;footer&gt;</span>
+<pre class="highlightjs highlight"><code class="language-html hljs" data-lang="html">&lt;!DOCTYPE html&gt;
+&lt;html th:fragment="layout (title, content)" xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;title th:replace="${title}"&gt;Layout Title&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Layout H1&lt;/h1&gt;
+&lt;div th:replace="${content}"&gt;
+    &lt;p&gt;Layout content&lt;/p&gt;
+&lt;/div&gt;
+&lt;footer&gt;
     Layout footer
-<span class="tag">&lt;/footer&gt;</span>
-<span class="tag">&lt;/body&gt;</span>
-<span class="tag">&lt;/html&gt;</span></code></pre>
+&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
 </div>
 </div>
 
@@ -329,7 +329,7 @@ the <a href="http://jknack.github.io/handlebars.java/">Handlebars.java</a> proje
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.github.jknack:handlebars:4.1.0</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">runtime "com.github.jknack:handlebars:4.1.0"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -338,19 +338,19 @@ the <a href="http://jknack.github.io/handlebars.java/">Handlebars.java</a> proje
 <div class="listingblock">
 <div class="title">src/main/resources/views/home.hbs</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="html"><span class="doctype">&lt;!DOCTYPE html&gt;</span>
-<span class="tag">&lt;html&gt;</span>
-<span class="tag">&lt;head&gt;</span>
-    <span class="tag">&lt;title&gt;</span>Home<span class="tag">&lt;/title&gt;</span>
-<span class="tag">&lt;/head&gt;</span>
-<span class="tag">&lt;body&gt;</span>
+<pre class="highlightjs highlight"><code class="language-html hljs" data-lang="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Home&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
     {{#if loggedIn}}
-    <span class="tag">&lt;h1&gt;</span>username: <span class="tag">&lt;span&gt;</span>{{username}}<span class="tag">&lt;/span&gt;</span><span class="tag">&lt;/h1&gt;</span>
+    &lt;h1&gt;username: &lt;span&gt;{{username}}&lt;/span&gt;&lt;/h1&gt;
     {{else}}
-    <span class="tag">&lt;h1&gt;</span>You are not logged in<span class="tag">&lt;/h1&gt;</span>
+    &lt;h1&gt;You are not logged in&lt;/h1&gt;
     {{/if}}
-<span class="tag">&lt;/body&gt;</span>
-<span class="tag">&lt;/html&gt;</span></code></pre>
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
 </div>
 </div>
 
@@ -373,7 +373,7 @@ the <a href="http://velocity.apache.org">Apache Velocity</a> Java-based template
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.apache.velocity:velocity-engine-core:2.0</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">runtime "org.apache.velocity:velocity-engine-core:2.0"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -382,19 +382,19 @@ the <a href="http://velocity.apache.org">Apache Velocity</a> Java-based template
 <div class="listingblock">
 <div class="title">src/main/resources/views/home.vm</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="html"><span class="doctype">&lt;!DOCTYPE html&gt;</span>
-<span class="tag">&lt;html&gt;</span>
-<span class="tag">&lt;head&gt;</span>
-    <span class="tag">&lt;title&gt;</span>Home<span class="tag">&lt;/title&gt;</span>
-<span class="tag">&lt;/head&gt;</span>
-<span class="tag">&lt;body&gt;</span>
+<pre class="highlightjs highlight"><code class="language-html hljs" data-lang="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Home&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
     #if( $loggedIn )
-    <span class="tag">&lt;h1&gt;</span>username: <span class="tag">&lt;span&gt;</span>$username<span class="tag">&lt;/span&gt;</span><span class="tag">&lt;/h1&gt;</span>
+    &lt;h1&gt;username: &lt;span&gt;$username&lt;/span&gt;&lt;/h1&gt;
     #else
-    <span class="tag">&lt;h1&gt;</span>You are not logged in<span class="tag">&lt;/h1&gt;</span>
+    &lt;h1&gt;You are not logged in&lt;/h1&gt;
     #end
-<span class="tag">&lt;/body&gt;</span>
-<span class="tag">&lt;/html&gt;</span></code></pre>
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
 </div>
 </div>
 

@@ -176,24 +176,24 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">A TraceService Example using RxJava</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>;
-<span class="keyword">import</span> <span class="include">io.reactivex.Flowable</span>;
-<span class="keyword">import</span> <span class="include">io.reactivex.schedulers.Schedulers</span>;
-<span class="keyword">import</span> <span class="include">org.slf4j</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.HttpRequest;
+import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
+import org.slf4j.*;
 
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
-<span class="annotation">@Singleton</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">TraceService</span> {
+import javax.inject.Singleton;
+@Singleton
+public class TraceService {
 
-    <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">Logger</span> LOG = LoggerFactory.getLogger(TraceService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TraceService.class);
 
-    Flowable&lt;<span class="predefined-type">Boolean</span>&gt; trace(HttpRequest&lt;?&gt; request) {
-        <span class="keyword">return</span> Flowable.fromCallable(() -&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
-            <span class="keyword">if</span> (LOG.isDebugEnabled()) {
-                LOG.debug(<span class="string"><span class="delimiter">&quot;</span><span class="content">Tracing request: </span><span class="delimiter">&quot;</span></span> + request.getUri());
+    Flowable&lt;Boolean&gt; trace(HttpRequest&lt;?&gt; request) {
+        return Flowable.fromCallable(() -&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Tracing request: " + request.getUri());
             }
-            <span class="comment">// trace logic here, potentially performing I/O </span><i class="conum" data-value="2"></i><b>(2)</b>
-            <span class="keyword">return</span> <span class="predefined-constant">true</span>;
+            // trace logic here, potentially performing I/O <i class="conum" data-value="2"></i><b>(2)</b>
+            return true;
         }).subscribeOn(Schedulers.io()); <i class="conum" data-value="3"></i><b>(3)</b>
     }
 }</code></pre>
@@ -221,17 +221,17 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">An Example HttpServerFilter</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Filter</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.filter</span>.*;
-<span class="keyword">import</span> <span class="include">org.reactivestreams.Publisher</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.*;
+import io.micronaut.http.annotation.Filter;
+import io.micronaut.http.filter.*;
+import org.reactivestreams.Publisher;
 
-<span class="annotation">@Filter</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/**</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">TraceFilter</span> <span class="directive">implements</span> HttpServerFilter { <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="directive">private</span> <span class="directive">final</span> TraceService traceService;
+@Filter("/hello/**") <i class="conum" data-value="1"></i><b>(1)</b>
+public class TraceFilter implements HttpServerFilter { <i class="conum" data-value="2"></i><b>(2)</b>
+    private final TraceService traceService;
 
-    <span class="directive">public</span> TraceFilter(TraceService traceService) { <i class="conum" data-value="3"></i><b>(3)</b>
-        <span class="local-variable">this</span>.traceService = traceService;
+    public TraceFilter(TraceService traceService) { <i class="conum" data-value="3"></i><b>(3)</b>
+        this.traceService = traceService;
     }
     ...
 }</code></pre>
@@ -259,12 +259,12 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">The doFilter implementation</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Override</span>
-<span class="directive">public</span> Publisher&lt;MutableHttpResponse&lt;?&gt;&gt; doFilter(HttpRequest&lt;?&gt; request, ServerFilterChain chain) {
-    <span class="keyword">return</span> traceService.trace(request) <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Override
+public Publisher&lt;MutableHttpResponse&lt;?&gt;&gt; doFilter(HttpRequest&lt;?&gt; request, ServerFilterChain chain) {
+    return traceService.trace(request) <i class="conum" data-value="1"></i><b>(1)</b>
                        .switchMap(aBoolean -&gt; chain.proceed(request)) <i class="conum" data-value="2"></i><b>(2)</b>
                        .doOnNext(res -&gt; <i class="conum" data-value="3"></i><b>(3)</b>
-                            res.getHeaders().add(<span class="string"><span class="delimiter">&quot;</span><span class="content">X-Trace-Enabled</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>)
+                            res.getHeaders().add("X-Trace-Enabled", "true")
                        );
 }</code></pre>
 </div>

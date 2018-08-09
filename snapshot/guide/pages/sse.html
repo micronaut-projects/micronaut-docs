@@ -142,31 +142,31 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Headline.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">Headline</span> {
-    <span class="directive">private</span> <span class="predefined-type">String</span> title;
-    <span class="directive">private</span> <span class="predefined-type">String</span> description;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public class Headline {
+    private String title;
+    private String description;
 
-    <span class="directive">public</span> Headline() { }
+    public Headline() { }
 
-    <span class="directive">public</span> Headline(<span class="predefined-type">String</span> title, <span class="predefined-type">String</span> description) {
-        <span class="local-variable">this</span>.title = title;
-        <span class="local-variable">this</span>.description = description;
+    public Headline(String title, String description) {
+        this.title = title;
+        this.description = description;
     }
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getTitle() {
-        <span class="keyword">return</span> title;
+    public String getTitle() {
+        return title;
     }
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getDescription() {
-        <span class="keyword">return</span> description;
+    public String getDescription() {
+        return description;
     }
 
-    <span class="directive">public</span> <span class="type">void</span> setTitle(<span class="predefined-type">String</span> title) {
-        <span class="local-variable">this</span>.title = title;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    <span class="directive">public</span> <span class="type">void</span> setDescription(<span class="predefined-type">String</span> description) {
-        <span class="local-variable">this</span>.description = description;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }</code></pre>
 </div>
@@ -177,27 +177,27 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Publishing Server Sent Events from a Controller</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.sse.Event</span>;
-<span class="keyword">import</span> <span class="include">io.reactivex.Flowable</span>;
-<span class="keyword">import</span> <span class="include">org.reactivestreams.Publisher</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.annotation.*;
+import io.micronaut.http.sse.Event;
+import io.reactivex.Flowable;
+import org.reactivestreams.Publisher;
 
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/headlines</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">HeadlineController</span> {
+@Controller("/headlines")
+public class HeadlineController {
 
-    <span class="annotation">@Get</span>
-    <span class="directive">public</span> Publisher&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; index() { <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="predefined-type">String</span><span class="type">[]</span> versions = <span class="keyword">new</span> <span class="predefined-type">String</span><span class="type">[]</span>{<span class="string"><span class="delimiter">&quot;</span><span class="content">1.0</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">2.0</span><span class="delimiter">&quot;</span></span>}; <i class="conum" data-value="2"></i><b>(2)</b>
+    @Get
+    public Publisher&lt;Event&lt;Headline&gt;&gt; index() { <i class="conum" data-value="1"></i><b>(1)</b>
+        String[] versions = new String[]{"1.0", "2.0"}; <i class="conum" data-value="2"></i><b>(2)</b>
 
-        <span class="keyword">return</span> Flowable.generate(() -&gt; <span class="integer">0</span>, (i, emitter) -&gt; { <i class="conum" data-value="3"></i><b>(3)</b>
-            <span class="keyword">if</span> (i &lt; versions.length) {
+        return Flowable.generate(() -&gt; 0, (i, emitter) -&gt; { <i class="conum" data-value="3"></i><b>(3)</b>
+            if (i &lt; versions.length) {
                 emitter.onNext( <i class="conum" data-value="4"></i><b>(4)</b>
-                    <span class="predefined-type">Event</span>.of(<span class="keyword">new</span> Headline(<span class="string"><span class="delimiter">&quot;</span><span class="content">Micronaut </span><span class="delimiter">&quot;</span></span> + versions[i] + <span class="string"><span class="delimiter">&quot;</span><span class="content"> Released</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Come and get it</span><span class="delimiter">&quot;</span></span>))
+                    Event.of(new Headline("Micronaut " + versions[i] + " Released", "Come and get it"))
                 );
-            } <span class="keyword">else</span> {
+            } else {
                 emitter.onComplete(); <i class="conum" data-value="5"></i><b>(5)</b>
             }
-            <span class="keyword">return</span> ++i;
+            return ++i;
         });
     }
 }</code></pre>
@@ -233,8 +233,8 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Server Sent Event Response Output</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json"> <span class="error">d</span><span class="error">a</span><span class="error">t</span><span class="error">a</span>: {<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Micronaut 1.0 Released</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">description</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Come and get it</span><span class="delimiter">&quot;</span></span>}
- <span class="error">d</span><span class="error">a</span><span class="error">t</span><span class="error">a</span>: {<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Micronaut 2.0 Released</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">description</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Come and get it</span><span class="delimiter">&quot;</span></span>}</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json"> data: {"title":"Micronaut 1.0 Released","description":"Come and get it"}
+ data: {"title":"Micronaut 2.0 Released","description":"Come and get it"}</code></pre>
 </div>
 </div>
 <div class="paragraph">

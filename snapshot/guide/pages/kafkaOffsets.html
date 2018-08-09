@@ -192,15 +192,15 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Committing offsets with <code>ack()</code></div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaListener</span>(
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@KafkaListener(
     offsetReset = OffsetReset.EARLIEST,
     offsetStrategy = OffsetStrategy.DISABLED <i class="conum" data-value="1"></i><b>(1)</b>
 )
-<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> receive(
+@Topic("awesome-products")
+void receive(
         Product product,
         Acknowledgement acknowledgement) { <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="comment">// process product record</span>
+    // process product record
 
     acknowledgement.ack(); <i class="conum" data-value="3"></i><b>(3)</b>
 }</code></pre>
@@ -228,30 +228,30 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Committing offsets with the <code>KafkaConsumer</code> API</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.docs.consumer.config.Product</span>;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.KafkaConsumer</span>;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.common.TopicPartition</span>;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.OffsetAndMetadata</span>;
-<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.configuration.kafka.annotation.*;
+import io.micronaut.configuration.kafka.docs.consumer.config.Product;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import java.util.Collections;
 
-<span class="annotation">@KafkaListener</span>(
+@KafkaListener(
         offsetReset = OffsetReset.EARLIEST,
         offsetStrategy = OffsetStrategy.DISABLED <i class="conum" data-value="1"></i><b>(1)</b>
 )
-<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> receive(
+@Topic("awesome-products")
+void receive(
         Product product,
-        <span class="type">long</span> offset,
-        <span class="type">int</span> partition,
-        <span class="predefined-type">String</span> topic,
+        long offset,
+        int partition,
+        String topic,
         KafkaConsumer kafkaConsumer) { <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="comment">// process product record</span>
+    // process product record
 
-    <span class="comment">// commit offsets</span>
-    kafkaConsumer.commitSync(<span class="predefined-type">Collections</span>.singletonMap( <i class="conum" data-value="3"></i><b>(3)</b>
-            <span class="keyword">new</span> TopicPartition(topic, partition),
-            <span class="keyword">new</span> OffsetAndMetadata(offset + <span class="integer">1</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">my metadata</span><span class="delimiter">&quot;</span></span>)
+    // commit offsets
+    kafkaConsumer.commitSync(Collections.singletonMap( <i class="conum" data-value="3"></i><b>(3)</b>
+            new TopicPartition(topic, partition),
+            new OffsetAndMetadata(offset + 1, "my metadata")
     ));
 
 }</code></pre>
@@ -288,40 +288,40 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Manually seeking offsets with the <code>KafkaConsumer</code> API</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.KafkaConsumerAware</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.ConsumerRebalanceListener</span>;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.KafkaConsumer</span>;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.common.TopicPartition</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.configuration.kafka.KafkaConsumerAware;
+import io.micronaut.configuration.kafka.annotation.*;
+import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 
-<span class="keyword">import</span> <span class="include">javax.annotation.Nonnull</span>;
-<span class="keyword">import</span> <span class="include">java.util.Collection</span>;
+import javax.annotation.Nonnull;
+import java.util.Collection;
 
-<span class="annotation">@KafkaListener</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">ProductListener</span> <span class="directive">implements</span> ConsumerRebalanceListener, KafkaConsumerAware {
+@KafkaListener
+public class ProductListener implements ConsumerRebalanceListener, KafkaConsumerAware {
 
-    <span class="directive">private</span> KafkaConsumer consumer;
+    private KafkaConsumer consumer;
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="type">void</span> setKafkaConsumer(<span class="annotation">@Nonnull</span> KafkaConsumer consumer) { <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="local-variable">this</span>.consumer = consumer;
+    @Override
+    public void setKafkaConsumer(@Nonnull KafkaConsumer consumer) { <i class="conum" data-value="1"></i><b>(1)</b>
+        this.consumer = consumer;
     }
 
-    <span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>)
-    <span class="type">void</span> receive(Product product) {
-        <span class="comment">// process product</span>
+    @Topic("awesome-products")
+    void receive(Product product) {
+        // process product
     }
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="type">void</span> onPartitionsRevoked(<span class="predefined-type">Collection</span>&lt;TopicPartition&gt; partitions) { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="comment">// save offsets here</span>
+    @Override
+    public void onPartitionsRevoked(Collection&lt;TopicPartition&gt; partitions) { <i class="conum" data-value="2"></i><b>(2)</b>
+        // save offsets here
     }
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="type">void</span> onPartitionsAssigned(<span class="predefined-type">Collection</span>&lt;TopicPartition&gt; partitions) { <i class="conum" data-value="3"></i><b>(3)</b>
-        <span class="comment">// seek to offset here</span>
-        <span class="keyword">for</span> (TopicPartition partition : partitions) {
-            consumer.seek(partition, <span class="integer">1</span>);
+    @Override
+    public void onPartitionsAssigned(Collection&lt;TopicPartition&gt; partitions) { <i class="conum" data-value="3"></i><b>(3)</b>
+        // seek to offset here
+        for (TopicPartition partition : partitions) {
+            consumer.seek(partition, 1);
         }
     }
 }</code></pre>

@@ -156,7 +156,7 @@ The <a href="#cli">Command Line Interface</a> for Micronaut includes special sup
 <div class="listingblock">
 <div class="title">Create a Micronaut Kotlin application</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ mn create-app hello-world --lang kotlin</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ mn create-app hello-world --lang kotlin</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -180,12 +180,12 @@ Learn more about kapt and its features from the <a href="https://kotlinlang.org/
 <div class="listingblock">
 <div class="title">Example build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.jetbrains.kotlin:kotlin-stdlib-jdk8:</span><span class="inline"><span class="inline-delimiter">$</span>kotlinVersion</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.jetbrains.kotlin:kotlin-reflect:</span><span class="inline"><span class="inline-delimiter">$</span>kotlinVersion</span><span class="delimiter">&quot;</span></span>
-    kapt <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:inject-java</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion" <i class="conum" data-value="1"></i><b>(1)</b>
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+    kapt "io.micronaut:inject-java" <i class="conum" data-value="2"></i><b>(2)</b>
 
-    kaptTest <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:inject-java</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+    kaptTest "io.micronaut:inject-java" <i class="conum" data-value="3"></i><b>(3)</b>
     ...
 }</code></pre>
 </div>
@@ -211,7 +211,7 @@ Learn more about kapt and its features from the <a href="https://kotlinlang.org/
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew run</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ ./gradlew run</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -220,16 +220,16 @@ Learn more about kapt and its features from the <a href="https://kotlinlang.org/
 <div class="listingblock">
 <div class="title">src/main/kotlin/example/HelloController.kt</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="kotlin">package example
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">package example
 
 import io.micronaut.http.annotation.*
 
-@Controller(&quot;/&quot;)
+@Controller("/")
 class HelloController {
 
-    @Get(&quot;/hello/{name}&quot;)
+    @Get("/hello/{name}")
     fun hello(name: String): String {
-        return &quot;Hello $name&quot;
+        return "Hello $name"
     }
 }</code></pre>
 </div>
@@ -293,20 +293,20 @@ so that the generated subclasses can extend them.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>
-<span class="include">import</span> <span class="include">io.micronaut.http.annotation.Get</span>
-<span class="include">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
-<span class="include">import</span> <span class="include">io.micronaut.validation.Validated</span>
-<span class="include">import</span> <span class="include">javax.validation.constraints.NotBlank</span>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Get
+import io.micronaut.http.HttpStatus
+import io.micronaut.validation.Validated
+import javax.validation.constraints.NotBlank
 
-<span class="annotation">@Validated</span>
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/email</span><span class="delimiter">&quot;</span></span>)
-<span class="include">open</span> <span class="include">class</span> <span class="include">EmailController</span> { <i class="conum" data-value="1"></i><b>(1)</b>
+@Validated
+@Controller("/email")
+open class EmailController { <i class="conum" data-value="1"></i><b>(1)</b>
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/send</span><span class="delimiter">&quot;</span></span>)
-    <span class="include">open</span> <span class="include">fun</span> <span class="include">index</span>(<span class="annotation">@NotBlank</span> <span class="include">recipient</span>: <span class="include">String</span>, <i class="conum" data-value="1"></i><b>(1)</b>
-                   <span class="annotation">@NotBlank</span> <span class="include">subject</span>: <span class="include">String</span>): <span class="include">HttpStatus</span> {
-        <span class="include">return</span> <span class="include">HttpStatus.OK</span>
+    @Get("/send")
+    open fun index(@NotBlank recipient: String, <i class="conum" data-value="1"></i><b>(1)</b>
+                   @NotBlank subject: String): HttpStatus {
+        return HttpStatus.OK
     }
 }</code></pre>
 </div>
@@ -339,11 +339,11 @@ so that the generated subclasses can extend them.</p>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compileTestKotlin {
-        kotlinOptions {
-            jvmTarget = <span class="string"><span class="delimiter">'</span><span class="content">1.8</span><span class="delimiter">'</span></span>
-            javaParameters = <span class="predefined-constant">true</span>
-        }
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compileTestKotlin {
+	kotlinOptions {
+	    jvmTarget = '1.8'
+	    javaParameters = true
+	}
 }</code></pre>
 </div>
 </div>

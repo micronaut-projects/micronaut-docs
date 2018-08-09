@@ -136,20 +136,20 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Committing offsets with the <code>KafkaConsumer</code> API</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.docs.consumer.config.Product</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.messaging.annotation.SendTo</span>;
-<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
-<span class="keyword">import</span> <span class="include">io.reactivex.functions.Function</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.configuration.kafka.annotation.*;
+import io.micronaut.configuration.kafka.docs.consumer.config.Product;
+import io.micronaut.messaging.annotation.SendTo;
+import io.reactivex.Single;
+import io.reactivex.functions.Function;
 
-<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="annotation">@SendTo</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">product-quantities</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
-<span class="directive">public</span> <span class="type">int</span> receive(
-        <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand,
+@Topic("awesome-products") <i class="conum" data-value="1"></i><b>(1)</b>
+@SendTo("product-quantities") <i class="conum" data-value="2"></i><b>(2)</b>
+public int receive(
+        @KafkaKey String brand,
         Product product) {
-    <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Product - </span><span class="delimiter">&quot;</span></span> + product.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> by </span><span class="delimiter">&quot;</span></span> + brand);
+    System.out.println("Got Product - " + product.getName() + " by " + brand);
 
-    <span class="keyword">return</span> product.getQuantity(); <i class="conum" data-value="3"></i><b>(3)</b>
+    return product.getQuantity(); <i class="conum" data-value="3"></i><b>(3)</b>
 }</code></pre>
 </div>
 </div>
@@ -175,15 +175,15 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Committing offsets with the <code>KafkaConsumer</code> API</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="annotation">@SendTo</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">product-quantities</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
-<span class="directive">public</span> Single&lt;<span class="predefined-type">Integer</span>&gt; receiveProduct(
-        <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand,
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic("awesome-products") <i class="conum" data-value="1"></i><b>(1)</b>
+@SendTo("product-quantities") <i class="conum" data-value="2"></i><b>(2)</b>
+public Single&lt;Integer&gt; receiveProduct(
+        @KafkaKey String brand,
         Single&lt;Product&gt; productSingle) {
 
-    <span class="keyword">return</span> productSingle.map(product -&gt; {
-        <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Product - </span><span class="delimiter">&quot;</span></span> + product.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> by </span><span class="delimiter">&quot;</span></span> + brand);
-        <span class="keyword">return</span> product.getQuantity(); <i class="conum" data-value="3"></i><b>(3)</b>
+    return productSingle.map(product -&gt; {
+        System.out.println("Got Product - " + product.getName() + " by " + brand);
+        return product.getQuantity(); <i class="conum" data-value="3"></i><b>(3)</b>
     });
 }</code></pre>
 </div>

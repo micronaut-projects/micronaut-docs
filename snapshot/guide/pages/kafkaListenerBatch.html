@@ -139,22 +139,22 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Receiving a Batch of Records</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.KafkaConsumer</span>;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.consumer.OffsetAndMetadata</span>;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.common.TopicPartition</span>;
-<span class="keyword">import</span> <span class="include">reactor.core.publisher.Flux</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.configuration.kafka.annotation.*;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.TopicPartition;
+import reactor.core.publisher.Flux;
 
-<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
-<span class="keyword">import</span> <span class="include">java.util.List</span>;
+import java.util.Collections;
+import java.util.List;
 
-<span class="annotation">@KafkaListener</span>(batch = <span class="predefined-constant">true</span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">BookListener</span> {
+@KafkaListener(batch = true) <i class="conum" data-value="1"></i><b>(1)</b>
+public class BookListener {
 
-  <span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">all-the-books</span><span class="delimiter">&quot;</span></span>)
-  <span class="directive">public</span> <span class="type">void</span> receiveList(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books) { <i class="conum" data-value="2"></i><b>(2)</b>
-      <span class="keyword">for</span> (<span class="predefined-type">Book</span> book : books) {
-          <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Book = </span><span class="delimiter">&quot;</span></span> + book.getTitle()); <i class="conum" data-value="3"></i><b>(3)</b>
+  @Topic("all-the-books")
+  public void receiveList(List&lt;Book&gt; books) { <i class="conum" data-value="2"></i><b>(2)</b>
+      for (Book book : books) {
+          System.out.println("Got Book = " + book.getTitle()); <i class="conum" data-value="3"></i><b>(3)</b>
       }
   }
 
@@ -188,26 +188,26 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Committing Offsets Manually with Batch</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">all-the-books</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">void</span> receive(
-        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books,
-        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Long</span>&gt; offsets,
-        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Integer</span>&gt; partitions,
-        <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; topics,
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic("all-the-books")
+public void receive(
+        List&lt;Book&gt; books,
+        List&lt;Long&gt; offsets,
+        List&lt;Integer&gt; partitions,
+        List&lt;String&gt; topics,
         KafkaConsumer kafkaConsumer) { <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="integer">0</span>; i &lt; books.size(); i++) {
+    for (int i = 0; i &lt; books.size(); i++) {
 
-        <span class="comment">// process the book</span>
-        <span class="predefined-type">Book</span> book = books.get(i); <i class="conum" data-value="2"></i><b>(2)</b>
+        // process the book
+        Book book = books.get(i); <i class="conum" data-value="2"></i><b>(2)</b>
 
-        <span class="comment">// commit offsets</span>
-        <span class="predefined-type">String</span> topic = topics.get(i);
-        <span class="type">int</span> partition = partitions.get(i);
-        <span class="type">long</span> offset = offsets.get(i); <i class="conum" data-value="3"></i><b>(3)</b>
+        // commit offsets
+        String topic = topics.get(i);
+        int partition = partitions.get(i);
+        long offset = offsets.get(i); <i class="conum" data-value="3"></i><b>(3)</b>
 
-        kafkaConsumer.commitSync(<span class="predefined-type">Collections</span>.singletonMap( <i class="conum" data-value="4"></i><b>(4)</b>
-                <span class="keyword">new</span> TopicPartition(topic, partition),
-                <span class="keyword">new</span> OffsetAndMetadata(offset + <span class="integer">1</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">my metadata</span><span class="delimiter">&quot;</span></span>)
+        kafkaConsumer.commitSync(Collections.singletonMap( <i class="conum" data-value="4"></i><b>(4)</b>
+                new TopicPartition(topic, partition),
+                new OffsetAndMetadata(offset + 1, "my metadata")
         ));
 
     }
@@ -249,10 +249,10 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Reactive Processing of Batch Records</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">all-the-books</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> Flux&lt;<span class="predefined-type">Book</span>&gt; receiveFlux(Flux&lt;<span class="predefined-type">Book</span>&gt; books) {
-    <span class="keyword">return</span> books.doOnNext(book -&gt;
-            <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Book = </span><span class="delimiter">&quot;</span></span> + book.getTitle())
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic("all-the-books")
+public Flux&lt;Book&gt; receiveFlux(Flux&lt;Book&gt; books) {
+    return books.doOnNext(book -&gt;
+            System.out.println("Got Book = " + book.getTitle())
     );
 }</code></pre>
 </div>

@@ -201,7 +201,7 @@ Regardless whether you choose to use Micronaut&#8217;s HTTP server, you may wish
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:http-client</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:http-client"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -243,7 +243,7 @@ Regardless whether you choose to use Micronaut&#8217;s HTTP server, you may wish
 <div class="listingblock">
 <div class="title">Injecting an HTTP client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">https://api.twitter.com/1.1</span><span class="delimiter">&quot;</span></span>) <span class="annotation">@Inject</span> RxHttpClient httpClient;</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("https://api.twitter.com/1.1") @Inject RxHttpClient httpClient;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -251,7 +251,7 @@ Regardless whether you choose to use Micronaut&#8217;s HTTP server, you may wish
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="kotlin">@Client(&quot;\${myapp.api.twitter.url}&quot;) @Inject httpClient: RxHttpClient</code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Client("\${myapp.api.twitter.url}") @Inject httpClient: RxHttpClient</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -294,10 +294,10 @@ Regardless whether you choose to use Micronaut&#8217;s HTTP server, you may wish
 <div class="listingblock">
 <div class="title">Using retrieve</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">String</span> result = client.toBlocking().retrieve(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/John</span><span class="delimiter">&quot;</span></span>);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">String result = client.toBlocking().retrieve("/hello/John");
 
 assertEquals(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>,
+        "Hello John",
         result
 );</code></pre>
 </div>
@@ -311,17 +311,17 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Using the HTTP client without blocking</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">static</span> <span class="include">io.micronaut.http.HttpRequest</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import static io.micronaut.http.HttpRequest.*;
 
-<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.MediaType</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.client</span>.*;
-<span class="keyword">import</span> <span class="include">io.reactivex.Maybe</span>;
+import io.micronaut.http.HttpStatus;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.*;
+import io.micronaut.http.client.*;
+import io.reactivex.Maybe;
 
-<span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/{name}</span><span class="delimiter">&quot;</span></span>)
-Maybe&lt;<span class="predefined-type">String</span>&gt; hello(<span class="predefined-type">String</span> name) { <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="keyword">return</span> httpClient.retrieve( GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/</span><span class="delimiter">&quot;</span></span> + name) )
+@Get("/hello/{name}")
+Maybe&lt;String&gt; hello(String name) { <i class="conum" data-value="1"></i><b>(1)</b>
+    return httpClient.retrieve( GET("/hello/" + name) )
                      .firstElement(); <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
@@ -359,7 +359,7 @@ Using RxJava (or Reactor if you prefer) you can easily and efficiently compose m
 <div class="listingblock">
 <div class="title">logback.xml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;logger</span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.http.client</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">level</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">TRACE</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;logger name="io.micronaut.http.client" level="TRACE"/&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -371,9 +371,9 @@ Using RxJava (or Reactor if you prefer) you can easily and efficiently compose m
 <div class="listingblock">
 <div class="title">Passing an HttpRequest to retrieve</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;<span class="predefined-type">String</span>&gt; response = client.retrieve(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/John</span><span class="delimiter">&quot;</span></span>)
-        .header(<span class="string"><span class="delimiter">&quot;</span><span class="content">X-My-Header</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">SomeValue</span><span class="delimiter">&quot;</span></span>)
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;String&gt; response = client.retrieve(
+        GET("/hello/John")
+        .header("X-My-Header", "SomeValue")
 );</code></pre>
 </div>
 </div>
@@ -392,9 +392,9 @@ Using RxJava (or Reactor if you prefer) you can easily and efficiently compose m
 <div class="listingblock">
 <div class="title">Returning JSON from a controller</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/{name}</span><span class="delimiter">&quot;</span></span>)
-Message greet(<span class="predefined-type">String</span> name) {
-    <span class="keyword">return</span> <span class="keyword">new</span> Message(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello </span><span class="delimiter">&quot;</span></span> + name);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Get("/greet/{name}")
+Message greet(String name) {
+    return new Message("Hello " + name);
 }</code></pre>
 </div>
 </div>
@@ -404,18 +404,18 @@ Message greet(<span class="predefined-type">String</span> name) {
 <div class="listingblock">
 <div class="title">Message POJO</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">com.fasterxml.jackson.annotation</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import com.fasterxml.jackson.annotation.*;
 
-<span class="directive">public</span> <span class="type">class</span> <span class="class">Message</span> {
-    <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">String</span> text;
+public class Message {
+    private final String text;
 
-    <span class="annotation">@JsonCreator</span>
-    <span class="directive">public</span> Message(<span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> text) {
-        <span class="local-variable">this</span>.text = text;
+    @JsonCreator
+    public Message(@JsonProperty("text") String text) {
+        this.text = text;
     }
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getText() {
-        <span class="keyword">return</span> text;
+    public String getText() {
+        return text;
     }
 }</code></pre>
 </div>
@@ -438,8 +438,8 @@ Jackson annotations are used to map the constructor
 <div class="listingblock">
 <div class="title">Decoding the response body to a Map</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;<span class="predefined-type">Map</span>&gt; response = client.retrieve(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/John</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">Map</span>.class
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;Map&gt; response = client.retrieve(
+        GET("/greet/John"), Map.class
 );</code></pre>
 </div>
 </div>
@@ -449,9 +449,9 @@ Jackson annotations are used to map the constructor
 <div class="listingblock">
 <div class="title">Decoding the response body to a Map</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">response = client.retrieve(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/John</span><span class="delimiter">&quot;</span></span>),
-        Argument.of(<span class="predefined-type">Map</span>.class, <span class="predefined-type">String</span>.class, <span class="predefined-type">String</span>.class) <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">response = client.retrieve(
+        GET("/greet/John"),
+        Argument.of(Map.class, String.class, String.class) <i class="conum" data-value="1"></i><b>(1)</b>
 );</code></pre>
 </div>
 </div>
@@ -469,12 +469,12 @@ Jackson annotations are used to map the constructor
 <div class="listingblock">
 <div class="title">Decoding the response body to a POJO</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;Message&gt; response = client.retrieve(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/John</span><span class="delimiter">&quot;</span></span>), Message.class
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;Message&gt; response = client.retrieve(
+        GET("/greet/John"), Message.class
 );
 
 assertEquals(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>,
+        "Hello John",
         response.blockingFirst().getText()
 );</code></pre>
 </div>
@@ -500,21 +500,21 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Recieving the Full HTTP Response</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/John</span><span class="delimiter">&quot;</span></span>), Message.class <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
+        GET("/greet/John"), Message.class <i class="conum" data-value="1"></i><b>(1)</b>
 );
 
 HttpResponse&lt;Message&gt; response = call.blockingFirst();
 Optional&lt;Message&gt; message = response.getBody(Message.class); <i class="conum" data-value="2"></i><b>(2)</b>
-<span class="comment">// check the status</span>
+// check the status
 assertEquals(
         HttpStatus.OK,
         response.getStatus() <i class="conum" data-value="3"></i><b>(3)</b>
 );
-<span class="comment">// check the body</span>
+// check the body
 assertTrue(message.isPresent());
 assertEquals(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>,
+        "Hello John",
         message.get().getText()
 );</code></pre>
 </div>
@@ -614,11 +614,11 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Sending a <code>String</code> body</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;<span class="predefined-type">String</span>&gt;&gt; call = client.exchange(
-        POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;String&gt;&gt; call = client.exchange(
+        POST("/hello", "Hello John") <i class="conum" data-value="1"></i><b>(1)</b>
             .contentType(MediaType.TEXT_PLAIN_TYPE)
             .accept(MediaType.TEXT_PLAIN_TYPE), <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="predefined-type">String</span>.class <i class="conum" data-value="3"></i><b>(3)</b>
+        String.class <i class="conum" data-value="3"></i><b>(3)</b>
 );</code></pre>
 </div>
 </div>
@@ -650,8 +650,8 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Sending a JSON body</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
-        POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> Message(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>)), <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
+        POST("/greet", new Message("Hello John")), <i class="conum" data-value="1"></i><b>(1)</b>
         Message.class <i class="conum" data-value="2"></i><b>(2)</b>
 );</code></pre>
 </div>
@@ -674,7 +674,7 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Resulting JSON</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>}</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"text":"Hello John"}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -694,9 +694,9 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Sending a JSON body with a URI template</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;<span class="predefined-type">Book</span>&gt;&gt; call = client.exchange(
-        POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/amazon/book/{title}</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>)),
-        <span class="predefined-type">Book</span>.class
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;Book&gt;&gt; call = client.exchange(
+        POST("/amazon/book/{title}", new Book("The Stand")),
+        Book.class
 );</code></pre>
 </div>
 </div>
@@ -714,10 +714,10 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Sending a Form Data</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;<span class="predefined-type">Book</span>&gt;&gt; call = client.exchange(
-        POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/amazon/book/{title}</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>))
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;Book&gt;&gt; call = client.exchange(
+        POST("/amazon/book/{title}", new Book("The Stand"))
         .contentType(MediaType.APPLICATION_FORM_URLENCODED),
-        <span class="predefined-type">Book</span>.class
+        Book.class
 );</code></pre>
 </div>
 </div>
@@ -746,14 +746,14 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Creating the body</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.http.client.multipart.MultipartBody</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.http.MediaType</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.client.multipart.MultipartBody
+import io.micronaut.http.HttpRequest
+import io.micronaut.http.MediaType
 
-<span class="predefined-type">File</span> file = ...
+File file = ...
 MultipartBody requestBody = MultipartBody.builder()     <i class="conum" data-value="1"></i><b>(1)</b>
         .addPart(                                       <i class="conum" data-value="2"></i><b>(2)</b>
-            <span class="string"><span class="delimiter">&quot;</span><span class="content">data</span><span class="delimiter">&quot;</span></span>,
+            "data",
             file.name,
             MediaType.TEXT_PLAIN_TYPE,
             file
@@ -779,7 +779,7 @@ MultipartBody requestBody = MultipartBody.builder()     <i class="conum" data-va
 <div class="listingblock">
 <div class="title">Creating a request</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">HttpRequest.POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/multipart/upload</span><span class="delimiter">&quot;</span></span>, requestBody)       <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">HttpRequest.POST("/multipart/upload", requestBody)       <i class="conum" data-value="1"></i><b>(1)</b>
         .contentType(MediaType.MULTIPART_FORM_DATA_TYPE) <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
@@ -842,21 +842,21 @@ MultipartBody requestBody = MultipartBody.builder()     <i class="conum" data-va
 <div class="listingblock">
 <div class="title">Streaming JSON on the Server</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.MediaType</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">io.reactivex.Flowable</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.*;
+import io.reactivex.Flowable;
 
-<span class="keyword">import</span> <span class="include">java.time.ZonedDateTime</span>;
-<span class="keyword">import</span> <span class="include">java.util.concurrent.TimeUnit</span>;
+import java.time.ZonedDateTime;
+import java.util.concurrent.TimeUnit;
 
-<span class="annotation">@Get</span>(value = <span class="string"><span class="delimiter">&quot;</span><span class="content">/headlines</span><span class="delimiter">&quot;</span></span>, produces = MediaType.APPLICATION_JSON_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
+@Get(value = "/headlines", produces = MediaType.APPLICATION_JSON_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
 Flowable&lt;Headline&gt; streamHeadlines() {
-    <span class="keyword">return</span> Flowable.fromCallable(() -&gt; {  <i class="conum" data-value="2"></i><b>(2)</b>
-        Headline headline = <span class="keyword">new</span> Headline();
-        headline.setText(<span class="string"><span class="delimiter">&quot;</span><span class="content">Latest Headline at </span><span class="delimiter">&quot;</span></span> + ZonedDateTime.now());
-        <span class="keyword">return</span> headline;
-    }).repeat(<span class="integer">100</span>) <i class="conum" data-value="3"></i><b>(3)</b>
-      .delay(<span class="integer">1</span>, <span class="predefined-type">TimeUnit</span>.SECONDS); <i class="conum" data-value="4"></i><b>(4)</b>
+    return Flowable.fromCallable(() -&gt; {  <i class="conum" data-value="2"></i><b>(2)</b>
+        Headline headline = new Headline();
+        headline.setText("Latest Headline at " + ZonedDateTime.now());
+        return headline;
+    }).repeat(100) <i class="conum" data-value="3"></i><b>(3)</b>
+      .delay(1, TimeUnit.SECONDS); <i class="conum" data-value="4"></i><b>(4)</b>
 }</code></pre>
 </div>
 </div>
@@ -898,28 +898,28 @@ The server does not have to be written in Micronaut, any server that supports JS
 <div class="listingblock">
 <div class="title">Streaming JSON on the Client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;Headline&gt; headlineStream = client.jsonStream(GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/streaming/headlines</span><span class="delimiter">&quot;</span></span>), Headline.class); <i class="conum" data-value="1"></i><b>(1)</b>
-CompletableFuture&lt;Headline&gt; future = <span class="keyword">new</span> CompletableFuture&lt;&gt;(); <i class="conum" data-value="2"></i><b>(2)</b>
-headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline&gt;() {
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="type">void</span> onSubscribe(Subscription s) {
-        s.request(<span class="integer">1</span>); <i class="conum" data-value="3"></i><b>(3)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;Headline&gt; headlineStream = client.jsonStream(GET("/streaming/headlines"), Headline.class); <i class="conum" data-value="1"></i><b>(1)</b>
+CompletableFuture&lt;Headline&gt; future = new CompletableFuture&lt;&gt;(); <i class="conum" data-value="2"></i><b>(2)</b>
+headlineStream.subscribe(new Subscriber&lt;Headline&gt;() {
+    @Override
+    public void onSubscribe(Subscription s) {
+        s.request(1); <i class="conum" data-value="3"></i><b>(3)</b>
     }
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="type">void</span> onNext(Headline headline) {
-        <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Received Headline = </span><span class="delimiter">&quot;</span></span> + headline.getText());
+    @Override
+    public void onNext(Headline headline) {
+        System.out.println("Received Headline = " + headline.getText());
         future.complete(headline); <i class="conum" data-value="4"></i><b>(4)</b>
     }
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="type">void</span> onError(<span class="predefined-type">Throwable</span> t) {
+    @Override
+    public void onError(Throwable t) {
         future.completeExceptionally(t); <i class="conum" data-value="5"></i><b>(5)</b>
     }
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="type">void</span> onComplete() {
-        <span class="comment">// no-op </span><i class="conum" data-value="6"></i><b>(6)</b>
+    @Override
+    public void onComplete() {
+        // no-op <i class="conum" data-value="6"></i><b>(6)</b>
     }
 });</code></pre>
 </div>
@@ -974,10 +974,10 @@ headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline
 <div class="listingblock">
 <div class="title">Altering default HTTP client configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">http</span>:
-        <span class="key">client</span>:
-            <span class="key">read-timeout</span>: <span class="string"><span class="content">5s</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    http:
+        client:
+            read-timeout: 5s</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -992,14 +992,14 @@ headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline
 <div class="listingblock">
 <div class="title">Manually configuring HTTP services</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">http</span>:
-        <span class="key">services</span>:
-            <span class="key">foo</span>:
-                <span class="key">urls</span>:
-                    - <span class="string"><span class="content">http://foo1</span></span>
-                    - <span class="string"><span class="content">http://foo2</span></span>
-                <span class="key">read-timeout</span>: <span class="string"><span class="content">5s </span></span><i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    http:
+        services:
+            foo:
+                urls:
+                    - http://foo1
+                    - http://foo2
+                read-timeout: 5s <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1016,7 +1016,7 @@ headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline
 <div class="listingblock">
 <div class="title">Injecting an HTTP client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">foo</span><span class="delimiter">&quot;</span></span>) <span class="annotation">@Inject</span> RxHttpClient httpClient;</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("foo") @Inject RxHttpClient httpClient;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1025,11 +1025,11 @@ headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline
 <div class="listingblock">
 <div class="title">Defining an HTTP client configuration bean</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Named</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">twitter</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">TwitterHttpClientConfiguration</span> <span class="directive">extends</span> HttpClientConfiguration {
-   <span class="directive">public</span> TwitterHttpClientConfiguration(ApplicationConfiguration applicationConfiguration) {
-        <span class="local-variable">super</span>(applicationConfiguration);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Named("twitter")
+@Singleton
+class TwitterHttpClientConfiguration extends HttpClientConfiguration {
+   public TwitterHttpClientConfiguration(ApplicationConfiguration applicationConfiguration) {
+        super(applicationConfiguration);
     }
 }</code></pre>
 </div>
@@ -1040,7 +1040,7 @@ headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline
 <div class="listingblock">
 <div class="title">Injecting an HTTP client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">twitter</span><span class="delimiter">&quot;</span></span>) <span class="annotation">@Inject</span> RxHttpClient httpClient;</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("twitter") @Inject RxHttpClient httpClient;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1049,9 +1049,9 @@ headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline
 <div class="listingblock">
 <div class="title">Injecting an HTTP client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(value=<span class="string"><span class="delimiter">&quot;</span><span class="content">https://api.twitter.com/1.1</span><span class="delimiter">&quot;</span></span>,
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client(value="https://api.twitter.com/1.1",
         configuration=TwitterHttpClientConfiguration.class)
-<span class="annotation">@Inject</span>
+@Inject
 RxHttpClient httpClient;</code></pre>
 </div>
 </div>
@@ -1064,16 +1064,16 @@ RxHttpClient httpClient;</code></pre>
 <div class="listingblock">
 <div class="title">Manually configuring HTTP services</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">http</span>:
-        <span class="key">services</span>:
-            <span class="key">foo</span>:
-                <span class="key">urls</span>:
-                    - <span class="string"><span class="content">http://foo1</span></span>
-                    - <span class="string"><span class="content">http://foo2</span></span>
-                <span class="key">pool</span>:
-                    <span class="key">enabled</span>: <span class="string"><span class="content">true </span></span><i class="conum" data-value="1"></i><b>(1)</b>
-                    <span class="key">max-connections</span>: <span class="string"><span class="content">50 </span></span><i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    http:
+        services:
+            foo:
+                urls:
+                    - http://foo1
+                    - http://foo2
+                pool:
+                    enabled: true <i class="conum" data-value="1"></i><b>(1)</b>
+                    max-connections: 50 <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1115,24 +1115,24 @@ RxHttpClient httpClient;</code></pre>
 <div class="listingblock">
 <div class="title">Pet.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">Pet</span> {
-    <span class="directive">private</span> <span class="predefined-type">String</span> name;
-    <span class="directive">private</span> <span class="type">int</span> age;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public class Pet {
+    private String name;
+    private int age;
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getName() {
-        <span class="keyword">return</span> name;
+    public String getName() {
+        return name;
     }
 
-    <span class="directive">public</span> <span class="type">void</span> setName(<span class="predefined-type">String</span> name) {
-        <span class="local-variable">this</span>.name = name;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    <span class="directive">public</span> <span class="type">int</span> getAge() {
-        <span class="keyword">return</span> age;
+    public int getAge() {
+        return age;
     }
 
-    <span class="directive">public</span> <span class="type">void</span> setAge(<span class="type">int</span> age) {
-        <span class="local-variable">this</span>.age = age;
+    public void setAge(int age) {
+        this.age = age;
     }
 }</code></pre>
 </div>
@@ -1143,16 +1143,16 @@ RxHttpClient httpClient;</code></pre>
 <div class="listingblock">
 <div class="title">PetOperations.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Post</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.validation.Validated</span>;
-<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.annotation.Post;
+import io.micronaut.validation.Validated;
+import io.reactivex.Single;
 
-<span class="keyword">import</span> <span class="include">javax.validation.constraints</span>.*;
+import javax.validation.constraints.*;
 
-<span class="annotation">@Validated</span>
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">PetOperations</span> {
-    <span class="annotation">@Post</span>
-    Single&lt;Pet&gt; save(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> name, <span class="annotation">@Min</span>(<span class="integer">1L</span>) <span class="type">int</span> age);
+@Validated
+public interface PetOperations {
+    @Post
+    Single&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age);
 }</code></pre>
 </div>
 </div>
@@ -1165,8 +1165,8 @@ RxHttpClient httpClient;</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:validation</span><span class="delimiter">&quot;</span></span>
-compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:hibernate-validator</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:validation"
+compile "io.micronaut.configuration:hibernate-validator"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1175,19 +1175,19 @@ compile <span class="string"><span class="delimiter">&quot;</span><span class="c
 <div class="listingblock">
 <div class="title">PetController.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
-<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.annotation.Controller;
+import io.reactivex.Single;
 
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pets</span><span class="delimiter">&quot;</span></span>)
-<span class="type">class</span> <span class="class">PetController</span> <span class="directive">implements</span> PetOperations {
+@Controller("/pets")
+class PetController implements PetOperations {
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age) {
-        Pet pet = <span class="keyword">new</span> Pet();
+    @Override
+    public Single&lt;Pet&gt; save(String name, int age) {
+        Pet pet = new Pet();
         pet.setName(name);
         pet.setAge(age);
-        <span class="comment">// save to database or something</span>
-        <span class="keyword">return</span> Single.just(pet);
+        // save to database or something
+        return Single.just(pet);
     }
 }</code></pre>
 </div>
@@ -1198,14 +1198,14 @@ compile <span class="string"><span class="delimiter">&quot;</span><span class="c
 <div class="listingblock">
 <div class="title">PetClient.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.client.Client</span>;
-<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.client.Client;
+import io.reactivex.Single;
 
-<span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pets</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">PetClient</span> <span class="directive">extends</span> PetOperations { <i class="conum" data-value="2"></i><b>(2)</b>
+@Client("/pets") <i class="conum" data-value="1"></i><b>(1)</b>
+public interface PetClient extends PetOperations { <i class="conum" data-value="2"></i><b>(2)</b>
 
-    <span class="annotation">@Override</span>
-    Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age); <i class="conum" data-value="3"></i><b>(3)</b>
+    @Override
+    Single&lt;Pet&gt; save(String name, int age); <i class="conum" data-value="3"></i><b>(3)</b>
 }</code></pre>
 </div>
 </div>
@@ -1338,8 +1338,8 @@ Notice in the above example we override the <code>save</code> method. This is ne
 <div class="listingblock">
 <div class="title">PetOperations.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>
-Single&lt;Pet&gt; save(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> name, <span class="annotation">@Min</span>(<span class="integer">1L</span>) <span class="type">int</span> age);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Post
+Single&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1348,7 +1348,7 @@ Single&lt;Pet&gt; save(<span class="annotation">@NotBlank</span> <span class="pr
 <div class="listingblock">
 <div class="title">Example Produced JSON</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Dino</span><span class="delimiter">&quot;</span></span>, <span class="error">a</span><span class="error">g</span><span class="error">e</span>:<span class="integer">10</span>}</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"name":"Dino", age:10}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1360,10 +1360,10 @@ Single&lt;Pet&gt; save(<span class="annotation">@NotBlank</span> <span class="pr
 <div class="listingblock">
 <div class="title">PetOperations.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/{name}</span><span class="delimiter">&quot;</span></span>)
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Post("/{name}")
 Single&lt;Pet&gt; save(
-    <span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> name, <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="annotation">@Body</span> <span class="annotation">@Valid</span> Pet pet) <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+    @NotBlank String name, <i class="conum" data-value="1"></i><b>(1)</b>
+    @Body @Valid Pet pet) <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1440,10 +1440,10 @@ Single&lt;Pet&gt; save(
 <div class="listingblock">
 <div class="title">HeadlineClient.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/streaming</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">HeadlineClient</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("/streaming")
+public interface HeadlineClient {
 
-    <span class="annotation">@Get</span>(value = <span class="string"><span class="delimiter">&quot;</span><span class="content">/headlines</span><span class="delimiter">&quot;</span></span>, processes = MediaType.APPLICATION_JSON_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
+    @Get(value = "/headlines", processes = MediaType.APPLICATION_JSON_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
     Flowable&lt;Headline&gt; streamHeadlines(); <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
@@ -1466,9 +1466,9 @@ Single&lt;Pet&gt; save(
 <div class="listingblock">
 <div class="title">Streaming HeadlineClient</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Test</span>
-<span class="directive">public</span> <span class="type">void</span> testClientAnnotationStreaming() <span class="directive">throws</span> <span class="exception">Exception</span> {
-    <span class="keyword">try</span>( EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer.class) ) {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
+public void testClientAnnotationStreaming() throws Exception {
+    try( EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer.class) ) {
         HeadlineClient headlineClient = embeddedServer
                                             .getApplicationContext()
                                             .getBean(HeadlineClient.class); <i class="conum" data-value="1"></i><b>(1)</b>
@@ -1478,7 +1478,7 @@ Single&lt;Pet&gt; save(
         Headline headline = firstHeadline.blockingGet(); <i class="conum" data-value="3"></i><b>(3)</b>
 
         assertNotNull( headline );
-        assertTrue( headline.getText().startsWith(<span class="string"><span class="delimiter">&quot;</span><span class="content">Latest Headline</span><span class="delimiter">&quot;</span></span>) );
+        assertTrue( headline.getText().startsWith("Latest Headline") );
     }
 }</code></pre>
 </div>
@@ -1508,8 +1508,8 @@ Single&lt;Pet&gt; save(
 <div class="listingblock">
 <div class="title">A JSON Stream</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>}
-{<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Shining</span><span class="delimiter">&quot;</span></span>}</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"title":"The Stand"}
+{"title":"The Shining"}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1518,9 +1518,9 @@ Single&lt;Pet&gt; save(
 <div class="listingblock">
 <div class="title">A JSON Array</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">[
-    {<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>},
-    {<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Shining</span><span class="delimiter">&quot;</span></span>}
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+    {"title":"The Stand"},
+    {"title":"The Shining"}
 ]</code></pre>
 </div>
 </div>
@@ -1545,10 +1545,10 @@ Single&lt;Pet&gt; save(
 <div class="listingblock">
 <div class="title">Adjusting the readIdleTime</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">http</span>:
-        <span class="key">client</span>:
-            <span class="key">readIdleTime</span>: <span class="string"><span class="content">5m</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    http:
+        client:
+            readIdleTime: 5m</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1581,15 +1581,15 @@ Although SSE streams are typically consumed by a browser <code>EventSource</code
 <div class="listingblock">
 <div class="title">SSE Controller</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>(value = <span class="string"><span class="delimiter">&quot;</span><span class="content">/headlines</span><span class="delimiter">&quot;</span></span>, produces = MediaType.TEXT_EVENT_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
-Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHeadlines() {
-    <span class="keyword">return</span> Flux.&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt;create((emitter) -&gt; {  <i class="conum" data-value="2"></i><b>(2)</b>
-        Headline headline = <span class="keyword">new</span> Headline();
-        headline.setText(<span class="string"><span class="delimiter">&quot;</span><span class="content">Latest Headline at </span><span class="delimiter">&quot;</span></span> + ZonedDateTime.now());
-        emitter.next(<span class="predefined-type">Event</span>.of(headline));
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Get(value = "/headlines", produces = MediaType.TEXT_EVENT_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
+Flux&lt;Event&lt;Headline&gt;&gt; streamHeadlines() {
+    return Flux.&lt;Event&lt;Headline&gt;&gt;create((emitter) -&gt; {  <i class="conum" data-value="2"></i><b>(2)</b>
+        Headline headline = new Headline();
+        headline.setText("Latest Headline at " + ZonedDateTime.now());
+        emitter.next(Event.of(headline));
         emitter.complete();
-    }).repeat(<span class="integer">100</span>) <i class="conum" data-value="3"></i><b>(3)</b>
-      .delayElements(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">1</span>)); <i class="conum" data-value="4"></i><b>(4)</b>
+    }).repeat(100) <i class="conum" data-value="3"></i><b>(3)</b>
+      .delayElements(Duration.ofSeconds(1)); <i class="conum" data-value="4"></i><b>(4)</b>
 }</code></pre>
 </div>
 </div>
@@ -1622,11 +1622,11 @@ Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHea
 <div class="listingblock">
 <div class="title">SSE Client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/streaming/sse</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">HeadlineClient</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("/streaming/sse")
+public interface HeadlineClient {
 
-    <span class="annotation">@Get</span>(value = <span class="string"><span class="delimiter">&quot;</span><span class="content">/headlines</span><span class="delimiter">&quot;</span></span>, processes = MediaType.TEXT_EVENT_STREAM)
-    Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHeadlines();
+    @Get(value = "/headlines", processes = MediaType.TEXT_EVENT_STREAM)
+    Flux&lt;Event&lt;Headline&gt;&gt; streamHeadlines();
 }</code></pre>
 </div>
 </div>
@@ -1660,15 +1660,15 @@ Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHea
 <div class="listingblock">
 <div class="title">Defining Headers via Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pets</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@Header</span>(name=<span class="string"><span class="delimiter">&quot;</span><span class="content">X-Pet-Client</span><span class="delimiter">&quot;</span></span>, value=<span class="string"><span class="delimiter">&quot;</span><span class="content">${pet.client.id}</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">PetClient</span> <span class="directive">extends</span> PetOperations {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("/pets")
+@Header(name="X-Pet-Client", value="${pet.client.id}")
+public interface PetClient extends PetOperations {
 
-    <span class="annotation">@Override</span>
-    Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age);
+    @Override
+    Single&lt;Pet&gt; save(String name, int age);
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/{name}</span><span class="delimiter">&quot;</span></span>)
-    Single&lt;Pet&gt; get(<span class="predefined-type">String</span> name);
+    @Get("/{name}")
+    Single&lt;Pet&gt; get(String name);
 }</code></pre>
 </div>
 </div>
@@ -1681,9 +1681,9 @@ Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHea
 <div class="listingblock">
 <div class="title">Configuring Headers in YAML</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">pet</span>:
-    <span class="key">client</span>:
-        <span class="key">id</span>: <span class="string"><span class="content">foo</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">pet:
+    client:
+        id: foo</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1725,9 +1725,9 @@ Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHea
 <div class="listingblock">
 <div class="title">Example Jackson Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">jackson</span>:
-    <span class="key">serialization</span>:
-        <span class="key">indentOutput</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">jackson:
+    serialization:
+        indentOutput: true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1739,13 +1739,13 @@ Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHea
 <div class="listingblock">
 <div class="title">Example of JacksonFeatures</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(id = EurekaClient.SERVICE_ID, path = <span class="string"><span class="delimiter">&quot;</span><span class="content">/eureka</span><span class="delimiter">&quot;</span></span>, configuration = EurekaConfiguration.class)
-<span class="annotation">@JacksonFeatures</span>(
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client(id = EurekaClient.SERVICE_ID, path = "/eureka", configuration = EurekaConfiguration.class)
+@JacksonFeatures(
     enabledSerializationFeatures = WRAP_ROOT_VALUE,
     disabledSerializationFeatures = WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED,
     enabledDeserializationFeatures = {UNWRAP_ROOT_VALUE, ACCEPT_SINGLE_VALUE_AS_ARRAY}
 )
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">EurekaClient</span> {
+public interface EurekaClient {
     ...
 }</code></pre>
 </div>
@@ -1785,12 +1785,12 @@ If the customization offered by <code>JacksonFeatures</code> is not enough, you 
 <div class="listingblock">
 <div class="title">Declaring @Retryable</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pets</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@Retryable</span>
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">PetClient</span> <span class="directive">extends</span> PetOperations {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("/pets")
+@Retryable
+public interface PetClient extends PetOperations {
 
-    <span class="annotation">@Override</span>
-    Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age);
+    @Override
+    Single&lt;Pet&gt; save(String name, int age);
 }</code></pre>
 </div>
 </div>
@@ -1829,14 +1829,14 @@ If the customization offered by <code>JacksonFeatures</code> is not enough, you 
 <div class="listingblock">
 <div class="title">Defining a Fallback</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Fallback</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">PetFallback</span> <span class="directive">implements</span> PetOperations {
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age) {
-        Pet pet = <span class="keyword">new</span> Pet();
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Fallback
+public class PetFallback implements PetOperations {
+    @Override
+    public Single&lt;Pet&gt; save(String name, int age) {
+        Pet pet = new Pet();
         pet.setAge(age);
         pet.setName(name);
-        <span class="keyword">return</span> Single.just(pet);
+        return Single.just(pet);
     }
 }</code></pre>
 </div>
@@ -1879,7 +1879,7 @@ If you purely want to use fallbacks to help with testing against external Micros
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:netflix-hystrix</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut.configuration:netflix-hystrix"</code></pre>
 </div>
 </div>
 <div class="sect1">
@@ -1891,9 +1891,9 @@ If you purely want to use fallbacks to help with testing against external Micros
 <div class="listingblock">
 <div class="title">Using @HystrixCommand</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@HystrixCommand</span>
-<span class="predefined-type">String</span> hello(<span class="predefined-type">String</span> name) {
-    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello </span><span class="inline"><span class="inline-delimiter">$</span>name</span><span class="delimiter">&quot;</span></span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@HystrixCommand
+String hello(String name) {
+    return "Hello $name"
 }</code></pre>
 </div>
 </div>
@@ -1935,9 +1935,9 @@ For information on how to customize the Hystrix thread pool, group and propertie
 <div class="listingblock">
 <div class="title">Enabling Hystrix Stream</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">hystrix</span>:
-    <span class="key">stream</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">hystrix:
+    stream:
+        enabled: true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1970,27 +1970,27 @@ For information on how to customize the Hystrix thread pool, group and propertie
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">BintrayApi</span> {
-    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> <span class="predefined-type">URL</span> = <span class="string"><span class="delimiter">'</span><span class="content">https://api.bintray.com</span><span class="delimiter">'</span></span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">class BintrayApi {
+    public static final String URL = 'https://api.bintray.com'
 }
-<span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">BintrayService</span> {
-    <span class="directive">final</span> RxHttpClient client
-    <span class="directive">final</span> <span class="predefined-type">String</span> org
+@Singleton
+class BintrayService {
+    final RxHttpClient client
+    final String org
 
     BintrayService(
-            <span class="annotation">@Client</span>(BintrayApi.URL) RxHttpClient client,           <i class="conum" data-value="1"></i><b>(1)</b>
-            <span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${bintray.organization}</span><span class="delimiter">'</span></span>) <span class="predefined-type">String</span> org ) {
-        <span class="local-variable">this</span>.client = client
-        <span class="local-variable">this</span>.org = org
+            @Client(BintrayApi.URL) RxHttpClient client,           <i class="conum" data-value="1"></i><b>(1)</b>
+            @Value('${bintray.organization}') String org ) {
+        this.client = client
+        this.org = org
     }
 
-    Flowable&lt;HttpResponse&lt;<span class="predefined-type">String</span>&gt;&gt; fetchRepositories() {
-        <span class="keyword">return</span> client.exchange(HttpRequest.GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/repos/</span><span class="inline"><span class="inline-delimiter">$</span>org</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">String</span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    Flowable&lt;HttpResponse&lt;String&gt;&gt; fetchRepositories() {
+        return client.exchange(HttpRequest.GET("/repos/$org"), String) <i class="conum" data-value="2"></i><b>(2)</b>
     }
 
-    Flowable&lt;HttpResponse&lt;<span class="predefined-type">String</span>&gt;&gt; fetchPackages(<span class="predefined-type">String</span> repo) {
-        <span class="keyword">return</span> client.exchange(HttpRequest.GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/repos/</span><span class="inline"><span class="inline-delimiter">${</span>org<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="inline"><span class="inline-delimiter">${</span>repo<span class="inline-delimiter">}</span></span><span class="content">/packages</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">String</span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    Flowable&lt;HttpResponse&lt;String&gt;&gt; fetchPackages(String repo) {
+        return client.exchange(HttpRequest.GET("/repos/${org}/${repo}/packages"), String) <i class="conum" data-value="2"></i><b>(2)</b>
     }
 }</code></pre>
 </div>
@@ -2012,23 +2012,23 @@ For information on how to customize the Hystrix thread pool, group and propertie
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Filter</span>(<span class="string"><span class="delimiter">'</span><span class="content">/repos/**</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="type">class</span> <span class="class">BintrayFilter</span> <span class="directive">implements</span> HttpClientFilter {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Filter('/repos/**') <i class="conum" data-value="1"></i><b>(1)</b>
+class BintrayFilter implements HttpClientFilter {
 
 
-    <span class="directive">final</span> <span class="predefined-type">String</span> username
-    <span class="directive">final</span> <span class="predefined-type">String</span> token
+    final String username
+    final String token
 
     BintrayFilter(
-            <span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${bintray.username}</span><span class="delimiter">'</span></span>) <span class="predefined-type">String</span> username, <i class="conum" data-value="2"></i><b>(2)</b>
-            <span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${bintray.token}</span><span class="delimiter">'</span></span>) <span class="predefined-type">String</span> token ) { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="local-variable">this</span>.username = username
-        <span class="local-variable">this</span>.token = token
+            @Value('${bintray.username}') String username, <i class="conum" data-value="2"></i><b>(2)</b>
+            @Value('${bintray.token}') String token ) { <i class="conum" data-value="2"></i><b>(2)</b>
+        this.username = username
+        this.token = token
     }
 
-    <span class="annotation">@Override</span>
-    Publisher&lt;? <span class="directive">extends</span> HttpResponse&lt;?&gt;&gt; doFilter(MutableHttpRequest&lt;?&gt; request, ClientFilterChain chain) {
-        <span class="keyword">return</span> chain.proceed(
+    @Override
+    Publisher&lt;? extends HttpResponse&lt;?&gt;&gt; doFilter(MutableHttpRequest&lt;?&gt; request, ClientFilterChain chain) {
+        return chain.proceed(
                 request.basicAuth(username, token) <i class="conum" data-value="3"></i><b>(3)</b>
         )
     }

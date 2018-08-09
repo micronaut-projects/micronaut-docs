@@ -152,7 +152,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:session</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:session"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -161,8 +161,8 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:session</span><span class="delimiter">&quot;</span></span>
-compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:redis-lettuce</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:session"
+compile "io.micronaut.configuration:redis-lettuce"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -171,13 +171,13 @@ compile <span class="string"><span class="delimiter">&quot;</span><span class="c
 <div class="listingblock">
 <div class="title">Enabling Redis Sessions</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">redis</span>:
-    <span class="key">uri</span>: <span class="string"><span class="content">redis://localhost:6379</span></span>
-<span class="key">micronaut</span>:
-    <span class="key">session</span>:
-        <span class="key">http</span>:
-            <span class="key">redis</span>:
-                <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">redis:
+    uri: redis://localhost:6379
+micronaut:
+    session:
+        http:
+            redis:
+                enabled: true</code></pre>
 </div>
 </div>
 </div>
@@ -197,11 +197,11 @@ compile <span class="string"><span class="delimiter">&quot;</span><span class="c
 <div class="listingblock">
 <div class="title">Disabling Cookie Resolution</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">session</span>:
-        <span class="key">http</span>:
-            <span class="key">cookie</span>: <span class="string"><span class="content">false</span></span>
-            <span class="key">header</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    session:
+        http:
+            cookie: false
+            header: true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -218,26 +218,26 @@ compile <span class="string"><span class="delimiter">&quot;</span><span class="c
 <div class="listingblock">
 <div class="title">ShoppingController.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.session.Session</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.session.annotation.SessionValue</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.annotation.*;
+import io.micronaut.session.Session;
+import io.micronaut.session.annotation.SessionValue;
 
-<span class="keyword">import</span> <span class="include">javax.annotation.Nullable</span>;
-<span class="keyword">import</span> <span class="include">javax.validation.constraints.NotBlank</span>;
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotBlank;
 
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/shopping</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">ShoppingController</span> {
-    <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> ATTR_CART = <span class="string"><span class="delimiter">&quot;</span><span class="content">cart</span><span class="delimiter">&quot;</span></span>; <i class="conum" data-value="1"></i><b>(1)</b>
+@Controller("/shopping")
+public class ShoppingController {
+    private static final String ATTR_CART = "cart"; <i class="conum" data-value="1"></i><b>(1)</b>
 
-    <span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/cart/{name}</span><span class="delimiter">&quot;</span></span>)
-    Cart addItem(Session session, <span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> name) { <i class="conum" data-value="2"></i><b>(2)</b>
+    @Post("/cart/{name}")
+    Cart addItem(Session session, @NotBlank String name) { <i class="conum" data-value="2"></i><b>(2)</b>
         Cart cart = session.get(ATTR_CART, Cart.class).orElseGet(() -&gt; { <i class="conum" data-value="3"></i><b>(3)</b>
-            Cart newCart = <span class="keyword">new</span> Cart();
+            Cart newCart = new Cart();
             session.put(ATTR_CART, newCart); <i class="conum" data-value="4"></i><b>(4)</b>
-            <span class="keyword">return</span> newCart;
+            return newCart;
         });
         cart.getItems().add(name);
-        <span class="keyword">return</span> cart;
+        return cart;
     }
 
 }</code></pre>
@@ -272,9 +272,9 @@ compile <span class="string"><span class="delimiter">&quot;</span><span class="c
 <div class="listingblock">
 <div class="title">Using @Nullable with Sessions</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/cart/clear</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> clearCart(<span class="annotation">@Nullable</span> Session session) {
-    <span class="keyword">if</span> (session != <span class="predefined-constant">null</span>) {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Post("/cart/clear")
+void clearCart(@Nullable Session session) {
+    if (session != null) {
         session.remove(ATTR_CART);
     }
 }</code></pre>
@@ -297,14 +297,14 @@ compile <span class="string"><span class="delimiter">&quot;</span><span class="c
 <div class="listingblock">
 <div class="title">Retrieving the AUTHORIZATION_INFO header</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The shopping cart is retrieved</span><span class="delimiter">&quot;</span></span>
-HttpResponse&lt;Cart&gt; response = httpClient.exchange(HttpRequest.GET(<span class="string"><span class="delimiter">'</span><span class="content">/shopping/cart</span><span class="delimiter">'</span></span>), Cart) <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">when: "The shopping cart is retrieved"
+HttpResponse&lt;Cart&gt; response = httpClient.exchange(HttpRequest.GET('/shopping/cart'), Cart) <i class="conum" data-value="1"></i><b>(1)</b>
                                         .blockingFirst()
 Cart cart = response.body()
 
-<span class="key">then</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The shopping cart is present as well as a session id header</span><span class="delimiter">&quot;</span></span>
-response.header(HttpHeaders.AUTHORIZATION_INFO) != <span class="predefined-constant">null</span> <i class="conum" data-value="2"></i><b>(2)</b>
-cart != <span class="predefined-constant">null</span>
+then: "The shopping cart is present as well as a session id header"
+response.header(HttpHeaders.AUTHORIZATION_INFO) != null <i class="conum" data-value="2"></i><b>(2)</b>
+cart != null
 cart.items.isEmpty()</code></pre>
 </div>
 </div>
@@ -326,10 +326,10 @@ cart.items.isEmpty()</code></pre>
 <div class="listingblock">
 <div class="title">Sending the AUTHORIZATION_INFO header</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">String</span> sessionId = response.header(HttpHeaders.AUTHORIZATION_INFO) <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">String sessionId = response.header(HttpHeaders.AUTHORIZATION_INFO) <i class="conum" data-value="1"></i><b>(1)</b>
 
 response = httpClient.exchange(
-        HttpRequest.POST(<span class="string"><span class="delimiter">'</span><span class="content">/shopping/cart/Apple</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>)
+        HttpRequest.POST('/shopping/cart/Apple', "")
                 .header(HttpHeaders.AUTHORIZATION_INFO, sessionId), Cart) <i class="conum" data-value="2"></i><b>(2)</b>
         .blockingFirst()
 cart = response.body()</code></pre>
@@ -358,13 +358,13 @@ cart = response.body()</code></pre>
 <div class="listingblock">
 <div class="title">Using @SessionValue</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/cart</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@SessionValue</span>(ATTR_CART) <i class="conum" data-value="1"></i><b>(1)</b>
-Cart viewCart(<span class="annotation">@SessionValue</span> <span class="annotation">@Nullable</span> Cart cart) { <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="keyword">if</span> (cart == <span class="predefined-constant">null</span>) {
-        cart = <span class="keyword">new</span> Cart();
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Get("/cart")
+@SessionValue(ATTR_CART) <i class="conum" data-value="1"></i><b>(1)</b>
+Cart viewCart(@SessionValue @Nullable Cart cart) { <i class="conum" data-value="2"></i><b>(2)</b>
+    if (cart == null) {
+        cart = new Cart();
     }
-    <span class="keyword">return</span> cart;
+    return cart;
 }</code></pre>
 </div>
 </div>
@@ -439,17 +439,17 @@ Cart viewCart(<span class="annotation">@SessionValue</span> <span class="annotat
 <div class="listingblock">
 <div class="title">Configuring Redis Sessions</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">session</span>:
-        <span class="key">http</span>:
-            <span class="key">redis</span>:
-                <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-                <span class="comment"># The Redis namespace to write sessions to</span>
-                <span class="key">namespace</span>: <span class="string"><span class="content">'myapp:sessions'</span></span>
-                <span class="comment"># Write session changes in the background</span>
-                <span class="key">write-mode</span>: <span class="string"><span class="content">BACKGROUND</span></span>
-                <span class="comment"># Disable programatic activation of keyspace events</span>
-                <span class="key">enable-keyspace-events</span>: <span class="string"><span class="content">false</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    session:
+        http:
+            redis:
+                enabled: true
+                # The Redis namespace to write sessions to
+                namespace: 'myapp:sessions'
+                # Write session changes in the background
+                write-mode: BACKGROUND
+                # Disable programatic activation of keyspace events
+                enable-keyspace-events: false</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -470,12 +470,12 @@ The <a href="../api/io/micronaut/configuration/lettuce/session/RedisSessionStore
 <div class="listingblock">
 <div class="title">Using Jackson Serialization</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">session</span>:
-        <span class="key">http</span>:
-            <span class="key">redis</span>:
-                <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-                <span class="key">valueSerializer</span>: <span class="string"><span class="content">io.micronaut.jackson.serialize.JacksonObjectSerializer</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    session:
+        http:
+            redis:
+                enabled: true
+                valueSerializer: io.micronaut.jackson.serialize.JacksonObjectSerializer</code></pre>
 </div>
 </div>
 </div>

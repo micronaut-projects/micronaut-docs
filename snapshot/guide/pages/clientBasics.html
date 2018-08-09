@@ -135,7 +135,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Injecting an HTTP client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">https://api.twitter.com/1.1</span><span class="delimiter">&quot;</span></span>) <span class="annotation">@Inject</span> RxHttpClient httpClient;</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("https://api.twitter.com/1.1") @Inject RxHttpClient httpClient;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -143,7 +143,7 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="kotlin">@Client(&quot;\${myapp.api.twitter.url}&quot;) @Inject httpClient: RxHttpClient</code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Client("\${myapp.api.twitter.url}") @Inject httpClient: RxHttpClient</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -186,10 +186,10 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Using retrieve</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">String</span> result = client.toBlocking().retrieve(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/John</span><span class="delimiter">&quot;</span></span>);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">String result = client.toBlocking().retrieve("/hello/John");
 
 assertEquals(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>,
+        "Hello John",
         result
 );</code></pre>
 </div>
@@ -203,17 +203,17 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Using the HTTP client without blocking</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">static</span> <span class="include">io.micronaut.http.HttpRequest</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import static io.micronaut.http.HttpRequest.*;
 
-<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.MediaType</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.client</span>.*;
-<span class="keyword">import</span> <span class="include">io.reactivex.Maybe</span>;
+import io.micronaut.http.HttpStatus;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.*;
+import io.micronaut.http.client.*;
+import io.reactivex.Maybe;
 
-<span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/{name}</span><span class="delimiter">&quot;</span></span>)
-Maybe&lt;<span class="predefined-type">String</span>&gt; hello(<span class="predefined-type">String</span> name) { <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="keyword">return</span> httpClient.retrieve( GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/</span><span class="delimiter">&quot;</span></span> + name) )
+@Get("/hello/{name}")
+Maybe&lt;String&gt; hello(String name) { <i class="conum" data-value="1"></i><b>(1)</b>
+    return httpClient.retrieve( GET("/hello/" + name) )
                      .firstElement(); <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
@@ -251,7 +251,7 @@ Using RxJava (or Reactor if you prefer) you can easily and efficiently compose m
 <div class="listingblock">
 <div class="title">logback.xml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;logger</span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.http.client</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">level</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">TRACE</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;logger name="io.micronaut.http.client" level="TRACE"/&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -263,9 +263,9 @@ Using RxJava (or Reactor if you prefer) you can easily and efficiently compose m
 <div class="listingblock">
 <div class="title">Passing an HttpRequest to retrieve</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;<span class="predefined-type">String</span>&gt; response = client.retrieve(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/John</span><span class="delimiter">&quot;</span></span>)
-        .header(<span class="string"><span class="delimiter">&quot;</span><span class="content">X-My-Header</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">SomeValue</span><span class="delimiter">&quot;</span></span>)
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;String&gt; response = client.retrieve(
+        GET("/hello/John")
+        .header("X-My-Header", "SomeValue")
 );</code></pre>
 </div>
 </div>
@@ -284,9 +284,9 @@ Using RxJava (or Reactor if you prefer) you can easily and efficiently compose m
 <div class="listingblock">
 <div class="title">Returning JSON from a controller</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/{name}</span><span class="delimiter">&quot;</span></span>)
-Message greet(<span class="predefined-type">String</span> name) {
-    <span class="keyword">return</span> <span class="keyword">new</span> Message(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello </span><span class="delimiter">&quot;</span></span> + name);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Get("/greet/{name}")
+Message greet(String name) {
+    return new Message("Hello " + name);
 }</code></pre>
 </div>
 </div>
@@ -296,18 +296,18 @@ Message greet(<span class="predefined-type">String</span> name) {
 <div class="listingblock">
 <div class="title">Message POJO</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">com.fasterxml.jackson.annotation</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import com.fasterxml.jackson.annotation.*;
 
-<span class="directive">public</span> <span class="type">class</span> <span class="class">Message</span> {
-    <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">String</span> text;
+public class Message {
+    private final String text;
 
-    <span class="annotation">@JsonCreator</span>
-    <span class="directive">public</span> Message(<span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> text) {
-        <span class="local-variable">this</span>.text = text;
+    @JsonCreator
+    public Message(@JsonProperty("text") String text) {
+        this.text = text;
     }
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getText() {
-        <span class="keyword">return</span> text;
+    public String getText() {
+        return text;
     }
 }</code></pre>
 </div>
@@ -330,8 +330,8 @@ Jackson annotations are used to map the constructor
 <div class="listingblock">
 <div class="title">Decoding the response body to a Map</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;<span class="predefined-type">Map</span>&gt; response = client.retrieve(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/John</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">Map</span>.class
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;Map&gt; response = client.retrieve(
+        GET("/greet/John"), Map.class
 );</code></pre>
 </div>
 </div>
@@ -341,9 +341,9 @@ Jackson annotations are used to map the constructor
 <div class="listingblock">
 <div class="title">Decoding the response body to a Map</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">response = client.retrieve(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/John</span><span class="delimiter">&quot;</span></span>),
-        Argument.of(<span class="predefined-type">Map</span>.class, <span class="predefined-type">String</span>.class, <span class="predefined-type">String</span>.class) <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">response = client.retrieve(
+        GET("/greet/John"),
+        Argument.of(Map.class, String.class, String.class) <i class="conum" data-value="1"></i><b>(1)</b>
 );</code></pre>
 </div>
 </div>
@@ -361,12 +361,12 @@ Jackson annotations are used to map the constructor
 <div class="listingblock">
 <div class="title">Decoding the response body to a POJO</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;Message&gt; response = client.retrieve(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/John</span><span class="delimiter">&quot;</span></span>), Message.class
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;Message&gt; response = client.retrieve(
+        GET("/greet/John"), Message.class
 );
 
 assertEquals(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>,
+        "Hello John",
         response.blockingFirst().getText()
 );</code></pre>
 </div>
@@ -392,21 +392,21 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Recieving the Full HTTP Response</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/John</span><span class="delimiter">&quot;</span></span>), Message.class <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
+        GET("/greet/John"), Message.class <i class="conum" data-value="1"></i><b>(1)</b>
 );
 
 HttpResponse&lt;Message&gt; response = call.blockingFirst();
 Optional&lt;Message&gt; message = response.getBody(Message.class); <i class="conum" data-value="2"></i><b>(2)</b>
-<span class="comment">// check the status</span>
+// check the status
 assertEquals(
         HttpStatus.OK,
         response.getStatus() <i class="conum" data-value="3"></i><b>(3)</b>
 );
-<span class="comment">// check the body</span>
+// check the body
 assertTrue(message.isPresent());
 assertEquals(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>,
+        "Hello John",
         message.get().getText()
 );</code></pre>
 </div>

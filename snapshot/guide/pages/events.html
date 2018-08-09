@@ -145,42 +145,42 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">javax.inject.*</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import javax.inject.*
 
-<span class="type">class</span> <span class="class">V8Engine</span> <span class="directive">implements</span> Engine {
-    <span class="directive">final</span> <span class="type">int</span> cylinders = <span class="integer">8</span>
-    <span class="type">double</span> rodLength <i class="conum" data-value="1"></i><b>(1)</b>
+class V8Engine implements Engine {
+    final int cylinders = 8
+    double rodLength <i class="conum" data-value="1"></i><b>(1)</b>
 
-    <span class="predefined-type">String</span> start() {
-        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Starting V</span><span class="inline"><span class="inline-delimiter">${</span>cylinders<span class="inline-delimiter">}</span></span><span class="content"> [rodLength=</span><span class="inline"><span class="inline-delimiter">$</span>rodLength</span><span class="content">]</span><span class="delimiter">&quot;</span></span>
+    String start() {
+        return "Starting V${cylinders} [rodLength=$rodLength]"
     }
 }
 
-<span class="annotation">@Factory</span>
-<span class="type">class</span> <span class="class">EngineFactory</span> {
+@Factory
+class EngineFactory {
 
-    <span class="directive">private</span> V8Engine engine
-    <span class="type">double</span> rodLength = <span class="float">5.7</span>
+    private V8Engine engine
+    double rodLength = 5.7
 
-    <span class="annotation">@PostConstruct</span>
-    <span class="type">void</span> initialize() {
-        engine = <span class="keyword">new</span> V8Engine(<span class="key">rodLength</span>: rodLength) <i class="conum" data-value="2"></i><b>(2)</b>
+    @PostConstruct
+    void initialize() {
+        engine = new V8Engine(rodLength: rodLength) <i class="conum" data-value="2"></i><b>(2)</b>
     }
 
-    <span class="annotation">@Bean</span>
-    <span class="annotation">@Singleton</span>
+    @Bean
+    @Singleton
     Engine v8Engine() {
-        <span class="keyword">return</span> engine <i class="conum" data-value="3"></i><b>(3)</b>
+        return engine <i class="conum" data-value="3"></i><b>(3)</b>
     }
 }
 
-<span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">EngineInitializer</span> <span class="directive">implements</span> BeanInitializedEventListener&lt;EngineFactory&gt; { <i class="conum" data-value="4"></i><b>(4)</b>
-    <span class="annotation">@Override</span>
+@Singleton
+class EngineInitializer implements BeanInitializedEventListener&lt;EngineFactory&gt; { <i class="conum" data-value="4"></i><b>(4)</b>
+    @Override
     EngineFactory onInitialized(BeanInitializingEvent&lt;EngineFactory&gt; event) {
         EngineFactory engineFactory = event.bean
-        engineFactory.rodLength = <span class="float">6.6</span> <i class="conum" data-value="5"></i><b>(5)</b>
-        <span class="keyword">return</span> event.bean
+        engineFactory.rodLength = 6.6 <i class="conum" data-value="5"></i><b>(5)</b>
+        return event.bean
     }
 }</code></pre>
 </div>

@@ -137,7 +137,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:hibernate-validator</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut.configuration:hibernate-validator"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -145,21 +145,21 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.validation.Validated</span>;
-<span class="keyword">import</span> <span class="include">javax.validation.constraints.NotBlank</span>;
-<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.validation.Validated;
+import javax.validation.constraints.NotBlank;
+import java.util.Collections;
 
-<span class="annotation">@Validated</span> <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/email</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">EmailController</span> {
+@Validated <i class="conum" data-value="1"></i><b>(1)</b>
+@Controller("/email")
+public class EmailController {
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/send</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> HttpResponse send(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> recipient, <i class="conum" data-value="2"></i><b>(2)</b>
-                             <span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> subject) { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="keyword">return</span> HttpResponse.ok(<span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">msg</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">OK</span><span class="delimiter">&quot;</span></span>));
+    @Get("/send")
+    public HttpResponse send(@NotBlank String recipient, <i class="conum" data-value="2"></i><b>(2)</b>
+                             @NotBlank String subject) { <i class="conum" data-value="2"></i><b>(2)</b>
+        return HttpResponse.ok(Collections.singletonMap("msg", "OK"));
     }
 }</code></pre>
 </div>
@@ -181,23 +181,23 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">invoking /email/send validates parameters</span><span class="delimiter">&quot;</span></span>() {
-    <span class="key">when</span>:
-    client.toBlocking().retrieve(<span class="string"><span class="delimiter">'</span><span class="content">/email/send?subject=Hi&amp;recipient=</span><span class="delimiter">'</span></span>)
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">def "invoking /email/send validates parameters"() {
+    when:
+    client.toBlocking().retrieve('/email/send?subject=Hi&amp;recipient=')
 
-    <span class="key">then</span>:
-    <span class="keyword">def</span> e = thrown(HttpClientResponseException)
+    then:
+    def e = thrown(HttpClientResponseException)
 
-    <span class="key">when</span>:
-    <span class="keyword">def</span> response = e.response
+    when:
+    def response = e.response
 
-    <span class="key">then</span>:
+    then:
     response.status == HttpStatus.BAD_REQUEST
 
-    <span class="key">when</span>:
-    client.toBlocking().retrieve(<span class="string"><span class="delimiter">'</span><span class="content">/email/send?subject=Hi&amp;recipient=me@micronaut.example</span><span class="delimiter">'</span></span>)
+    when:
+    client.toBlocking().retrieve('/email/send?subject=Hi&amp;recipient=me@micronaut.example')
 
-    <span class="key">then</span>:
+    then:
     noExceptionThrown()
 }</code></pre>
 </div>
@@ -207,32 +207,32 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">io.micronaut.docs.datavalidation.pogo</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs.datavalidation.pogo;
 
-<span class="keyword">import</span> <span class="include">javax.validation.constraints.NotBlank</span>;
+import javax.validation.constraints.NotBlank;
 
-<span class="directive">public</span> <span class="type">class</span> <span class="class">Email</span> {
+public class Email {
 
-    <span class="annotation">@NotBlank</span> <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="predefined-type">String</span> subject;
+    @NotBlank <i class="conum" data-value="1"></i><b>(1)</b>
+    String subject;
 
-    <span class="annotation">@NotBlank</span> <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="predefined-type">String</span> recipient;
+    @NotBlank <i class="conum" data-value="1"></i><b>(1)</b>
+    String recipient;
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getSubject() {
-        <span class="keyword">return</span> subject;
+    public String getSubject() {
+        return subject;
     }
 
-    <span class="directive">public</span> <span class="type">void</span> setSubject(<span class="predefined-type">String</span> subject) {
-        <span class="local-variable">this</span>.subject = subject;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getRecipient() {
-        <span class="keyword">return</span> recipient;
+    public String getRecipient() {
+        return recipient;
     }
 
-    <span class="directive">public</span> <span class="type">void</span> setRecipient(<span class="predefined-type">String</span> recipient) {
-        <span class="local-variable">this</span>.recipient = recipient;
+    public void setRecipient(String recipient) {
+        this.recipient = recipient;
     }
 }</code></pre>
 </div>
@@ -251,21 +251,21 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Body</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Post</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.validation.Validated</span>;
-<span class="keyword">import</span> <span class="include">javax.validation.Valid</span>;
-<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.validation.Validated;
+import javax.validation.Valid;
+import java.util.Collections;
 
-<span class="annotation">@Validated</span> <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/email</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">EmailController</span> {
+@Validated <i class="conum" data-value="1"></i><b>(1)</b>
+@Controller("/email")
+public class EmailController {
 
-    <span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/send</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> HttpResponse send(<span class="annotation">@Body</span> <span class="annotation">@Valid</span> Email email) { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="keyword">return</span> HttpResponse.ok(<span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">msg</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">OK</span><span class="delimiter">&quot;</span></span>));    }
+    @Post("/send")
+    public HttpResponse send(@Body @Valid Email email) { <i class="conum" data-value="2"></i><b>(2)</b>
+        return HttpResponse.ok(Collections.singletonMap("msg", "OK"));    }
 }</code></pre>
 </div>
 </div>
@@ -286,29 +286,29 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">invoking /email/send parse parameters in a POJO and validates</span><span class="delimiter">&quot;</span></span>() {
-    <span class="key">when</span>:
-    Email email = <span class="keyword">new</span> Email()
-    email.subject = <span class="string"><span class="delimiter">'</span><span class="content">Hi</span><span class="delimiter">'</span></span>
-    email.recipient = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
-    client.toBlocking().exchange(HttpRequest.POST(<span class="string"><span class="delimiter">'</span><span class="content">/email/send</span><span class="delimiter">'</span></span>, email))
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">def "invoking /email/send parse parameters in a POJO and validates"() {
+    when:
+    Email email = new Email()
+    email.subject = 'Hi'
+    email.recipient = ''
+    client.toBlocking().exchange(HttpRequest.POST('/email/send', email))
 
-    <span class="key">then</span>:
-    <span class="keyword">def</span> e = thrown(HttpClientResponseException)
+    then:
+    def e = thrown(HttpClientResponseException)
 
-    <span class="key">when</span>:
-    <span class="keyword">def</span> response = e.response
+    when:
+    def response = e.response
 
-    <span class="key">then</span>:
+    then:
     response.status == HttpStatus.BAD_REQUEST
 
-    <span class="key">when</span>:
-    email = <span class="keyword">new</span> Email()
-    email.subject = <span class="string"><span class="delimiter">'</span><span class="content">Hi</span><span class="delimiter">'</span></span>
-    email.recipient = <span class="string"><span class="delimiter">'</span><span class="content">me@micronaut.example</span><span class="delimiter">'</span></span>
-    client.toBlocking().exchange(HttpRequest.POST(<span class="string"><span class="delimiter">'</span><span class="content">/email/send</span><span class="delimiter">'</span></span>, email))
+    when:
+    email = new Email()
+    email.subject = 'Hi'
+    email.recipient = 'me@micronaut.example'
+    client.toBlocking().exchange(HttpRequest.POST('/email/send', email))
 
-    <span class="key">then</span>:
+    then:
     noExceptionThrown()
 }</code></pre>
 </div>

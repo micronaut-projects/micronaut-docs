@@ -213,7 +213,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:security</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:security"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -221,9 +221,9 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">security</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    security:
+        enabled: true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -253,15 +253,15 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Singleton</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">AuthenticationProviderUserPassword</span> <span class="directive">implements</span> AuthenticationProvider {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Singleton
+public class AuthenticationProviderUserPassword implements AuthenticationProvider {
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> Publisher&lt;AuthenticationResponse&gt; authenticate(AuthenticationRequest authenticationRequest) {
-        <span class="keyword">if</span> (authenticationRequest.getIdentity().equals(<span class="string"><span class="delimiter">&quot;</span><span class="content">user</span><span class="delimiter">&quot;</span></span>) &amp;&amp; authenticationRequest.getSecret().equals(<span class="string"><span class="delimiter">&quot;</span><span class="content">password</span><span class="delimiter">&quot;</span></span>)) {
-            <span class="keyword">return</span> Flowable.just(<span class="keyword">new</span> UserDetails(<span class="string"><span class="delimiter">&quot;</span><span class="content">user</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> <span class="predefined-type">ArrayList</span>&lt;&gt;()));
+    @Override
+    public Publisher&lt;AuthenticationResponse&gt; authenticate(AuthenticationRequest authenticationRequest) {
+        if (authenticationRequest.getIdentity().equals("user") &amp;&amp; authenticationRequest.getSecret().equals("password")) {
+            return Flowable.just(new UserDetails("user", new ArrayList&lt;&gt;()));
         }
-        <span class="keyword">return</span> Flowable.just(<span class="keyword">new</span> AuthenticationFailed());
+        return Flowable.just(new AuthenticationFailed());
     }
 }</code></pre>
 </div>
@@ -329,12 +329,12 @@ you can implement your own <a href="../api/io/micronaut/security/rules/SecurityR
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-  <span class="key">security</span>:
-    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">ipPatterns</span>:
-      - <span class="string"><span class="content">127.0.0.1</span></span>
-      - <span class="string"><span class="content">192.168.1.*</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  security:
+    enabled: true
+    ipPatterns:
+      - 127.0.0.1
+      - 192.168.1.*</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -358,25 +358,25 @@ access at <a href="../api/io/micronaut/http/annotation/Controller.html">Controll
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/example</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@Secured</span>(SecurityRule.IS_AUTHENTICATED) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">ExampleController</span> {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Controller("/example")
+@Secured(SecurityRule.IS_AUTHENTICATED) <i class="conum" data-value="1"></i><b>(1)</b>
+public class ExampleController {
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/admin</span><span class="delimiter">&quot;</span></span>)
-    <span class="annotation">@Secured</span>([<span class="string"><span class="delimiter">&quot;</span><span class="content">ROLE_ADMIN</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">ROLE_X</span><span class="delimiter">&quot;</span></span>]) <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="directive">public</span> <span class="predefined-type">String</span> withroles() {
-        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">You have ROLE_ADMIN or ROLE_X roles</span><span class="delimiter">&quot;</span></span>;
+    @Get("/admin")
+    @Secured(["ROLE_ADMIN", "ROLE_X"]) <i class="conum" data-value="2"></i><b>(2)</b>
+    public String withroles() {
+        return "You have ROLE_ADMIN or ROLE_X roles";
     }
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">'</span><span class="content">/anonymous</span><span class="delimiter">'</span></span>)
-    <span class="annotation">@Secured</span>(SecurityRule.IS_ANONYMOUS)  <i class="conum" data-value="3"></i><b>(3)</b>
-    <span class="directive">public</span> <span class="predefined-type">String</span> anonymous() {
-        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">You are anonymous</span><span class="delimiter">&quot;</span></span>;
+    @Get('/anonymous')
+    @Secured(SecurityRule.IS_ANONYMOUS)  <i class="conum" data-value="3"></i><b>(3)</b>
+    public String anonymous() {
+        return "You are anonymous";
     }
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/authenticated</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="directive">public</span> <span class="predefined-type">String</span> authenticated(Authentication authentication) {
-        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>authentication.name<span class="inline-delimiter">}</span></span><span class="content"> is authenticated</span><span class="delimiter">&quot;</span></span>;
+    @Get("/authenticated") <i class="conum" data-value="1"></i><b>(1)</b>
+    public String authenticated(Authentication authentication) {
+        return "${authentication.name} is authenticated";
     }
 }</code></pre>
 </div>
@@ -413,25 +413,25 @@ access at <a href="../api/io/micronaut/http/annotation/Controller.html">Controll
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-  <span class="key">security</span>:
-    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">interceptUrlMap</span>:
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  security:
+    enabled: true
+    interceptUrlMap:
       -
-        <span class="key">pattern</span>: <span class="string"><span class="content">/images/*</span></span>
-        <span class="key">httpMethod</span>: <span class="string"><span class="content">GET</span></span>
-        <span class="key">access</span>:
-          - <span class="string"><span class="content">isAnonymous() </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+        pattern: /images/*
+        httpMethod: GET
+        access:
+          - isAnonymous() <i class="conum" data-value="1"></i><b>(1)</b>
       -
-        <span class="key">pattern</span>: <span class="string"><span class="content">/books</span></span>
-        <span class="key">access</span>:
-          - <span class="string"><span class="content">isAuthenticated() </span></span><i class="conum" data-value="2"></i><b>(2)</b>
+        pattern: /books
+        access:
+          - isAuthenticated() <i class="conum" data-value="2"></i><b>(2)</b>
       -
-        <span class="key">pattern</span>: <span class="string"><span class="content">/books/grails</span></span>
-        <span class="key">httpMethod</span>: <span class="string"><span class="content">GET</span></span>
-        <span class="key">access</span>:
-          - <span class="string"><span class="content">ROLE_GRAILS </span></span><i class="conum" data-value="3"></i><b>(3)</b>
-          - <span class="string"><span class="content">ROLE_GROOVY</span></span></code></pre>
+        pattern: /books/grails
+        httpMethod: GET
+        access:
+          - ROLE_GRAILS <i class="conum" data-value="3"></i><b>(3)</b>
+          - ROLE_GROOVY</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -470,13 +470,13 @@ and an optional HTTP Method</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">endpoints</span>:
-  <span class="key">beans</span>:
-    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">sensitive</span>: <span class="string"><span class="content">true </span></span><i class="conum" data-value="1"></i><b>(1)</b>
-  <span class="key">info</span>:
-    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">sensitive</span>: <span class="string"><span class="content">false  </span></span><i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">endpoints:
+  beans:
+    enabled: true
+    sensitive: true <i class="conum" data-value="1"></i><b>(1)</b>
+  info:
+    enabled: true
+    sensitive: false  <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -522,9 +522,9 @@ and an optional HTTP Method</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-  <span class="key">security</span>:
-    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  security:
+    enabled: true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -541,7 +541,7 @@ and an optional HTTP Method</p>
 <div class="listingblock">
 <div class="title">cURL command using Basic Auth</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">curl &quot;http://localhost:8080/info&quot; \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl "http://localhost:8080/info" \
      -u 'user:password'</code></pre>
 </div>
 </div>
@@ -616,7 +616,7 @@ Read the <a href="http://guides.micronaut.io/micronaut-security-basicauth/guide/
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:security-session</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:security-session"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -682,17 +682,17 @@ Read the <a href="http://guides.micronaut.io/micronaut-security-basicauth/guide/
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-  <span class="key">security</span>:
-    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">endpoints</span>:
-      <span class="key">login</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-      <span class="key">logout</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">session</span>:
-      <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-      <span class="key">loginFailureTargetUrl</span>: <span class="string"><span class="content">/login/authFailed</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  security:
+    enabled: true
+    endpoints:
+      login:
+        enabled: true
+      logout:
+        enabled: true
+    session:
+      enabled: true
+      loginFailureTargetUrl: /login/authFailed</code></pre>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -730,7 +730,7 @@ JWT is an <a href="https://tools.ietf.org/html/rfc7519">IETF standard</a> which 
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:security-jwt</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:security-jwt"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -789,9 +789,9 @@ JWT is an <a href="https://tools.ietf.org/html/rfc7519">IETF standard</a> which 
 <div class="listingblock">
 <div class="title">JWT header</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">{
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">alg</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">HS256</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">typ</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">JWT</span><span class="delimiter">&quot;</span></span>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+    "alg": "HS256",
+    "typ": "JWT"
 }</code></pre>
 </div>
 </div>
@@ -804,14 +804,14 @@ JWT is an <a href="https://tools.ietf.org/html/rfc7519">IETF standard</a> which 
 <div class="listingblock">
 <div class="title">JWT claims</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">{
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">exp</span><span class="delimiter">&quot;</span></span>: <span class="integer">1422990129</span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">sub</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">jimi</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">roles</span><span class="delimiter">&quot;</span></span>: [
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">ROLE_ADMIN</span><span class="delimiter">&quot;</span></span>,
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">ROLE_USER</span><span class="delimiter">&quot;</span></span>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+    "exp": 1422990129,
+    "sub": "jimi",
+    "roles": [
+        "ROLE_ADMIN",
+        "ROLE_USER"
     ],
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">iat</span><span class="delimiter">&quot;</span></span>: <span class="integer">1422986529</span>
+    "iat": 1422986529
 }</code></pre>
 </div>
 </div>
@@ -905,7 +905,7 @@ JWT is an <a href="https://tools.ietf.org/html/rfc7519">IETF standard</a> which 
 <div class="listingblock">
 <div class="title">Accessing a protected resource using Authorization request header</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">GET /protectedResource HTTP/1.1
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">GET /protectedResource HTTP/1.1
 Host: micronaut.example
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0MjI5OTU5MjIsInN1YiI6ImppbWkiLCJyb2xlcyI6WyJST0xFX0FETUlOIiwiUk9MRV9VU0VSIl0sImlhdCI6MTQyMjk5MjMyMn0.rA7A2Gwt14LaYMpxNRtrCdO24RGrfHtZXY9fIjV8x8o</code></pre>
 </div>
@@ -1042,17 +1042,17 @@ Read the <a href="http://guides.micronaut.io/micronaut-security-jwt-cookie/guide
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-  <span class="key">security</span>:
-    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">token</span>:
-      <span class="key">jwt</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">signatures</span>:
-          <span class="key">secret</span>:
-            <span class="key">generator</span>:
-              <span class="key">secret</span>: <span class="string"><span class="content">pleaseChangeThisSecretForANewOne </span></span><i class="conum" data-value="1"></i><b>(1)</b>
-              <span class="key">jwsAlgorithm</span>: <span class="string"><span class="content">HS256 </span></span><i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  security:
+    enabled: true
+    token:
+      jwt:
+        enabled: true
+        signatures:
+          secret:
+            generator:
+              secret: pleaseChangeThisSecretForANewOne <i class="conum" data-value="1"></i><b>(1)</b>
+              jwsAlgorithm: HS256 <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1072,18 +1072,18 @@ Read the <a href="http://guides.micronaut.io/micronaut-security-jwt-cookie/guide
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-  <span class="key">security</span>:
-    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">token</span>:
-      <span class="key">jwt</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">signatures</span>:
-          <span class="key">secret</span>:
-            <span class="key">generator</span>:
-              <span class="key">secret</span>: <span class="string"><span class="content">'cGxlYXNlQ2hhbmdlVGhpc1NlY3JldEZvckFOZXdPbmU=' </span></span><i class="conum" data-value="1"></i><b>(1)</b>
-              <span class="key">base64</span>: <span class="string"><span class="content">true </span></span><i class="conum" data-value="2"></i><b>(2)</b>
-              <span class="key">jwsAlgorithm</span>: <span class="string"><span class="content">HS256</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  security:
+    enabled: true
+    token:
+      jwt:
+        enabled: true
+        signatures:
+          secret:
+            generator:
+              secret: 'cGxlYXNlQ2hhbmdlVGhpc1NlY3JldEZvckFOZXdPbmU=' <i class="conum" data-value="1"></i><b>(1)</b>
+              base64: true <i class="conum" data-value="2"></i><b>(2)</b>
+              jwsAlgorithm: HS256</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1128,19 +1128,19 @@ Read the <a href="http://guides.micronaut.io/micronaut-security-jwt-cookie/guide
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">micronaut</span>:
-  <span class="key">security</span>:
-    <span class="key">enabled</span>: <span class="predefined-constant">true</span>
-    <span class="key">token</span>:
-      <span class="key">jwt</span>:
-        <span class="key">enabled</span>: <span class="predefined-constant">true</span>
-        <span class="key">signatures</span>:
-          <span class="key">secret</span>:
-            <span class="key">generator</span>:
-              <span class="key">secret</span>: pleaseChangeThisSecretForANewOne <i class="conum" data-value="1"></i><b>(1)</b>
-              <span class="key">jwsAlgorithm</span>: HS256 <i class="conum" data-value="2"></i><b>(2)</b>
-<span class="key">pem</span>:
-  <span class="key">path</span>: <span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>user/rsa-<span class="integer">2048</span>bit-key-pair.pem <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">micronaut:
+  security:
+    enabled: true
+    token:
+      jwt:
+        enabled: true
+        signatures:
+          secret:
+            generator:
+              secret: pleaseChangeThisSecretForANewOne <i class="conum" data-value="1"></i><b>(1)</b>
+              jwsAlgorithm: HS256 <i class="conum" data-value="2"></i><b>(2)</b>
+pem:
+  path: /home/user/rsa-2048bit-key-pair.pem <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1160,46 +1160,46 @@ Read the <a href="http://guides.micronaut.io/micronaut-security-jwt-cookie/guide
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">openssl genrsa -out rsa-2048bit-key-pair.pem 2048</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">openssl genrsa -out rsa-2048bit-key-pair.pem 2048</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Named</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">generator</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">RSAOAEPEncryptionConfiguration</span> <span class="directive">implements</span> RSAEncryptionConfiguration {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Named("generator") <i class="conum" data-value="1"></i><b>(1)</b>
+@Singleton
+class RSAOAEPEncryptionConfiguration implements RSAEncryptionConfiguration {
 
-    <span class="directive">private</span> <span class="predefined-type">RSAPrivateKey</span> rsaPrivateKey
-    <span class="directive">private</span> <span class="predefined-type">RSAPublicKey</span> rsaPublicKey
+    private RSAPrivateKey rsaPrivateKey
+    private RSAPublicKey rsaPublicKey
     JWEAlgorithm jweAlgorithm = JWEAlgorithm.RSA_OAEP_256
     EncryptionMethod encryptionMethod = EncryptionMethod.A128GCM
 
-    RSAOAEPEncryptionConfiguration(<span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${pem.path}</span><span class="delimiter">'</span></span>) <span class="predefined-type">String</span> pemPath) {
-        Optional&lt;<span class="predefined-type">KeyPair</span>&gt; keyPair = KeyPairProvider.keyPair(pemPath)
-        <span class="keyword">if</span> (keyPair.isPresent()) {
-            <span class="local-variable">this</span>.rsaPublicKey = (<span class="predefined-type">RSAPublicKey</span>) keyPair.get().getPublic()
-            <span class="local-variable">this</span>.rsaPrivateKey = (<span class="predefined-type">RSAPrivateKey</span>) keyPair.get().getPrivate()
+    RSAOAEPEncryptionConfiguration(@Value('${pem.path}') String pemPath) {
+        Optional&lt;KeyPair&gt; keyPair = KeyPairProvider.keyPair(pemPath)
+        if (keyPair.isPresent()) {
+            this.rsaPublicKey = (RSAPublicKey) keyPair.get().getPublic()
+            this.rsaPrivateKey = (RSAPrivateKey) keyPair.get().getPrivate()
         }
     }
 
-    <span class="annotation">@Override</span>
-    <span class="predefined-type">RSAPublicKey</span> getPublicKey() {
-        <span class="keyword">return</span> rsaPublicKey
+    @Override
+    RSAPublicKey getPublicKey() {
+        return rsaPublicKey
     }
 
-    <span class="annotation">@Override</span>
-    <span class="predefined-type">RSAPrivateKey</span> getPrivateKey() {
-        <span class="keyword">return</span> rsaPrivateKey
+    @Override
+    RSAPrivateKey getPrivateKey() {
+        return rsaPrivateKey
     }
 
-    <span class="annotation">@Override</span>
+    @Override
     JWEAlgorithm getJweAlgorithm() {
-        <span class="keyword">return</span> jweAlgorithm
+        return jweAlgorithm
     }
 
-    <span class="annotation">@Override</span>
+    @Override
     EncryptionMethod getEncryptionMethod() {
-        <span class="keyword">return</span> encryptionMethod
+        return encryptionMethod
     }
 }</code></pre>
 </div>
@@ -1217,40 +1217,40 @@ Read the <a href="http://guides.micronaut.io/micronaut-security-jwt-cookie/guide
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Slf4j</span>
-<span class="type">class</span> <span class="class">KeyPairProvider</span> {
-    <span class="comment">/**
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Slf4j
+class KeyPairProvider {
+    /**
      *
      * @param pemPath Full path to PEM file.
      * @return returns KeyPair if successfully for PEM files.
-     */</span>
-    <span class="directive">static</span> Optional&lt;<span class="predefined-type">KeyPair</span>&gt; keyPair(<span class="predefined-type">String</span> pemPath) {
-        <span class="comment">// Load BouncyCastle as JCA provider</span>
-        <span class="predefined-type">Security</span>.addProvider(<span class="keyword">new</span> BouncyCastleProvider())
+     */
+    static Optional&lt;KeyPair&gt; keyPair(String pemPath) {
+        // Load BouncyCastle as JCA provider
+        Security.addProvider(new BouncyCastleProvider())
 
-        <span class="comment">// Parse the EC key pair</span>
+        // Parse the EC key pair
         PEMParser pemParser
-        <span class="keyword">try</span> {
-            pemParser = <span class="keyword">new</span> PEMParser(<span class="keyword">new</span> <span class="predefined-type">InputStreamReader</span>(<span class="keyword">new</span> <span class="predefined-type">FileInputStream</span>(pemPath)))
+        try {
+            pemParser = new PEMParser(new InputStreamReader(new FileInputStream(pemPath)))
             PEMKeyPair pemKeyPair = (PEMKeyPair) pemParser.readObject()
 
-            <span class="comment">// Convert to Java (JCA) format</span>
-            JcaPEMKeyConverter converter = <span class="keyword">new</span> JcaPEMKeyConverter()
-            <span class="predefined-type">KeyPair</span> keyPair = converter.getKeyPair(pemKeyPair)
+            // Convert to Java (JCA) format
+            JcaPEMKeyConverter converter = new JcaPEMKeyConverter()
+            KeyPair keyPair = converter.getKeyPair(pemKeyPair)
             pemParser.close()
 
-            <span class="keyword">return</span> Optional.of(keyPair)
+            return Optional.of(keyPair)
 
-        } <span class="keyword">catch</span> (<span class="exception">FileNotFoundException</span> e) {
-            log.warn(<span class="string"><span class="delimiter">&quot;</span><span class="content">file not found: {}</span><span class="delimiter">&quot;</span></span>, pemPath)
+        } catch (FileNotFoundException e) {
+            log.warn("file not found: {}", pemPath)
 
-        } <span class="keyword">catch</span> (PEMException e) {
-            log.warn(<span class="string"><span class="delimiter">&quot;</span><span class="content">PEMException {}</span><span class="delimiter">&quot;</span></span>, e.getMessage())
+        } catch (PEMException e) {
+            log.warn("PEMException {}", e.getMessage())
 
-        } <span class="keyword">catch</span> (<span class="exception">IOException</span> e) {
-            log.warn(<span class="string"><span class="delimiter">&quot;</span><span class="content">IOException {}</span><span class="delimiter">&quot;</span></span>, e.getMessage())
+        } catch (IOException e) {
+            log.warn("IOException {}", e.getMessage())
         }
-        <span class="keyword">return</span> Optional.empty()
+        return Optional.empty()
     }
 }</code></pre>
 </div>
@@ -1318,18 +1318,18 @@ the JWT tokens are returned to the client as part of an OAuth 2.0 <a href="https
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json"><span class="error">H</span><span class="error">T</span><span class="error">T</span><span class="error">P</span><span class="error">/</span><span class="float">1.1</span> <span class="integer">200</span> <span class="error">O</span><span class="error">K</span>
-<span class="error">C</span><span class="error">o</span><span class="error">n</span><span class="error">t</span><span class="error">e</span><span class="error">n</span><span class="error">t</span><span class="error">-</span><span class="error">T</span><span class="error">y</span><span class="error">p</span><span class="error">e</span>: <span class="error">a</span><span class="error">p</span><span class="error">p</span><span class="error">l</span><span class="error">i</span><span class="error">c</span><span class="error">a</span><span class="error">t</span><span class="error">i</span><span class="error">o</span><span class="error">n</span><span class="error">/</span><span class="error">j</span><span class="error">s</span><span class="error">o</span><span class="error">n</span><span class="error">;</span><span class="error">c</span><span class="error">h</span><span class="error">a</span><span class="error">r</span><span class="error">s</span><span class="error">e</span><span class="error">t</span><span class="error">=</span><span class="error">U</span><span class="error">T</span><span class="error">F</span><span class="integer">-8</span>
-<span class="error">C</span><span class="error">a</span><span class="error">c</span><span class="error">h</span><span class="error">e</span><span class="error">-</span><span class="error">C</span><span class="error">o</span><span class="error">n</span><span class="error">t</span><span class="error">r</span><span class="error">o</span><span class="error">l</span>: <span class="error">n</span><span class="error">o</span><span class="error">-</span><span class="error">s</span><span class="error">t</span><span class="error">o</span><span class="error">r</span><span class="error">e</span>
-<span class="error">P</span><span class="error">r</span><span class="error">a</span><span class="error">g</span><span class="error">m</span><span class="error">a</span>: <span class="error">n</span><span class="error">o</span><span class="error">-</span><span class="error">c</span><span class="error">a</span><span class="error">c</span><span class="error">h</span><span class="error">e</span>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Cache-Control: no-store
+Pragma: no-cache
 {
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">access_token</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">eyJhbGciOiJIUzI1NiJ9...</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">token_type</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">expires_in</span><span class="delimiter">&quot;</span></span>:<span class="integer">3600</span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">refresh_token</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">tGzv3JOkF0XG5Qx2TlKWIA...</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">euler</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">roles</span><span class="delimiter">&quot;</span></span>: [
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">ROLE_USER</span><span class="delimiter">&quot;</span></span>
+    "access_token":"eyJhbGciOiJIUzI1NiJ9...",
+    "token_type":"Bearer",
+    "expires_in":3600,
+    "refresh_token":"tGzv3JOkF0XG5Qx2TlKWIA...",
+    "username": "euler",
+    "roles": [
+        "ROLE_USER"
     ],
 }</code></pre>
 </div>
@@ -1393,11 +1393,11 @@ the JWT tokens are returned to the client as part of an OAuth 2.0 <a href="https
 <div class="listingblock">
 <div class="title">Login Endpoint invocation example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">curl -X &quot;POST&quot; &quot;http://localhost:8080/login&quot; \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -X "POST" "http://localhost:8080/login" \
      -H 'Content-Type: application/json; charset=utf-8' \
      -d $'{
-  &quot;username&quot;: &quot;euler&quot;,
-  &quot;password&quot;: &quot;password&quot;
+  "username": "euler",
+  "password": "password"
 }'</code></pre>
 </div>
 </div>
@@ -1462,7 +1462,7 @@ If you are using JWT authentication, you may not need to invoke the <code>/logou
 <div class="listingblock">
 <div class="title">Login Endpoint invocation example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">curl -X &quot;POST&quot; &quot;http://localhost:8080/logout&quot;</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -X "POST" "http://localhost:8080/logout"</code></pre>
 </div>
 </div>
 </div>
@@ -1527,7 +1527,7 @@ ease the refresh, you can enable <a href="../api/io/micronaut/security/token/jwt
 <div class="listingblock">
 <div class="title">Sample HTTP request to obtain an access token</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">POST /myApp/oauth/access_token HTTP/1.1
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">POST /myApp/oauth/access_token HTTP/1.1
 Host: micronaut.example
 Content-Type: application/x-www-form-urlencoded
 
@@ -1575,24 +1575,24 @@ See <a href="https://tools.ietf.org/html/rfc6749#section-10.4">section 10.4 of t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Requires</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.core.util.CollectionUtils</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.security.Secured</span>;
-<span class="keyword">import</span> <span class="include">javax.annotation.Nullable</span>;
-<span class="keyword">import</span> <span class="include">java.security.Principal</span>;
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.security.Secured;
+import javax.annotation.Nullable;
+import java.security.Principal;
 
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/user</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">UserController</span> {
+@Controller("/user")
+public class UserController {
 
-    <span class="annotation">@Secured</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">isAnonymous()</span><span class="delimiter">&quot;</span></span>)
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/myinfo</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> <span class="predefined-type">Map</span> myinfo(<span class="annotation">@Nullable</span> <span class="predefined-type">Principal</span> principal) {
-        <span class="keyword">if</span> (principal == <span class="predefined-constant">null</span>) {
-            <span class="keyword">return</span> <span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">false</span>);
+    @Secured("isAnonymous()")
+    @Get("/myinfo")
+    public Map myinfo(@Nullable Principal principal) {
+        if (principal == null) {
+            return Collections.singletonMap("isLoggedIn", false);
         }
-        <span class="keyword">return</span> CollectionUtils.mapOf(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>, principal.getName());
+        return CollectionUtils.mapOf("isLoggedIn", true, "username", principal.getName());
     }
 }</code></pre>
 </div>
@@ -1602,28 +1602,28 @@ See <a href="https://tools.ietf.org/html/rfc6749#section-10.4">section 10.4 of t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Requires</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.core.util.CollectionUtils</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.security.Secured</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.security.authentication.Authentication</span>;
-<span class="keyword">import</span> <span class="include">javax.annotation.Nullable</span>;
-<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
-<span class="keyword">import</span> <span class="include">java.util.Map</span>;
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.security.Secured;
+import io.micronaut.security.authentication.Authentication;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Map;
 
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/user</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">UserController</span> {
+@Controller("/user")
+public class UserController {
 
-    <span class="annotation">@Secured</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">isAnonymous()</span><span class="delimiter">&quot;</span></span>)
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/myinfo</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> <span class="predefined-type">Map</span> myinfo(<span class="annotation">@Nullable</span> Authentication authentication) {
-        <span class="keyword">if</span> (authentication == <span class="predefined-constant">null</span>) {
-            <span class="keyword">return</span> <span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">false</span>);
+    @Secured("isAnonymous()")
+    @Get("/myinfo")
+    public Map myinfo(@Nullable Authentication authentication) {
+        if (authentication == null) {
+            return Collections.singletonMap("isLoggedIn", false);
         }
-        <span class="keyword">return</span> CollectionUtils.mapOf(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>,
-                <span class="string"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>, authentication.getName(),
-                <span class="string"><span class="delimiter">&quot;</span><span class="content">roles</span><span class="delimiter">&quot;</span></span>, authentication.getAttributes().get(<span class="string"><span class="delimiter">&quot;</span><span class="content">roles</span><span class="delimiter">&quot;</span></span>)
+        return CollectionUtils.mapOf("isLoggedIn", true,
+                "username", authentication.getName(),
+                "roles", authentication.getAttributes().get("roles")
         );
     }
 }</code></pre>
