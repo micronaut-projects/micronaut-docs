@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>8.4 Distributed Tracing 1.0.0.M3</title>
+    <title>8.4 Distributed Tracing 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>8.4 Distributed Tracing</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -150,7 +153,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:tracing</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:tracing"</code></pre>
 </div>
 </div>
 <div class="sect1">
@@ -171,7 +174,7 @@ function addJsClass() {
 <p>The <a href="../api/io/micronaut/tracing/annotation/ContinueSpan.html">@ContinueSpan</a> annotation will continue an existing span, wrapping the method call or reactive type.</p>
 </li>
 <li>
-<p>The <a href="../api/io/micronaut/tracing/annotation/SpanTag.html">@SpanTag</a> annotation can be used on method arguments to include the value of each argument within a Span&#8217;s tags</p>
+<p>The <a href="../api/io/micronaut/tracing/annotation/SpanTag.html">@SpanTag</a> annotation can be used on method arguments to include the value of each argument within a Span&#8217;s tags. When you use <code>@SpanTag</code> on a method argument, you need either to annotate the method with <code>@NewSpan</code> or <code>@ContinueSpan</code>.</p>
 </li>
 </ul>
 </div>
@@ -181,17 +184,17 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Using Trace Annotations</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">HelloService</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Singleton
+class HelloService {
 
-    <span class="annotation">@NewSpan</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello-world</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="directive">public</span> <span class="predefined-type">String</span> hello(<span class="annotation">@SpanTag</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">person.name</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> name) { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="keyword">return</span> greet(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello </span><span class="delimiter">&quot;</span></span> + name);
+    @NewSpan("hello-world") <i class="conum" data-value="1"></i><b>(1)</b>
+    public String hello(@SpanTag("person.name") String name) { <i class="conum" data-value="2"></i><b>(2)</b>
+        return greet("Hello " + name);
     }
 
-    <span class="annotation">@ContinueSpan</span> <i class="conum" data-value="3"></i><b>(3)</b>
-    <span class="directive">public</span> <span class="predefined-type">String</span> greet(<span class="annotation">@SpanTag</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello.greeting</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> greet) {
-        <span class="keyword">return</span> greeting;
+    @ContinueSpan <i class="conum" data-value="3"></i><b>(3)</b>
+    public String greet(@SpanTag("hello.greeting") String greet) {
+        return greeting;
     }
 }</code></pre>
 </div>
@@ -257,7 +260,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Running Zipkin with Docker</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ docker run -d -p 9411:9411 openzipkin/zipkin</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ docker run -d -p 9411:9411 openzipkin/zipkin</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -274,9 +277,9 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Adding Zipkin Dependencies</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">runtime <span class="string"><span class="delimiter">'</span><span class="content">io.zipkin.brave:brave-instrumentation-http:4.19.0</span><span class="delimiter">'</span></span>
-runtime <span class="string"><span class="delimiter">'</span><span class="content">io.zipkin.reporter2:zipkin-reporter:2.5.0</span><span class="delimiter">'</span></span>
-compile <span class="string"><span class="delimiter">'</span><span class="content">io.opentracing.brave:brave-opentracing:0.30.0</span><span class="delimiter">'</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">runtime 'io.zipkin.brave:brave-instrumentation-http:4.19.0'
+runtime 'io.zipkin.reporter2:zipkin-reporter:2.5.0'
+compile 'io.opentracing.brave:brave-opentracing:0.30.0'</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -285,9 +288,9 @@ compile <span class="string"><span class="delimiter">'</span><span class="conten
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">tracing</span>:
-    <span class="key">zipkin</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    zipkin:
+        enabled: true</code></pre>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -308,7 +311,17 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 <h2 id="_customizing_the_zipkin_sender">Customizing the Zipkin Sender</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>By default an <a href="../api/io/micronaut/tracing/brave/sender/HttpClientSender.html">HttpClientSender</a> that sends Spans asynchronously using Micronaut&#8217;s native HTTP client to <code><a href="http://localhost:9411/api/v2/spans" class="bare">http://localhost:9411/api/v2/spans</a></code> will be configured.</p>
+<p>In order to send spans you need to configure a Zipkin sender. You can configure a <a href="../api/io/micronaut/tracing/brave/sender/HttpClientSender.html">HttpClientSender</a> that sends Spans asynchronously using Micronaut&#8217;s native HTTP client using the <code>tracing.zipkin.http.url</code> setting:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Multiple Zipkin Servers</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    zipkin:
+        enabled: true
+        http:
+            url: http://localhost:9411</code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>It is unlikely that sending spans to localhost will be suitable for production deployment so you generally will want to configure the location of one or many Zipkin servers for production:</p>
@@ -316,12 +329,13 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 <div class="listingblock">
 <div class="title">Configuring Multiple Zipkin Servers</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">tracing</span>:
-    <span class="key">zipkin</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">urls</span>:
-            - <span class="string"><span class="content">http://foo:9411</span></span>
-            - <span class="string"><span class="content">http://bar:9411</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    zipkin:
+        enabled: true
+        http:
+            urls:
+                - http://foo:9411
+                - http://bar:9411</code></pre>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -331,7 +345,7 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-In production, setting <code>TRACING_ZIPKIN_URLS</code> environment variable with a comma separated list of URLs will also work.
+In production, setting <code>TRACING_ZIPKIN_HTTP_URLS</code> environment variable with a comma separated list of URLs will also work.
 </td>
 </tr>
 </table>
@@ -353,12 +367,12 @@ In production, setting <code>TRACING_ZIPKIN_URLS</code> environment variable wit
 <div class="listingblock">
 <div class="title">Customizing Zipkin Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">tracing</span>:
-    <span class="key">zipkin</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">traceId128Bit</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">sampler</span>:
-            <span class="key">probability</span>: <span class="string"><span class="content">1</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    zipkin:
+        enabled: true
+        traceId128Bit: true
+        sampler:
+            probability: 1</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -388,7 +402,7 @@ In production, setting <code>TRACING_ZIPKIN_URLS</code> environment variable wit
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ docker run -d -e \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ docker run -d -e \
   COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
   -p 5775:5775/udp \
   -p 6831:6831/udp \
@@ -417,7 +431,7 @@ In production, setting <code>TRACING_ZIPKIN_URLS</code> environment variable wit
 <div class="listingblock">
 <div class="title">Adding Jaeger Dependencies</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">io.jaegertracing:jaeger-core:0.27.0</span><span class="delimiter">'</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile 'io.jaegertracing:jaeger-core:0.27.0'</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -426,9 +440,9 @@ In production, setting <code>TRACING_ZIPKIN_URLS</code> environment variable wit
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">tracing</span>:
-    <span class="key">jaeger</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    jaeger:
+        enabled: true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -460,17 +474,17 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 <div class="listingblock">
 <div class="title">Customizing Zipkin Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">tracing</span>:
-    <span class="key">jaeger</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">sampler</span>:
-            <span class="key">probability</span>: <span class="string"><span class="content">0.5</span></span>
-        <span class="key">sender</span>:
-            <span class="key">agentHost</span>: <span class="string"><span class="content">foo</span></span>
-            <span class="key">agentPort</span>: <span class="string"><span class="content">5775</span></span>
-        <span class="key">reporter</span>:
-            <span class="key">flushInterval</span>: <span class="string"><span class="content">2000</span></span>
-            <span class="key">maxQueueSize</span>: <span class="string"><span class="content">200</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    jaeger:
+        enabled: true
+        sampler:
+            probability: 0.5
+        sender:
+            agentHost: foo
+            agentPort: 5775
+        reporter:
+            flushInterval: 2000
+            maxQueueSize: 200</code></pre>
 </div>
 </div>
 <div class="paragraph">

@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>10.1.3.4 Injecting Kafka Producer Beans 1.0.0.M3</title>
+    <title>10.1.3.4 Injecting Kafka Producer Beans 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -101,14 +104,14 @@ function addJsClass() {
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span> >></a></div>
                 
 
 
                 <div class="project">
                     <h1>10.1.3.4 Injecting Kafka Producer Beans</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -133,24 +136,24 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Using a KafkaProducer directly</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.KafkaClient</span>;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.producer</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.configuration.kafka.annotation.KafkaClient;
+import org.apache.kafka.clients.producer.*;
 
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
-<span class="keyword">import</span> <span class="include">java.util.concurrent.Future</span>;
+import javax.inject.Singleton;
+import java.util.concurrent.Future;
 
-<span class="annotation">@Singleton</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">BookSender</span> {
+@Singleton
+public class BookSender {
 
-    <span class="directive">private</span> <span class="directive">final</span> KafkaProducer&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Book</span>&gt; kafkaProducer;
+    private final KafkaProducer&lt;String, Book&gt; kafkaProducer;
 
-    <span class="directive">public</span> BookSender(
-            <span class="annotation">@KafkaClient</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">book-producer</span><span class="delimiter">&quot;</span></span>) KafkaProducer&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Book</span>&gt; kafkaProducer) { <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="local-variable">this</span>.kafkaProducer = kafkaProducer;
+    public BookSender(
+            @KafkaClient("book-producer") KafkaProducer&lt;String, Book&gt; kafkaProducer) { <i class="conum" data-value="1"></i><b>(1)</b>
+        this.kafkaProducer = kafkaProducer;
     }
 
-    <span class="directive">public</span> <span class="predefined-type">Future</span>&lt;RecordMetadata&gt; send(<span class="predefined-type">String</span> author, <span class="predefined-type">Book</span> book) {
-        <span class="keyword">return</span> kafkaProducer.send(<span class="keyword">new</span> ProducerRecord&lt;&gt;(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>, author, book)); <i class="conum" data-value="2"></i><b>(2)</b>
+    public Future&lt;RecordMetadata&gt; send(String author, Book book) {
+        return kafkaProducer.send(new ProducerRecord&lt;&gt;("books", author, book)); <i class="conum" data-value="2"></i><b>(2)</b>
     }
 
 }</code></pre>
@@ -177,17 +180,17 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Using a KafkaProducer directly</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Test</span>
-<span class="directive">public</span> <span class="type">void</span> testBookSender() <span class="directive">throws</span> <span class="exception">IOException</span> {
-    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; config = <span class="predefined-type">Collections</span>.singletonMap( <i class="conum" data-value="1"></i><b>(1)</b>
-            AbstractKafkaConfiguration.EMBEDDED, <span class="predefined-constant">true</span>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
+public void testBookSender() throws IOException {
+    Map&lt;String, Object&gt; config = Collections.singletonMap( <i class="conum" data-value="1"></i><b>(1)</b>
+            AbstractKafkaConfiguration.EMBEDDED, true
     );
 
-    <span class="keyword">try</span> (ApplicationContext ctx = ApplicationContext.run(config)) {
+    try (ApplicationContext ctx = ApplicationContext.run(config)) {
         BookSender bookSender = ctx.getBean(BookSender.class); <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>();
-        book.setTitle(<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>);
-        bookSender.send(<span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>, book);
+        Book book = new Book();
+        book.setTitle("The Stand");
+        bookSender.send("Stephen King", book);
     }
 }</code></pre>
 </div>
@@ -213,7 +216,7 @@ function addJsClass() {
                 
                     <div class="toc-item prev-left"><a href="../../guide/serverlessFunctions.html">&lt;&lt; <strong>9</strong><span>Serverless Functions</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

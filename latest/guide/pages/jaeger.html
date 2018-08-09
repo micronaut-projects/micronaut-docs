@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>8.4.2 Tracing with Jaeger 1.0.0.M3</title>
+    <title>8.4.2 Tracing with Jaeger 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>8.4.2 Tracing with Jaeger</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -135,7 +138,7 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ docker run -d -e \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ docker run -d -e \
   COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
   -p 5775:5775/udp \
   -p 6831:6831/udp \
@@ -164,7 +167,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Adding Jaeger Dependencies</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">io.jaegertracing:jaeger-core:0.27.0</span><span class="delimiter">'</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile 'io.jaegertracing:jaeger-core:0.27.0'</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -173,9 +176,9 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">tracing</span>:
-    <span class="key">jaeger</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    jaeger:
+        enabled: true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -207,17 +210,17 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 <div class="listingblock">
 <div class="title">Customizing Zipkin Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">tracing</span>:
-    <span class="key">jaeger</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">sampler</span>:
-            <span class="key">probability</span>: <span class="string"><span class="content">0.5</span></span>
-        <span class="key">sender</span>:
-            <span class="key">agentHost</span>: <span class="string"><span class="content">foo</span></span>
-            <span class="key">agentPort</span>: <span class="string"><span class="content">5775</span></span>
-        <span class="key">reporter</span>:
-            <span class="key">flushInterval</span>: <span class="string"><span class="content">2000</span></span>
-            <span class="key">maxQueueSize</span>: <span class="string"><span class="content">200</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    jaeger:
+        enabled: true
+        sampler:
+            probability: 0.5
+        sender:
+            agentHost: foo
+            agentPort: 5775
+        reporter:
+            flushInterval: 2000
+            maxQueueSize: 200</code></pre>
 </div>
 </div>
 <div class="paragraph">

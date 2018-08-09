@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>6.20 Server Events 1.0.0.M3</title>
+    <title>6.20 Server Events 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>6.20 Server Events</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -176,13 +179,33 @@ If you do significant work within a listener for a <a href="../api/io/micronaut/
 <div class="listingblock">
 <div class="title">Listening for Server Startup Events</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.event.ApplicationEventListener</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.event.ApplicationEventListener;
 ...
-<span class="annotation">@Singleton</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">StartupListener</span> <span class="directive">implements</span> ApplicationEventListener&lt;ServerStartupEvent&gt; {
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="type">void</span> onApplicationEvent(ServerStartupEvent event) {
-        <span class="comment">// logic here</span>
+@Singleton
+public class StartupListener implements ApplicationEventListener&lt;ServerStartupEvent&gt; {
+    @Override
+    public void onApplicationEvent(ServerStartupEvent event) {
+        // logic here
+        ...
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively, you can also use the <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> annotation on a method of any existing bean that accepts <code>ServerStartupEvent</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using <code>@EventListener</code> with <code>ServerStartupEvent</code></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.runtime.server.event.*;
+import io.micronaut.runtime.event.annotation.*;
+...
+@Singleton
+public class MyBean {
+
+    @EventListener
+    public void onStartup(ServerStartupEvent event) {
+        // logic here
         ...
     }
 }</code></pre>

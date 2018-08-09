@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>10.1.3.1 Defining @KafkaClient Methods 1.0.0.M3</title>
+    <title>10.1.3.1 Defining @KafkaClient Methods 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -101,14 +104,14 @@ function addJsClass() {
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span> >></a></div>
                 
 
 
                 <div class="project">
                     <h1>10.1.3.1 Defining @KafkaClient Methods</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -134,8 +137,8 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">my-products</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> sendProduct(<span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand, <span class="predefined-type">String</span> name);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic("my-products")
+void sendProduct(@KafkaKey String brand, String name);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -149,11 +152,11 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">my-products</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> sendProduct(
-    <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand,
-    <span class="predefined-type">String</span> name,
-    <span class="annotation">@Header</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">My-Header</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> myHeader);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic("my-products")
+void sendProduct(
+    @KafkaKey String brand,
+    String name,
+    @Header("My-Header") String myHeader);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -165,12 +168,12 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Declaring @KafkaClient Headers</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.KafkaClient</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.messaging.annotation.Header</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.configuration.kafka.annotation.KafkaClient;
+import io.micronaut.messaging.annotation.Header;
 
-<span class="annotation">@KafkaClient</span>(id=<span class="string"><span class="delimiter">&quot;</span><span class="content">product-client</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@Header</span>(name = <span class="string"><span class="delimiter">&quot;</span><span class="content">X-Token</span><span class="delimiter">&quot;</span></span>, value = <span class="string"><span class="delimiter">&quot;</span><span class="content">${my.application.token}</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">ProductClient</span> {
+@KafkaClient(id="product-client")
+@Header(name = "X-Token", value = "${my.application.token}")
+public interface ProductClient {
     ...
 }</code></pre>
 </div>
@@ -194,9 +197,9 @@ function addJsClass() {
 <h4 id="_single_value_and_return_type">Single Value and Return Type</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Single&lt;<span class="predefined-type">Book</span>&gt; sendBook(
-    <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> author,
-    Single&lt;<span class="predefined-type">Book</span>&gt; book
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Single&lt;Book&gt; sendBook(
+    @KafkaKey String author,
+    Single&lt;Book&gt; book
 );</code></pre>
 </div>
 </div>
@@ -208,9 +211,9 @@ function addJsClass() {
 <h4 id="_flowable_value_and_return_type">Flowable Value and Return Type</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;<span class="predefined-type">Book</span>&gt; sendBooks(
-    <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> author,
-    Flowable&lt;<span class="predefined-type">Book</span>&gt; book
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;Book&gt; sendBooks(
+    @KafkaKey String author,
+    Flowable&lt;Book&gt; book
 );</code></pre>
 </div>
 </div>
@@ -222,9 +225,9 @@ function addJsClass() {
 <h4 id="_flowable_value_and_return_type_2">Flowable Value and Return Type</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flux&lt;RecordMetadata&gt; sendBooks(
-    <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> author,
-    Flux&lt;<span class="predefined-type">Book</span>&gt; book
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flux&lt;RecordMetadata&gt; sendBooks(
+    @KafkaKey String author,
+    Flux&lt;Book&gt; book
 );</code></pre>
 </div>
 </div>
@@ -283,7 +286,7 @@ function addJsClass() {
                 
                     <div class="toc-item prev-left"><a href="../../guide/serverlessFunctions.html">&lt;&lt; <strong>9</strong><span>Serverless Functions</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

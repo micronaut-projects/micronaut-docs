@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>10.1.4.1 Defining @KafkaListener Methods 1.0.0.M3</title>
+    <title>10.1.4.1 Defining @KafkaListener Methods 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -101,14 +104,14 @@ function addJsClass() {
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span> >></a></div>
                 
 
 
                 <div class="project">
                     <h1>10.1.4.1 Defining @KafkaListener Methods</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -144,7 +147,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Specifying Multiple Topics</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">fun-products</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>)</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic("fun-products", "awesome-products")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -153,7 +156,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Using regular expressions to match Topics</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(patterns=<span class="string"><span class="delimiter">&quot;</span><span class="content">products-</span><span class="char">\\</span><span class="content">w+</span><span class="delimiter">&quot;</span></span>)</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic(patterns="products-\\w+")</code></pre>
 </div>
 </div>
 </div>
@@ -246,15 +249,15 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Specifying Parameters for offset, topic etc.</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">void</span> receive(
-        <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand, <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic("awesome-products")
+public void receive(
+        @KafkaKey String brand, <i class="conum" data-value="1"></i><b>(1)</b>
         Product product, <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="type">long</span> offset, <i class="conum" data-value="3"></i><b>(3)</b>
-        <span class="type">int</span> partition, <i class="conum" data-value="4"></i><b>(4)</b>
-        <span class="predefined-type">String</span> topic, <i class="conum" data-value="5"></i><b>(5)</b>
-        <span class="type">long</span> timestamp) { <i class="conum" data-value="6"></i><b>(6)</b>
-    <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Product - </span><span class="delimiter">&quot;</span></span> + product.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> by </span><span class="delimiter">&quot;</span></span> + brand);
+        long offset, <i class="conum" data-value="3"></i><b>(3)</b>
+        int partition, <i class="conum" data-value="4"></i><b>(4)</b>
+        String topic, <i class="conum" data-value="5"></i><b>(5)</b>
+        long timestamp) { <i class="conum" data-value="6"></i><b>(6)</b>
+    System.out.println("Got Product - " + product.getName() + " by " + brand);
 }</code></pre>
 </div>
 </div>
@@ -298,11 +301,11 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Specifying Parameters for offset, topic etc.</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">awesome-products</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">void</span> receive(ConsumerRecord&lt;<span class="predefined-type">String</span>, Product&gt; record) { <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic("awesome-products")
+public void receive(ConsumerRecord&lt;String, Product&gt; record) { <i class="conum" data-value="1"></i><b>(1)</b>
     Product product = record.value(); <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="predefined-type">String</span> brand = record.key(); <i class="conum" data-value="3"></i><b>(3)</b>
-    <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Product - </span><span class="delimiter">&quot;</span></span> + product.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> by </span><span class="delimiter">&quot;</span></span> + brand);
+    String brand = record.key(); <i class="conum" data-value="3"></i><b>(3)</b>
+    System.out.println("Got Product - " + product.getName() + " by " + brand);
 }</code></pre>
 </div>
 </div>
@@ -331,12 +334,12 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Using Reactive Types</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">reactive-products</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> Single&lt;Product&gt; receive(
-        <span class="annotation">@KafkaKey</span> <span class="predefined-type">String</span> brand,  <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic("reactive-products")
+public Single&lt;Product&gt; receive(
+        @KafkaKey String brand,  <i class="conum" data-value="1"></i><b>(1)</b>
         Single&lt;Product&gt; productFlowable) { <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="keyword">return</span> productFlowable.doOnSuccess((product) -&gt;
-            <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got Product - </span><span class="delimiter">&quot;</span></span> + product.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content"> by </span><span class="delimiter">&quot;</span></span> + brand) <i class="conum" data-value="3"></i><b>(3)</b>
+    return productFlowable.doOnSuccess((product) -&gt;
+            System.out.println("Got Product - " + product.getName() + " by " + brand) <i class="conum" data-value="3"></i><b>(3)</b>
     );
 }</code></pre>
 </div>
@@ -369,9 +372,9 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Blocking with Reactive Consumers</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Blocking</span>
-<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">reactive-products</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> Single&lt;Product&gt; receive(
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Blocking
+@Topic("reactive-products")
+public Single&lt;Product&gt; receive(
     ...
 }</code></pre>
 </div>
@@ -383,7 +386,7 @@ function addJsClass() {
                 
                     <div class="toc-item prev-left"><a href="../../guide/serverlessFunctions.html">&lt;&lt; <strong>9</strong><span>Serverless Functions</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

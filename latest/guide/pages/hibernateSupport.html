@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>11.1.2 Configuring Hibernate 1.0.0.M3</title>
+    <title>12.1.2 Configuring Hibernate 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -95,27 +98,27 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../../guide/messaging.html">&lt;&lt; <strong>10</strong><span>Message-Driven Microservices</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/commandLineApps.html">&lt;&lt; <strong>11</strong><span>Standalone Command Line Applications</span></a></div>
                 
 
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span> >></a></div>
                 
 
 
                 <div class="project">
-                    <h1>11.1.2 Configuring Hibernate</h1>
+                    <h1>12.1.2 Configuring Hibernate</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
 
                 
 
-<h2 id="hibernateSupport">11.1.2 Configuring Hibernate</h2>
+<h2 id="hibernateSupport">12.1.2 Configuring Hibernate</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/configurations/dataAccess/hibernateSupport.adoc"'>
@@ -135,7 +138,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:hibernate-jpa</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut.configuration:hibernate-jpa"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -159,6 +162,25 @@ function addJsClass() {
 </div>
 </div>
 <div class="sect3">
+<h4 id="_injecting_an_entitymanager_or_hibernate_session">Injecting an EntityManager or Hibernate Session</h4>
+<div class="paragraph">
+<p>You can use the <code>javax.persistence.PersistenceContext</code> annotation to inject an <code>EntityManager</code> (or Hibernate <code>Session</code>):</p>
+</div>
+<div class="listingblock">
+<div class="title">Using <code>@PersistenceContext</code></div>
+<div class="content">
+<pre>@PersistenceContext
+EntityManager entityManager;
+
+@PersistenceContext(name = "other")
+EntityManager otherManager;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Micronaut will inject a compile time scoped proxy that retrieves the <code>EntityManager</code> associated with the current transaction when using <a href="../api/io/micronaut/spring/tx/Transactional.html">@Transactional</a> (see "Using Spring Transaction Management" below).</p>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_customizing_hibernate_jpa_configuration">Customizing Hibernate / JPA Configuration</h4>
 <div class="paragraph">
 <p>There are several different ways you can customize and configure how the <code>SessionFactory</code> is built. The easiest way is via configuration in <code>application.yml</code>. The following configuration demonstrates an example:</p>
@@ -166,19 +188,19 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Configuring Hibernate Properties</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">datasources</span>:
-    <span class="key">default</span>:
-        <span class="key">name</span>: <span class="string"><span class="content">'mydb'</span></span>
-<span class="key">jpa</span>:
-    <span class="key">default</span>:
-        <span class="key">packages-to-scan</span>:
-            - <span class="string"><span class="content">'foo.bar'</span></span>
-            - <span class="string"><span class="content">'foo.baz'</span></span>
-        <span class="key">properties</span>:
-            <span class="key">hibernate</span>:
-                <span class="key">hbm2ddl</span>:
-                    <span class="key">auto</span>: <span class="string"><span class="content">update</span></span>
-                <span class="key">show_sql</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">datasources:
+    default:
+        name: 'mydb'
+jpa:
+    default:
+        packages-to-scan:
+            - 'foo.bar'
+            - 'foo.baz'
+        properties:
+            hibernate:
+                hbm2ddl:
+                    auto: update
+                show_sql: true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -209,7 +231,7 @@ function addJsClass() {
 <p>When using <a href="../api/io/micronaut/spring/tx/annotation/Transactional.html">@Transactional</a> the Hibernate <code>Session</code> will only be open for the duration of this method execution and then will automatically be closed. This ensures that the blocking operation is kept as short as possible.</p>
 </div>
 <div class="paragraph">
-<p>There is no notion of OpenSessionInView (OSIV) in Micronaut and never will be, since it is <a href="https://vladmihalcea.com/the-open-session-in-view-anti-pattern/">sub-optimal and not recommended</a>. You should optimize the queries that you write to return all the necessary data Micronaut will need to encode your objects into JSON.</p>
+<p>There is no notion of OpenSessionInView (OSIV) in Micronaut and never will be, since it is <a href="https://vladmihalcea.com/the-open-session-in-view-anti-pattern/">sub-optimal and not recommended</a>. You should optimize the queries that you write to return all the necessary data Micronaut will need to encode your objects into JSON either by using the appropriate join queries or using a <a href="https://vladmihalcea.com/the-best-way-to-map-a-projection-query-to-a-dto-with-jpa-and-hibernate/">data transfer object (DTO)</a>.</p>
 </div>
 <div class="paragraph">
 <p>If you encounter a <code>LazyInitializationException</code> when returning a Hibernate entity from a method it is an indication that your query is suboptimal and you should perform a join.</p>
@@ -218,7 +240,7 @@ function addJsClass() {
 <div class="sect3">
 <h4 id="_using_gorm_for_hibernate">Using GORM for Hibernate</h4>
 <div class="paragraph">
-<p>For Groovy users and users familiar with Grails framework special support for <a href="http://gorm.grails.org">GORM for Hibernate</a> is available. To use GORM for Hibernate you should not include the Micronaut&#8217;s built in <a href="#sqlSupport">SQL Support</a> or the <code>hibernate-jpa</code> dependency since GORM itself takes responsibility for creating the <code>DataSource</code>, <code>SessionFactory</code> etc.</p>
+<p>For Groovy users and users familiar with Grails framework special support for <a href="http://gorm.grails.org">GORM for Hibernate</a> is available. To use GORM for Hibernate you <strong>should not</strong> include Micronaut&#8217;s built in <a href="#sqlSupport">SQL Support</a> or the <code>hibernate-jpa</code> dependency since GORM itself takes responsibility for creating the <code>DataSource</code>, <code>SessionFactory</code> etc.</p>
 </div>
 <div class="paragraph">
 <p>Instead you should only define the <code>hibernate-gorm</code> dependency, a connection pool implementation and the necessary JDBC driver. For example:</p>
@@ -226,11 +248,11 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Configuring GORM for Hibernate</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">  compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:hibernate-gorm</span><span class="delimiter">&quot;</span></span>
-  <span class="comment">// Use Tomcat connection pool</span>
-  runtime <span class="string"><span class="delimiter">'</span><span class="content">org.apache.tomcat:tomcat-jdbc:8.0.44</span><span class="delimiter">'</span></span>
-  <span class="comment">// Use H2 database driver</span>
-  runtime  <span class="string"><span class="delimiter">'</span><span class="content">com.h2database:h2:1.4.196</span><span class="delimiter">'</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">  compile "io.micronaut.configuration:hibernate-gorm"
+  // Use Tomcat connection pool
+  runtime 'org.apache.tomcat:tomcat-jdbc:8.0.44'
+  // Use H2 database driver
+  runtime  'com.h2database:h2:1.4.196'</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -239,19 +261,19 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Configuring GORM for Hibernate</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">dataSource</span>:
-    <span class="key">pooled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">dbCreate</span>: <span class="string"><span class="content">create-drop</span></span>
-    <span class="key">url</span>: <span class="string"><span class="content">jdbc:h2:mem:devDb</span></span>
-    <span class="key">driverClassName</span>: <span class="string"><span class="content">org.h2.Driver</span></span>
-    <span class="key">username</span>: <span class="string"><span class="content">sa</span></span>
-    <span class="key">password</span>:
-<span class="key">hibernate</span>:
-    <span class="key">cache</span>:
-        <span class="key">queries</span>: <span class="string"><span class="content">false</span></span>
-        <span class="key">use_second_level_cache</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">use_query_cache</span>: <span class="string"><span class="content">false</span></span>
-        <span class="key">region.factory_class</span>: <span class="string"><span class="content">org.hibernate.cache.ehcache.EhCacheRegionFactory</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">dataSource:
+    pooled: true
+    dbCreate: create-drop
+    url: jdbc:h2:mem:devDb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+hibernate:
+    cache:
+        queries: false
+        use_second_level_cache: true
+        use_query_cache: false
+        region.factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -275,9 +297,9 @@ function addJsClass() {
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../../guide/messaging.html">&lt;&lt; <strong>10</strong><span>Message-Driven Microservices</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/commandLineApps.html">&lt;&lt; <strong>11</strong><span>Standalone Command Line Applications</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

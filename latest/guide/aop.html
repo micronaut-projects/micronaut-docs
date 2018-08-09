@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>5 Aspect Oriented Programming 1.0.0.M3</title>
+    <title>5 Aspect Oriented Programming 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>5 Aspect Oriented Programming</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -121,19 +124,22 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0px"><a href="#introductionAdvice"><strong>5.2</strong><span>Introduction Advice</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#validation"><strong>5.3</strong><span>Validation Advice</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#adapterAdvice"><strong>5.3</strong><span>Method Adapter Advice</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#caching"><strong>5.4</strong><span>Cache Advice</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#validation"><strong>5.4</strong><span>Validation Advice</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#retry"><strong>5.5</strong><span>Retry Advice</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#caching"><strong>5.5</strong><span>Cache Advice</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#scheduling"><strong>5.6</strong><span>Scheduled Tasks</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#retry"><strong>5.6</strong><span>Retry Advice</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#springAop"><strong>5.7</strong><span>Bridging Spring AOP</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#scheduling"><strong>5.7</strong><span>Scheduled Tasks</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#springAop"><strong>5.8</strong><span>Bridging Spring AOP</span></a>
                     </div>
                     
                 </div>
@@ -198,28 +204,28 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">MethodInterceptor Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.aop</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.core.type.MutableArgumentValue</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.aop.*;
+import io.micronaut.core.type.MutableArgumentValue;
 
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
-<span class="keyword">import</span> <span class="include">java.util</span>.*;
+import javax.inject.Singleton;
+import java.util.*;
 
-<span class="annotation">@Singleton</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">NotNullInterceptor</span> <span class="directive">implements</span> MethodInterceptor&lt;<span class="predefined-type">Object</span>, <span class="predefined-type">Object</span>&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="predefined-type">Object</span> intercept(MethodInvocationContext&lt;<span class="predefined-type">Object</span>, <span class="predefined-type">Object</span>&gt; context) {
-        Optional&lt;<span class="predefined-type">Map</span>.Entry&lt;<span class="predefined-type">String</span>, MutableArgumentValue&lt;?&gt;&gt;&gt; nullParam = context.getParameters()
+@Singleton
+public class NotNullInterceptor implements MethodInterceptor&lt;Object, Object&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+    @Override
+    public Object intercept(MethodInvocationContext&lt;Object, Object&gt; context) {
+        Optional&lt;Map.Entry&lt;String, MutableArgumentValue&lt;?&gt;&gt;&gt; nullParam = context.getParameters()
             .entrySet()
             .stream()
             .filter(entry -&gt; {
                 MutableArgumentValue&lt;?&gt; argumentValue = entry.getValue();
-                <span class="keyword">return</span> Objects.isNull(argumentValue.getValue());
+                return Objects.isNull(argumentValue.getValue());
             })
             .findFirst(); <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="keyword">if</span> (nullParam.isPresent()) {
-            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="exception">IllegalArgumentException</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">Null parameter [</span><span class="delimiter">&quot;</span></span> + nullParam.get().getKey() + <span class="string"><span class="delimiter">&quot;</span><span class="content">] not allowed</span><span class="delimiter">&quot;</span></span>); <i class="conum" data-value="3"></i><b>(3)</b>
-        } <span class="keyword">else</span> {
-            <span class="keyword">return</span> context.proceed(); <i class="conum" data-value="4"></i><b>(4)</b>
+        if (nullParam.isPresent()) {
+            throw new IllegalArgumentException("Null parameter [" + nullParam.get().getKey() + "] not allowed"); <i class="conum" data-value="3"></i><b>(3)</b>
+        } else {
+            return context.proceed(); <i class="conum" data-value="4"></i><b>(4)</b>
         }
     }
 }</code></pre>
@@ -263,17 +269,17 @@ Micronaut AOP interceptors use no reflection which improves performance and redu
 <div class="listingblock">
 <div class="title">Around Advice Annotation Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Type</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.aop.Around</span>;
-<span class="keyword">import</span> <span class="include">java.lang.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">java.lang.annotation.RetentionPolicy.RUNTIME</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Type;
+import io.micronaut.aop.Around;
+import java.lang.annotation.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-<span class="annotation">@Documented</span>
-<span class="annotation">@Retention</span>(RUNTIME) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="annotation">@Target</span>({<span class="predefined-type">ElementType</span>.TYPE, <span class="predefined-type">ElementType</span>.METHOD}) <i class="conum" data-value="2"></i><b>(2)</b>
-<span class="annotation">@Around</span> <i class="conum" data-value="3"></i><b>(3)</b>
-<span class="annotation">@Type</span>(NotNullInterceptor.class) <i class="conum" data-value="4"></i><b>(4)</b>
-<span class="directive">public</span> <span class="annotation">@interface</span> NotNull {
+@Documented
+@Retention(RUNTIME) <i class="conum" data-value="1"></i><b>(1)</b>
+@Target({ElementType.TYPE, ElementType.METHOD}) <i class="conum" data-value="2"></i><b>(2)</b>
+@Around <i class="conum" data-value="3"></i><b>(3)</b>
+@Type(NotNullInterceptor.class) <i class="conum" data-value="4"></i><b>(4)</b>
+public @interface NotNull {
 }</code></pre>
 </div>
 </div>
@@ -303,12 +309,12 @@ Micronaut AOP interceptors use no reflection which improves performance and redu
 <div class="listingblock">
 <div class="title">Around Advice Usage Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Singleton</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">NotNullExample</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Singleton
+public class NotNullExample {
 
-    <span class="annotation">@NotNull</span>
-    <span class="type">void</span> doWork(<span class="predefined-type">String</span> taskName) {
-        <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Doing job: </span><span class="delimiter">&quot;</span></span> + taskName);
+    @NotNull
+    void doWork(String taskName) {
+        System.out.println("Doing job: " + taskName);
     }
 }</code></pre>
 </div>
@@ -319,18 +325,18 @@ Micronaut AOP interceptors use no reflection which improves performance and redu
 <div class="listingblock">
 <div class="title">Around Advice Test</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Rule</span>
-<span class="directive">public</span> ExpectedException thrown = ExpectedException.none();
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Rule
+public ExpectedException thrown = ExpectedException.none();
 
-<span class="annotation">@Test</span>
-<span class="directive">public</span> <span class="type">void</span> testNotNull() {
+@Test
+public void testNotNull() {
     ApplicationContext applicationContext = ApplicationContext.run();
     NotNullExample exampleBean = applicationContext.getBean(NotNullExample.class);
 
-    thrown.expect(<span class="exception">IllegalArgumentException</span>.class);
-    thrown.expectMessage(<span class="string"><span class="delimiter">&quot;</span><span class="content">Null parameter [taskName] not allowed</span><span class="delimiter">&quot;</span></span>);
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("Null parameter [taskName] not allowed");
 
-    exampleBean.doWork(<span class="predefined-constant">null</span>);
+    exampleBean.doWork(null);
 }</code></pre>
 </div>
 </div>
@@ -401,25 +407,25 @@ Since Micronaut is compile time, generally the advice should be packaged in a de
 <div class="listingblock">
 <div class="title">Introduction Advice Annotation Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">static</span> <span class="include">java.lang.annotation.RetentionPolicy.RUNTIME</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-<span class="keyword">import</span> <span class="include">io.micronaut.aop.Introduction</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Bean</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Type</span>;
+import io.micronaut.aop.Introduction;
+import io.micronaut.context.annotation.Bean;
+import io.micronaut.context.annotation.Type;
 
-<span class="keyword">import</span> <span class="include">java.lang.annotation.Documented</span>;
-<span class="keyword">import</span> <span class="include">java.lang.annotation.ElementType</span>;
-<span class="keyword">import</span> <span class="include">java.lang.annotation.Retention</span>;
-<span class="keyword">import</span> <span class="include">java.lang.annotation.Target</span>;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-<span class="annotation">@Introduction</span> <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="annotation">@Type</span>(StubIntroduction.class) <i class="conum" data-value="2"></i><b>(2)</b>
-<span class="annotation">@Bean</span> <i class="conum" data-value="3"></i><b>(3)</b>
-<span class="annotation">@Documented</span>
-<span class="annotation">@Retention</span>(RUNTIME)
-<span class="annotation">@Target</span>({<span class="predefined-type">ElementType</span>.TYPE, <span class="predefined-type">ElementType</span>.ANNOTATION_TYPE, <span class="predefined-type">ElementType</span>.METHOD})
-<span class="directive">public</span> <span class="annotation">@interface</span> <span class="predefined-type">Stub</span> {
-    <span class="predefined-type">String</span> value() <span class="keyword">default</span> <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>;
+@Introduction <i class="conum" data-value="1"></i><b>(1)</b>
+@Type(StubIntroduction.class) <i class="conum" data-value="2"></i><b>(2)</b>
+@Bean <i class="conum" data-value="3"></i><b>(3)</b>
+@Documented
+@Retention(RUNTIME)
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE, ElementType.METHOD})
+public @interface Stub {
+    String value() default "";
 }</code></pre>
 </div>
 </div>
@@ -448,18 +454,18 @@ Since Micronaut is compile time, generally the advice should be packaged in a de
 <div class="listingblock">
 <div class="title">StubIntroduction.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.aop</span>.*;
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.aop.*;
+import javax.inject.Singleton;
 
-<span class="annotation">@Singleton</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">StubIntroduction</span> <span class="directive">implements</span> MethodInterceptor&lt;<span class="predefined-type">Object</span>,<span class="predefined-type">Object</span>&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+@Singleton
+public class StubIntroduction implements MethodInterceptor&lt;Object,Object&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="predefined-type">Object</span> intercept(MethodInvocationContext&lt;<span class="predefined-type">Object</span>, <span class="predefined-type">Object</span>&gt; context) {
-        <span class="keyword">return</span> context.getValue( <i class="conum" data-value="2"></i><b>(2)</b>
-                <span class="predefined-type">Stub</span>.class,
+    @Override
+    public Object intercept(MethodInvocationContext&lt;Object, Object&gt; context) {
+        return context.getValue( <i class="conum" data-value="2"></i><b>(2)</b>
+                Stub.class,
                 context.getReturnType().getType()
-        ).orElse(<span class="predefined-constant">null</span>); <i class="conum" data-value="3"></i><b>(3)</b>
+        ).orElse(null); <i class="conum" data-value="3"></i><b>(3)</b>
     }
 }</code></pre>
 </div>
@@ -486,11 +492,11 @@ Since Micronaut is compile time, generally the advice should be packaged in a de
 <div class="listingblock">
 <div class="title">StubExample.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Stub</span>
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">StubExample</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Stub
+public interface StubExample {
 
-    <span class="annotation">@Stub</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">10</span><span class="delimiter">&quot;</span></span>)
-    <span class="type">int</span> getNumber();
+    @Stub("10")
+    int getNumber();
 
     LocalDateTime getDate();
 }</code></pre>
@@ -505,9 +511,9 @@ Since Micronaut is compile time, generally the advice should be packaged in a de
 <div class="listingblock">
 <div class="title">Testing Introduction Advice</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">StubExample stubExample = applicationContext.getBean(StubExample.class);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">StubExample stubExample = applicationContext.getBean(StubExample.class);
 
-assertEquals(<span class="integer">10</span>, stubExample.getNumber());
+assertEquals(10, stubExample.getNumber());
 assertNull(stubExample.getDate());</code></pre>
 </div>
 </div>
@@ -522,7 +528,81 @@ assertNull(stubExample.getDate());</code></pre>
 </div>
 
 
-<h2 id="validation">5.3 Validation Advice</h2>
+<h2 id="adapterAdvice">5.3 Method Adapter Advice</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/aop/adapterAdvice.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>There are sometimes cases where you want to introduce a new bean based on the presence of an annotation on a method. An example of this case is the <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> annotation which for each method annotated with <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> produces an implementation of <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> that invokes the annotated method.</p>
+</div>
+<div class="paragraph">
+<p>For example the following snippet will run the logic contained within the method when the <a href="../api/io/micronaut/context/ApplicationContext.html">ApplicationContext</a> starts up:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.event.StartupEvent;
+import io.micronaut.runtime.event.annotation.EventListener;
+...
+
+@EventListener
+void onStartup(StartupEvent event) {
+    // startup logic here
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The presence of the <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> annotation causes Micronaut to create a new class that implements the <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> and invokes the <code>onStartup</code> method defined in the bean above.</p>
+</div>
+<div class="paragraph">
+<p>The actual implementation of the <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> is trivial, it simply uses the <a href="../api/io/micronaut/aop/Adapter.html">@Adapter</a> annotation to specify which SAM (single abstract method) type it adapts:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.aop.Adapter;
+import io.micronaut.context.event.ApplicationEventListener;
+import java.lang.annotation.*;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(RUNTIME)
+@Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
+@Adapter(ApplicationEventListener.class) <i class="conum" data-value="1"></i><b>(1)</b>
+public @interface EventListener {
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/aop/Adapter.html">@Adapter</a> annotation is used to indicate which SAM type to adapt. In this case <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a>.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Micronaut will also automatically align the generic types for the SAM interface if they are specified.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Using this mechanism you can define custom annotations that use the <a href="../api/io/micronaut/aop/Adapter.html">@Adapter</a> annotation and a SAM interface to automatically implement beans for you at compile time.</p>
+</div>
+
+
+<h2 id="validation">5.4 Validation Advice</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/aop/validation.adoc"'>
@@ -551,7 +631,7 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:hibernate-validator</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut.configuration:hibernate-validator"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -560,22 +640,22 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">BookService.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.validation.Validated</span>;
-<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>;
-<span class="keyword">import</span> <span class="include">javax.validation.constraints.NotBlank</span>;
-<span class="keyword">import</span> <span class="include">java.util</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.validation.Validated;
+import javax.inject.Singleton;
+import javax.validation.constraints.NotBlank;
+import java.util.*;
 
-<span class="annotation">@Singleton</span>
-<span class="annotation">@Validated</span> <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">BookService</span> {
+@Singleton
+@Validated <i class="conum" data-value="1"></i><b>(1)</b>
+public class BookService {
 
-    <span class="directive">private</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; authorsByTitle = <span class="keyword">new</span> <span class="predefined-type">LinkedHashMap</span>&lt;&gt;();
+    private Map&lt;String, String&gt; authorsByTitle = new LinkedHashMap&lt;&gt;();
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getAuthor(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> title) { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="keyword">return</span> authorsByTitle.get(title);
+    public String getAuthor(@NotBlank String title) { <i class="conum" data-value="2"></i><b>(2)</b>
+        return authorsByTitle.get(title);
     }
 
-    <span class="directive">public</span> <span class="type">void</span> addBook(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> author, <span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> title) {
+    public void addBook(@NotBlank String author, @NotBlank String title) {
         authorsByTitle.put(title, author);
     }
 }</code></pre>
@@ -599,22 +679,22 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">Testing Validation</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test validate book service</span><span class="delimiter">&quot;</span></span>() {
-    <span class="key">given</span>:
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">void "test validate book service"() {
+    given:
     BookService bookService = applicationContext.getBean(BookService)
 
-    <span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">An invalid title is passed</span><span class="delimiter">&quot;</span></span>
-    bookService.getAuthor(<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>)
+    when:"An invalid title is passed"
+    bookService.getAuthor("")
 
-    <span class="key">then</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">A constraint violation occurred</span><span class="delimiter">&quot;</span></span>
-    <span class="keyword">def</span> e = thrown(ConstraintViolationException)
-    e.message == <span class="string"><span class="delimiter">'</span><span class="content">getAuthor.title: must not be blank</span><span class="delimiter">'</span></span>
+    then:"A constraint violation occurred"
+    def e = thrown(ConstraintViolationException)
+    e.message == 'getAuthor.title: must not be blank'
 }</code></pre>
 </div>
 </div>
 
 
-<h2 id="caching">5.4 Cache Advice</h2>
+<h2 id="caching">5.5 Cache Advice</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/aop/caching.adoc"'>
@@ -671,10 +751,10 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">Cache Configuration Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">caches</span>:
-        <span class="key">myCache</span>:
-            <span class="key">maximumSize</span>: <span class="string"><span class="content">20</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    caches:
+        myCache:
+            maximumSize: 20</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -694,9 +774,9 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">Lettuce Configuration build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:redis-lettuce</span><span class="delimiter">&quot;</span></span>
+    compile "io.micronaut.configuration:redis-lettuce"
     ...
 }</code></pre>
 </div>
@@ -707,19 +787,19 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">Cache Configuration Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">redis</span>:
-        <span class="key">uri</span>: <span class="string"><span class="content">redis://localhost</span></span>
-        <span class="key">caches</span>:
-            <span class="key">myCache</span>:
-                <span class="key">expireAfterWrite</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1h</span><span class="delimiter">&quot;</span></span> <span class="comment"># expire one hour after write</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    redis:
+        uri: redis://localhost
+        caches:
+            myCache:
+                expireAfterWrite: "1h" # expire one hour after write</code></pre>
 </div>
 </div>
 </div>
 </div>
 
 
-<h2 id="retry">5.5 Retry Advice</h2>
+<h2 id="retry">5.6 Retry Advice</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/aop/retry.adoc"'>
@@ -746,8 +826,8 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">Simply Retry Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Retryable</span>
-<span class="directive">public</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; listBooks() {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Retryable
+public List&lt;Book&gt; listBooks() {
     ...
 }</code></pre>
 </div>
@@ -767,9 +847,9 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">Setting Retry Attempts</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Retryable</span>( attempts = <span class="string"><span class="delimiter">&quot;</span><span class="content">5</span><span class="delimiter">&quot;</span></span>,
-            delay = <span class="string"><span class="delimiter">&quot;</span><span class="content">2s</span><span class="delimiter">&quot;</span></span> )
-<span class="directive">public</span> <span class="predefined-type">Book</span> findBook(<span class="predefined-type">String</span> title) {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Retryable( attempts = "5",
+            delay = "2s" )
+public Book findBook(String title) {
     ...
 }</code></pre>
 </div>
@@ -780,9 +860,9 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">Setting Retry via Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Retryable</span>( attempts = <span class="string"><span class="delimiter">&quot;</span><span class="content">${book.retry.attempts:3}</span><span class="delimiter">&quot;</span></span>,
-            delay = <span class="string"><span class="delimiter">&quot;</span><span class="content">${book.retry.delay:1s}</span><span class="delimiter">&quot;</span></span> )
-<span class="directive">public</span> <span class="predefined-type">Book</span> getBook(<span class="predefined-type">String</span> title) {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Retryable( attempts = "${book.retry.attempts:3}",
+            delay = "${book.retry.delay:1s}" )
+public Book getBook(String title) {
     ...
 }</code></pre>
 </div>
@@ -801,8 +881,8 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">Applying Retry Policy to Reactive Types</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Retryable</span>
-<span class="directive">public</span> Flowable&lt;<span class="predefined-type">Book</span>&gt; streamBooks() {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Retryable
+public Flowable&lt;Book&gt; streamBooks() {
     ...
 }</code></pre>
 </div>
@@ -827,8 +907,8 @@ with a built-in configuration to use Hibernate Validator.</p>
 <div class="listingblock">
 <div class="title">Applying CircuitBreaker Advice</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@CircuitBreaker</span>(reset = <span class="string"><span class="delimiter">&quot;</span><span class="content">30s</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; findBooks() {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@CircuitBreaker(reset = "30s")
+public List&lt;Book&gt; findBooks() {
     ...
 }</code></pre>
 </div>
@@ -849,12 +929,12 @@ with a built-in configuration to use Hibernate Validator.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Factory</span> <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">Neo4jDriverFactory</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Factory <i class="conum" data-value="1"></i><b>(1)</b>
+public class Neo4jDriverFactory {
     ...
-    <span class="annotation">@Retryable</span>(<span class="exception">ServiceUnavailableException</span>.class) <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="annotation">@Bean</span>(preDestroy = <span class="string"><span class="delimiter">&quot;</span><span class="content">close</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> <span class="predefined-type">Driver</span> buildDriver() {
+    @Retryable(ServiceUnavailableException.class) <i class="conum" data-value="2"></i><b>(2)</b>
+    @Bean(preDestroy = "close")
+    public Driver buildDriver() {
         ...
     }
 }</code></pre>
@@ -887,7 +967,7 @@ with a built-in configuration to use Hibernate Validator.</p>
 </div>
 
 
-<h2 id="scheduling">5.6 Scheduled Tasks</h2>
+<h2 id="scheduling">5.7 Scheduled Tasks</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/aop/scheduling.adoc"'>
@@ -925,9 +1005,9 @@ Remember that the scope of the bean has an impact on behaviour. a <code>@Singlet
 <div class="listingblock">
 <div class="title">Fixed Rate Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Scheduled</span>(fixedRate = <span class="string"><span class="delimiter">&quot;</span><span class="content">5m</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> everyFiveMinutes() {
-    <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Executing everyFiveMinutes()</span><span class="delimiter">&quot;</span></span>);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Scheduled(fixedRate = "5m")
+void everyFiveMinutes() {
+    System.out.println("Executing everyFiveMinutes()");
 }</code></pre>
 </div>
 </div>
@@ -943,9 +1023,9 @@ Remember that the scope of the bean has an impact on behaviour. a <code>@Singlet
 <div class="listingblock">
 <div class="title">Fixed Delay Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Scheduled</span>(fixedDelay = <span class="string"><span class="delimiter">&quot;</span><span class="content">5m</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> fiveMinutesAfterLastExecution() {
-    <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Executing fiveMinutesAfterLastExecution()</span><span class="delimiter">&quot;</span></span>);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Scheduled(fixedDelay = "5m")
+void fiveMinutesAfterLastExecution() {
+    System.out.println("Executing fiveMinutesAfterLastExecution()");
 }</code></pre>
 </div>
 </div>
@@ -958,9 +1038,9 @@ Remember that the scope of the bean has an impact on behaviour. a <code>@Singlet
 <div class="listingblock">
 <div class="title">Cron Example</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Scheduled</span>(cron = <span class="string"><span class="delimiter">&quot;</span><span class="content">0 15 10 ? * MON</span><span class="delimiter">&quot;</span></span> )
-<span class="type">void</span> everyMondayAtTenFifteenAm() {
-    <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Executing everyMondayAtTenFifteenAm()</span><span class="delimiter">&quot;</span></span>);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Scheduled(cron = "0 15 10 ? * MON" )
+void everyMondayAtTenFifteenAm() {
+    System.out.println("Executing everyMondayAtTenFifteenAm()");
 }</code></pre>
 </div>
 </div>
@@ -978,7 +1058,7 @@ Remember that the scope of the bean has an impact on behaviour. a <code>@Singlet
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Inject</span> <span class="annotation">@Named</span>(TaskExecutors.SCHEDULED) TaskScheduler taskScheduler;</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Inject @Named(TaskExecutors.SCHEDULED) TaskScheduler taskScheduler;</code></pre>
 </div>
 </div>
 </div>
@@ -992,10 +1072,10 @@ Remember that the scope of the bean has an impact on behaviour. a <code>@Singlet
 <div class="listingblock">
 <div class="title">Allowing Tasks to be Configured</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Scheduled</span>( fixedRate = <span class="string"><span class="delimiter">&quot;</span><span class="content">${my.task.rate:5m}</span><span class="delimiter">&quot;</span></span>,
-            initialDelay = <span class="string"><span class="delimiter">&quot;</span><span class="content">${my.task.delay:1m}</span><span class="delimiter">&quot;</span></span> )
-<span class="type">void</span> configuredTask() {
-    <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Executing configuredTask()</span><span class="delimiter">&quot;</span></span>);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Scheduled( fixedRate = "${my.task.rate:5m}",
+            initialDelay = "${my.task.delay:1m}" )
+void configuredTask() {
+    System.out.println("Executing configuredTask()");
 }</code></pre>
 </div>
 </div>
@@ -1016,18 +1096,18 @@ Remember that the scope of the bean has an impact on behaviour. a <code>@Singlet
 <div class="listingblock">
 <div class="title">Configuring Scheduled Task Thread Pool</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">executors</span>:
-        <span class="key">scheduled</span>:
-            <span class="key">type</span>: <span class="string"><span class="content">scheduled</span></span>
-            <span class="key">core-pool-size</span>: <span class="string"><span class="content">10</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    executors:
+        scheduled:
+            type: scheduled
+            core-pool-size: 10</code></pre>
 </div>
 </div>
 </div>
 </div>
 
 
-<h2 id="springAop">5.7 Bridging Spring AOP</h2>
+<h2 id="springAop">5.8 Bridging Spring AOP</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/aop/springAop.adoc"'>
@@ -1051,7 +1131,7 @@ Remember that the scope of the bean has an impact on behaviour. a <code>@Singlet
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:spring</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:spring"</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -1075,11 +1155,11 @@ If you use Micronaut&#8217;s <a href="#hibernateSupport">Hibernate support</a> y
 <div class="listingblock">
 <div class="title">Using @Transactional</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.spring.tx.annotation</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.spring.tx.annotation.*;
 ...
 
-<span class="annotation">@Transactional</span>
-<span class="directive">public</span> <span class="predefined-type">Book</span> saveBook(<span class="predefined-type">String</span> title) {
+@Transactional
+public Book saveBook(String title) {
     ...
 }</code></pre>
 </div>

@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>7.1 Using the Low-Level HTTP Client 1.0.0.M3</title>
+    <title>7.1 Using the Low-Level HTTP Client 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>7.1 Using the Low-Level HTTP Client</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -169,7 +172,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Injecting an HTTP client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">https://api.twitter.com/1.1</span><span class="delimiter">&quot;</span></span>) <span class="annotation">@Inject</span> RxHttpClient httpClient;</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("https://api.twitter.com/1.1") @Inject RxHttpClient httpClient;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -177,7 +180,7 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="kotlin">@Client(&quot;\${myapp.api.twitter.url}&quot;) @Inject httpClient: RxHttpClient</code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Client("\${myapp.api.twitter.url}") @Inject httpClient: RxHttpClient</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -220,10 +223,10 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Using retrieve</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">String</span> result = client.toBlocking().retrieve(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/John</span><span class="delimiter">&quot;</span></span>);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">String result = client.toBlocking().retrieve("/hello/John");
 
 assertEquals(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>,
+        "Hello John",
         result
 );</code></pre>
 </div>
@@ -237,17 +240,17 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Using the HTTP client without blocking</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">static</span> <span class="include">io.micronaut.http.HttpRequest</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import static io.micronaut.http.HttpRequest.*;
 
-<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.MediaType</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.client</span>.*;
-<span class="keyword">import</span> <span class="include">io.reactivex.Maybe</span>;
+import io.micronaut.http.HttpStatus;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.*;
+import io.micronaut.http.client.*;
+import io.reactivex.Maybe;
 
-<span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/{name}</span><span class="delimiter">&quot;</span></span>)
-Maybe&lt;<span class="predefined-type">String</span>&gt; hello(<span class="predefined-type">String</span> name) { <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="keyword">return</span> httpClient.retrieve( GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/</span><span class="delimiter">&quot;</span></span> + name) )
+@Get("/hello/{name}")
+Maybe&lt;String&gt; hello(String name) { <i class="conum" data-value="1"></i><b>(1)</b>
+    return httpClient.retrieve( GET("/hello/" + name) )
                      .firstElement(); <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
@@ -285,7 +288,7 @@ Using RxJava (or Reactor if you prefer) you can easily and efficiently compose m
 <div class="listingblock">
 <div class="title">logback.xml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;logger</span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.http.client</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">level</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">TRACE</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;logger name="io.micronaut.http.client" level="TRACE"/&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -297,9 +300,9 @@ Using RxJava (or Reactor if you prefer) you can easily and efficiently compose m
 <div class="listingblock">
 <div class="title">Passing an HttpRequest to retrieve</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;<span class="predefined-type">String</span>&gt; response = client.retrieve(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello/John</span><span class="delimiter">&quot;</span></span>)
-        .header(<span class="string"><span class="delimiter">&quot;</span><span class="content">X-My-Header</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">SomeValue</span><span class="delimiter">&quot;</span></span>)
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;String&gt; response = client.retrieve(
+        GET("/hello/John")
+        .header("X-My-Header", "SomeValue")
 );</code></pre>
 </div>
 </div>
@@ -318,9 +321,9 @@ Using RxJava (or Reactor if you prefer) you can easily and efficiently compose m
 <div class="listingblock">
 <div class="title">Returning JSON from a controller</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/{name}</span><span class="delimiter">&quot;</span></span>)
-Message greet(<span class="predefined-type">String</span> name) {
-    <span class="keyword">return</span> <span class="keyword">new</span> Message(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello </span><span class="delimiter">&quot;</span></span> + name);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Get("/greet/{name}")
+Message greet(String name) {
+    return new Message("Hello " + name);
 }</code></pre>
 </div>
 </div>
@@ -330,18 +333,18 @@ Message greet(<span class="predefined-type">String</span> name) {
 <div class="listingblock">
 <div class="title">Message POJO</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">com.fasterxml.jackson.annotation</span>.*;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import com.fasterxml.jackson.annotation.*;
 
-<span class="directive">public</span> <span class="type">class</span> <span class="class">Message</span> {
-    <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">String</span> text;
+public class Message {
+    private final String text;
 
-    <span class="annotation">@JsonCreator</span>
-    <span class="directive">public</span> Message(<span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> text) {
-        <span class="local-variable">this</span>.text = text;
+    @JsonCreator
+    public Message(@JsonProperty("text") String text) {
+        this.text = text;
     }
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getText() {
-        <span class="keyword">return</span> text;
+    public String getText() {
+        return text;
     }
 }</code></pre>
 </div>
@@ -364,8 +367,8 @@ Jackson annotations are used to map the constructor
 <div class="listingblock">
 <div class="title">Decoding the response body to a Map</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;<span class="predefined-type">Map</span>&gt; response = client.retrieve(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/John</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">Map</span>.class
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;Map&gt; response = client.retrieve(
+        GET("/greet/John"), Map.class
 );</code></pre>
 </div>
 </div>
@@ -375,9 +378,9 @@ Jackson annotations are used to map the constructor
 <div class="listingblock">
 <div class="title">Decoding the response body to a Map</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">response = client.retrieve(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/John</span><span class="delimiter">&quot;</span></span>),
-        Argument.of(<span class="predefined-type">Map</span>.class, <span class="predefined-type">String</span>.class, <span class="predefined-type">String</span>.class) <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">response = client.retrieve(
+        GET("/greet/John"),
+        Argument.of(Map.class, String.class, String.class) <i class="conum" data-value="1"></i><b>(1)</b>
 );</code></pre>
 </div>
 </div>
@@ -395,12 +398,12 @@ Jackson annotations are used to map the constructor
 <div class="listingblock">
 <div class="title">Decoding the response body to a POJO</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;Message&gt; response = client.retrieve(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/John</span><span class="delimiter">&quot;</span></span>), Message.class
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;Message&gt; response = client.retrieve(
+        GET("/greet/John"), Message.class
 );
 
 assertEquals(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>,
+        "Hello John",
         response.blockingFirst().getText()
 );</code></pre>
 </div>
@@ -426,21 +429,21 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Recieving the Full HTTP Response</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
-        GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet/John</span><span class="delimiter">&quot;</span></span>), Message.class <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
+        GET("/greet/John"), Message.class <i class="conum" data-value="1"></i><b>(1)</b>
 );
 
 HttpResponse&lt;Message&gt; response = call.blockingFirst();
 Optional&lt;Message&gt; message = response.getBody(Message.class); <i class="conum" data-value="2"></i><b>(2)</b>
-<span class="comment">// check the status</span>
+// check the status
 assertEquals(
         HttpStatus.OK,
         response.getStatus() <i class="conum" data-value="3"></i><b>(3)</b>
 );
-<span class="comment">// check the body</span>
+// check the body
 assertTrue(message.isPresent());
 assertEquals(
-        <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>,
+        "Hello John",
         message.get().getText()
 );</code></pre>
 </div>
@@ -540,11 +543,11 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Sending a <code>String</code> body</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;<span class="predefined-type">String</span>&gt;&gt; call = client.exchange(
-        POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;String&gt;&gt; call = client.exchange(
+        POST("/hello", "Hello John") <i class="conum" data-value="1"></i><b>(1)</b>
             .contentType(MediaType.TEXT_PLAIN_TYPE)
             .accept(MediaType.TEXT_PLAIN_TYPE), <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="predefined-type">String</span>.class <i class="conum" data-value="3"></i><b>(3)</b>
+        String.class <i class="conum" data-value="3"></i><b>(3)</b>
 );</code></pre>
 </div>
 </div>
@@ -576,8 +579,8 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Sending a JSON body</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
-        POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> Message(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>)), <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
+        POST("/greet", new Message("Hello John")), <i class="conum" data-value="1"></i><b>(1)</b>
         Message.class <i class="conum" data-value="2"></i><b>(2)</b>
 );</code></pre>
 </div>
@@ -600,7 +603,7 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Resulting JSON</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>}</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"text":"Hello John"}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -620,9 +623,9 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Sending a JSON body with a URI template</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;<span class="predefined-type">Book</span>&gt;&gt; call = client.exchange(
-        POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/amazon/book/{title}</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>)),
-        <span class="predefined-type">Book</span>.class
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;Book&gt;&gt; call = client.exchange(
+        POST("/amazon/book/{title}", new Book("The Stand")),
+        Book.class
 );</code></pre>
 </div>
 </div>
@@ -640,10 +643,10 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Sending a Form Data</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;<span class="predefined-type">Book</span>&gt;&gt; call = client.exchange(
-        POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/amazon/book/{title}</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>))
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;Book&gt;&gt; call = client.exchange(
+        POST("/amazon/book/{title}", new Book("The Stand"))
         .contentType(MediaType.APPLICATION_FORM_URLENCODED),
-        <span class="predefined-type">Book</span>.class
+        Book.class
 );</code></pre>
 </div>
 </div>
@@ -672,14 +675,14 @@ assertEquals(
 <div class="listingblock">
 <div class="title">Creating the body</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.http.client.multipart.MultipartBody</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
-<span class="keyword">import</span> <span class="include">io.micronaut.http.MediaType</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.client.multipart.MultipartBody
+import io.micronaut.http.HttpRequest
+import io.micronaut.http.MediaType
 
-<span class="predefined-type">File</span> file = ...
+File file = ...
 MultipartBody requestBody = MultipartBody.builder()     <i class="conum" data-value="1"></i><b>(1)</b>
         .addPart(                                       <i class="conum" data-value="2"></i><b>(2)</b>
-            <span class="string"><span class="delimiter">&quot;</span><span class="content">data</span><span class="delimiter">&quot;</span></span>,
+            "data",
             file.name,
             MediaType.TEXT_PLAIN_TYPE,
             file
@@ -705,7 +708,7 @@ MultipartBody requestBody = MultipartBody.builder()     <i class="conum" data-va
 <div class="listingblock">
 <div class="title">Creating a request</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">HttpRequest.POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/multipart/upload</span><span class="delimiter">&quot;</span></span>, requestBody)       <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">HttpRequest.POST("/multipart/upload", requestBody)       <i class="conum" data-value="1"></i><b>(1)</b>
         .contentType(MediaType.MULTIPART_FORM_DATA_TYPE) <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
@@ -768,21 +771,21 @@ MultipartBody requestBody = MultipartBody.builder()     <i class="conum" data-va
 <div class="listingblock">
 <div class="title">Streaming JSON on the Server</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.MediaType</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">io.reactivex.Flowable</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.*;
+import io.reactivex.Flowable;
 
-<span class="keyword">import</span> <span class="include">java.time.ZonedDateTime</span>;
-<span class="keyword">import</span> <span class="include">java.util.concurrent.TimeUnit</span>;
+import java.time.ZonedDateTime;
+import java.util.concurrent.TimeUnit;
 
-<span class="annotation">@Get</span>(uri = <span class="string"><span class="delimiter">&quot;</span><span class="content">/headlines</span><span class="delimiter">&quot;</span></span>, produces = MediaType.APPLICATION_JSON_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
+@Get(value = "/headlines", produces = MediaType.APPLICATION_JSON_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
 Flowable&lt;Headline&gt; streamHeadlines() {
-    <span class="keyword">return</span> Flowable.fromCallable(() -&gt; {  <i class="conum" data-value="2"></i><b>(2)</b>
-        Headline headline = <span class="keyword">new</span> Headline();
-        headline.setText(<span class="string"><span class="delimiter">&quot;</span><span class="content">Latest Headline at </span><span class="delimiter">&quot;</span></span> + ZonedDateTime.now());
-        <span class="keyword">return</span> headline;
-    }).repeat(<span class="integer">100</span>) <i class="conum" data-value="3"></i><b>(3)</b>
-      .delay(<span class="integer">1</span>, <span class="predefined-type">TimeUnit</span>.SECONDS); <i class="conum" data-value="4"></i><b>(4)</b>
+    return Flowable.fromCallable(() -&gt; {  <i class="conum" data-value="2"></i><b>(2)</b>
+        Headline headline = new Headline();
+        headline.setText("Latest Headline at " + ZonedDateTime.now());
+        return headline;
+    }).repeat(100) <i class="conum" data-value="3"></i><b>(3)</b>
+      .delay(1, TimeUnit.SECONDS); <i class="conum" data-value="4"></i><b>(4)</b>
 }</code></pre>
 </div>
 </div>
@@ -824,28 +827,28 @@ The server does not have to be written in Micronaut, any server that supports JS
 <div class="listingblock">
 <div class="title">Streaming JSON on the Client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;Headline&gt; headlineStream = client.jsonStream(GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/streaming/headlines</span><span class="delimiter">&quot;</span></span>), Headline.class); <i class="conum" data-value="1"></i><b>(1)</b>
-CompletableFuture&lt;Headline&gt; future = <span class="keyword">new</span> CompletableFuture&lt;&gt;(); <i class="conum" data-value="2"></i><b>(2)</b>
-headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline&gt;() {
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="type">void</span> onSubscribe(Subscription s) {
-        s.request(<span class="integer">1</span>); <i class="conum" data-value="3"></i><b>(3)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;Headline&gt; headlineStream = client.jsonStream(GET("/streaming/headlines"), Headline.class); <i class="conum" data-value="1"></i><b>(1)</b>
+CompletableFuture&lt;Headline&gt; future = new CompletableFuture&lt;&gt;(); <i class="conum" data-value="2"></i><b>(2)</b>
+headlineStream.subscribe(new Subscriber&lt;Headline&gt;() {
+    @Override
+    public void onSubscribe(Subscription s) {
+        s.request(1); <i class="conum" data-value="3"></i><b>(3)</b>
     }
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="type">void</span> onNext(Headline headline) {
-        <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Received Headline = </span><span class="delimiter">&quot;</span></span> + headline.getText());
+    @Override
+    public void onNext(Headline headline) {
+        System.out.println("Received Headline = " + headline.getText());
         future.complete(headline); <i class="conum" data-value="4"></i><b>(4)</b>
     }
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="type">void</span> onError(<span class="predefined-type">Throwable</span> t) {
+    @Override
+    public void onError(Throwable t) {
         future.completeExceptionally(t); <i class="conum" data-value="5"></i><b>(5)</b>
     }
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="type">void</span> onComplete() {
-        <span class="comment">// no-op </span><i class="conum" data-value="6"></i><b>(6)</b>
+    @Override
+    public void onComplete() {
+        // no-op <i class="conum" data-value="6"></i><b>(6)</b>
     }
 });</code></pre>
 </div>
@@ -892,46 +895,81 @@ headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline
 </div>
 
 
+<div class="sect2">
+<h3 id="_global_configuration_for_all_clients">Global Configuration for All Clients</h3>
 <div class="paragraph">
 <p>The default HTTP client configuration is a <a href="#configurationProperties">Configuration Properties</a> called <a href="../api/io/micronaut/http/client/DefaultHttpClientConfiguration.html">DefaultHttpClientConfiguration</a> that allows configuring the default behaviour for all HTTP clients. For example, in <code>application.yml</code>:</p>
 </div>
 <div class="listingblock">
 <div class="title">Altering default HTTP client configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">http</span>:
-        <span class="key">client</span>:
-            <span class="key">readTimeout</span>: <span class="string"><span class="content">5s</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    http:
+        client:
+            read-timeout: 5s</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The above example sets of <code>readTimeout</code> property of the <a href="../api/io/micronaut/http/client/HttpClientConfiguration.html">HttpClientConfiguration</a> class.</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_client_specific_configuration">Client Specific Configuration</h3>
 <div class="paragraph">
-<p>If you wish to have a separate configuration per client then there are a couple of options. An option that fits nicely with <a href="#serviceDiscovery">Service Discovery</a> is to define a named bean that is a subclass of <a href="../api/io/micronaut/http/client/HttpClientConfiguration.html">HttpClientConfiguration</a>.</p>
+<p>If you wish to have a separate configuration per client then there a couple of options. You can configure <a href="#serviceDiscoveryManual">Service Discovery</a> manually in <code>application.yml</code> and apply per-client configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">Manually configuring HTTP services</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    http:
+        services:
+            foo:
+                urls:
+                    - http://foo1
+                    - http://foo2
+                read-timeout: 5s <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The read timeout is applied to the <code>foo</code> client.</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>For example given an injected client for a service called <code>hello</code> using <code>@Client</code>:</p>
+<p>Then simply inject the named client configuration:</p>
 </div>
 <div class="listingblock">
 <div class="title">Injecting an HTTP client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>) <span class="annotation">@Inject</span> RxHttpClient httpClient;</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("foo") @Inject RxHttpClient httpClient;</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>To configure the property of the HTTP client you can define the following bean:</p>
+<p>You can also simply define a bean that extends from <a href="../api/io/micronaut/http/client/HttpClientConfiguration.html">HttpClientConfiguration</a> and ensuring that the <code>javax.inject.Named</code> annotation is used to name it appropriately:</p>
 </div>
 <div class="listingblock">
 <div class="title">Defining an HTTP client configuration bean</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Named</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">HelloConfiguration</span> <span class="directive">extends</span> HttpClientConfiguration {
-   <span class="directive">public</span> HelloConfiguration(ApplicationConfiguration applicationConfiguration) {
-        <span class="local-variable">super</span>(applicationConfiguration);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Named("twitter")
+@Singleton
+class TwitterHttpClientConfiguration extends HttpClientConfiguration {
+   public TwitterHttpClientConfiguration(ApplicationConfiguration applicationConfiguration) {
+        super(applicationConfiguration);
     }
 }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This configuration will then be picked up if you inject a service called <code>twitter</code> using <code>@Client</code> using <a href="#serviceDiscovery">Service Discovery</a>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Injecting an HTTP client</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("twitter") @Inject RxHttpClient httpClient;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -940,10 +978,47 @@ headlineStream.subscribe(<span class="keyword">new</span> Subscriber&lt;Headline
 <div class="listingblock">
 <div class="title">Injecting an HTTP client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(value=<span class="string"><span class="delimiter">&quot;</span><span class="content">https://api.twitter.com/1.1</span><span class="delimiter">&quot;</span></span>,
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client(value="https://api.twitter.com/1.1",
         configuration=TwitterHttpClientConfiguration.class)
-<span class="annotation">@Inject</span>
+@Inject
 RxHttpClient httpClient;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_using_http_client_connection_pooling">Using HTTP Client Connection Pooling</h3>
+<div class="paragraph">
+<p>If you have a client that needs to handle a significant number of requests then you can benefit from enabling HTTP client connection pooling. The following configuration will enable pooling for the <code>foo</code> client:</p>
+</div>
+<div class="listingblock">
+<div class="title">Manually configuring HTTP services</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    http:
+        services:
+            foo:
+                urls:
+                    - http://foo1
+                    - http://foo2
+                pool:
+                    enabled: true <i class="conum" data-value="1"></i><b>(1)</b>
+                    max-connections: 50 <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Enables the pool</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Sets the maximum number of connections in the pool</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>See the API for <a href="../api/io/micronaut/http/client/HttpClientConfiguration.ConnectionPoolConfiguration.html">ConnectionPoolConfiguration</a> for details on available options to configure the pool.</p>
 </div>
 </div>
 

@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>7.2.2 Streaming with @Client 1.0.0.M3</title>
+    <title>7.2.2 Streaming with @Client 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>7.2.2 Streaming with @Client</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -135,10 +138,10 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">HeadlineClient.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/streaming</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">HeadlineClient</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("/streaming")
+public interface HeadlineClient {
 
-    <span class="annotation">@Get</span>(uri = <span class="string"><span class="delimiter">&quot;</span><span class="content">/headlines</span><span class="delimiter">&quot;</span></span>, processes = MediaType.APPLICATION_JSON_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
+    @Get(value = "/headlines", processes = MediaType.APPLICATION_JSON_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
     Flowable&lt;Headline&gt; streamHeadlines(); <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
@@ -161,9 +164,9 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Streaming HeadlineClient</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Test</span>
-<span class="directive">public</span> <span class="type">void</span> testClientAnnotationStreaming() <span class="directive">throws</span> <span class="exception">Exception</span> {
-    <span class="keyword">try</span>( EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer.class) ) {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
+public void testClientAnnotationStreaming() throws Exception {
+    try( EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer.class) ) {
         HeadlineClient headlineClient = embeddedServer
                                             .getApplicationContext()
                                             .getBean(HeadlineClient.class); <i class="conum" data-value="1"></i><b>(1)</b>
@@ -173,7 +176,7 @@ function addJsClass() {
         Headline headline = firstHeadline.blockingGet(); <i class="conum" data-value="3"></i><b>(3)</b>
 
         assertNotNull( headline );
-        assertTrue( headline.getText().startsWith(<span class="string"><span class="delimiter">&quot;</span><span class="content">Latest Headline</span><span class="delimiter">&quot;</span></span>) );
+        assertTrue( headline.getText().startsWith("Latest Headline") );
     }
 }</code></pre>
 </div>
@@ -203,8 +206,8 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">A JSON Stream</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>}
-{<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Shining</span><span class="delimiter">&quot;</span></span>}</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"title":"The Stand"}
+{"title":"The Shining"}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -213,9 +216,9 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">A JSON Array</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">[
-    {<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>},
-    {<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Shining</span><span class="delimiter">&quot;</span></span>}
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+    {"title":"The Stand"},
+    {"title":"The Shining"}
 ]</code></pre>
 </div>
 </div>
@@ -240,10 +243,10 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Adjusting the readIdleTime</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">http</span>:
-        <span class="key">client</span>:
-            <span class="key">readIdleTime</span>: <span class="string"><span class="content">5m</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    http:
+        client:
+            readIdleTime: 5m</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -276,15 +279,15 @@ Although SSE streams are typically consumed by a browser <code>EventSource</code
 <div class="listingblock">
 <div class="title">SSE Controller</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>(uri = <span class="string"><span class="delimiter">&quot;</span><span class="content">/headlines</span><span class="delimiter">&quot;</span></span>, produces = MediaType.TEXT_EVENT_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
-Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHeadlines() {
-    <span class="keyword">return</span> Flux.&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt;create((emitter) -&gt; {  <i class="conum" data-value="2"></i><b>(2)</b>
-        Headline headline = <span class="keyword">new</span> Headline();
-        headline.setText(<span class="string"><span class="delimiter">&quot;</span><span class="content">Latest Headline at </span><span class="delimiter">&quot;</span></span> + ZonedDateTime.now());
-        emitter.next(<span class="predefined-type">Event</span>.of(headline));
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Get(value = "/headlines", produces = MediaType.TEXT_EVENT_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
+Flux&lt;Event&lt;Headline&gt;&gt; streamHeadlines() {
+    return Flux.&lt;Event&lt;Headline&gt;&gt;create((emitter) -&gt; {  <i class="conum" data-value="2"></i><b>(2)</b>
+        Headline headline = new Headline();
+        headline.setText("Latest Headline at " + ZonedDateTime.now());
+        emitter.next(Event.of(headline));
         emitter.complete();
-    }).repeat(<span class="integer">100</span>) <i class="conum" data-value="3"></i><b>(3)</b>
-      .delayElements(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">1</span>)); <i class="conum" data-value="4"></i><b>(4)</b>
+    }).repeat(100) <i class="conum" data-value="3"></i><b>(3)</b>
+      .delayElements(Duration.ofSeconds(1)); <i class="conum" data-value="4"></i><b>(4)</b>
 }</code></pre>
 </div>
 </div>
@@ -317,11 +320,11 @@ Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHea
 <div class="listingblock">
 <div class="title">SSE Client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/streaming/sse</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">HeadlineClient</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("/streaming/sse")
+public interface HeadlineClient {
 
-    <span class="annotation">@Get</span>(uri = <span class="string"><span class="delimiter">&quot;</span><span class="content">/headlines</span><span class="delimiter">&quot;</span></span>, processes = MediaType.TEXT_EVENT_STREAM)
-    Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHeadlines();
+    @Get(value = "/headlines", processes = MediaType.TEXT_EVENT_STREAM)
+    Flux&lt;Event&lt;Headline&gt;&gt; streamHeadlines();
 }</code></pre>
 </div>
 </div>

@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>7.3 HTTP Client Filters 1.0.0.M3</title>
+    <title>7.3 HTTP Client Filters 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>7.3 HTTP Client Filters</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -138,27 +141,27 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">BintrayApi</span> {
-    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> <span class="predefined-type">URL</span> = <span class="string"><span class="delimiter">'</span><span class="content">https://api.bintray.com</span><span class="delimiter">'</span></span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">class BintrayApi {
+    public static final String URL = 'https://api.bintray.com'
 }
-<span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">BintrayService</span> {
-    <span class="directive">final</span> RxHttpClient client
-    <span class="directive">final</span> <span class="predefined-type">String</span> org
+@Singleton
+class BintrayService {
+    final RxHttpClient client
+    final String org
 
     BintrayService(
-            <span class="annotation">@Client</span>(BintrayApi.URL) RxHttpClient client,           <i class="conum" data-value="1"></i><b>(1)</b>
-            <span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${bintray.organization}</span><span class="delimiter">'</span></span>) <span class="predefined-type">String</span> org ) {
-        <span class="local-variable">this</span>.client = client
-        <span class="local-variable">this</span>.org = org
+            @Client(BintrayApi.URL) RxHttpClient client,           <i class="conum" data-value="1"></i><b>(1)</b>
+            @Value('${bintray.organization}') String org ) {
+        this.client = client
+        this.org = org
     }
 
-    Flowable&lt;HttpResponse&lt;<span class="predefined-type">String</span>&gt;&gt; fetchRepositories() {
-        <span class="keyword">return</span> client.exchange(HttpRequest.GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/repos/</span><span class="inline"><span class="inline-delimiter">$</span>org</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">String</span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    Flowable&lt;HttpResponse&lt;String&gt;&gt; fetchRepositories() {
+        return client.exchange(HttpRequest.GET("/repos/$org"), String) <i class="conum" data-value="2"></i><b>(2)</b>
     }
 
-    Flowable&lt;HttpResponse&lt;<span class="predefined-type">String</span>&gt;&gt; fetchPackages(<span class="predefined-type">String</span> repo) {
-        <span class="keyword">return</span> client.exchange(HttpRequest.GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/repos/</span><span class="inline"><span class="inline-delimiter">${</span>org<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="inline"><span class="inline-delimiter">${</span>repo<span class="inline-delimiter">}</span></span><span class="content">/packages</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">String</span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    Flowable&lt;HttpResponse&lt;String&gt;&gt; fetchPackages(String repo) {
+        return client.exchange(HttpRequest.GET("/repos/${org}/${repo}/packages"), String) <i class="conum" data-value="2"></i><b>(2)</b>
     }
 }</code></pre>
 </div>
@@ -180,23 +183,23 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Filter</span>(<span class="string"><span class="delimiter">'</span><span class="content">/repos/**</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="type">class</span> <span class="class">BintrayFilter</span> <span class="directive">implements</span> HttpClientFilter {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Filter('/repos/**') <i class="conum" data-value="1"></i><b>(1)</b>
+class BintrayFilter implements HttpClientFilter {
 
 
-    <span class="directive">final</span> <span class="predefined-type">String</span> username
-    <span class="directive">final</span> <span class="predefined-type">String</span> token
+    final String username
+    final String token
 
     BintrayFilter(
-            <span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${bintray.username}</span><span class="delimiter">'</span></span>) <span class="predefined-type">String</span> username, <i class="conum" data-value="2"></i><b>(2)</b>
-            <span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${bintray.token}</span><span class="delimiter">'</span></span>) <span class="predefined-type">String</span> token ) { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="local-variable">this</span>.username = username
-        <span class="local-variable">this</span>.token = token
+            @Value('${bintray.username}') String username, <i class="conum" data-value="2"></i><b>(2)</b>
+            @Value('${bintray.token}') String token ) { <i class="conum" data-value="2"></i><b>(2)</b>
+        this.username = username
+        this.token = token
     }
 
-    <span class="annotation">@Override</span>
-    Publisher&lt;? <span class="directive">extends</span> HttpResponse&lt;?&gt;&gt; doFilter(MutableHttpRequest&lt;?&gt; request, ClientFilterChain chain) {
-        <span class="keyword">return</span> chain.proceed(
+    @Override
+    Publisher&lt;? extends HttpResponse&lt;?&gt;&gt; doFilter(MutableHttpRequest&lt;?&gt; request, ClientFilterChain chain) {
+        return chain.proceed(
                 request.basicAuth(username, token) <i class="conum" data-value="3"></i><b>(3)</b>
         )
     }

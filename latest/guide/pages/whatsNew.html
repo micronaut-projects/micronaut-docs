@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>1.1 What's New? 1.0.0.M3</title>
+    <title>1.1 What's New? 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -106,7 +109,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>1.1 What's New?</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -123,79 +126,270 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>Apart from <a href="https://github.com/micronaut-projects/micronaut-core/milestone/3?closed=1">issues resolved and minor enhancements</a> since the last release of Micronaut, this section covers significant new features.</p>
+<p>Apart from <a href="https://github.com/micronaut-projects/micronaut-core/milestone/4?closed=1">issues resolved and minor enhancements</a> since the last release of Micronaut, this section covers significant new features.</p>
 </div>
 <div class="sect2">
-<h3 id="_improved_metrics_support">Improved Metrics Support</h3>
+<h3 id="_documentation_improvements">Documentation Improvements</h3>
 <div class="paragraph">
-<p>Metrics support has been improved with support for metrics for:</p>
+<p>The documentation you are reading has been improved with a always present Table of Contents and styling improvements including code highlighting with <a href="http://highlightjs.org">Highlight.js</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bean_generics_computed_at_compile_time">Bean Generics Computed at Compile Time</h3>
+<div class="paragraph">
+<p>Generic information for beans is now calculated at compile time, improving performance and allowing more uses cases.</p>
+</div>
+<div class="paragraph">
+<p>For example it is now possible to define converters, serverless functions etc. as Java lambdas because the generic information is computed from the method signature:</p>
+</div>
+<div class="listingblock">
+<div class="title">Functions as Java Lambdas</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Factory
+public class FunctionFactory {
+
+    @FunctionBean("round")
+    Function&lt;Double, Long&gt; round() {
+        return (doub) -&gt; Math.round(doub.doubleValue());
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/inject/BeanDefinition.html">BeanDefinition</a> interface features a new <code>getTypeArguments(..)</code> method that can be used to retrieve the generic types of any bean without using reflection and having to deal with type erasure.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_new_adapter_aop_advice">New @Adapter AOP Advice</h3>
+<div class="paragraph">
+<p>Micronaut&#8217;s AOP API has been extended introducing a new <a href="../api/io/micronaut/aop/Adapter.html">@Adapter</a> annotation that allows any method to be adapted to a new SAM (single abstract method) type at compile time that is automatically registered as a bean.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using the <code>@Adapter</code> annotation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.aop.*;
+import io.micronaut.context.event.*;
+
+@javax.inject.Singleton
+class MyBean{
+
+    @Adapter(ApplicationEventListener.class)
+    void onStartup(StartupEvent event) {
+        // startup logic
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example will create a new bean at compile time that implements the <a href="../api/io/micronaut/context/event/ApplicationEventListener.html">ApplicationEventListener</a> interface and delegates to the <code>onStartup</code> method of <code>MyBean</code>. Micronaut will automatically align the generic type arguments (if the SAM type features any) and will also perform checks at compile time to verify the method is a valid candidate, failing compilation if it isn&#8217;t.</p>
+</div>
+<div class="paragraph">
+<p>For more information see the section on <a href="#adapterAdvice">Adapter Advice</a> in the documentation.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_improved_events_api">Improved Events API</h3>
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/aop/Adapter.html">@Adapter</a> annotation can be used as an annotation stereotype (meta annotation), and in fact is already used that way - the new <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> annotation allows more elegant definition of application event listeners:</p>
+</div>
+<div class="listingblock">
+<div class="title">Using the <code>@EventListener</code> annotation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.aop.*;
+import io.micronaut.context.event.*;
+import io.micronaut.runtime.event.annotation.EventListener;
+
+@javax.inject.Singleton
+class MyBean{
+
+    @EventListener <i class="conum" data-value="1"></i><b>(1)</b>
+    void onStartup(StartupEvent event) {
+        // startup logic
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Simply define the <code>@EventListener</code> annotation on any method to create a new listener</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In addition the <a href="../api/io/micronaut/scheduling/annotation/Async.html">@Async</a> annotation can be used to make any <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> asynchronous:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@EventListener <i class="conum" data-value="1"></i><b>(1)</b>
+@Async <i class="conum" data-value="2"></i><b>(2)</b>
+void onStartup(StartupEvent event) {
+    // startup logic
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>An <code>@EventListener</code> is defined</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>@Async</code> annotation tells Micronaut to run the operation asynchronously (by default on the <code>scheduled</code> executor)</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For more information, see the section on <a href="#contextEvents">Application Context Events</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_support_for_persistencecontext_in_jpa">Support for @PersistenceContext in JPA</h3>
+<div class="paragraph">
+<p>The JPA support in Micronaut has been improved with support for the <code>@PersistenceContext</code> annotation to inject an <code>EntityManager</code> (or Hibernate <code>Session</code>):</p>
+</div>
+<div class="listingblock">
+<div class="title">Using <code>@PersistenceContext</code></div>
+<div class="content">
+<pre>@PersistenceContext
+EntityManager entityManager;
+
+@PersistenceContext(name = "other")
+EntityManager otherManager;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Micronaut will inject a compile time scoped proxy that retrieves the <code>EntityManager</code> associated with the current transaction when using <a href="../api/io/micronaut/spring/tx/Transactional.html">@Transactional</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_manual_service_discovery_configuration">Manual Service Discovery Configuration</h3>
+<div class="paragraph">
+<p>If you do not wish to use a service discovery server like Consul or Eureka and instead prefer environment variables or DNS you can manually configure service discovery in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Manually configuring services</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    http:
+        services:
+            foo:
+                urls:
+                    - http://foo1
+                    - http://foo2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With the above configuration you can inject a <a href="#httpClient">HTTP Client</a> using the <a href="../api/io/micronaut/http/client/Client.html">@Client</a> annotation and the service name <code>foo</code>. For example: <code>@Client("foo")</code> and Micronaut will automatically load balance between the configured servers.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can override this configuration in production by specifying an environment variable such as <code>MICRONAUT_HTTP_SERVICES_FOO_URLS=http://prod1,http://prod2</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For more information see the section on <a href="#serviceDiscoveryManual">Manual Service Discovery</a> configuration.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_support_for_http_client_connection_pooling">Support for HTTP Client Connection Pooling</h3>
+<div class="paragraph">
+<p>For clients that need to deal with high volumes of requests you can now enable connection pooling:</p>
+</div>
+<div class="listingblock">
+<div class="title">Enabling Connection Pooling for a Client</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    http:
+        services:
+            foo:
+                pool:
+                    enabled: true <i class="conum" data-value="1"></i><b>(1)</b>
+                    max-connections: 50 <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above configuration will enable connection pooling for the service named <code>foo</code>.</p>
+</div>
+<div class="paragraph">
+<p>For more information see the section on <a href="#clientConfiguration">HTTP Client</a> configuration.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_metrics_for_http_client_requests">Metrics for HTTP Client Requests</h3>
+<div class="paragraph">
+<p>The <a href="#metricsEndpoint">Metrics</a> support via Micrometer has been enhanced to support Metrics for client requests.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_initial_support_for_server_side_view_rendering">Initial Support for Server Side View Rendering</h3>
+<div class="paragraph">
+<p>Support for rendering views on the server-side has been added using the <a href="#views">Views Module</a>. Initially Thymeleaf, Velocity and Handlebars are supported with more implementations planned for the future.</p>
+</div>
+<div class="paragraph">
+<p>See the section on <a href="#views">Server Side View Rendering</a> for more information.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_improved_support_for_command_line_applications">Improved Support for Command Line Applications</h3>
+<div class="paragraph">
+<p>The command line application support in Micronaut has been improved with a new <code>create-cli-app</code> command that generates a project with an example command, and sets the main class of the application to this command.
+For details, see the <a href="#picocliGenerateProject">create-cli-app command</a> section of the user guide.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_dependency_upgrades">Dependency Upgrades</h3>
+<div class="paragraph">
+<p>The following dependency upgrades occurred in this release:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Micronaut Thread Pools</p>
+<p>Netty 4.1.28</p>
 </li>
 <li>
-<p>Kafka Metrics</p>
+<p>RxJava 2.2.0</p>
+</li>
+<li>
+<p>Groovy 2.5.1</p>
+</li>
+<li>
+<p>Caffeine 2.6.2</p>
+</li>
+<li>
+<p>ASM 6.2.1</p>
+</li>
+<li>
+<p>Mongo Java Driver 3.8.0</p>
+</li>
+<li>
+<p>Neo4j Bolt Driver 1.6.2</p>
+</li>
+<li>
+<p>Kafka 2.0.0</p>
+</li>
+<li>
+<p>Hibernate Core 5.3.4</p>
+</li>
+<li>
+<p>Micrometer 1.0.6</p>
+</li>
+<li>
+<p>Spring 5.0.8</p>
 </li>
 </ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_apache_kafka_support">Apache Kafka Support</h3>
-<div class="paragraph">
-<p>Micronaut can now be used to build Message-Driven Microservices with Apache Kafka.</p>
-</div>
-<div class="paragraph">
-<p>The new <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaClient.html">@KafkaClient</a> annotation supports declarative, compile-time creation of Kafka <code>Producer</code> instances.</p>
-</div>
-<div class="paragraph">
-<p>Whilst the <a href="../api/io/micronaut/configuration/kafka/annotation/KafkaListener.html">@KafkaListener</a> annotation supports defining Kafka consumers.</p>
-</div>
-<div class="paragraph">
-<p>See the <a href="#kafka">Kafka</a> section of the documentation for more information.</p>
-</div>
-<div class="paragraph">
-<p>The Micronaut CLI now includes a Kafka <strong>feature</strong>, which adds the necessary dependency and config to use Kafka within your project. In addition, the CLI also includes a Kafka <strong>profile</strong>, which can be used to create messaging services without the need for an HTTP server. See the <a href="#kafkaCli">Kafka</a> section for more information.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_annotation_metadata_processing_support_improved">Annotation Metadata Processing Support Improved</h3>
-<div class="paragraph">
-<p>All annotation metadata in Micronaut is produced as compile time, resulting in significant improvements to startup time and memory consumption over traditional frameworks.</p>
-</div>
-<div class="paragraph">
-<p>This support has been enhanced to better support repeated annotations such that repeated annotations are normalized at compile time, avoiding the need to process them and compensate for the difference between a single annotation definition and multiple.</p>
-</div>
-<div class="paragraph">
-<p>The <a href="../api/io/micronaut/core/annotation/AnnotationMetadata.html">AnnotationMetadata</a> interface now includes methods such as <code>getAnnotationValuesByType</code> and <code>getDeclaredAnnotationValuesByType</code> that allow the retrieval of the repeated annotation values that are computed at compile time.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_reactive_postgres_driver_support">Reactive Postgres Driver Support</h3>
-<div class="paragraph">
-<p>Support has been added for the <a href="https://github.com/reactiverse/reactive-pg-client">Postgres Reactive Client</a> project allowing building non-blocking, reactive applications with Postgres SQL and Micronaut. See the documentation on <a href="#postgresSupport">Postgres Reactive Client Support</a> for more information.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_cli_improvements">CLI Improvements</h3>
-<div class="paragraph">
-<p>Thanks to a contribution from <a href="https://github.com/remkop">Remko Popma</a> the CLI has been re-written on top of <a href="https://github.com/remkop/picocli">PicoCLI</a> resulting in improvements to documentation, TAB completion and code maintainability.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_spring_transaction_management_for_sql">Spring Transaction Management for SQL</h3>
-<div class="paragraph">
-<p>Regular JDBC support now optionally supports transaction management via Spring&#8217;s transaction manager with the addition of the following dependencies to your classpath:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:spring</span><span class="delimiter">&quot;</span></span>
-    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework:spring-jdbc</span><span class="delimiter">&quot;</span></span>
-}</code></pre>
-</div>
 </div>
 </div>
 

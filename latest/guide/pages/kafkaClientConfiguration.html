@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>10.1.3.2 Configuring @KafkaClient beans 1.0.0.M3</title>
+    <title>10.1.3.2 Configuring @KafkaClient beans 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -101,14 +104,14 @@ function addJsClass() {
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span> >></a></div>
                 
 
 
                 <div class="project">
                     <h1>10.1.3.2 Configuring @KafkaClient beans</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -132,10 +135,10 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Applying Default Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
-    <span class="key">producers</span>:
-        <span class="key">default</span>:
-            <span class="key">retries</span>: <span class="string"><span class="content">5</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">kafka:
+    producers:
+        default:
+            retries: 5</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -150,7 +153,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Using a Client ID</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaClient</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">product-client</span><span class="delimiter">&quot;</span></span>)</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@KafkaClient("product-client")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -159,10 +162,10 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Applying Default Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
-    <span class="key">producers</span>:
-        <span class="key">product-client</span>:
-            <span class="key">retries</span>: <span class="string"><span class="content">5</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">kafka:
+    producers:
+        product-client:
+            retries: 5</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -171,16 +174,16 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Configuring Producer Properties with @KafkaClient</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.KafkaClient</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Property</span>;
-<span class="keyword">import</span> <span class="include">org.apache.kafka.clients.producer.ProducerConfig</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.configuration.kafka.annotation.KafkaClient;
+import io.micronaut.context.annotation.Property;
+import org.apache.kafka.clients.producer.ProducerConfig;
 
-<span class="annotation">@KafkaClient</span>(
-    id=<span class="string"><span class="delimiter">&quot;</span><span class="content">product-client</span><span class="delimiter">&quot;</span></span>,
+@KafkaClient(
+    id="product-client",
     acks = KafkaClient.Acknowledge.ALL,
-    properties = <span class="annotation">@Property</span>(name = ProducerConfig.RETRIES_CONFIG, value = <span class="string"><span class="delimiter">&quot;</span><span class="content">5</span><span class="delimiter">&quot;</span></span>)
+    properties = @Property(name = ProducerConfig.RETRIES_CONFIG, value = "5")
 )
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">ProductClient</span> {
+public interface ProductClient {
     ...
 }</code></pre>
 </div>
@@ -212,11 +215,11 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
 <div class="listingblock">
 <div class="title">Applying Default Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">kafka</span>:
-    <span class="key">producers</span>:
-        <span class="key">product-client</span>:
-            <span class="key">value</span>:
-                <span class="key">serializer</span>: <span class="string"><span class="content">org.apache.kafka.common.serialization.ByteArrayDeserializer</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">kafka:
+    producers:
+        product-client:
+            value:
+                serializer: org.apache.kafka.common.serialization.ByteArrayDeserializer</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -229,7 +232,7 @@ You can replace the default <a href="../api/io/micronaut/configuration/kafka/ser
                 
                     <div class="toc-item prev-left"><a href="../../guide/serverlessFunctions.html">&lt;&lt; <strong>9</strong><span>Serverless Functions</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

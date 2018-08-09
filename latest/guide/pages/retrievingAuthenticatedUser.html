@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>14.5 Retrieve the authenticated user 1.0.0.M3</title>
+    <title>15.5 Retrieve the authenticated user 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -95,27 +98,27 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../../guide/management.html">&lt;&lt; <strong>13</strong><span>Management &amp; Monitoring</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/management.html">&lt;&lt; <strong>14</strong><span>Management &amp; Monitoring</span></a></div>
                 
 
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span> >></a></div>
                 
 
 
                 <div class="project">
-                    <h1>14.5 Retrieve the authenticated user</h1>
+                    <h1>15.5 Retrieve the authenticated user</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
 
                 
 
-<h2 id="retrievingAuthenticatedUser">14.5 Retrieve the authenticated user</h2>
+<h2 id="retrievingAuthenticatedUser">15.5 Retrieve the authenticated user</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/security/retrievingAuthenticatedUser.adoc"'>
@@ -132,24 +135,24 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Requires</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.core.util.CollectionUtils</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.security.Secured</span>;
-<span class="keyword">import</span> <span class="include">javax.annotation.Nullable</span>;
-<span class="keyword">import</span> <span class="include">java.security.Principal</span>;
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.security.Secured;
+import javax.annotation.Nullable;
+import java.security.Principal;
 
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/user</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">UserController</span> {
+@Controller("/user")
+public class UserController {
 
-    <span class="annotation">@Secured</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">isAnonymous()</span><span class="delimiter">&quot;</span></span>)
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/myinfo</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> <span class="predefined-type">Map</span> myinfo(<span class="annotation">@Nullable</span> <span class="predefined-type">Principal</span> principal) {
-        <span class="keyword">if</span> (principal == <span class="predefined-constant">null</span>) {
-            <span class="keyword">return</span> <span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">false</span>);
+    @Secured("isAnonymous()")
+    @Get("/myinfo")
+    public Map myinfo(@Nullable Principal principal) {
+        if (principal == null) {
+            return Collections.singletonMap("isLoggedIn", false);
         }
-        <span class="keyword">return</span> CollectionUtils.mapOf(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>, principal.getName());
+        return CollectionUtils.mapOf("isLoggedIn", true, "username", principal.getName());
     }
 }</code></pre>
 </div>
@@ -159,28 +162,28 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Requires</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.core.util.CollectionUtils</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.security.Secured</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.security.authentication.Authentication</span>;
-<span class="keyword">import</span> <span class="include">javax.annotation.Nullable</span>;
-<span class="keyword">import</span> <span class="include">java.util.Collections</span>;
-<span class="keyword">import</span> <span class="include">java.util.Map</span>;
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.security.Secured;
+import io.micronaut.security.authentication.Authentication;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Map;
 
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/user</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">UserController</span> {
+@Controller("/user")
+public class UserController {
 
-    <span class="annotation">@Secured</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">isAnonymous()</span><span class="delimiter">&quot;</span></span>)
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/myinfo</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> <span class="predefined-type">Map</span> myinfo(<span class="annotation">@Nullable</span> Authentication authentication) {
-        <span class="keyword">if</span> (authentication == <span class="predefined-constant">null</span>) {
-            <span class="keyword">return</span> <span class="predefined-type">Collections</span>.singletonMap(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">false</span>);
+    @Secured("isAnonymous()")
+    @Get("/myinfo")
+    public Map myinfo(@Nullable Authentication authentication) {
+        if (authentication == null) {
+            return Collections.singletonMap("isLoggedIn", false);
         }
-        <span class="keyword">return</span> CollectionUtils.mapOf(<span class="string"><span class="delimiter">&quot;</span><span class="content">isLoggedIn</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>,
-                <span class="string"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>, authentication.getName(),
-                <span class="string"><span class="delimiter">&quot;</span><span class="content">roles</span><span class="delimiter">&quot;</span></span>, authentication.getAttributes().get(<span class="string"><span class="delimiter">&quot;</span><span class="content">roles</span><span class="delimiter">&quot;</span></span>)
+        return CollectionUtils.mapOf("isLoggedIn", true,
+                "username", authentication.getName(),
+                "roles", authentication.getAttributes().get("roles")
         );
     }
 }</code></pre>
@@ -190,9 +193,9 @@ function addJsClass() {
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../../guide/management.html">&lt;&lt; <strong>13</strong><span>Management &amp; Monitoring</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/management.html">&lt;&lt; <strong>14</strong><span>Management &amp; Monitoring</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

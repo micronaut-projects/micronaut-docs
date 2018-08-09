@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>6.14 Writing Response Data 1.0.0.M3</title>
+    <title>6.14 Writing Response Data 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>6.14 Writing Response Data</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -198,44 +201,44 @@ See the section on configuring <a href="#threadPools">Server Thread Pools</a> fo
 <div class="listingblock">
 <div class="title">Performing Blocking I/O</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">groovy.text.SimpleTemplateEngine</span>;
-<span class="keyword">import</span> <span class="include">groovy.text.Template</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.core.io.Writable</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.core.util.CollectionUtils</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.MediaType</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.server.exceptions.HttpServerException</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import groovy.text.SimpleTemplateEngine;
+import groovy.text.Template;
+import io.micronaut.core.io.Writable;
+import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.*;
+import io.micronaut.http.server.exceptions.HttpServerException;
 
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/template</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">TemplateController</span> {
+@Controller("/template")
+public class TemplateController {
 
-    <span class="directive">private</span> <span class="directive">final</span> SimpleTemplateEngine templateEngine = <span class="keyword">new</span> SimpleTemplateEngine();
-    <span class="directive">private</span> <span class="directive">final</span> Template template;
+    private final SimpleTemplateEngine templateEngine = new SimpleTemplateEngine();
+    private final Template template;
 
-    <span class="directive">public</span> TemplateController() {
+    public TemplateController() {
         template = initTemplate(); <i class="conum" data-value="1"></i><b>(1)</b>
     }
 
-    <span class="annotation">@Get</span>(uri = <span class="string"><span class="delimiter">&quot;</span><span class="content">/welcome</span><span class="delimiter">&quot;</span></span>, produces = MediaType.TEXT_PLAIN)
+    @Get(value = "/welcome", produces = MediaType.TEXT_PLAIN)
     Writable render() { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="keyword">return</span> writer -&gt; template.make( <i class="conum" data-value="3"></i><b>(3)</b>
+        return writer -&gt; template.make( <i class="conum" data-value="3"></i><b>(3)</b>
             CollectionUtils.mapOf(
-                    <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>,
-                    <span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Flintstone</span><span class="delimiter">&quot;</span></span>
+                    "firstName", "Fred",
+                    "lastName", "Flintstone"
             )
         ).writeTo(writer);
     }
 
-    <span class="directive">private</span> Template initTemplate() {
+    private Template initTemplate() {
         Template template;
-        <span class="keyword">try</span> {
+        try {
             template = templateEngine.createTemplate(
-                    <span class="string"><span class="delimiter">&quot;</span><span class="content">Dear $firstName $lastName. Nice to meet you.</span><span class="delimiter">&quot;</span></span>
+                    "Dear $firstName $lastName. Nice to meet you."
             );
-        } <span class="keyword">catch</span> (<span class="exception">Exception</span> e) {
-            <span class="keyword">throw</span> <span class="keyword">new</span> HttpServerException(<span class="string"><span class="delimiter">&quot;</span><span class="content">Cannot create template</span><span class="delimiter">&quot;</span></span>);
+        } catch (Exception e) {
+            throw new HttpServerException("Cannot create template");
         }
-        <span class="keyword">return</span> template;
+        return template;
     }
 }</code></pre>
 </div>
@@ -253,6 +256,56 @@ See the section on configuring <a href="#threadPools">Server Thread Pools</a> fo
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
 <td>The returned function receives a <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Writer.html">Writer</a> and calls <code>writeTo</code> on the template.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_404_responses">404 Responses</h3>
+<div class="paragraph">
+<p>Often, you want to respond 404 (Not Found) when you don&#8217;t find an item in your persistence layer or in similar scenarios.</p>
+</div>
+<div class="paragraph">
+<p>See the following example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Controller("/books")
+public class BooksController {
+
+    @Get("/stock/{isbn}")
+    public Map stock(String isbn) {
+        return null; <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+
+    @Get("/maybestock/{isbn}")
+    public Maybe&lt;Map&gt; maybestock(String isbn) {
+        return Maybe.empty(); <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Returning <code>null</code> triggers a 404 (Not Found) response.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Returning an empty <code>Maybe</code> triggers a 404 (Not Found) response.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Responding with an empty <code>Publisher</code> or <code>Flowable</code> will result in an empty array being returned if the content type is JSON.
+</td>
 </tr>
 </table>
 </div>

@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>9 Serverless Functions 1.0.0.M3</title>
+    <title>9 Serverless Functions 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>9 Serverless Functions</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -136,7 +139,13 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:10px"><a href="#functionCLI"><strong>9.2.2</strong><span>Functions as CLI Applications</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#lambdaFunctions"><strong>9.3</strong><span>Deploying Functions to AWS Lambda</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#deployingFunctions"><strong>9.3</strong><span>Deploying Functions</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#lambdaFunctions"><strong>9.3.1</strong><span>Deploying Functions to AWS Lambda</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#openFaasFunctions"><strong>9.3.2</strong><span>Deploying Functions to OpenFaaS</span></a>
                     </div>
                     
                     <div class="toc-item" style="margin-left:0px"><a href="#callingFunctions"><strong>9.4</strong><span>Calling Functions with FunctionClient</span></a>
@@ -163,7 +172,7 @@ function addJsClass() {
 <p>Traditional frameworks like Grails and Spring are not really suitable since low memory consumption and fast startup time are critical, since the Function as a Service (FaaS) server will typically spin up your function for a period using a cold start and then keep it warm.</p>
 </div>
 <div class="paragraph">
-<p>Micronaut&#8217;s compile-time approach, fast startup time and low-memory footprint make it a great candidate for using as a framework for developing functions and in fact Micronaut features dedicated support for developing and deploying functions to AWS Lambda (support for other FaaS platforms is planned in the future).</p>
+<p>Micronaut&#8217;s compile-time approach, fast startup time and low-memory footprint make it a great candidate for using as a framework for developing functions and in fact Micronaut features dedicated support for developing and deploying functions to AWS Lambda and any FaaS system that supports running functions as containers (such as OpenFaaS, Rift or Fn).</p>
 </div>
 
 
@@ -177,7 +186,7 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>To get started writing serverless function you must add the appropriate Micronaut <code>function</code> dependency to your classpath. For example, to create functions for AWS Lambda, add the <code>function-aws</code> dependency.  The supported providers are listed in the table below.</p>
+<p>To get started writing serverless function you must add the appropriate Micronaut <code>function</code> dependency to your classpath. In certain cases there are FaaS platform specific extension which you may wish to include. The following table includes the dependencies for each individual FaaS platform:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 1. Function Providers</caption>
@@ -216,9 +225,9 @@ If you are using Groovy, there is a single compile-time dependency to be added: 
 <div class="listingblock">
 <div class="title">Example build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:function-aws</span><span class="delimiter">&quot;</span></span>
+    compile "io.micronaut:function-aws"
     ...
 }</code></pre>
 </div>
@@ -252,17 +261,17 @@ This section applies to Java &amp; Kotlin functions - for functions written in G
 <div class="listingblock">
 <div class="title">Example build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">mainClassName = <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.function.executor.FunctionApplication</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">mainClassName = "io.micronaut.function.executor.FunctionApplication"</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Example pom.xml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;project&gt;</span>
-    <span class="tag">&lt;properties&gt;</span>
-        <span class="tag">&lt;exec.mainClass&gt;</span>io.micronaut.function.executor.FunctionApplication<span class="tag">&lt;/exec.mainClass&gt;</span>
-    <span class="tag">&lt;/properties&gt;</span>
-<span class="tag">&lt;/project&gt;</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;project&gt;
+    &lt;properties&gt;
+        &lt;exec.mainClass&gt;io.micronaut.function.executor.FunctionApplication&lt;/exec.mainClass&gt;
+    &lt;/properties&gt;
+&lt;/project&gt;</code></pre>
 </div>
 </div>
 
@@ -309,17 +318,17 @@ If you have the Micronaut CLI installed you can quickly create a Java function w
 <div class="listingblock">
 <div class="title">Example Java Function</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">example</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package example;
 
-<span class="keyword">import</span> <span class="include">io.micronaut.function.FunctionBean</span>;
-<span class="keyword">import</span> <span class="include">java.util.function.Supplier</span>;
+import io.micronaut.function.FunctionBean;
+import java.util.function.Supplier;
 
-<span class="annotation">@FunctionBean</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello-world-java</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">HelloJavaFunction</span> <span class="directive">implements</span> Supplier&lt;<span class="predefined-type">String</span>&gt; {
+@FunctionBean("hello-world-java")
+public class HelloJavaFunction implements Supplier&lt;String&gt; {
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="predefined-type">String</span> get() { <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello world!</span><span class="delimiter">&quot;</span></span>;
+    @Override
+    public String get() { <i class="conum" data-value="1"></i><b>(1)</b>
+        return "Hello world!";
     }
 }</code></pre>
 </div>
@@ -332,19 +341,56 @@ If you have the Micronaut CLI installed you can quickly create a Java function w
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>Alternatively you can also define a <a href="../api/io/micronaut/context/annotation/Factory.html">Factory</a> that returns a Java lambda:</p>
+</div>
+<div class="listingblock">
+<div class="title">Example Java Function as a Lambda</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package example;
+
+import io.micronaut.context.annotation.*;
+import io.micronaut.function.FunctionBean;
+import java.util.function.Supplier;
+
+@Factory <i class="conum" data-value="1"></i><b>(1)</b>
+public class MyFunctions {
+
+    @FunctionBean("hello-world-java")
+    public Supplier&lt;String&gt; helloWorld() { <i class="conum" data-value="2"></i><b>(2)</b>
+        return () -&gt; "Hello world!";
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A <a href="../api/io/micronaut/context/annotation/Factory.html">Factory</a> bean is defined</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <a href="../api/io/micronaut/function/FunctionBean.html">@FunctionBean</a> annotation is used on a method that returns the function.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you are using Kotlin then process is exactly the same:</p>
+</div>
 <div class="listingblock">
 <div class="title">Example Kotlin Function</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="kotlin">package example
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">package example
 
 import io.micronaut.function.FunctionBean
 import java.util.function.Supplier
 
-@FunctionBean(&quot;hello-world-kotlin&quot;)
+@FunctionBean("hello-world-kotlin")
 class HelloKotlinFunction : Supplier&lt;String&gt; {
 
     override fun get(): String { <i class="conum" data-value="1"></i><b>(1)</b>
-        return &quot;Hello world!&quot;
+        return "Hello world!"
     }
 }</code></pre>
 </div>
@@ -404,9 +450,28 @@ class HelloKotlinFunction : Supplier&lt;String&gt; {
 <div class="listingblock">
 <div class="title">Configuring the Function Name to Execute</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">function</span>:
-        <span class="key">name</span>: <span class="string"><span class="content">hello-world-java</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    function:
+        name: hello-world-java</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively you can specify the value when running your function (for example in the <code>Dockerfile</code>) either as an environment variable:</p>
+</div>
+<div class="listingblock">
+<div class="title">Specifying the Function to Execute as a Environment variable</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ export MICRONAUT_FUNCTION_NAME=hello-world-java
+$ java -jar build/libs/hello-world-function-all.jar</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or as a system property:</p>
+</div>
+<div class="listingblock">
+<div class="title">Specifying the Function to Execute as a System property</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ java -Dmicronaut.function.name=hello-world-java -jar build/libs/hello-world-function-all.jar</code></pre>
 </div>
 </div>
 
@@ -441,9 +506,9 @@ If you have the Micronaut CLI installed you can quickly create a Groovy function
 <div class="listingblock">
 <div class="title">Example build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:function-groovy</span><span class="delimiter">&quot;</span></span>
+    compile "io.micronaut:function-groovy"
     ...
 }</code></pre>
 </div>
@@ -454,14 +519,14 @@ If you have the Micronaut CLI installed you can quickly create a Groovy function
 <div class="listingblock">
 <div class="title">Example build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">mainClassName = <span class="string"><span class="delimiter">&quot;</span><span class="content">example.HelloGroovyFunction</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">mainClassName = "example.HelloGroovyFunction"</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">HelloGroovyFunction.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">String</span> hello(<span class="predefined-type">String</span> name) {
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello </span><span class="inline"><span class="inline-delimiter">${</span>name<span class="inline-delimiter">}</span></span><span class="content">!</span><span class="delimiter">&quot;</span></span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">String hello(String name) {
+    "Hello ${name}!"
 }</code></pre>
 </div>
 </div>
@@ -484,12 +549,12 @@ If you have the Micronaut CLI installed you can quickly create a Groovy function
 <div class="listingblock">
 <div class="title">HelloGroovyFunction.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">groovy.transform.Field</span>
-<span class="keyword">import</span> <span class="include">javax.inject.Inject</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import groovy.transform.Field
+import javax.inject.Inject
 
-<span class="annotation">@Field</span> <span class="annotation">@Inject</span> HelloService helloService
+@Field @Inject HelloService helloService
 
-<span class="predefined-type">String</span> hello(<span class="predefined-type">String</span> name) {
+String hello(String name) {
     helloService.hello(name)
 }</code></pre>
 </div>
@@ -525,10 +590,10 @@ If you have the Micronaut CLI installed you can quickly create a Groovy function
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:function-web</span><span class="delimiter">&quot;</span></span>
-    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:http-server-netty</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+    runtime "io.micronaut:function-web"
+    runtime "io.micronaut:http-server-netty" <i class="conum" data-value="1"></i><b>(1)</b>
     ...
 }</code></pre>
 </div>
@@ -547,11 +612,11 @@ If you have the Micronaut CLI installed you can quickly create a Groovy function
 <div class="listingblock">
 <div class="title">Example Application class</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.runtime.Micronaut</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.runtime.Micronaut;
 
-<span class="directive">public</span> <span class="type">class</span> <span class="class">Application</span> {
+public class Application {
 
-    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
+    public static void main(String[] args) {
         Micronaut.run(Application.class);
     }
 }</code></pre>
@@ -645,10 +710,10 @@ For further information on the use of <code>@FunctionClient</code>, please see <
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:function-web</span><span class="delimiter">&quot;</span></span>
-    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:http-server-netty</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+    testRuntime "io.micronaut:function-web"
+    testRuntime "io.micronaut:http-server-netty" <i class="conum" data-value="1"></i><b>(1)</b>
     ...
 }</code></pre>
 </div>
@@ -667,15 +732,15 @@ For further information on the use of <code>@FunctionClient</code>, please see <
 <div class="listingblock">
 <div class="title">MathClient.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.function.client.FunctionClient</span>
-<span class="keyword">import</span> <span class="include">javax.inject.Named</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.function.client.FunctionClient
+import javax.inject.Named
 
-<span class="annotation">@FunctionClient</span>
-<span class="directive">static</span> <span class="type">interface</span> MathClient {
+@FunctionClient
+static interface MathClient {
 
-    <span class="predefined-type">Long</span> max() <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="annotation">@Named</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">round</span><span class="delimiter">&quot;</span></span>)
-    <span class="type">int</span> rnd(<span class="type">float</span> value)
+    Long max() <i class="conum" data-value="1"></i><b>(1)</b>
+    @Named("round")
+    int rnd(float value)
 }</code></pre>
 </div>
 </div>
@@ -696,15 +761,15 @@ For further information on the use of <code>@FunctionClient</code>, please see <
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test invoking a local function</span><span class="delimiter">&quot;</span></span>() {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">void "test invoking a local function"() {
     given:
     EmbeddedServer server = ApplicationContext.run(EmbeddedServer)
     MathClient mathClient = server.getApplicationContext().getBean(MathClient)
 
     expect:
-    mathClient.max() == <span class="predefined-type">Integer</span>.MAX_VALUE.toLong()
-    mathClient.rnd(<span class="float">1.6</span>) == <span class="integer">2</span>
-    mathClient.sum(<span class="keyword">new</span> Sum(a:<span class="integer">5</span>,b:<span class="integer">10</span>)) == <span class="integer">15</span>
+    mathClient.max() == Integer.MAX_VALUE.toLong()
+    mathClient.rnd(1.6) == 2
+    mathClient.sum(new Sum(a:5,b:10)) == 15
 
 }</code></pre>
 </div>
@@ -728,17 +793,17 @@ For further information on the use of <code>@FunctionClient</code>, please see <
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">buildscript {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">buildscript {
     repositories {
-        maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://plugins.gradle.org/m2/</span><span class="delimiter">&quot;</span></span> } <i class="conum" data-value="1"></i><b>(1)</b>
+        maven { url "https://plugins.gradle.org/m2/" } <i class="conum" data-value="1"></i><b>(1)</b>
     }
     dependencies {
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.github.jengelman.gradle.plugins:shadow:2.0.4</span><span class="delimiter">&quot;</span></span>
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.4"
 ...
     }
 }
 
-apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">com.github.johnrengelman.shadow</span><span class="delimiter">&quot;</span></span>
+apply plugin:"com.github.johnrengelman.shadow"
 
 shadowJar {
     mergeServiceFiles()
@@ -759,7 +824,7 @@ shadowJar {
 <div class="listingblock">
 <div class="title">Packaging a Function as a JAR</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew shadowJar</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ ./gradlew shadowJar</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -768,7 +833,7 @@ shadowJar {
 <div class="listingblock">
 <div class="title">Executing a function via the CLI</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ echo '{value: 3}' | java -jar build/libs/math-function-0.1-all.jar</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ echo '{value: 3}' | java -jar build/libs/math-function-0.1-all.jar</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -779,10 +844,24 @@ shadowJar {
 </div>
 
 
-<h2 id="lambdaFunctions">9.3 Deploying Functions to AWS Lambda</h2>
+<h2 id="deployingFunctions">9.3 Deploying Functions</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/serverlessFunctions/lambdaFunctions.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/serverlessFunctions/deployingFunctions.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut functions can be deployed to either AWS lambda or any FaaS platform that can execute the function as a container. The following sections detail how to deploy your function.</p>
+</div>
+
+
+<h2 id="lambdaFunctions">9.3.1 Deploying Functions to AWS Lambda</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/serverlessFunctions/deployingFunctions/lambdaFunctions.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -794,9 +873,9 @@ shadowJar {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:function-aws</span><span class="delimiter">&quot;</span></span>
+    compile "io.micronaut:function-aws"
     ...
 }</code></pre>
 </div>
@@ -807,9 +886,9 @@ shadowJar {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:function-groovy</span><span class="delimiter">&quot;</span></span>
+    compile "io.micronaut:function-groovy"
     ...
 }</code></pre>
 </div>
@@ -823,8 +902,8 @@ shadowJar {
 <div class="listingblock">
 <div class="title">application-aws.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">production</span>:
-    <span class="key">property</span>: <span class="string"><span class="content">44</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">production:
+    property: 44</code></pre>
 </div>
 </div>
 </div>
@@ -843,17 +922,17 @@ shadowJar {
 <div class="listingblock">
 <div class="title">Example build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">buildscript {
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">buildscript {
     repositories {
-        maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://plugins.gradle.org/m2/</span><span class="delimiter">&quot;</span></span> } <i class="conum" data-value="1"></i><b>(1)</b>
+        maven { url "https://plugins.gradle.org/m2/" } <i class="conum" data-value="1"></i><b>(1)</b>
     }
     dependencies {
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.github.jengelman.gradle.plugins:shadow:2.0.4</span><span class="delimiter">&quot;</span></span>
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.4"
 ...
     }
 }
 
-apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">com.github.johnrengelman.shadow</span><span class="delimiter">&quot;</span></span>
+apply plugin:"com.github.johnrengelman.shadow"
 
 shadowJar {
     mergeServiceFiles()
@@ -873,7 +952,7 @@ shadowJar {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew shadowJar</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ ./gradlew shadowJar</code></pre>
 </div>
 </div>
 </div>
@@ -885,34 +964,34 @@ shadowJar {
 <div class="listingblock">
 <div class="title">Example pom.xml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;project&gt;</span>
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;project&gt;
 
-    <span class="tag">&lt;build&gt;</span>
-        <span class="tag">&lt;plugins&gt;</span>
-            <span class="tag">&lt;plugin&gt;</span>
-                <span class="tag">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/groupId&gt;</span>
-                <span class="tag">&lt;artifactId&gt;</span>maven-shade-plugin<span class="tag">&lt;/artifactId&gt;</span>
-                <span class="tag">&lt;version&gt;</span>3.1.0<span class="tag">&lt;/version&gt;</span>
-                <span class="tag">&lt;executions&gt;</span>
-                    <span class="tag">&lt;execution&gt;</span>
-                        <span class="tag">&lt;phase&gt;</span>package<span class="tag">&lt;/phase&gt;</span>
-                        <span class="tag">&lt;goals&gt;</span>
-                            <span class="tag">&lt;goal&gt;</span>shade<span class="tag">&lt;/goal&gt;</span>
-                        <span class="tag">&lt;/goals&gt;</span>
-                        <span class="tag">&lt;configuration&gt;</span>
-                            <span class="tag">&lt;transformers&gt;</span>
-                                <span class="tag">&lt;transformer</span> <span class="attribute-name">implementation</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">org.apache.maven.plugins.shade.resource.ManifestResourceTransformer</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
-                                    <span class="tag">&lt;mainClass&gt;</span>${exec.mainClass}<span class="tag">&lt;/mainClass&gt;</span>
-                                <span class="tag">&lt;/transformer&gt;</span>
-                                <span class="tag">&lt;transformer</span> <span class="attribute-name">implementation</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">org.apache.maven.plugins.shade.resource.ServicesResourceTransformer</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
-                            <span class="tag">&lt;/transformers&gt;</span>
-                        <span class="tag">&lt;/configuration&gt;</span>
-                    <span class="tag">&lt;/execution&gt;</span>
-                <span class="tag">&lt;/executions&gt;</span>
-            <span class="tag">&lt;/plugin&gt;</span>
-        <span class="tag">&lt;/plugins&gt;</span>
-    <span class="tag">&lt;/build&gt;</span>
-<span class="tag">&lt;/project&gt;</span></code></pre>
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;
+                &lt;version&gt;3.1.0&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;phase&gt;package&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;shade&lt;/goal&gt;
+                        &lt;/goals&gt;
+                        &lt;configuration&gt;
+                            &lt;transformers&gt;
+                                &lt;transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"&gt;
+                                    &lt;mainClass&gt;${exec.mainClass}&lt;/mainClass&gt;
+                                &lt;/transformer&gt;
+                                &lt;transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/&gt;
+                            &lt;/transformers&gt;
+                        &lt;/configuration&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -920,7 +999,7 @@ shadowJar {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./mvnw package</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ ./mvnw package</code></pre>
 </div>
 </div>
 </div>
@@ -935,40 +1014,40 @@ shadowJar {
 <div class="listingblock">
 <div class="title">Example build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.amazonaws.services.lambda.model.InvocationType</span>
-<span class="keyword">import</span> <span class="include">jp.classmethod.aws.gradle.lambda.AWSLambdaInvokeTask</span>
-<span class="keyword">import</span> <span class="include">jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask</span>
-<span class="keyword">import</span> <span class="include">com.amazonaws.services.lambda.model.Runtime</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import com.amazonaws.services.lambda.model.InvocationType
+import jp.classmethod.aws.gradle.lambda.AWSLambdaInvokeTask
+import jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask
+import com.amazonaws.services.lambda.model.Runtime
 
 buildscript {
     repositories {
         ...
-        maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://plugins.gradle.org/m2/</span><span class="delimiter">&quot;</span></span> } <i class="conum" data-value="1"></i><b>(1)</b>
+        maven { url "https://plugins.gradle.org/m2/" } <i class="conum" data-value="1"></i><b>(1)</b>
     }
     dependencies {
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">jp.classmethod.aws:gradle-aws-plugin:0.22</span><span class="delimiter">&quot;</span></span>
+        classpath "jp.classmethod.aws:gradle-aws-plugin:0.22"
     }
 }
 
-apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">jp.classmethod.aws.lambda</span><span class="delimiter">'</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+apply plugin: 'jp.classmethod.aws.lambda' <i class="conum" data-value="2"></i><b>(2)</b>
 
 ...
-task deploy(<span class="key">type</span>: AWSLambdaMigrateFunctionTask, <span class="key">dependsOn</span>: shadowJar) {
-    functionName = <span class="string"><span class="delimiter">&quot;</span><span class="content">hello-world</span><span class="delimiter">&quot;</span></span>
-    handler = <span class="string"><span class="delimiter">&quot;</span><span class="content">example.HelloWorldFunction::hello</span><span class="delimiter">&quot;</span></span>
-    role = <span class="string"><span class="delimiter">&quot;</span><span class="content">arn:aws:iam::</span><span class="inline"><span class="inline-delimiter">${</span>aws.accountId<span class="inline-delimiter">}</span></span><span class="content">:role/lambda_basic_execution</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
-    runtime = <span class="predefined-type">Runtime</span>.Java8
+task deploy(type: AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
+    functionName = "hello-world"
+    handler = "example.HelloWorldFunction::hello"
+    role = "arn:aws:iam::${aws.accountId}:role/lambda_basic_execution" <i class="conum" data-value="3"></i><b>(3)</b>
+    runtime = Runtime.Java8
     zipFile = shadowJar.archivePath
-    memorySize = <span class="integer">256</span>
-    timeout = <span class="integer">60</span>
+    memorySize = 256
+    timeout = 60
 }
 
-task invoke(<span class="key">type</span>: AWSLambdaInvokeTask) {
-    functionName = <span class="string"><span class="delimiter">&quot;</span><span class="content">hello-world</span><span class="delimiter">&quot;</span></span>
+task invoke(type: AWSLambdaInvokeTask) {
+    functionName = "hello-world"
     invocationType = InvocationType.RequestResponse
-    payload = <span class="string"><span class="delimiter">'</span><span class="content">{&quot;name&quot;:&quot;Fred&quot;}</span><span class="delimiter">'</span></span>
+    payload = '{"name":"Fred"}'
     doLast {
-        println <span class="string"><span class="delimiter">&quot;</span><span class="content">Lambda function result: </span><span class="delimiter">&quot;</span></span> + <span class="keyword">new</span> <span class="predefined-type">String</span>(invokeResult.payload.array(), <span class="string"><span class="delimiter">&quot;</span><span class="content">UTF-8</span><span class="delimiter">&quot;</span></span>)
+        println "Lambda function result: " + new String(invokeResult.payload.array(), "UTF-8")
     }
 }</code></pre>
 </div>
@@ -1010,7 +1089,7 @@ task invoke(<span class="key">type</span>: AWSLambdaInvokeTask) {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew deploy</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ ./gradlew deploy</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1018,13 +1097,33 @@ task invoke(<span class="key">type</span>: AWSLambdaInvokeTask) {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew invoke
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ ./gradlew invoke
 Hello, Fred</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Consult the <a href="https://github.com/classmethod/gradle-aws-plugin">Gradle AWS plugin documentation</a> for more details on the use of the plugin.</p>
 </div>
+</div>
+</div>
+
+
+<h2 id="openFaasFunctions">9.3.2 Deploying Functions to OpenFaaS</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/serverlessFunctions/deployingFunctions/openFaasFunctions.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>When creating a function you can use the <code>openfaas</code> feature to create a function that includes a <code>Dockerfile</code> that can be built into an image deployable to OpenFaas:</p>
+</div>
+<div class="listingblock">
+<div class="title">Creating an OpenFaaS Function</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ mn create-function hello-world-function --features openfaas</code></pre>
 </div>
 </div>
 
@@ -1044,7 +1143,7 @@ Hello, Fred</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:function-client</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:function-client"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1062,12 +1161,12 @@ Hello, Fred</code></pre>
 <div class="listingblock">
 <div class="title">MaxFunction.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">groovy.transform.Field</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import groovy.transform.Field
 
-math.multiplier = <span class="integer">2</span>
-<span class="annotation">@Field</span> MathService mathService
+math.multiplier = 2
+@Field MathService mathService
 
-<span class="predefined-type">Long</span> max() {
+Long max() {
     mathService.max()
 }</code></pre>
 </div>
@@ -1075,13 +1174,13 @@ math.multiplier = <span class="integer">2</span>
 <div class="listingblock">
 <div class="title">Using @FunctionClient to Discover Function</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.function.client.FunctionClient</span>
-<span class="keyword">import</span> <span class="include">javax.inject.Named</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.function.client.FunctionClient
+import javax.inject.Named
 
-<span class="annotation">@FunctionClient</span>
-<span class="directive">static</span> <span class="type">interface</span> MathClient {
+@FunctionClient
+static interface MathClient {
 
-    <span class="predefined-type">Long</span> max() <i class="conum" data-value="1"></i><b>(1)</b>
+    Long max() <i class="conum" data-value="1"></i><b>(1)</b>
 }</code></pre>
 </div>
 </div>
@@ -1099,12 +1198,12 @@ math.multiplier = <span class="integer">2</span>
 <div class="listingblock">
 <div class="title">RoundFunction.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">groovy.transform.Field</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import groovy.transform.Field
 
-math.multiplier = <span class="integer">2</span>
-<span class="annotation">@Field</span> MathService mathService
+math.multiplier = 2
+@Field MathService mathService
 
-<span class="type">int</span> round(<span class="type">float</span> value) {
+int round(float value) {
     mathService.round(value)
 }</code></pre>
 </div>
@@ -1112,14 +1211,14 @@ math.multiplier = <span class="integer">2</span>
 <div class="listingblock">
 <div class="title">Using @Named to customize target method</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.function.client.FunctionClient</span>
-<span class="keyword">import</span> <span class="include">javax.inject.Named</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.function.client.FunctionClient
+import javax.inject.Named
 
-<span class="annotation">@FunctionClient</span>
-<span class="directive">static</span> <span class="type">interface</span> MathClient {
+@FunctionClient
+static interface MathClient {
 
-    <span class="annotation">@Named</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">round</span><span class="delimiter">&quot;</span></span>)
-    <span class="type">int</span> rnd(<span class="type">float</span> value)
+    @Named("round")
+    int rnd(float value)
 }</code></pre>
 </div>
 </div>
@@ -1134,18 +1233,18 @@ math.multiplier = <span class="integer">2</span>
 <div class="listingblock">
 <div class="title">RxMathClient.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.micronaut.function.client.FunctionClient</span>
-<span class="keyword">import</span> <span class="include">javax.inject.Named</span>
-<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.function.client.FunctionClient
+import javax.inject.Named
+import io.reactivex.Single
 
-<span class="annotation">@FunctionClient</span>
-<span class="directive">static</span> <span class="type">interface</span> RxMathClient {
-    Single&lt;<span class="predefined-type">Long</span>&gt; max()
+@FunctionClient
+static interface RxMathClient {
+    Single&lt;Long&gt; max()
 
-    <span class="annotation">@Named</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">round</span><span class="delimiter">&quot;</span></span>)
-    Single&lt;<span class="predefined-type">Integer</span>&gt; rnd(<span class="type">float</span> value)
+    @Named("round")
+    Single&lt;Integer&gt; rnd(float value)
 
-    Single&lt;<span class="predefined-type">Long</span>&gt; sum(Sum sum)
+    Single&lt;Long&gt; sum(Sum sum)
 }</code></pre>
 </div>
 </div>
@@ -1165,13 +1264,13 @@ math.multiplier = <span class="integer">2</span>
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">aws</span>:
-    <span class="key">lambda</span>:
-        <span class="key">functions</span>:
-            <span class="key">hello</span>:
-                <span class="key">functionName</span>: <span class="string"><span class="content">hello-world</span></span>
-                <span class="key">qualifer</span>: <span class="string"><span class="content">foo</span></span>
-    <span class="key">region</span>: <span class="string"><span class="content">us-east-1</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">aws:
+    lambda:
+        functions:
+            hello:
+                functionName: hello-world
+                qualifer: foo
+    region: us-east-1</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1198,12 +1297,12 @@ To invoke a function Micronaut configures a <code>AWSLambdaAsyncClient</code> us
 <div class="listingblock">
 <div class="title">HelloClient.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.reactivex.*</span>;
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.reactivex.*;
 
-<span class="annotation">@FunctionClient</span>
-<span class="type">interface</span> HelloClient {
+@FunctionClient
+interface HelloClient {
 
-    Single&lt;<span class="predefined-type">String</span>&gt; hello(<span class="predefined-type">String</span> name);
+    Single&lt;String&gt; hello(String name);
 }</code></pre>
 </div>
 </div>

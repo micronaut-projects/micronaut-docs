@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>7.1.2 Posting a Request Body 1.0.0.M3</title>
+    <title>7.1.2 Posting a Request Body 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>7.1.2 Posting a Request Body</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -188,11 +191,11 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Sending a <code>String</code> body</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;<span class="predefined-type">String</span>&gt;&gt; call = client.exchange(
-        POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/hello</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;String&gt;&gt; call = client.exchange(
+        POST("/hello", "Hello John") <i class="conum" data-value="1"></i><b>(1)</b>
             .contentType(MediaType.TEXT_PLAIN_TYPE)
             .accept(MediaType.TEXT_PLAIN_TYPE), <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="predefined-type">String</span>.class <i class="conum" data-value="3"></i><b>(3)</b>
+        String.class <i class="conum" data-value="3"></i><b>(3)</b>
 );</code></pre>
 </div>
 </div>
@@ -224,8 +227,8 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Sending a JSON body</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
-        POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/greet</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> Message(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>)), <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
+        POST("/greet", new Message("Hello John")), <i class="conum" data-value="1"></i><b>(1)</b>
         Message.class <i class="conum" data-value="2"></i><b>(2)</b>
 );</code></pre>
 </div>
@@ -248,7 +251,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Resulting JSON</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello John</span><span class="delimiter">&quot;</span></span>}</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"text":"Hello John"}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -268,9 +271,9 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Sending a JSON body with a URI template</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;<span class="predefined-type">Book</span>&gt;&gt; call = client.exchange(
-        POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/amazon/book/{title}</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>)),
-        <span class="predefined-type">Book</span>.class
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;Book&gt;&gt; call = client.exchange(
+        POST("/amazon/book/{title}", new Book("The Stand")),
+        Book.class
 );</code></pre>
 </div>
 </div>
@@ -288,10 +291,10 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Sending a Form Data</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Flowable&lt;HttpResponse&lt;<span class="predefined-type">Book</span>&gt;&gt; call = client.exchange(
-        POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/amazon/book/{title}</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>))
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flowable&lt;HttpResponse&lt;Book&gt;&gt; call = client.exchange(
+        POST("/amazon/book/{title}", new Book("The Stand"))
         .contentType(MediaType.APPLICATION_FORM_URLENCODED),
-        <span class="predefined-type">Book</span>.class
+        Book.class
 );</code></pre>
 </div>
 </div>

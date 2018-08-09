@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>7.2 Declarative HTTP Clients with @Client 1.0.0.M3</title>
+    <title>7.2 Declarative HTTP Clients with @Client 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>7.2 Declarative HTTP Clients with @Client</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -162,24 +165,24 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Pet.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">Pet</span> {
-    <span class="directive">private</span> <span class="predefined-type">String</span> name;
-    <span class="directive">private</span> <span class="type">int</span> age;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public class Pet {
+    private String name;
+    private int age;
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> getName() {
-        <span class="keyword">return</span> name;
+    public String getName() {
+        return name;
     }
 
-    <span class="directive">public</span> <span class="type">void</span> setName(<span class="predefined-type">String</span> name) {
-        <span class="local-variable">this</span>.name = name;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    <span class="directive">public</span> <span class="type">int</span> getAge() {
-        <span class="keyword">return</span> age;
+    public int getAge() {
+        return age;
     }
 
-    <span class="directive">public</span> <span class="type">void</span> setAge(<span class="type">int</span> age) {
-        <span class="local-variable">this</span>.age = age;
+    public void setAge(int age) {
+        this.age = age;
     }
 }</code></pre>
 </div>
@@ -190,16 +193,16 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">PetOperations.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Post</span>;
-<span class="keyword">import</span> <span class="include">io.micronaut.validation.Validated</span>;
-<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.annotation.Post;
+import io.micronaut.validation.Validated;
+import io.reactivex.Single;
 
-<span class="keyword">import</span> <span class="include">javax.validation.constraints</span>.*;
+import javax.validation.constraints.*;
 
-<span class="annotation">@Validated</span>
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">PetOperations</span> {
-    <span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
-    Single&lt;Pet&gt; save(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> name, <span class="annotation">@Min</span>(<span class="integer">1L</span>) <span class="type">int</span> age);
+@Validated
+public interface PetOperations {
+    @Post
+    Single&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age);
 }</code></pre>
 </div>
 </div>
@@ -212,8 +215,8 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:validation</span><span class="delimiter">&quot;</span></span>
-compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:hibernate-validator</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:validation"
+compile "io.micronaut.configuration:hibernate-validator"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -222,19 +225,19 @@ compile <span class="string"><span class="delimiter">&quot;</span><span class="c
 <div class="listingblock">
 <div class="title">PetController.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Controller</span>;
-<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.annotation.Controller;
+import io.reactivex.Single;
 
-<span class="annotation">@Controller</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pets</span><span class="delimiter">&quot;</span></span>)
-<span class="type">class</span> <span class="class">PetController</span> <span class="directive">implements</span> PetOperations {
+@Controller("/pets")
+class PetController implements PetOperations {
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age) {
-        Pet pet = <span class="keyword">new</span> Pet();
+    @Override
+    public Single&lt;Pet&gt; save(String name, int age) {
+        Pet pet = new Pet();
         pet.setName(name);
         pet.setAge(age);
-        <span class="comment">// save to database or something</span>
-        <span class="keyword">return</span> Single.just(pet);
+        // save to database or something
+        return Single.just(pet);
     }
 }</code></pre>
 </div>
@@ -245,14 +248,14 @@ compile <span class="string"><span class="delimiter">&quot;</span><span class="c
 <div class="listingblock">
 <div class="title">PetClient.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.client.Client</span>;
-<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.client.Client;
+import io.reactivex.Single;
 
-<span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pets</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">PetClient</span> <span class="directive">extends</span> PetOperations { <i class="conum" data-value="2"></i><b>(2)</b>
+@Client("/pets") <i class="conum" data-value="1"></i><b>(1)</b>
+public interface PetClient extends PetOperations { <i class="conum" data-value="2"></i><b>(2)</b>
 
-    <span class="annotation">@Override</span>
-    Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age); <i class="conum" data-value="3"></i><b>(3)</b>
+    @Override
+    Single&lt;Pet&gt; save(String name, int age); <i class="conum" data-value="3"></i><b>(3)</b>
 }</code></pre>
 </div>
 </div>
@@ -385,8 +388,8 @@ Notice in the above example we override the <code>save</code> method. This is ne
 <div class="listingblock">
 <div class="title">PetOperations.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
-Single&lt;Pet&gt; save(<span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> name, <span class="annotation">@Min</span>(<span class="integer">1L</span>) <span class="type">int</span> age);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Post
+Single&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -395,7 +398,7 @@ Single&lt;Pet&gt; save(<span class="annotation">@NotBlank</span> <span class="pr
 <div class="listingblock">
 <div class="title">Example Produced JSON</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Dino</span><span class="delimiter">&quot;</span></span>, <span class="error">a</span><span class="error">g</span><span class="error">e</span>:<span class="integer">10</span>}</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"name":"Dino", age:10}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -407,10 +410,10 @@ Single&lt;Pet&gt; save(<span class="annotation">@NotBlank</span> <span class="pr
 <div class="listingblock">
 <div class="title">PetOperations.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/{name}</span><span class="delimiter">&quot;</span></span>)
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Post("/{name}")
 Single&lt;Pet&gt; save(
-    <span class="annotation">@NotBlank</span> <span class="predefined-type">String</span> name, <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="annotation">@Body</span> <span class="annotation">@Valid</span> Pet pet) <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+    @NotBlank String name, <i class="conum" data-value="1"></i><b>(1)</b>
+    @Body @Valid Pet pet) <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -487,10 +490,10 @@ Single&lt;Pet&gt; save(
 <div class="listingblock">
 <div class="title">HeadlineClient.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/streaming</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">HeadlineClient</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("/streaming")
+public interface HeadlineClient {
 
-    <span class="annotation">@Get</span>(uri = <span class="string"><span class="delimiter">&quot;</span><span class="content">/headlines</span><span class="delimiter">&quot;</span></span>, processes = MediaType.APPLICATION_JSON_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
+    @Get(value = "/headlines", processes = MediaType.APPLICATION_JSON_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
     Flowable&lt;Headline&gt; streamHeadlines(); <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
@@ -513,9 +516,9 @@ Single&lt;Pet&gt; save(
 <div class="listingblock">
 <div class="title">Streaming HeadlineClient</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Test</span>
-<span class="directive">public</span> <span class="type">void</span> testClientAnnotationStreaming() <span class="directive">throws</span> <span class="exception">Exception</span> {
-    <span class="keyword">try</span>( EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer.class) ) {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
+public void testClientAnnotationStreaming() throws Exception {
+    try( EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer.class) ) {
         HeadlineClient headlineClient = embeddedServer
                                             .getApplicationContext()
                                             .getBean(HeadlineClient.class); <i class="conum" data-value="1"></i><b>(1)</b>
@@ -525,7 +528,7 @@ Single&lt;Pet&gt; save(
         Headline headline = firstHeadline.blockingGet(); <i class="conum" data-value="3"></i><b>(3)</b>
 
         assertNotNull( headline );
-        assertTrue( headline.getText().startsWith(<span class="string"><span class="delimiter">&quot;</span><span class="content">Latest Headline</span><span class="delimiter">&quot;</span></span>) );
+        assertTrue( headline.getText().startsWith("Latest Headline") );
     }
 }</code></pre>
 </div>
@@ -555,8 +558,8 @@ Single&lt;Pet&gt; save(
 <div class="listingblock">
 <div class="title">A JSON Stream</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>}
-{<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Shining</span><span class="delimiter">&quot;</span></span>}</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"title":"The Stand"}
+{"title":"The Shining"}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -565,9 +568,9 @@ Single&lt;Pet&gt; save(
 <div class="listingblock">
 <div class="title">A JSON Array</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">[
-    {<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>},
-    {<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Shining</span><span class="delimiter">&quot;</span></span>}
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+    {"title":"The Stand"},
+    {"title":"The Shining"}
 ]</code></pre>
 </div>
 </div>
@@ -592,10 +595,10 @@ Single&lt;Pet&gt; save(
 <div class="listingblock">
 <div class="title">Adjusting the readIdleTime</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">http</span>:
-        <span class="key">client</span>:
-            <span class="key">readIdleTime</span>: <span class="string"><span class="content">5m</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    http:
+        client:
+            readIdleTime: 5m</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -628,15 +631,15 @@ Although SSE streams are typically consumed by a browser <code>EventSource</code
 <div class="listingblock">
 <div class="title">SSE Controller</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Get</span>(uri = <span class="string"><span class="delimiter">&quot;</span><span class="content">/headlines</span><span class="delimiter">&quot;</span></span>, produces = MediaType.TEXT_EVENT_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
-Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHeadlines() {
-    <span class="keyword">return</span> Flux.&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt;create((emitter) -&gt; {  <i class="conum" data-value="2"></i><b>(2)</b>
-        Headline headline = <span class="keyword">new</span> Headline();
-        headline.setText(<span class="string"><span class="delimiter">&quot;</span><span class="content">Latest Headline at </span><span class="delimiter">&quot;</span></span> + ZonedDateTime.now());
-        emitter.next(<span class="predefined-type">Event</span>.of(headline));
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Get(value = "/headlines", produces = MediaType.TEXT_EVENT_STREAM) <i class="conum" data-value="1"></i><b>(1)</b>
+Flux&lt;Event&lt;Headline&gt;&gt; streamHeadlines() {
+    return Flux.&lt;Event&lt;Headline&gt;&gt;create((emitter) -&gt; {  <i class="conum" data-value="2"></i><b>(2)</b>
+        Headline headline = new Headline();
+        headline.setText("Latest Headline at " + ZonedDateTime.now());
+        emitter.next(Event.of(headline));
         emitter.complete();
-    }).repeat(<span class="integer">100</span>) <i class="conum" data-value="3"></i><b>(3)</b>
-      .delayElements(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">1</span>)); <i class="conum" data-value="4"></i><b>(4)</b>
+    }).repeat(100) <i class="conum" data-value="3"></i><b>(3)</b>
+      .delayElements(Duration.ofSeconds(1)); <i class="conum" data-value="4"></i><b>(4)</b>
 }</code></pre>
 </div>
 </div>
@@ -669,11 +672,11 @@ Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHea
 <div class="listingblock">
 <div class="title">SSE Client</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/streaming/sse</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">HeadlineClient</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("/streaming/sse")
+public interface HeadlineClient {
 
-    <span class="annotation">@Get</span>(uri = <span class="string"><span class="delimiter">&quot;</span><span class="content">/headlines</span><span class="delimiter">&quot;</span></span>, processes = MediaType.TEXT_EVENT_STREAM)
-    Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHeadlines();
+    @Get(value = "/headlines", processes = MediaType.TEXT_EVENT_STREAM)
+    Flux&lt;Event&lt;Headline&gt;&gt; streamHeadlines();
 }</code></pre>
 </div>
 </div>
@@ -707,15 +710,15 @@ Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHea
 <div class="listingblock">
 <div class="title">Defining Headers via Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pets</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@Header</span>(name=<span class="string"><span class="delimiter">&quot;</span><span class="content">X-Pet-Client</span><span class="delimiter">&quot;</span></span>, value=<span class="string"><span class="delimiter">&quot;</span><span class="content">${pet.client.id}</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">PetClient</span> <span class="directive">extends</span> PetOperations {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("/pets")
+@Header(name="X-Pet-Client", value="${pet.client.id}")
+public interface PetClient extends PetOperations {
 
-    <span class="annotation">@Override</span>
-    Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age);
+    @Override
+    Single&lt;Pet&gt; save(String name, int age);
 
-    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/{name}</span><span class="delimiter">&quot;</span></span>)
-    Single&lt;Pet&gt; get(<span class="predefined-type">String</span> name);
+    @Get("/{name}")
+    Single&lt;Pet&gt; get(String name);
 }</code></pre>
 </div>
 </div>
@@ -728,9 +731,9 @@ Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHea
 <div class="listingblock">
 <div class="title">Configuring Headers in YAML</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">pet</span>:
-    <span class="key">client</span>:
-        <span class="key">id</span>: <span class="string"><span class="content">foo</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">pet:
+    client:
+        id: foo</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -772,9 +775,9 @@ Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHea
 <div class="listingblock">
 <div class="title">Example Jackson Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">jackson</span>:
-    <span class="key">serialization</span>:
-        <span class="key">indentOutput</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">jackson:
+    serialization:
+        indentOutput: true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -786,13 +789,13 @@ Flux&lt;<span class="predefined-type">Event</span>&lt;Headline&gt;&gt; streamHea
 <div class="listingblock">
 <div class="title">Example of JacksonFeatures</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(id = EurekaClient.SERVICE_ID, path = <span class="string"><span class="delimiter">&quot;</span><span class="content">/eureka</span><span class="delimiter">&quot;</span></span>, configuration = EurekaConfiguration.class)
-<span class="annotation">@JacksonFeatures</span>(
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client(id = EurekaClient.SERVICE_ID, path = "/eureka", configuration = EurekaConfiguration.class)
+@JacksonFeatures(
     enabledSerializationFeatures = WRAP_ROOT_VALUE,
     disabledSerializationFeatures = WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED,
     enabledDeserializationFeatures = {UNWRAP_ROOT_VALUE, ACCEPT_SINGLE_VALUE_AS_ARRAY}
 )
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">EurekaClient</span> {
+public interface EurekaClient {
     ...
 }</code></pre>
 </div>
@@ -832,12 +835,12 @@ If the customization offered by <code>JacksonFeatures</code> is not enough, you 
 <div class="listingblock">
 <div class="title">Declaring @Retryable</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/pets</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@Retryable</span>
-<span class="directive">public</span> <span class="type">interface</span> <span class="class">PetClient</span> <span class="directive">extends</span> PetOperations {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("/pets")
+@Retryable
+public interface PetClient extends PetOperations {
 
-    <span class="annotation">@Override</span>
-    Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age);
+    @Override
+    Single&lt;Pet&gt; save(String name, int age);
 }</code></pre>
 </div>
 </div>
@@ -876,14 +879,14 @@ If the customization offered by <code>JacksonFeatures</code> is not enough, you 
 <div class="listingblock">
 <div class="title">Defining a Fallback</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Fallback</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">PetFallback</span> <span class="directive">implements</span> PetOperations {
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> Single&lt;Pet&gt; save(<span class="predefined-type">String</span> name, <span class="type">int</span> age) {
-        Pet pet = <span class="keyword">new</span> Pet();
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Fallback
+public class PetFallback implements PetOperations {
+    @Override
+    public Single&lt;Pet&gt; save(String name, int age) {
+        Pet pet = new Pet();
         pet.setAge(age);
         pet.setName(name);
-        <span class="keyword">return</span> Single.just(pet);
+        return Single.just(pet);
     }
 }</code></pre>
 </div>
@@ -926,7 +929,7 @@ If you purely want to use fallbacks to help with testing against external Micros
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:netflix-hystrix</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut.configuration:netflix-hystrix"</code></pre>
 </div>
 </div>
 <div class="sect1">
@@ -938,9 +941,9 @@ If you purely want to use fallbacks to help with testing against external Micros
 <div class="listingblock">
 <div class="title">Using @HystrixCommand</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@HystrixCommand</span>
-<span class="predefined-type">String</span> hello(<span class="predefined-type">String</span> name) {
-    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello </span><span class="inline"><span class="inline-delimiter">$</span>name</span><span class="delimiter">&quot;</span></span>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@HystrixCommand
+String hello(String name) {
+    return "Hello $name"
 }</code></pre>
 </div>
 </div>
@@ -982,9 +985,9 @@ For information on how to customize the Hystrix thread pool, group and propertie
 <div class="listingblock">
 <div class="title">Enabling Hystrix Stream</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">hystrix</span>:
-    <span class="key">stream</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">hystrix:
+    stream:
+        enabled: true</code></pre>
 </div>
 </div>
 <div class="paragraph">

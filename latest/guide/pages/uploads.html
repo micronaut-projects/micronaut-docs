@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>6.15 File Uploads 1.0.0.M3</title>
+    <title>6.15 File Uploads 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>6.15 File Uploads</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -132,7 +135,7 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Post</span>(consumes = MediaType.MULTIPART_FORM_DATA)
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Post(consumes = MediaType.MULTIPART_FORM_DATA)
 HttpResponse upload( ... )</code></pre>
 </div>
 </div>
@@ -179,28 +182,28 @@ Data can only be retrieved from a <a href="../api/io/micronaut/http/multipart/Pa
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation</span>.*;
-<span class="keyword">import</span> <span class="include">io.micronaut.http.multipart.StreamingFileUpload</span>;
-<span class="keyword">import</span> <span class="include">io.reactivex.Single</span>;
-<span class="keyword">import</span> <span class="include">org.reactivestreams.Publisher</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.*;
+import io.micronaut.http.annotation.*;
+import io.micronaut.http.multipart.StreamingFileUpload;
+import io.reactivex.Single;
+import org.reactivestreams.Publisher;
 
-<span class="keyword">import</span> <span class="include">java.io.File</span>;
+import java.io.File;
 
-<span class="annotation">@Controller</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">UploadController</span> {
+@Controller("/upload")
+public class UploadController {
 
-    <span class="annotation">@Post</span>(value = <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>, consumes = MediaType.MULTIPART_FORM_DATA) <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="directive">public</span> Single&lt;HttpResponse&lt;<span class="predefined-type">String</span>&gt;&gt; upload(StreamingFileUpload file) <span class="directive">throws</span> <span class="exception">IOException</span> { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="predefined-type">File</span> tempFile = <span class="predefined-type">File</span>.createTempFile(file.getFilename(), <span class="string"><span class="delimiter">&quot;</span><span class="content">temp</span><span class="delimiter">&quot;</span></span>);
-        Publisher&lt;<span class="predefined-type">Boolean</span>&gt; uploadPublisher = file.transferTo(tempFile); <i class="conum" data-value="3"></i><b>(3)</b>
-        <span class="keyword">return</span> Single.fromPublisher(uploadPublisher)  <i class="conum" data-value="4"></i><b>(4)</b>
+    @Post(value = "/", consumes = MediaType.MULTIPART_FORM_DATA) <i class="conum" data-value="1"></i><b>(1)</b>
+    public Single&lt;HttpResponse&lt;String&gt;&gt; upload(StreamingFileUpload file) throws IOException { <i class="conum" data-value="2"></i><b>(2)</b>
+        File tempFile = File.createTempFile(file.getFilename(), "temp");
+        Publisher&lt;Boolean&gt; uploadPublisher = file.transferTo(tempFile); <i class="conum" data-value="3"></i><b>(3)</b>
+        return Single.fromPublisher(uploadPublisher)  <i class="conum" data-value="4"></i><b>(4)</b>
             .map(success -&gt; {
-                <span class="keyword">if</span> (success) {
-                    <span class="keyword">return</span> HttpResponse.ok(<span class="string"><span class="delimiter">&quot;</span><span class="content">Uploaded</span><span class="delimiter">&quot;</span></span>);
-                } <span class="keyword">else</span> {
-                    <span class="keyword">return</span> HttpResponse.&lt;<span class="predefined-type">String</span>&gt;status(HttpStatus.CONFLICT)
-                                       .body(<span class="string"><span class="delimiter">&quot;</span><span class="content">Upload Failed</span><span class="delimiter">&quot;</span></span>);
+                if (success) {
+                    return HttpResponse.ok("Uploaded");
+                } else {
+                    return HttpResponse.&lt;String&gt;status(HttpStatus.CONFLICT)
+                                       .body("Upload Failed");
                 }
             });
     }
@@ -239,23 +242,23 @@ Data can only be retrieved from a <a href="../api/io/micronaut/http/multipart/Pa
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">import</span> <span class="include">io.micronaut.http.multipart.CompletedFileUpload</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.multipart.CompletedFileUpload;
 
-<span class="keyword">import</span> <span class="include">java.io.IOException</span>;
-<span class="keyword">import</span> <span class="include">java.nio.file</span>.*;
+import java.io.IOException;
+import java.nio.file.*;
 
-<span class="annotation">@Controller</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">UploadController</span> {
+@Controller("/upload")
+public class UploadController {
 
-    <span class="annotation">@Post</span>(value = <span class="string"><span class="delimiter">&quot;</span><span class="content">/completed</span><span class="delimiter">&quot;</span></span>, consumes = MediaType.MULTIPART_FORM_DATA) <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="directive">public</span> HttpResponse&lt;<span class="predefined-type">String</span>&gt; uploadCompleted(CompletedFileUpload file) { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="keyword">try</span> {
-            <span class="predefined-type">File</span> tempFile = <span class="predefined-type">File</span>.createTempFile(file.getFilename(), <span class="string"><span class="delimiter">&quot;</span><span class="content">temp</span><span class="delimiter">&quot;</span></span>); <i class="conum" data-value="3"></i><b>(3)</b>
+    @Post(value = "/completed", consumes = MediaType.MULTIPART_FORM_DATA) <i class="conum" data-value="1"></i><b>(1)</b>
+    public HttpResponse&lt;String&gt; uploadCompleted(CompletedFileUpload file) { <i class="conum" data-value="2"></i><b>(2)</b>
+        try {
+            File tempFile = File.createTempFile(file.getFilename(), "temp"); <i class="conum" data-value="3"></i><b>(3)</b>
             Path path = Paths.get(tempFile.getAbsolutePath());
             Files.write(path, file.getBytes()); <i class="conum" data-value="3"></i><b>(3)</b>
-            <span class="keyword">return</span> HttpResponse.ok(<span class="string"><span class="delimiter">&quot;</span><span class="content">Uploaded</span><span class="delimiter">&quot;</span></span>);
-        } <span class="keyword">catch</span> (<span class="exception">IOException</span> exception) {
-            <span class="keyword">return</span> HttpResponse.badRequest(<span class="string"><span class="delimiter">&quot;</span><span class="content">Upload Failed</span><span class="delimiter">&quot;</span></span>);
+            return HttpResponse.ok("Uploaded");
+        } catch (IOException exception) {
+            return HttpResponse.badRequest("Upload Failed");
         }
     }
 
@@ -291,7 +294,7 @@ Data can only be retrieved from a <a href="../api/io/micronaut/http/multipart/Pa
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">HttpResponse upload(<span class="predefined-type">String</span> title, <span class="predefined-type">String</span> name)</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">HttpResponse upload(String title, String name)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -324,7 +327,7 @@ Data can only be retrieved from a <a href="../api/io/micronaut/http/multipart/Pa
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">HttpResponse upload(Publisher&lt;StreamingFileUpload&gt; files)
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">HttpResponse upload(Publisher&lt;StreamingFileUpload&gt; files)
 HttpResponse upload(Publisher&lt;CompletedFileUpload&gt; files)
 HttpResponse upload(Publisher&lt;MyObject&gt; files)
 HttpResponse upload(Publisher&lt;Publisher&lt;PartData&gt;&gt; files)</code></pre>

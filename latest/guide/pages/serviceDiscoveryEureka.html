@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>8.2.2 Eureka Support 1.0.0.M3</title>
+    <title>8.2.2 Eureka Support 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>8.2.2 Eureka Support</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -159,14 +162,14 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">Auto Registering with Eureka (application.yml)</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">application</span>:
-        <span class="key">name</span>: <span class="string"><span class="content">hello-world</span></span>
-<span class="key">eureka</span>:
-  <span class="key">client</span>:
-    <span class="key">registration</span>:
-      <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">defaultZone</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    application:
+        name: hello-world
+eureka:
+  client:
+    registration:
+      enabled: true
+    defaultZone: "${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}"</code></pre>
 </div>
 </div>
 </div>
@@ -180,17 +183,17 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">Example Eureka Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">eureka</span>:
-  <span class="key">client</span>:
-     <span class="key">readTimeout</span>: <span class="string"><span class="content">5s</span></span>
-     <span class="key">registration</span>:
-         <span class="key">asgName</span>: <span class="string"><span class="content">myAsg</span></span> <span class="comment"># the auto scaling group name</span>
-         <span class="key">countryId</span>: <span class="string"><span class="content">10</span></span> <span class="comment"># the country id</span>
-         <span class="key">vipAddress</span>: <span class="string"><span class="content">'myapp'</span></span> <span class="comment"># The Eureka VIP address</span>
-         <span class="key">leaseInfo</span>:
-            <span class="key">durationInSecs</span>: <span class="string"><span class="content">60</span></span> <span class="comment"># The lease information</span>
-         <span class="key">metadata</span>: <span class="comment"># arbitrary instance metadata</span>
-            <span class="key">foo</span>: <span class="string"><span class="content">bar</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">eureka:
+  client:
+     readTimeout: 5s
+     registration:
+         asgName: myAsg # the auto scaling group name
+         countryId: 10 # the country id
+         vipAddress: 'myapp' # The Eureka VIP address
+         leaseInfo:
+            durationInSecs: 60 # The lease information
+         metadata: # arbitrary instance metadata
+            foo: bar</code></pre>
 </div>
 </div>
 </div>
@@ -207,9 +210,9 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">Auto Registering with Eureka</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">eureka</span>:
-  <span class="key">client</span>:
-    <span class="key">defaultZone</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">https://${EUREKA_USERNAME}:${EUREKA_PASSWORD}@localhost:8761</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">eureka:
+  client:
+    defaultZone: "https://${EUREKA_USERNAME}:${EUREKA_PASSWORD}@localhost:8761"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -225,6 +228,14 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 </div>
 <div class="paragraph">
 <p>The <a href="../api/io/micronaut/management/health/monitor/HealthMonitorTask.html">HealthMonitorTask</a> will by default continuously monitor the <a href="../api/io/micronaut/health/HealthStatus.html">HealthStatus</a> of the application by running health checks and the <a href="../api/io/micronaut/health/CurrentHealthStatus.html">CurrentHealthStatus</a> will be sent to Eureka.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_secure_communication_with_eureka">Secure Communication with Eureka</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you wish to configure HTTPS and have clients discovery Eureka instances and communicate over HTTPS then you should set the <code>eureka.client.discovery.use-secure-port</code> option to <code>true</code> to ensure that service communication happens over HTTPS and also configure <a href="#https">HTTPS</a> appropriately for each instance.</p>
 </div>
 </div>
 </div>

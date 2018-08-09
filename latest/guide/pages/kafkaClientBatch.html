@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>10.1.3.3 Sending Records in Batch 1.0.0.M3</title>
+    <title>10.1.3.3 Sending Records in Batch 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -101,14 +104,14 @@ function addJsClass() {
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span> >></a></div>
                 
 
 
                 <div class="project">
                     <h1>10.1.3.3 Sending Records in Batch</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -133,11 +136,11 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Sending Arrays and Lists</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> sendList(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Topic("books")
+void sendList(List&lt;Book&gt; books);
 
-<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> sendBooks(<span class="predefined-type">Book</span>...books);</code></pre>
+@Topic("books")
+void sendBooks(Book...books);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -149,9 +152,9 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Sending <code>ProducerRecord</code> batches</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaClient</span>(batch=<span class="predefined-constant">true</span>)
-<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> send(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@KafkaClient(batch=true)
+@Topic("books")
+void send(List&lt;Book&gt; books);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -160,9 +163,9 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">Sending <code>ProducerRecord</code> batches Reactively</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaClient</span>(batch=<span class="predefined-constant">true</span>)
-<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
-Flowable&lt;RecordMetadata&gt; send(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@KafkaClient(batch=true)
+@Topic("books")
+Flowable&lt;RecordMetadata&gt; send(List&lt;Book&gt; books);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -171,9 +174,9 @@ Flowable&lt;RecordMetadata&gt; send(<span class="predefined-type">List</span>&lt
 <div class="listingblock">
 <div class="title">Sending <code>ProducerRecord</code> batches from a Flowable</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@KafkaClient</span>(batch=<span class="predefined-constant">true</span>)
-<span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)
-Flowable&lt;RecordMetadata&gt; send(Flowable&lt;<span class="predefined-type">Book</span>&gt; books);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@KafkaClient(batch=true)
+@Topic("books")
+Flowable&lt;RecordMetadata&gt; send(Flowable&lt;Book&gt; books);</code></pre>
 </div>
 </div>
 
@@ -182,7 +185,7 @@ Flowable&lt;RecordMetadata&gt; send(Flowable&lt;<span class="predefined-type">Bo
                 
                     <div class="toc-item prev-left"><a href="../../guide/serverlessFunctions.html">&lt;&lt; <strong>9</strong><span>Serverless Functions</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

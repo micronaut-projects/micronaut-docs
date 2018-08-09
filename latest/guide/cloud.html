@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>8 Cloud Native Features 1.0.0.M3</title>
+    <title>8 Cloud Native Features 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>8 Cloud Native Features</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -134,6 +137,9 @@ function addJsClass() {
                     </div>
                     
                     <div class="toc-item" style="margin-left:10px"><a href="#serviceDiscoveryKubernetes"><strong>8.2.3</strong><span>Kubernetes Support</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#serviceDiscoveryManual"><strong>8.2.4</strong><span>Manual Service Discovery Configuration</span></a>
                     </div>
                     
                     <div class="toc-item" style="margin-left:0px"><a href="#clientSideLoadBalancing"><strong>8.3</strong><span>Client Side Load Balancing</span></a>
@@ -352,11 +358,11 @@ The Netflix Ribbon client side load balancer can be configured to use the metada
 <div class="listingblock">
 <div class="title">Obtaining Metadata for a Service instance</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">LoadBalancer loadBalancer = loadBalancerResolver.resolve(<span class="string"><span class="delimiter">&quot;</span><span class="content">some-service</span><span class="delimiter">&quot;</span></span>);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">LoadBalancer loadBalancer = loadBalancerResolver.resolve("some-service");
 Flowable.fromPublisher(
     loadBalancer.select()
 ).subscribe((instance) -&gt;
-    ConvertibleValues&lt;<span class="predefined-type">String</span>&gt; metaData = instance.getMetadata();
+    ConvertibleValues&lt;String&gt; metaData = instance.getMetadata();
     ...
 );</code></pre>
 </div>
@@ -367,8 +373,8 @@ Flowable.fromPublisher(
 <div class="listingblock">
 <div class="title">Obtaining Metadata for a Local Server</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">EmbeddedServerInstance serverInstance = applicationContext.getBean(EmbeddedServerInstance.class);
-ConvertibleValues&lt;<span class="predefined-type">String</span>&gt; metaData = serverInstance.getMetadata();</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">EmbeddedServerInstance serverInstance = applicationContext.getBean(EmbeddedServerInstance.class);
+ConvertibleValues&lt;String&gt; metaData = serverInstance.getMetadata();</code></pre>
 </div>
 </div>
 </div>
@@ -448,14 +454,14 @@ ConvertibleValues&lt;<span class="predefined-type">String</span>&gt; metaData = 
 <div class="listingblock">
 <div class="title">bootstrap.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">application</span>:
-        <span class="key">name</span>: <span class="string"><span class="content">hello-world</span></span>
-    <span class="key">config-client</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-<span class="key">consul</span>:
-    <span class="key">client</span>:
-        <span class="key">defaultZone</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    application:
+        name: hello-world
+    config-client:
+        enabled: true
+consul:
+    client:
+        defaultZone: "${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -527,7 +533,7 @@ You can alter the path searched for by setting <code>consul.client.config.path</
 <div class="listingblock">
 <div class="title">Using curl to Write a Value</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">curl -X PUT -d @- localhost:8500/v1/kv/config/application/foo.bar &lt;&lt;&lt; myvalue</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -X PUT -d @- localhost:8500/v1/kv/config/application/foo.bar &lt;&lt;&lt; myvalue</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -562,10 +568,10 @@ The <a href="../api/io/micronaut/discovery/config/ConfigDiscoveryConfiguration.h
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">consul</span>:
-    <span class="key">client</span>:
-        <span class="key">config</span>:
-            <span class="key">format</span>: <span class="string"><span class="content">JSON</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">consul:
+    client:
+        config:
+            format: JSON</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -574,9 +580,9 @@ The <a href="../api/io/micronaut/discovery/config/ConfigDiscoveryConfiguration.h
 <div class="listingblock">
 <div class="title">Using curl write JSON</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">curl -X PUT  localhost:8500/v1/kv/config/application \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -X PUT  localhost:8500/v1/kv/config/application \
 -d @- &lt;&lt; EOF
-{ &quot;foo&quot;: {  &quot;bar&quot;: &quot;myvalue&quot; } }
+{ "foo": {  "bar": "myvalue" } }
 EOF</code></pre>
 </div>
 </div>
@@ -597,10 +603,10 @@ EOF</code></pre>
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">consul</span>:
-    <span class="key">client</span>:
-        <span class="key">config</span>:
-            <span class="key">format</span>: <span class="string"><span class="content">FILES</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">consul:
+    client:
+        config:
+            format: FILES</code></pre>
 </div>
 </div>
 </div>
@@ -644,7 +650,7 @@ EOF</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:discovery-client</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:discovery-client"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -672,10 +678,10 @@ EOF</code></pre>
 <div class="listingblock">
 <div class="title">Disabling the Discovery Client Cache</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">caches</span>:
-        <span class="key">discovery-client</span>:
-            <span class="key">enabled</span>: <span class="string"><span class="content">false</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    caches:
+        discovery-client:
+            enabled: false</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -684,10 +690,10 @@ EOF</code></pre>
 <div class="listingblock">
 <div class="title">Configuring the Discovery Client Cache</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">caches</span>:
-        <span class="key">discovery-client</span>:
-            <span class="key">expireAfterAccess</span>: <span class="string"><span class="content">60s</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    caches:
+        discovery-client:
+            expireAfterAccess: 60s</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -739,14 +745,14 @@ EOF</code></pre>
 <div class="listingblock">
 <div class="title">Auto Registering with Consul (application.yml)</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">application</span>:
-        <span class="key">name</span>: <span class="string"><span class="content">hello-world</span></span>
-<span class="key">consul</span>:
-  <span class="key">client</span>:
-    <span class="key">registration</span>:
-      <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">defaultZone</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    application:
+        name: hello-world
+consul:
+  client:
+    registration:
+      enabled: true
+    defaultZone: "${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}"</code></pre>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -779,6 +785,30 @@ You could also simply set <code>consul.client.host</code> and <code>consul.clien
 <div class="paragraph">
 <p>By default registering with Consul is disabled hence you should set <code>consul.client.registration.enabled</code> to <code>true</code>. Note that you may wish to do this only in your production configuration.</p>
 </div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Running multiple instances of a service may require an additional configuration param.  See below.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you are running the same applications on the same port across different servers it is important to set the <code>micronaut.application.instance.id</code> property or you will experience instance registration collision.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  application:
+    name: hello-world
+    instance:
+      id: ${random.shortuuid}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -796,22 +826,22 @@ You could also simply set <code>consul.client.host</code> and <code>consul.clien
 <div class="listingblock">
 <div class="title">Customizing Consul Registration Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">application</span>:
-        <span class="key">name</span>: <span class="string"><span class="content">hello-world</span></span>
-<span class="key">consul</span>:
-  <span class="key">client</span>:
-    <span class="key">registration</span>:
-      <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-      <span class="comment"># Alters the tags</span>
-      <span class="key">tags</span>:
-        - <span class="string"><span class="content">hello</span></span>
-        - <span class="string"><span class="content">world</span></span>
-      <span class="comment"># Alters the retry count</span>
-      <span class="key">retry-count</span>: <span class="string"><span class="content">5</span></span>
-      <span class="comment"># Alters fail fast behaviour</span>
-      <span class="key">fail-fast</span>: <span class="string"><span class="content">false</span></span>
-    <span class="key">defaultZone</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    application:
+        name: hello-world
+consul:
+  client:
+    registration:
+      enabled: true
+      # Alters the tags
+      tags:
+        - hello
+        - world
+      # Alters the retry count
+      retry-count: 5
+      # Alters fail fast behaviour
+      fail-fast: false
+    defaultZone: "${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}"</code></pre>
 </div>
 </div>
 </div>
@@ -831,9 +861,9 @@ You could also simply set <code>consul.client.host</code> and <code>consul.clien
 <div class="listingblock">
 <div class="title">Using @Client to Discover Services</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(id = <span class="string"><span class="delimiter">&quot;</span><span class="content">hello-world</span><span class="delimiter">&quot;</span></span>)
-<span class="type">interface</span> <span class="class">HelloClient</span>{
-        ...
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client(id = "hello-world")
+interface HelloClient{
+	...
 }</code></pre>
 </div>
 </div>
@@ -843,8 +873,8 @@ You could also simply set <code>consul.client.host</code> and <code>consul.clien
 <div class="listingblock">
 <div class="title">Using @Client to Discover Services</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(id = <span class="string"><span class="delimiter">&quot;</span><span class="content">hello-world</span><span class="delimiter">&quot;</span></span>)
-<span class="annotation">@Inject</span>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client(id = "hello-world")
+@Inject
 RxHttpClient httpClient;</code></pre>
 </div>
 </div>
@@ -871,11 +901,11 @@ RxHttpClient httpClient;</code></pre>
 <div class="listingblock">
 <div class="title">Consul HTTP Check Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">consul</span>:
-  <span class="key">client</span>:
-    <span class="key">registration</span>:
-       <span class="key">check</span>:
-          <span class="key">http</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">consul:
+  client:
+    registration:
+       check:
+          http: true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -929,14 +959,14 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">Auto Registering with Eureka (application.yml)</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">application</span>:
-        <span class="key">name</span>: <span class="string"><span class="content">hello-world</span></span>
-<span class="key">eureka</span>:
-  <span class="key">client</span>:
-    <span class="key">registration</span>:
-      <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-    <span class="key">defaultZone</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    application:
+        name: hello-world
+eureka:
+  client:
+    registration:
+      enabled: true
+    defaultZone: "${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}"</code></pre>
 </div>
 </div>
 </div>
@@ -950,17 +980,17 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">Example Eureka Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">eureka</span>:
-  <span class="key">client</span>:
-     <span class="key">readTimeout</span>: <span class="string"><span class="content">5s</span></span>
-     <span class="key">registration</span>:
-         <span class="key">asgName</span>: <span class="string"><span class="content">myAsg</span></span> <span class="comment"># the auto scaling group name</span>
-         <span class="key">countryId</span>: <span class="string"><span class="content">10</span></span> <span class="comment"># the country id</span>
-         <span class="key">vipAddress</span>: <span class="string"><span class="content">'myapp'</span></span> <span class="comment"># The Eureka VIP address</span>
-         <span class="key">leaseInfo</span>:
-            <span class="key">durationInSecs</span>: <span class="string"><span class="content">60</span></span> <span class="comment"># The lease information</span>
-         <span class="key">metadata</span>: <span class="comment"># arbitrary instance metadata</span>
-            <span class="key">foo</span>: <span class="string"><span class="content">bar</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">eureka:
+  client:
+     readTimeout: 5s
+     registration:
+         asgName: myAsg # the auto scaling group name
+         countryId: 10 # the country id
+         vipAddress: 'myapp' # The Eureka VIP address
+         leaseInfo:
+            durationInSecs: 60 # The lease information
+         metadata: # arbitrary instance metadata
+            foo: bar</code></pre>
 </div>
 </div>
 </div>
@@ -977,9 +1007,9 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">Auto Registering with Eureka</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">eureka</span>:
-  <span class="key">client</span>:
-    <span class="key">defaultZone</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">https://${EUREKA_USERNAME}:${EUREKA_PASSWORD}@localhost:8761</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">eureka:
+  client:
+    defaultZone: "https://${EUREKA_USERNAME}:${EUREKA_PASSWORD}@localhost:8761"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -995,6 +1025,14 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 </div>
 <div class="paragraph">
 <p>The <a href="../api/io/micronaut/management/health/monitor/HealthMonitorTask.html">HealthMonitorTask</a> will by default continuously monitor the <a href="../api/io/micronaut/health/HealthStatus.html">HealthStatus</a> of the application by running health checks and the <a href="../api/io/micronaut/health/CurrentHealthStatus.html">CurrentHealthStatus</a> will be sent to Eureka.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_secure_communication_with_eureka">Secure Communication with Eureka</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you wish to configure HTTPS and have clients discovery Eureka instances and communicate over HTTPS then you should set the <code>eureka.client.discovery.use-secure-port</code> option to <code>true</code> to ensure that service communication happens over HTTPS and also configure <a href="#https">HTTPS</a> appropriately for each instance.</p>
 </div>
 </div>
 </div>
@@ -1021,14 +1059,93 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">Using @Client to Discover Services</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Client</span>(id = <span class="string"><span class="delimiter">&quot;</span><span class="content">hello-world</span><span class="delimiter">&quot;</span></span>)
-<span class="type">interface</span> <span class="class">HelloClient</span>{
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client(id = "hello-world")
+interface HelloClient{
     ...
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Since Kubernetes itself assumes responsibility for tasks such as health checks, load balancing and so on there is no need to send <a href="../api/io/micronaut/health/HeartbeatEvent.html">HeartbeatEvent</a> instances and so on.</p>
+</div>
+
+
+<h2 id="serviceDiscoveryManual">8.2.4 Manual Service Discovery Configuration</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/cloud/serviceDiscovery/serviceDiscoveryManual.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you do not wish to involve a service discovery server like Consul or you are interacting with a third-party service that cannot register with Consul you can instead manually configure services that are available via Service discovery.</p>
+</div>
+<div class="paragraph">
+<p>To do this you should use the <code>micronaut.http.services</code> setting. The following is an example configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">Manually configuring services</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    http:
+        services:
+            foo:
+                urls:
+                    - http://foo1
+                    - http://foo2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can then inject a client with <code>@Client("foo")</code> and it will use the above configuration to load balance between the two configured servers.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can override this configuration in production by specifying an environment variable such as <code>MICRONAUT_HTTP_SERVICES_FOO_URLS=http://prod1,http://prod2</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note that by default no health checking will happen to assert that the referenced services are operational. You can alter that by enabling health checking and optionally specifying a health check path (the default is <code>/heath</code>):</p>
+</div>
+<div class="listingblock">
+<div class="title">Enabling Health Checking</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    http:
+        services:
+            foo:
+                ...
+                health-check: true <i class="conum" data-value="1"></i><b>(1)</b>
+                health-check-interval: 15s <i class="conum" data-value="2"></i><b>(2)</b>
+                health-check-uri: /health <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Whether to health check the service</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The interval to wait between checks</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The URI to send the health check request to</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Micronaut will start a background thread to check the health status of the service and if any of the configured services respond with an error code, they will be removed from the list of available services.</p>
 </div>
 
 
@@ -1088,7 +1205,7 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.configuration:netflix-ribbon</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut.configuration:netflix-ribbon"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1100,9 +1217,9 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">Configuring Ribbon</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">ribbon</span>:
-    <span class="key">VipAddress</span>: <span class="string"><span class="content">test</span></span>
-    <span class="key">ServerListRefreshInterval</span>: <span class="string"><span class="content">2000</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">ribbon:
+    VipAddress: test
+    ServerListRefreshInterval: 2000</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1111,11 +1228,11 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">Per Client Ribbon Settings</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">ribbon</span>:
-    <span class="key">clients</span>:
-        <span class="key">hello-world</span>:
-            <span class="key">VipAddress</span>: <span class="string"><span class="content">test</span></span>
-            <span class="key">ServerListRefreshInterval</span>: <span class="string"><span class="content">2000</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">ribbon:
+    clients:
+        hello-world:
+            VipAddress: test
+            ServerListRefreshInterval: 2000</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1147,7 +1264,7 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:tracing</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:tracing"</code></pre>
 </div>
 </div>
 <div class="sect1">
@@ -1168,7 +1285,7 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <p>The <a href="../api/io/micronaut/tracing/annotation/ContinueSpan.html">@ContinueSpan</a> annotation will continue an existing span, wrapping the method call or reactive type.</p>
 </li>
 <li>
-<p>The <a href="../api/io/micronaut/tracing/annotation/SpanTag.html">@SpanTag</a> annotation can be used on method arguments to include the value of each argument within a Span&#8217;s tags</p>
+<p>The <a href="../api/io/micronaut/tracing/annotation/SpanTag.html">@SpanTag</a> annotation can be used on method arguments to include the value of each argument within a Span&#8217;s tags. When you use <code>@SpanTag</code> on a method argument, you need either to annotate the method with <code>@NewSpan</code> or <code>@ContinueSpan</code>.</p>
 </li>
 </ul>
 </div>
@@ -1178,17 +1295,17 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">Using Trace Annotations</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Singleton</span>
-<span class="type">class</span> <span class="class">HelloService</span> {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Singleton
+class HelloService {
 
-    <span class="annotation">@NewSpan</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello-world</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="directive">public</span> <span class="predefined-type">String</span> hello(<span class="annotation">@SpanTag</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">person.name</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> name) { <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="keyword">return</span> greet(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello </span><span class="delimiter">&quot;</span></span> + name);
+    @NewSpan("hello-world") <i class="conum" data-value="1"></i><b>(1)</b>
+    public String hello(@SpanTag("person.name") String name) { <i class="conum" data-value="2"></i><b>(2)</b>
+        return greet("Hello " + name);
     }
 
-    <span class="annotation">@ContinueSpan</span> <i class="conum" data-value="3"></i><b>(3)</b>
-    <span class="directive">public</span> <span class="predefined-type">String</span> greet(<span class="annotation">@SpanTag</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello.greeting</span><span class="delimiter">&quot;</span></span>) <span class="predefined-type">String</span> greet) {
-        <span class="keyword">return</span> greeting;
+    @ContinueSpan <i class="conum" data-value="3"></i><b>(3)</b>
+    public String greet(@SpanTag("hello.greeting") String greet) {
+        return greeting;
     }
 }</code></pre>
 </div>
@@ -1254,7 +1371,7 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">Running Zipkin with Docker</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ docker run -d -p 9411:9411 openzipkin/zipkin</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ docker run -d -p 9411:9411 openzipkin/zipkin</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1271,9 +1388,9 @@ As of this writing the Docker images for Eureka are significantly out-of-date so
 <div class="listingblock">
 <div class="title">Adding Zipkin Dependencies</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">runtime <span class="string"><span class="delimiter">'</span><span class="content">io.zipkin.brave:brave-instrumentation-http:4.19.0</span><span class="delimiter">'</span></span>
-runtime <span class="string"><span class="delimiter">'</span><span class="content">io.zipkin.reporter2:zipkin-reporter:2.5.0</span><span class="delimiter">'</span></span>
-compile <span class="string"><span class="delimiter">'</span><span class="content">io.opentracing.brave:brave-opentracing:0.30.0</span><span class="delimiter">'</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">runtime 'io.zipkin.brave:brave-instrumentation-http:4.19.0'
+runtime 'io.zipkin.reporter2:zipkin-reporter:2.5.0'
+compile 'io.opentracing.brave:brave-opentracing:0.30.0'</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1282,9 +1399,9 @@ compile <span class="string"><span class="delimiter">'</span><span class="conten
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">tracing</span>:
-    <span class="key">zipkin</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    zipkin:
+        enabled: true</code></pre>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -1305,7 +1422,17 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 <h2 id="_customizing_the_zipkin_sender">Customizing the Zipkin Sender</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>By default an <a href="../api/io/micronaut/tracing/brave/sender/HttpClientSender.html">HttpClientSender</a> that sends Spans asynchronously using Micronaut&#8217;s native HTTP client to <code><a href="http://localhost:9411/api/v2/spans" class="bare">http://localhost:9411/api/v2/spans</a></code> will be configured.</p>
+<p>In order to send spans you need to configure a Zipkin sender. You can configure a <a href="../api/io/micronaut/tracing/brave/sender/HttpClientSender.html">HttpClientSender</a> that sends Spans asynchronously using Micronaut&#8217;s native HTTP client using the <code>tracing.zipkin.http.url</code> setting:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Multiple Zipkin Servers</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    zipkin:
+        enabled: true
+        http:
+            url: http://localhost:9411</code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>It is unlikely that sending spans to localhost will be suitable for production deployment so you generally will want to configure the location of one or many Zipkin servers for production:</p>
@@ -1313,12 +1440,13 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 <div class="listingblock">
 <div class="title">Configuring Multiple Zipkin Servers</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">tracing</span>:
-    <span class="key">zipkin</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">urls</span>:
-            - <span class="string"><span class="content">http://foo:9411</span></span>
-            - <span class="string"><span class="content">http://bar:9411</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    zipkin:
+        enabled: true
+        http:
+            urls:
+                - http://foo:9411
+                - http://bar:9411</code></pre>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -1328,7 +1456,7 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-In production, setting <code>TRACING_ZIPKIN_URLS</code> environment variable with a comma separated list of URLs will also work.
+In production, setting <code>TRACING_ZIPKIN_HTTP_URLS</code> environment variable with a comma separated list of URLs will also work.
 </td>
 </tr>
 </table>
@@ -1350,12 +1478,12 @@ In production, setting <code>TRACING_ZIPKIN_URLS</code> environment variable wit
 <div class="listingblock">
 <div class="title">Customizing Zipkin Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">tracing</span>:
-    <span class="key">zipkin</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">traceId128Bit</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">sampler</span>:
-            <span class="key">probability</span>: <span class="string"><span class="content">1</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    zipkin:
+        enabled: true
+        traceId128Bit: true
+        sampler:
+            probability: 1</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1385,7 +1513,7 @@ In production, setting <code>TRACING_ZIPKIN_URLS</code> environment variable wit
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ docker run -d -e \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ docker run -d -e \
   COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
   -p 5775:5775/udp \
   -p 6831:6831/udp \
@@ -1414,7 +1542,7 @@ In production, setting <code>TRACING_ZIPKIN_URLS</code> environment variable wit
 <div class="listingblock">
 <div class="title">Adding Jaeger Dependencies</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">io.jaegertracing:jaeger-core:0.27.0</span><span class="delimiter">'</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile 'io.jaegertracing:jaeger-core:0.27.0'</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1423,9 +1551,9 @@ In production, setting <code>TRACING_ZIPKIN_URLS</code> environment variable wit
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">tracing</span>:
-    <span class="key">jaeger</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    jaeger:
+        enabled: true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1457,17 +1585,17 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 <div class="listingblock">
 <div class="title">Customizing Zipkin Configuration</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">tracing</span>:
-    <span class="key">jaeger</span>:
-        <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
-        <span class="key">sampler</span>:
-            <span class="key">probability</span>: <span class="string"><span class="content">0.5</span></span>
-        <span class="key">sender</span>:
-            <span class="key">agentHost</span>: <span class="string"><span class="content">foo</span></span>
-            <span class="key">agentPort</span>: <span class="string"><span class="content">5775</span></span>
-        <span class="key">reporter</span>:
-            <span class="key">flushInterval</span>: <span class="string"><span class="content">2000</span></span>
-            <span class="key">maxQueueSize</span>: <span class="string"><span class="content">200</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    jaeger:
+        enabled: true
+        sampler:
+            probability: 0.5
+        sender:
+            agentHost: foo
+            agentPort: 5775
+        reporter:
+            flushInterval: 2000
+            maxQueueSize: 200</code></pre>
 </div>
 </div>
 <div class="paragraph">

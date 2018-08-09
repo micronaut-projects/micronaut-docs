@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>9.1.2 FunctionBean 1.0.0.M3</title>
+    <title>9.1.2 FunctionBean 1.0.0.M4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -59,22 +59,25 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>11</strong><span>Configurations</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>12</strong><span>Language Support</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>13</strong><span>Management &amp; Monitoring</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>14</strong><span>Security</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>15</strong><span>Micronaut CLI</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>16</strong><span>Appendices</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>16</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>17</strong><span>Appendices</span></a>
                         </div>
                         
                     </div>
@@ -108,7 +111,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>9.1.2 FunctionBean</h1>
 
-                    <p><strong>Version:</strong> 1.0.0.M3</p>
+                    <p><strong>Version:</strong> 1.0.0.M4</p>
                 </div>
 
                 
@@ -157,17 +160,17 @@ If you have the Micronaut CLI installed you can quickly create a Java function w
 <div class="listingblock">
 <div class="title">Example Java Function</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">example</span>;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package example;
 
-<span class="keyword">import</span> <span class="include">io.micronaut.function.FunctionBean</span>;
-<span class="keyword">import</span> <span class="include">java.util.function.Supplier</span>;
+import io.micronaut.function.FunctionBean;
+import java.util.function.Supplier;
 
-<span class="annotation">@FunctionBean</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">hello-world-java</span><span class="delimiter">&quot;</span></span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">HelloJavaFunction</span> <span class="directive">implements</span> Supplier&lt;<span class="predefined-type">String</span>&gt; {
+@FunctionBean("hello-world-java")
+public class HelloJavaFunction implements Supplier&lt;String&gt; {
 
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="predefined-type">String</span> get() { <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello world!</span><span class="delimiter">&quot;</span></span>;
+    @Override
+    public String get() { <i class="conum" data-value="1"></i><b>(1)</b>
+        return "Hello world!";
     }
 }</code></pre>
 </div>
@@ -180,19 +183,56 @@ If you have the Micronaut CLI installed you can quickly create a Java function w
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>Alternatively you can also define a <a href="../api/io/micronaut/context/annotation/Factory.html">Factory</a> that returns a Java lambda:</p>
+</div>
+<div class="listingblock">
+<div class="title">Example Java Function as a Lambda</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package example;
+
+import io.micronaut.context.annotation.*;
+import io.micronaut.function.FunctionBean;
+import java.util.function.Supplier;
+
+@Factory <i class="conum" data-value="1"></i><b>(1)</b>
+public class MyFunctions {
+
+    @FunctionBean("hello-world-java")
+    public Supplier&lt;String&gt; helloWorld() { <i class="conum" data-value="2"></i><b>(2)</b>
+        return () -&gt; "Hello world!";
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A <a href="../api/io/micronaut/context/annotation/Factory.html">Factory</a> bean is defined</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <a href="../api/io/micronaut/function/FunctionBean.html">@FunctionBean</a> annotation is used on a method that returns the function.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you are using Kotlin then process is exactly the same:</p>
+</div>
 <div class="listingblock">
 <div class="title">Example Kotlin Function</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="kotlin">package example
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">package example
 
 import io.micronaut.function.FunctionBean
 import java.util.function.Supplier
 
-@FunctionBean(&quot;hello-world-kotlin&quot;)
+@FunctionBean("hello-world-kotlin")
 class HelloKotlinFunction : Supplier&lt;String&gt; {
 
     override fun get(): String { <i class="conum" data-value="1"></i><b>(1)</b>
-        return &quot;Hello world!&quot;
+        return "Hello world!"
     }
 }</code></pre>
 </div>
@@ -252,9 +292,28 @@ class HelloKotlinFunction : Supplier&lt;String&gt; {
 <div class="listingblock">
 <div class="title">Configuring the Function Name to Execute</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">micronaut</span>:
-    <span class="key">function</span>:
-        <span class="key">name</span>: <span class="string"><span class="content">hello-world-java</span></span></code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    function:
+        name: hello-world-java</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively you can specify the value when running your function (for example in the <code>Dockerfile</code>) either as an environment variable:</p>
+</div>
+<div class="listingblock">
+<div class="title">Specifying the Function to Execute as a Environment variable</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ export MICRONAUT_FUNCTION_NAME=hello-world-java
+$ java -jar build/libs/hello-world-function-all.jar</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or as a system property:</p>
+</div>
+<div class="listingblock">
+<div class="title">Specifying the Function to Execute as a System property</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ java -Dmicronaut.function.name=hello-world-java -jar build/libs/hello-world-function-all.jar</code></pre>
 </div>
 </div>
 
