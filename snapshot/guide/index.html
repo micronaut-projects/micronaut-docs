@@ -333,7 +333,11 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-functionCLI"><a href="#functionCLI"><strong>9.2.2</strong><span>Functions as CLI Applications</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-lambdaFunctions"><a href="#lambdaFunctions"><strong>9.3</strong><span>Deploying Functions to AWS Lambda</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-deployingFunctions"><a href="#deployingFunctions"><strong>9.3</strong><span>Deploying Functions</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-lambdaFunctions"><a href="#lambdaFunctions"><strong>9.3.1</strong><span>Deploying Functions to AWS Lambda</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-openFaasFunctions"><a href="#openFaasFunctions"><strong>9.3.2</strong><span>Deploying Functions to OpenFaaS</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-callingFunctions"><a href="#callingFunctions"><strong>9.4</strong><span>Calling Functions with FunctionClient</span></a></div>
         
@@ -11953,7 +11957,7 @@ You can override this configuration in production by specifying an environment v
 <p>The <a href="../api/io/micronaut/tracing/annotation/ContinueSpan.html">@ContinueSpan</a> annotation will continue an existing span, wrapping the method call or reactive type.</p>
 </li>
 <li>
-<p>The <a href="../api/io/micronaut/tracing/annotation/SpanTag.html">@SpanTag</a> annotation can be used on method arguments to include the value of each argument within a Span&#8217;s tags</p>
+<p>The <a href="../api/io/micronaut/tracing/annotation/SpanTag.html">@SpanTag</a> annotation can be used on method arguments to include the value of each argument within a Span&#8217;s tags. When you use <code>@SpanTag</code> on a method argument, you need either to annotate the method with <code>@NewSpan</code> or <code>@ContinueSpan</code>.</p>
 </li>
 </ul>
 </div>
@@ -12278,7 +12282,7 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 <p>Traditional frameworks like Grails and Spring are not really suitable since low memory consumption and fast startup time are critical, since the Function as a Service (FaaS) server will typically spin up your function for a period using a cold start and then keep it warm.</p>
 </div>
 <div class="paragraph">
-<p>Micronaut&#8217;s compile-time approach, fast startup time and low-memory footprint make it a great candidate for using as a framework for developing functions and in fact Micronaut features dedicated support for developing and deploying functions to AWS Lambda (support for other FaaS platforms is planned in the future).</p>
+<p>Micronaut&#8217;s compile-time approach, fast startup time and low-memory footprint make it a great candidate for using as a framework for developing functions and in fact Micronaut features dedicated support for developing and deploying functions to AWS Lambda and any FaaS system that supports running functions as containers (such as OpenFaaS, Rift or Fn).</p>
 </div>
 
 
@@ -12292,7 +12296,7 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 
 
 <div class="paragraph">
-<p>To get started writing serverless function you must add the appropriate Micronaut <code>function</code> dependency to your classpath. For example, to create functions for AWS Lambda, add the <code>function-aws</code> dependency.  The supported providers are listed in the table below.</p>
+<p>To get started writing serverless function you must add the appropriate Micronaut <code>function</code> dependency to your classpath. In certain cases there are FaaS platform specific extension which you may wish to include. The following table includes the dependencies for each individual FaaS platform:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 1. Function Providers</caption>
@@ -12447,6 +12451,43 @@ public class HelloJavaFunction implements Supplier&lt;String&gt; {
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>Alternatively you can also define a <a href="../api/io/micronaut/context/annotation/Factory.html">Factory</a> that returns a Java lambda:</p>
+</div>
+<div class="listingblock">
+<div class="title">Example Java Function as a Lambda</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package example;
+
+import io.micronaut.context.annotation.*;
+import io.micronaut.function.FunctionBean;
+import java.util.function.Supplier;
+
+@Factory <i class="conum" data-value="1"></i><b>(1)</b>
+public class MyFunctions {
+
+    @FunctionBean("hello-world-java")
+    public Supplier&lt;String&gt; helloWorld() { <i class="conum" data-value="2"></i><b>(2)</b>
+        return () -&gt; "Hello world!";
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A <a href="../api/io/micronaut/context/annotation/Factory.html">Factory</a> bean is defined</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <a href="../api/io/micronaut/function/FunctionBean.html">@FunctionBean</a> annotation is used on a method that returns the function.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you are using Kotlin then process is exactly the same:</p>
+</div>
 <div class="listingblock">
 <div class="title">Example Kotlin Function</div>
 <div class="content">
@@ -12522,6 +12563,25 @@ class HelloKotlinFunction : Supplier&lt;String&gt; {
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
     function:
         name: hello-world-java</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively you can specify the value when running your function (for example in the <code>Dockerfile</code>) either as an environment variable:</p>
+</div>
+<div class="listingblock">
+<div class="title">Specifying the Function to Execute as a Environment variable</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ export MICRONAUT_FUNCTION_NAME=hello-world-java
+$ java -jar build/libs/hello-world-function-all.jar</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or as a system property:</p>
+</div>
+<div class="listingblock">
+<div class="title">Specifying the Function to Execute as a System property</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ java -Dmicronaut.function.name=hello-world-java -jar build/libs/hello-world-function-all.jar</code></pre>
 </div>
 </div>
 
@@ -12894,10 +12954,24 @@ shadowJar {
 </div>
 
 
-<h2 id="lambdaFunctions">9.3 Deploying Functions to AWS Lambda</h2>
+<h2 id="deployingFunctions">9.3 Deploying Functions</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/serverlessFunctions/lambdaFunctions.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/serverlessFunctions/deployingFunctions.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut functions can be deployed to either AWS lambda or any FaaS platform that can execute the function as a container. The following sections detail how to deploy your function.</p>
+</div>
+
+
+<h2 id="lambdaFunctions">9.3.1 Deploying Functions to AWS Lambda</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/serverlessFunctions/deployingFunctions/lambdaFunctions.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -13140,6 +13214,26 @@ Hello, Fred</code></pre>
 <div class="paragraph">
 <p>Consult the <a href="https://github.com/classmethod/gradle-aws-plugin">Gradle AWS plugin documentation</a> for more details on the use of the plugin.</p>
 </div>
+</div>
+</div>
+
+
+<h2 id="openFaasFunctions">9.3.2 Deploying Functions to OpenFaaS</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/serverlessFunctions/deployingFunctions/openFaasFunctions.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>When creating a function you can use the <code>openfaas</code> feature to create a function that includes a <code>Dockerfile</code> that can be built into an image deployable to OpenFaas:</p>
+</div>
+<div class="listingblock">
+<div class="title">Creating an OpenFaaS Function</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ mn create-function hello-world-function --features openfaas</code></pre>
 </div>
 </div>
 
