@@ -311,7 +311,17 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 <h2 id="_customizing_the_zipkin_sender">Customizing the Zipkin Sender</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>By default an <a href="../api/io/micronaut/tracing/brave/sender/HttpClientSender.html">HttpClientSender</a> that sends Spans asynchronously using Micronaut&#8217;s native HTTP client to <code><a href="http://localhost:9411/api/v2/spans" class="bare">http://localhost:9411/api/v2/spans</a></code> will be configured.</p>
+<p>In order to send spans you need to configure a Zipkin sender. You can configure a <a href="../api/io/micronaut/tracing/brave/sender/HttpClientSender.html">HttpClientSender</a> that sends Spans asynchronously using Micronaut&#8217;s native HTTP client using the <code>tracing.zipkin.http.url</code> setting:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuring Multiple Zipkin Servers</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
+    zipkin:
+        enabled: true
+        http:
+            url: http://localhost:9411</code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>It is unlikely that sending spans to localhost will be suitable for production deployment so you generally will want to configure the location of one or many Zipkin servers for production:</p>
@@ -322,9 +332,10 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">tracing:
     zipkin:
         enabled: true
-        urls:
-            - http://foo:9411
-            - http://bar:9411</code></pre>
+        http:
+            urls:
+                - http://foo:9411
+                - http://bar:9411</code></pre>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -334,7 +345,7 @@ Or alternatively if you have the Micronaut CLI installed you can configure Zipki
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-In production, setting <code>TRACING_ZIPKIN_URLS</code> environment variable with a comma separated list of URLs will also work.
+In production, setting <code>TRACING_ZIPKIN_HTTP_URLS</code> environment variable with a comma separated list of URLs will also work.
 </td>
 </tr>
 </table>
