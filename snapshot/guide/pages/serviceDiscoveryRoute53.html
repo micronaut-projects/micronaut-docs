@@ -170,13 +170,17 @@ you are using</p>
 </ol>
 </div>
 <div class="listingblock">
-<div class="title">Sample application.groovy</div>
+<div class="title">Sample application.yml</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">registration.enabled = "true"
-aws.route53.registration.enabled = "true"
-aws.route53.registration.awsServiceId = "srv-978fs98fsdf"
-aws.route53.registration.namespace = "micronaut.io"
-micronaut.application.name = "something"</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">aws:
+    route53:
+        registration
+            enabled: true
+            aws-service-id: srv-978fs98fsdf
+            namespace: micronaut.io
+micronaut:
+    application:
+        name: something</code></pre>
 </div>
 </div>
 <div class="olist arabic">
@@ -205,12 +209,19 @@ compile group: 'com.amazonaws', name: 'aws-java-sdk-servicediscovery', version: 
 </ol>
 </div>
 <div class="listingblock">
-<div class="title">Sample application.groovy</div>
+<div class="title">Sample application.yml</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">aws.route53.discovery.enabled = "true"
-aws.route53.discovery.client.awsServiceId = "srv-978fs98fsdf"
-aws.route53.discovery.client.namespaceId = "micronaut.io"</code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">aws:
+    route53:
+        discovery:
+            client:
+                enabled: true
+                aws-service-id: srv-978fs98fsdf
+                namespace-id: micronaut.io</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>You can then use the <a href="../api/io/micronaut/discovery/DiscoveryClient.html">DiscoveryClient</a> API to find other services registered via Route 53. For example:</p>
 </div>
 <div class="listingblock">
 <div class="title">Sample code for client</div>
@@ -220,15 +231,14 @@ List&lt;String&gt; serviceIds = Flowable.fromPublisher(discoveryClient.getServic
 List&lt;ServiceInstance&gt; instances = Flowable.fromPublisher(discoveryClient.getInstances(serviceIds.get(0))).blockingFirst();</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>See <a href="../apiio/micronaut/discovery/route53/Route53AutoNamingClientSpec">Route53AutoNamingClientSpec</a>Route53AutoNamingClientSpec for an example on using the client to look up an instance.</p>
-</div>
 <div class="sect3">
 <h4 id="_creating_the_namespace">Creating the Namespace</h4>
 <div class="paragraph">
-<p>Namespaces is similar to a regular Route53 hosted zone, and they appear in the Route53 console but it doesn&#8217;t support
-working with them. You must use the AWS-CLI at this time for any Service Discovery functionality.
-First decide if you are creating a public facing namespace or a private one, as the commands are different:</p>
+<p>Namespaces are similar to a regular Route53 hosted zone, and they appear in the Route53 console but the console doesn&#8217;t support
+ modifying them. You must use the AWS-CLI at this time for any Service Discovery functionality.</p>
+</div>
+<div class="paragraph">
+<p>First decide if you are creating a public facing namespace or a private one, as the commands are different:</p>
 </div>
 <div class="listingblock">
 <div class="title">Creating Namespace</div>
@@ -241,7 +251,7 @@ $ aws servicediscovery create-private-dns-namespace --name micronaut.internal.io
 </div>
 </div>
 <div class="paragraph">
-<p>When you run this you will get an operation ID. You can check the status with the get-operation CLI command:</p>
+<p>When you run this you will get an operation ID. You can check the status with the <code>get-operation</code> CLI command:</p>
 </div>
 <div class="listingblock">
 <div class="title">Get Operation Results</div>
@@ -250,8 +260,10 @@ $ aws servicediscovery create-private-dns-namespace --name micronaut.internal.io
 </div>
 </div>
 <div class="paragraph">
-<p>This will tell you the ID of the namespace. Write that down, you&#8217;ll need it for the next steps. If you get an error it will say way. For the same, I use the domain name I&#8217;m using for the service discovery records for the name (dns records next).
-You can use this command to get the status of any call you make that returns an operation id.</p>
+<p>You can use this command to get the status of any call you make that returns an operation id.</p>
+</div>
+<div class="paragraph">
+<p>The result of the command will tell you the ID of the namespace. Write that down, you&#8217;ll need it for the next steps. If you get an error it will say what the error was.</p>
 </div>
 </div>
 <div class="sect3">
@@ -300,14 +312,18 @@ You can use this command to get the status of any call you make that returns an 
 <div class="sect3">
 <h4 id="_auto_naming_registration">Auto Naming Registration</h4>
 <div class="paragraph">
-<p>You will need to add the configuration to make your applications register with Route 53 Autodiscovery:</p>
+<p>You will need to add the configuration to make your applications register with Route 53 Auto-discovery:</p>
 </div>
 <div class="listingblock">
 <div class="title">Registration Properties</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">aws.route53.registration.enabled=true
-aws.route53.registration.aws-service-id=&lt;enter the service id you got after creation on aws cli&gt;
-aws.route53.discovery.namespace-id=&lt;namespaceId&gt;</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">aws:
+    route53:
+        registration:
+            enabled: true
+            aws-service-id=&lt;enter the service id you got after creation on aws cli&gt;
+        discovery:
+            namespace-id=&lt;enter the namespace id you got after creating the namespace&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -316,8 +332,12 @@ aws.route53.discovery.namespace-id=&lt;namespaceId&gt;</code></pre>
 <div class="listingblock">
 <div class="title">Discovery Properties</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">aws.route53.discovery.client.enabled=true
-aws.route53.discovery.client.aws-service-id=serviceid</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">aws:
+    route53:
+        discovery:
+            client
+                enabled: true
+                aws-service-id: &lt;enter the service id you got after creation on aws cli&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
