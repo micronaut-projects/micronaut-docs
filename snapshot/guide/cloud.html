@@ -127,6 +127,9 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:10px"><a href="#distributedConfigurationConsul"><strong>8.1.2</strong><span>Consul Support</span></a>
                     </div>
                     
+                    <div class="toc-item" style="margin-left:10px"><a href="#distributedConfigurationAwsParameterStore"><strong>8.1.3</strong><span>AWS Parameter Store Support</span></a>
+                    </div>
+                    
                     <div class="toc-item" style="margin-left:0px"><a href="#serviceDiscovery"><strong>8.2</strong><span>Service Discovery</span></a>
                     </div>
                     
@@ -612,6 +615,76 @@ EOF</code></pre>
             format: FILES</code></pre>
 </div>
 </div>
+</div>
+</div>
+
+
+<h2 id="distributedConfigurationAwsParameterStore">8.1.3 AWS Parameter Store Support</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/cloud/cloudConfiguration/distributedConfigurationAwsParameterStore.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut supports configuration sharing via AWS System Manager Parameter Store. You will need the following dependencies configured:</p>
+</div>
+<div class="listingblock">
+<div class="title">Example <code>build.gradle</code> for AWS System Manager Parameter Store</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:discovery-client"
+compile "io.micronaut.configuration:aws-common"
+compile group: 'com.amazonaws', name: 'aws-java-sdk-ssm', version: '1.11.308'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can configure shared properties by going into the AWS Console &#8594; System Manager &#8594; Parameter Store</p>
+</div>
+<div class="paragraph">
+<p>Micronaut will use a hierarchy to read the configuration values, and supports <code>String</code>, <code>StringList</code>, and <code>SecureString</code> types.</p>
+</div>
+<div class="paragraph">
+<p>You can make environment specific configurations as well by including the environment name after an underscore <code>_</code>. For example if your <code>micronaut.application.name</code> setting is set to <code>helloworld</code> then providing configuration values under <code>helloworld_test</code> will be applied only to the <code>test</code> environment.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Names as Hierarchy</div>
+<div class="content">
+<pre>application/
+    /specialConfig
+application_test/
+    /specialConfig2
+application_dev
+    /specialDevConfig</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each level of the tree can be composed of key=value pairs. If you want multiple key value pairs, set the type to 'StringList'.</p>
+</div>
+<div class="paragraph">
+<p>For special secure information, like keys or passwords, use the type "SecureString". KMS will be automatically invoked when you
+add and retrieve values and decrypt them with the default key store for your account. If you set the configuration to not use secure strings, they will be returned to you encrypted and you must manually decrypt them.</p>
+</div>
+<div class="paragraph">
+<p>The following is an example configuration in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Configuration Properties Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">aws:
+    client:
+        system-manager:
+            parameterstore:
+                # true/false will turn on or off this feature
+                enabled: true
+                # true/false - ask AWS to automatically decrypt SecureString type with KMS
+                useSecureParameters: true
+                # String - you can use a custom root path the application will look for configurations in. The default is '/config/application'.
+                rootHierarchyPath: /config/application</code></pre>
 </div>
 </div>
 
