@@ -305,7 +305,9 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-serviceDiscoveryKubernetes"><a href="#serviceDiscoveryKubernetes"><strong>8.2.3</strong><span>Kubernetes Support</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-serviceDiscoveryManual"><a href="#serviceDiscoveryManual"><strong>8.2.4</strong><span>Manual Service Discovery Configuration</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-serviceDiscoveryRoute53"><a href="#serviceDiscoveryRoute53"><strong>8.2.4</strong><span>AWS Route 53 Support</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-serviceDiscoveryManual"><a href="#serviceDiscoveryManual"><strong>8.2.5</strong><span>Manual Service Discovery Configuration</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-clientSideLoadBalancing"><a href="#clientSideLoadBalancing"><strong>8.3</strong><span>Client Side Load Balancing</span></a></div>
         
@@ -11832,7 +11834,232 @@ interface HelloClient{
 </div>
 
 
-<h2 id="serviceDiscoveryManual">8.2.4 Manual Service Discovery Configuration</h2>
+<h2 id="serviceDiscoveryRoute53">8.2.4 AWS Route 53 Support</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/cloud/serviceDiscovery/serviceDiscoveryRoute53.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To use the <a href="https://aws.amazon.com/route53/">Route 53 Service Discovery</a>, you must meet the following criteria:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Run EC2 instances of some type</p>
+</li>
+<li>
+<p>Have a domain name hosted in Route 53</p>
+</li>
+<li>
+<p>Have a newer version of AWS-CLI (such as 14+)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Assuming you have those things, you are ready. It is not as fancy as Consul or Eureka, but other than some initial setup
+with the AWS-CLI, there is no other software running to go wrong. You can even support health checks
+if you add a custom health check to your service. If you would like to test if your account can create and use Service Discovery see the Integration Test section.
+More information can be found at <a href="https://docs.aws.amazon.com/Route53/latest/APIReference/overview-service-discovery.html" class="bare">https://docs.aws.amazon.com/Route53/latest/APIReference/overview-service-discovery.html</a>.</p>
+</div>
+<div class="paragraph">
+<p>Here are the steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Use AWS-CLI to create a namespace. You can make either a public or private one depending on what IPs or subnets
+you are using</p>
+</li>
+<li>
+<p>Create a service with DNS Records with AWS-CLI command</p>
+</li>
+<li>
+<p>Add health checks or custom health checks (optional)</p>
+</li>
+<li>
+<p>Add Service ID to your application configuration file like so:</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">Sample application.groovy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">registration.enabled = "true"
+aws.route53.registration.enabled = "true"
+aws.route53.registration.awsServiceId = "srv-978fs98fsdf"
+aws.route53.registration.namespace = "micronaut.io"
+micronaut.application.name = "something"</code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Make sure you have the following dependencies included in your build file:</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">Sample build.gradle</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">compile "io.micronaut:discovery-client"
+compile "io.micronaut.configuration:aws-common"
+compile group: 'com.amazonaws', name: 'aws-java-sdk-route53', version: '1.11.297'
+compile group: 'com.amazonaws', name: 'aws-java-sdk-core', version: '1.11.297'
+compile group: 'com.amazonaws', name: 'jmespath-java', version: '1.11.297'
+compile group: 'com.amazonaws', name: 'aws-java-sdk-servicediscovery', version: '1.11.297'</code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>On the client side, you will need the same dependencies and less configuration options:</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">Sample application.groovy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">aws.route53.discovery.enabled = "true"
+aws.route53.discovery.client.awsServiceId = "srv-978fs98fsdf"
+aws.route53.discovery.client.namespaceId = "micronaut.io"</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample code for client</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">DiscoveryClient discoveryClient = embeddedServer.applicationContext.getBean(DiscoveryClient);
+List&lt;String&gt; serviceIds = Flowable.fromPublisher(discoveryClient.getServiceIds()).blockingFirst();
+List&lt;ServiceInstance&gt; instances = Flowable.fromPublisher(discoveryClient.getInstances(serviceIds.get(0))).blockingFirst();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See <a href="../apiio/micronaut/discovery/route53/Route53AutoNamingClientSpec">Route53AutoNamingClientSpec</a>Route53AutoNamingClientSpec for an example on using the client to look up an instance.</p>
+</div>
+<div class="sect3">
+<h4 id="_creating_the_namespace">Creating the Namespace</h4>
+<div class="paragraph">
+<p>Namespaces is similar to a regular Route53 hosted zone, and they appear in the Route53 console but it doesn&#8217;t support
+working with them. You must use the AWS-CLI at this time for any Service Discovery functionality.
+First decide if you are creating a public facing namespace or a private one, as the commands are different:</p>
+</div>
+<div class="listingblock">
+<div class="title">Creating Namespace</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ aws servicediscovery create-public-dns-namespace --name micronaut.io --create-request-id create-1522767790 --description adescrptionhere
+
+or
+
+$ aws servicediscovery create-private-dns-namespace --name micronaut.internal.io --create-request-id create-1522767790 --description adescrptionhere --vpc yourvpcID</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When you run this you will get an operation ID. You can check the status with the get-operation CLI command:</p>
+</div>
+<div class="listingblock">
+<div class="title">Get Operation Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ aws servicediscovery get-operation --operation-id asdffasdfsda</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will tell you the ID of the namespace. Write that down, you&#8217;ll need it for the next steps. If you get an error it will say way. For the same, I use the domain name I&#8217;m using for the service discovery records for the name (dns records next).
+You can use this command to get the status of any call you make that returns an operation id.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_creating_the_service_dns_records">Creating the Service &amp; DNS Records</h4>
+<div class="paragraph">
+<p>Next step is creating the Service and DNS records.</p>
+</div>
+<div class="listingblock">
+<div class="title">Create Service</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ aws create-service --name yourservicename --create-request-id somenumber --description someservicedescrption --dns-config NamespaceId=yournamespaceid,RoutingPolicy=WEIGHTED,DnsRecords=[{Type=A,TTL=1000},{Type=A,TTL=1000}]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>DnsRecord</code> type can be <code>A</code>(ipv4),<code>AAAA</code>(ipv6),<code>SRV</code>, or <code>CNAME</code>. <code>RoutingPolicy</code> can be <code>WEIGHTED</code> or <code>MULTIVALUE</code>. Keep in mind <code>CNAME</code> must use weighted routing type, <code>SRV</code> must have a valid port configured.</p>
+</div>
+<div class="paragraph">
+<p>If you want to add a health check, you can use the following syntax on the CLI:</p>
+</div>
+<div class="listingblock">
+<div class="title">Specifying a Health Check</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Type=string,ResourcePath=string,FailureThreshold=integer</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Type can be 'HTTP','HTTPS', or 'TCP'. You can only use a standard health check on a public namespace. See Custom Health Checks for private namespaces. Resource path should be a url that returns 200 OK if it&#8217;s healthy.</p>
+</div>
+<div class="paragraph">
+<p>For a custom health check, you only need to specify <code>--health-check-custom-config FailureThreshold=integer</code> which will work on private namespaces as well.</p>
+</div>
+<div class="paragraph">
+<p>This is also good because Micronaut will send out pulsation commands to let AWS know the instance is still healthy.</p>
+</div>
+<div class="paragraph">
+<p>For more help run 'aws discoveryservice create-service help'.</p>
+</div>
+<div class="paragraph">
+<p>You will get a service ID and an ARN back from this command if successful. Write that down, it&#8217;s going to go into the Micronaut configuration.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_setting_up_the_configuration_in_micronaut">Setting up the configuration in Micronaut</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_auto_naming_registration">Auto Naming Registration</h4>
+<div class="paragraph">
+<p>You will need to add the configuration to make your applications register with Route 53 Autodiscovery:</p>
+</div>
+<div class="listingblock">
+<div class="title">Registration Properties</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">aws.route53.registration.enabled=true
+aws.route53.registration.aws-service-id=&lt;enter the service id you got after creation on aws cli&gt;
+aws.route53.discovery.namespace-id=&lt;namespaceId&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_discovery_client_configuration">Discovery Client Configuration</h4>
+<div class="listingblock">
+<div class="title">Discovery Properties</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">aws.route53.discovery.client.enabled=true
+aws.route53.discovery.client.aws-service-id=serviceid</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also call the following methods by getting the bean "Route53AutoNamingClient":</p>
+</div>
+<div class="listingblock">
+<div class="title">Discovery Methods</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// if serviceId is null it will use property "aws.route53.discovery.client.awsServiceId"
+Publisher&lt;List&lt;ServiceInstance&gt;&gt; getInstances(String serviceId)
+// reads property "aws.route53.discovery.namespaceId"
+Publisher&lt;List&lt;String&gt;&gt; getServiceIds()</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_integration_tests">Integration Tests</h4>
+<div class="paragraph">
+<p>If you set the environment variable AWS_SUBNET_ID and have credentials configured in your home directory that are valid (in <code>~/.aws/credentials</code>)
+you can run the integration tests. You will still need a domain hosted on route53 as well. This test will create a t2.nano instance, a namespace, service, and register that instance to service discovery.
+When the test completes it will remove/terminate all resources it spun up.</p>
+</div>
+</div>
+
+
+<h2 id="serviceDiscoveryManual">8.2.5 Manual Service Discovery Configuration</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/cloud/serviceDiscovery/serviceDiscoveryManual.adoc"'>
