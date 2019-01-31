@@ -53,16 +53,20 @@ class JavaDocAtValueReplacementTask extends DefaultTask {
                     AtValue atValueReplacement = JavaDocAtValueReplacement.atValueField(configurationPropertiesClassName, proccessedLine)
 
                     if (atValueReplacement != null && atValueReplacement.type != null && atValueReplacement.fieldName != null) {
-                        String resolvedValue = calculateResolvedValue(atValueReplacement.type, atValueReplacement.fieldName)
-                        if (resolvedValue) {
-                            String result = proccessedLine.substring(0, proccessedLine.indexOf("{@value "))
-                            result += resolvedValue
-                            String sub = proccessedLine.substring(proccessedLine.indexOf("{@value ") + "{@value ".size())
-                            sub = sub.substring(sub.indexOf('}') + '}'.length())
-                            result += sub
-                            proccessedLine = result
-                        } else {
-                            println "no resolved value for type: ${atValueReplacement?.type} fieldname: ${atValueReplacement?.fieldName}"
+                        try {
+                            String resolvedValue = calculateResolvedValue(atValueReplacement.type, atValueReplacement.fieldName)
+                            if (resolvedValue) {
+                                String result = proccessedLine.substring(0, proccessedLine.indexOf("{@value "))
+                                result += resolvedValue
+                                String sub = proccessedLine.substring(proccessedLine.indexOf("{@value ") + "{@value ".size())
+                                sub = sub.substring(sub.indexOf('}') + '}'.length())
+                                result += sub
+                                proccessedLine = result
+                            } else {
+                                println "no resolved value for type: ${atValueReplacement?.type} fieldname: ${atValueReplacement?.fieldName}"
+                            }
+                        } catch(StringIndexOutOfBoundsException e) {
+                            println "StringIndexOutOfBoundsException - no resolved value for type: ${atValueReplacement?.type} fieldname: ${atValueReplacement?.fieldName}"
                         }
                     }
                     attempts--
