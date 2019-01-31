@@ -79,7 +79,13 @@ class ApiMacro extends InlineMacroProcessor {
         if(defaultPackage != null && !target.startsWith(defaultPackage)) {
             target = "${defaultPackage}${target}" // allow excluding io.micronaut
         }
-        String baseUri = getBaseUri(parent.document.attributes)
+        String baseUri
+
+        try {
+            baseUri = getBaseUri(parent.document.attributes)
+        } catch (e) {
+            baseUri = getBaseUri(Collections.emptyMap())
+        }
         final Map options = [
                 type: ':link',
                 target: "${baseUri}/${target.replace('.','/')}.html${methodRef}${propRef}".toString()
