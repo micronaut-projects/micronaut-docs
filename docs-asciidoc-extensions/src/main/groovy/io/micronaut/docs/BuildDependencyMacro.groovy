@@ -107,6 +107,8 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
             case 'implementation':
                 return 'compile'
             case 'testCompile':
+            case 'testRuntime':
+            case 'testRuntimeOnly':
             case 'testImplementation':
                 return 'test'
             case 'compileOnly': return 'provided'
@@ -118,6 +120,9 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
     private String toGradleScope(Map<String, Object> attributes) {
         String s = valueAtAttributes('scope', attributes)
         switch (s) {
+            case 'test':
+                return 'testCompile'
+            break
             case 'provided':
                 return 'developmentOnly'
             default: return s
