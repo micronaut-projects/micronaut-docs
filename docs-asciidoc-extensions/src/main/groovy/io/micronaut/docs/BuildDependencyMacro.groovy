@@ -73,13 +73,28 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
 
     @Override
     protected Object process(AbstractBlock parent, String target, Map<String, Object> attributes) {
-
         String groupId = valueAtAttributes('groupId', attributes) ?: GROUPID
         String artifactId = target.startsWith(DEPENDENCY_PREFIX) ? target : groupId.startsWith(MICRONAUT_GROUPID) ? "${DEPENDENCY_PREFIX}${target}" : target
         String version = valueAtAttributes('version', attributes)
+
+        if (target.contains(":")) {
+            def tokens = target.split(":")
+            groupId = tokens[0]
+            artifactId = tokens[1]
+            if (tokens.length == 3) {
+                version = tokens[2]
+            } else {
+                version = valueAtAttributes('version', attributes)    
+            }
+        } else {
+            groupId = valueAtAttributes('groupId', attributes) ?: GROUPID
+            artifactId = target.startsWith(DEPENDENCY_PREFIX) ? target : groupId.startsWith(MICRONAUT_GROUPID) ? "${DEPENDENCY_PREFIX}${target}" : target
+            version = valueAtAttributes('version', attributes)
+        }
+
         boolean verbose = valueAtAttributes('verbose', attributes) as boolean
 
-        String gradleScope = valueAtAttributes('gradleScope', attributes) ?: valueAtAttributes('scope', attributes) ?: SCOPE_COMPILE
+        String gradleScope = valueAtAttributes('gradleScope', attributes) ?: toGradleScope(attributes) ?: SCOPE_COMPILE
         String mavenScope = valueAtAttributes('mavenScope', attributes) ?: toMavenScope(attributes) ?: SCOPE_COMPILE
         String content = gradleDepependency(BUILD_GRADLE, groupId, artifactId, version, gradleScope, MULTILANGUAGECSSCLASS, verbose)
         content += mavenDepependency(BUILD_MAVEN, groupId, artifactId, version, mavenScope, MULTILANGUAGECSSCLASS)
@@ -96,6 +111,15 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
                 return 'test'
             case 'compileOnly': return 'provided'
             case 'runtimeOnly': return 'runtime'
+            default: return s
+        }
+    }
+
+    private String toGradleScope(Map<String, Object> attributes) {
+        String s = valueAtAttributes('scope', attributes)
+        switch (s) {
+            case 'provided':
+                return 'developmentOnly'
             default: return s
         }
     }
