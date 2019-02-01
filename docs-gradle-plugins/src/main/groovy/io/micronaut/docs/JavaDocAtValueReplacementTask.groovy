@@ -103,11 +103,19 @@ class JavaDocAtValueReplacementTask extends DefaultTask {
                     String line = lines[i]
                     if (line.contains("class ")) {
                         String subLine = line.substring(line.indexOf("class ") + "class ".length())
-                        classEvaluated = subLine.substring(0, subLine.indexOf(' '))
+                        if (subLine.indexOf(' ') != -1) {
+                            classEvaluated = subLine.substring(0, subLine.indexOf(' '))
+                        } else {
+                            classEvaluated = subLine
+                        }
                     }
                     if (line.contains("interface ")) {
                         String subLine = line.substring(line.indexOf("interface ") + "interface ".length())
-                        interfaceEvaluated = subLine.substring(0, subLine.indexOf(' '))
+                        if (subLine.indexOf(' ') != -1) {
+                            interfaceEvaluated = subLine.substring(0, subLine.indexOf(' '))
+                        } else {
+                            interfaceEvaluated = subLine
+                        }
                     }
                     if (
                     (classEvaluated && (classEvaluated == targetClassName)) ||
