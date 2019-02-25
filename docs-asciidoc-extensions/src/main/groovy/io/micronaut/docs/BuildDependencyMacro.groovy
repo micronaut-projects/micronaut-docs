@@ -73,13 +73,13 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
 
     @Override
     protected Object process(AbstractBlock parent, String target, Map<String, Object> attributes) {
-        String groupId = valueAtAttributes('groupId', attributes) ?: GROUPID
-        String artifactId = target.startsWith(DEPENDENCY_PREFIX) ? target : groupId.startsWith(MICRONAUT_GROUPID) ? "${DEPENDENCY_PREFIX}${target}" : target
-        String version = valueAtAttributes('version', attributes)
+        String groupId
+        String artifactId
+        String version
 
         if (target.contains(":")) {
             def tokens = target.split(":")
-            groupId = tokens[0]
+            groupId = tokens[0] ?: GROUPID
             artifactId = tokens[1]
             if (tokens.length == 3) {
                 version = tokens[2]
@@ -104,6 +104,7 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
     private String toMavenScope(Map<String, Object> attributes) {
         String s = valueAtAttributes('scope', attributes)
         switch (s) {
+            case 'api':
             case 'implementation':
                 return 'compile'
             case 'testCompile':
@@ -168,25 +169,47 @@ String html = """\
                               String scope,
                               String multilanguageCssClass
                              ) {
-        String html = """\
+        String html
+        if (scope == 'annotationProcessor') {
+            html = """\
+<div class=\"listingblock ${multilanguageCssClass}\">
+<div class=\"content\">
+<pre class=\"highlightjs highlight\"><code class=\"language-xml hljs\" data-lang=\"${build}\">&lt;annotationProcessorPaths&gt;
+    &lt;path&gt;
+        &lt;groupId&gt;${groupId}&lt;/groupId&gt;
+        &lt;artifactId&gt;${artifactId}&lt;/artifactId&gt;"""
+            if (version) {
+                html += "\n        &lt;version&gt;${version}&lt;/version&gt;"
+            }
+
+            html += """
+    &lt;/path&gt;
+&lt;/annotationProcessorPaths&gt;</code></pre>
+</div>
+</div>
+"""
+        } else {
+
+            html = """\
 <div class=\"listingblock ${multilanguageCssClass}\">
 <div class=\"content\">
 <pre class=\"highlightjs highlight\"><code class=\"language-xml hljs\" data-lang=\"${build}\">&lt;dependency&gt;
     &lt;groupId&gt;${groupId}&lt;/groupId&gt;
     &lt;artifactId&gt;${artifactId}&lt;/artifactId&gt;"""
-        if (version) {
-            html += "\n    &lt;version&gt;${version}&lt;/version&gt;"
-        }
-        if (scope != SCOPE_COMPILE) {
-            html += "\n    &lt;scope&gt;${scope}&lt;/scope&gt;"
-        }
+            if (version) {
+                html += "\n    &lt;version&gt;${version}&lt;/version&gt;"
+            }
+            if (scope != SCOPE_COMPILE) {
+                html += "\n    &lt;scope&gt;${scope}&lt;/scope&gt;"
+            }
 
-        html += """
+            html += """
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
 """
-        html
+        }
+        return html
     }
 }
 
