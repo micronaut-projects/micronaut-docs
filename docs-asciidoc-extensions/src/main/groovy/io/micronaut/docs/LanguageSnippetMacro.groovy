@@ -49,7 +49,7 @@ class LanguageSnippetMacro extends BlockMacroProcessor implements ValueAtAttribu
     @Override
     protected Object process(AbstractBlock parent, String target, Map<String, Object> attributes) {
         String[] tags = valueAtAttributes("tags", attributes)?.toString()?.split(",")
-        String indent = valueAtAttributes("tags", attributes)
+        String indent = valueAtAttributes("indent", attributes)
         StringBuilder content = new StringBuilder()
 
         String[] files = target.split(",")
