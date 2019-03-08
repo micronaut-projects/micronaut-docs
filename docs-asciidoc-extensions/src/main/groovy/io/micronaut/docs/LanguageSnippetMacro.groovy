@@ -1,5 +1,6 @@
 package io.micronaut.docs
 
+
 import org.asciidoctor.Asciidoctor
 import org.asciidoctor.SafeMode
 import org.asciidoctor.ast.AbstractBlock
@@ -25,7 +26,7 @@ class LanguageSnippetMacro extends BlockMacroProcessor implements ValueAtAttribu
     }
 
     private String projectDir(String lang, Map<String, Object> attributes) {
-        String projectBase= valueAtAttributes(ATTR_PROJECT_BASE, attributes)
+        String projectBase = valueAtAttributes(ATTR_PROJECT_BASE, attributes)
         if (projectBase) {
             return "$projectBase-$lang"
         }
@@ -39,8 +40,7 @@ class LanguageSnippetMacro extends BlockMacroProcessor implements ValueAtAttribu
             }
             if (lang == LANG_GROOVY) {
                 return DEFAULT_GROOVY_PROJECT
-            }
-            else {
+            } else {
                 return DEFAULT_JAVA_PROJECT
             }
         }
@@ -48,34 +48,40 @@ class LanguageSnippetMacro extends BlockMacroProcessor implements ValueAtAttribu
 
     @Override
     protected Object process(AbstractBlock parent, String target, Map<String, Object> attributes) {
-        String baseName = target.replace(".", File.separator)
         String[] tags = valueAtAttributes("tags", attributes)?.toString()?.split(",")
         String indent = valueAtAttributes("tags", attributes)
         StringBuilder content = new StringBuilder()
-        for(lang in LANGS) {
+
+        String[] files = target.split(",")
+        for (lang in LANGS) {
             String projectDir = projectDir(lang, attributes)
             String ext = lang == LANG_KOTLIN ? 'kt' : lang
             String sourceFolder = lang
             String sourceType = valueAtAttributes(ATTR_SOURCE, attributes) ?: 'test'
-            File file = new File("$projectDir/src/$sourceType/$sourceFolder/${baseName}.$ext")
-            if (!file.exists()) {
-                continue
+
+            List includes = []
+            for (fileName in files) {
+                String baseName = fileName.replace(".", File.separator)
+                File file = new File("$projectDir/src/$sourceType/$sourceFolder/${baseName}.$ext")
+                if (!file.exists()) {
+                    println "!!!! WARNING: NO FILE FOUND MATCHING TARGET PASSED IN AT PATH : $file.path"
+                    continue
+                }
+
+                indent = indent ? tags ? ",indent=$indent" : "indent=$indent" : ""
+
+                if (tags) {
+                    includes << tags.collect() { "include::${file.absolutePath}[tag=${it}${indent}]" }.join("\n\n")
+                } else {
+                    includes << "include::${file.absolutePath}[${indent}]"
+                }
             }
 
-            indent = indent ? tags ? ",indent=$indent" : "indent=$indent" : ""
-
-            String includes
-            if (tags) {
-                includes =  tags.collect() { "include::${file.absolutePath}[tag=${it}${indent}]" }.join("\n\n")
-            } else {
-                includes = "include::${file.absolutePath}[${indent}]"
-            }
-
-            if (file.exists()) {
+            if (!includes.empty) {
                 content << """
 [source.multi-language-sample,$lang]
 ----
-$includes
+${includes.join("\n")}
 ----"""
             }
         }
