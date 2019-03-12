@@ -93,11 +93,11 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
         }
 
         boolean verbose = valueAtAttributes('verbose', attributes) as boolean
-
+        String classifier = valueAtAttributes('classifier', attributes)
         String gradleScope = valueAtAttributes('gradleScope', attributes) ?: toGradleScope(attributes) ?: SCOPE_COMPILE
         String mavenScope = valueAtAttributes('mavenScope', attributes) ?: toMavenScope(attributes) ?: SCOPE_COMPILE
-        String content = gradleDepependency(BUILD_GRADLE, groupId, artifactId, version, gradleScope, MULTILANGUAGECSSCLASS, verbose)
-        content += mavenDepependency(BUILD_MAVEN, groupId, artifactId, version, mavenScope, MULTILANGUAGECSSCLASS)
+        String content = gradleDepependency(BUILD_GRADLE, groupId, artifactId, version, classifier, gradleScope, MULTILANGUAGECSSCLASS, verbose)
+        content += mavenDepependency(BUILD_MAVEN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS)
         createBlock(parent, "pass", [content], attributes, config).convert()
     }
 
@@ -133,12 +133,13 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
 
 
     String gradleDepependency(String build,
-                             String groupId,
-                             String artifactId,
-                             String version,
+                              String groupId,
+                              String artifactId,
+                              String version,
+                              String classifier,
                               String scope,
-                             String multilanguageCssClass,
-                             boolean  verbose) {
+                              String multilanguageCssClass,
+                              boolean verbose) {
 String html = """\
         <div class=\"listingblock ${multilanguageCssClass}\">
 <div class=\"content\">
@@ -148,10 +149,16 @@ String html = """\
             if (version) {
                 html +=", <span class=\"hljs-string\">version:</span> <span class=\"hljs-string\">'${version}'</span>"
             }
+            if (classifier) {
+                html +=", <span class=\"hljs-string\">classifier:</span> <span class=\"hljs-string\">'${classifier}'</span>"
+            }
         } else {
             html += "${scope} <span class=\"hljs-string\">'${groupId}:${artifactId}"
             if (version) {
                 html += ":${version}"
+            }
+            if (classifier) {
+                html += ":${classifier}"
             }
             html += "'</span>"
         }
@@ -166,6 +173,7 @@ String html = """\
                               String groupId,
                               String artifactId,
                               String version,
+                              String classifier,
                               String scope,
                               String multilanguageCssClass
                              ) {
@@ -181,7 +189,9 @@ String html = """\
             if (version) {
                 html += "\n        &lt;version&gt;${version}&lt;/version&gt;"
             }
-
+            if (classifier) {
+                html += "\n        &lt;classifier&gt;${classifier}&lt;/classifier&gt;"
+            }
             html += """
     &lt;/path&gt;
 &lt;/annotationProcessorPaths&gt;</code></pre>
@@ -201,6 +211,9 @@ String html = """\
             }
             if (scope != SCOPE_COMPILE) {
                 html += "\n    &lt;scope&gt;${scope}&lt;/scope&gt;"
+            }
+            if (classifier) {
+                html += "\n    &lt;classifier&gt;${classifier}&lt;/classifier&gt;"
             }
 
             html += """
