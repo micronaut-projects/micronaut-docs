@@ -86,7 +86,7 @@ class LanguageSnippetMacro extends BlockMacroProcessor implements ValueAtAttribu
                 content << """
 [source.multi-language-sample,$lang]
 ----
-${includes.join("\n")}
+${includes.join("\n\n")}
 ----"""
             }
         }
