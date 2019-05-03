@@ -50,6 +50,7 @@ class LanguageSnippetMacro extends BlockMacroProcessor implements ValueAtAttribu
     protected Object process(AbstractBlock parent, String target, Map<String, Object> attributes) {
         String[] tags = valueAtAttributes("tags", attributes)?.toString()?.split(",")
         String indent = valueAtAttributes("indent", attributes)
+        String title = valueAtAttributes("title", attributes)
         StringBuilder content = new StringBuilder()
 
         String[] files = target.split(",")
@@ -75,6 +76,10 @@ class LanguageSnippetMacro extends BlockMacroProcessor implements ValueAtAttribu
                 } else {
                     includes << "include::${file.absolutePath}[${indent}]"
                 }
+            }
+
+            if (title != null) {
+                content << ".$title\n"
             }
 
             if (!includes.empty) {
