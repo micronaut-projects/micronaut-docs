@@ -55,6 +55,9 @@ class LanguageSnippetMacro extends BlockMacroProcessor implements ValueAtAttribu
 
         String[] files = target.split(",")
         for (lang in LANGS) {
+            if (title != null) {
+                content << ".$title\n\n"
+            }
             String projectDir = projectDir(lang, attributes)
             String ext = lang == LANG_KOTLIN ? 'kt' : lang
             String sourceFolder = lang
@@ -78,16 +81,12 @@ class LanguageSnippetMacro extends BlockMacroProcessor implements ValueAtAttribu
                 }
             }
 
-            if (title != null) {
-                content << ".$title\n"
-            }
-
             if (!includes.empty) {
                 content << """
-[source.multi-language-sample,$lang]
+[source.multi-language-sample,$lang,$title]
 ----
 ${includes.join("\n\n")}
-----"""
+----\n\n"""
             }
         }
         if (content) {
