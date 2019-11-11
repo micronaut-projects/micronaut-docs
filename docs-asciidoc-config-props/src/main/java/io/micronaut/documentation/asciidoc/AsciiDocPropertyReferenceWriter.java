@@ -97,7 +97,8 @@ public class AsciiDocPropertyReferenceWriter implements ConfigurationMetadataWri
 
                             for (PropertyMetadata pm : entry.getValue()) {
                                 //ignore setters of configuration properties classes
-                                if (pm.getType().equals(cm.getType())) {
+                                final String pmType = pm.getType();
+                                if (pmType == null || pmType.equals(cm.getType())) {
                                     continue;
                                 }
 
