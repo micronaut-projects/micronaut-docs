@@ -1,9 +1,10 @@
 var BUILD_MAVEN = "maven";
 var BUILD_GRADLE = "gradle";
+var BUILD_GRADLE_KOTLIN = "gradle-kotlin";
 var LANG_JAVA = "java";
 var LANG_GROOVY = "groovy";
 var LANG_KOTLIN = "kotlin";
-var MICRONAUT_SUPPORTED_BUILDS = [BUILD_MAVEN, BUILD_GRADLE];
+var MICRONAUT_SUPPORTED_BUILDS = [BUILD_MAVEN, BUILD_GRADLE, BUILD_GRADLE_KOTLIN];
 var MICRONAUT_SUPPORTED_LANGS = [LANG_JAVA, LANG_GROOVY, LANG_KOTLIN];
 var DEFAULT_SUPPORTED_LANG = LANG_JAVA;
 var DEFAULT_BUILD = BUILD_GRADLE;
@@ -57,8 +58,14 @@ function postProcessCodeBlocks() {
         return build;
     }
 
-    function capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
+    function makeTitleForSnippetSelector(string) {
+        var langSlices = string.split("-");
+        var title = ""
+        langSlices.forEach(function(langPart) {
+            console.log(langPart);
+            title += langPart.charAt(0).toUpperCase() + langPart.slice(1) + " ";
+        })
+        return title.slice(0, -1);
     }
 
     function processSampleEl(sampleEl, prefLangId, prefBuildId) {
@@ -140,7 +147,7 @@ function postProcessCodeBlocks() {
                         optionEl.setAttribute("role", "button");
                         optionEl.classList.add("language-option");
 
-                        optionEl.innerText = capitalizeFirstLetter(sampleLanguage);
+                        optionEl.innerText = makeTitleForSnippetSelector(sampleLanguage);
 
                         optionEl.addEventListener("click", function updatePreferredLanguage(evt) {
                             var optionId = optionEl.getAttribute("data-lang");
