@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 buildscript {
     repositories {
         maven { url "https://repo.grails.org/grails/core" }
@@ -7,6 +9,7 @@ buildscript {
         classpath 'io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1'
         classpath "io.micronaut.docs:micronaut-docs-asciidoc-extensions:${project.ext.properties.micronautDocsVersion ?: '1.0.8'}"
         classpath "io.micronaut.docs:micronaut-docs-gradle-plugins:${project.ext.properties.micronautDocsVersion ?: '1.0.8'}"
+        classpath "org.codehaus.groovy:groovy-json:$groovyVersion"
     }
 }
 
@@ -468,6 +471,155 @@ task cleanDocResources {
     }
 }
 clean.dependsOn 'cleanDocResources'
+
+class Snapshot implements Comparable<Snapshot> {
+
+    private String text
+
+    int getMilestoneVersion() {
+        text.replace("M", "").toInteger()
+    }
+
+    int getReleaseCandidateVersion() {
+        text.replace("RC", "").toInteger()
+    }
+
+    boolean isBuildSnapshot() {
+        text == "BUILD-SNAPSHOT"
+    }
+
+    boolean isReleaseCandidate() {
+        text.startsWith("RC")
+    }
+
+    boolean isMilestone() {
+        text.startsWith("M")
+    }
+
+    Snapshot(String text) {
+        this.text = text
+    }
+
+    @Override
+    int compareTo(Snapshot o) {
+
+        if (this.buildSnapshot && !o.buildSnapshot) {
+            return 1
+        } else if (!this.buildSnapshot && o.buildSnapshot) {
+            return -1
+        } else if (this.buildSnapshot && o.buildSnapshot) {
+            return 0
+        }
+
+        if (this.releaseCandidate && !o.releaseCandidate) {
+            return 1
+        } else if (!this.releaseCandidate && o.releaseCandidate) {
+            return -1
+        } else if (this.releaseCandidate && o.releaseCandidate) {
+            return this.releaseCandidateVersion <=> o.releaseCandidateVersion
+        }
+
+        if (this.milestone && !o.milestone) {
+            return 1
+        } else if (!this.milestone && o.milestone) {
+            return -1
+        } else if (this.milestone && o.milestone) {
+            return this.milestoneVersion <=> o.milestoneVersion
+        }
+
+        return 0
+    }
+}
+
+class SoftwareVersion implements Comparable<SoftwareVersion> {
+
+    int major
+    int minor
+    int patch
+
+    Snapshot snapshot
+
+    String versionText
+
+    static SoftwareVersion build(String version) {
+        String[] parts = version.split("\\.")
+        SoftwareVersion softVersion
+        if (parts.length >= 3) {
+            softVersion = new SoftwareVersion()
+            softVersion.versionText = version
+            if (parts.length > 3) {
+                softVersion.snapshot = new Snapshot(parts[3])
+            }
+            softVersion.major = parts[0].toInteger()
+            softVersion.minor = parts[1].toInteger()
+            softVersion.patch = parts[2].toInteger()
+        }
+        softVersion
+    }
+
+    boolean isSnapshot() {
+        snapshot != null
+    }
+
+    @Override
+    int compareTo(SoftwareVersion o) {
+        int majorCompare = this.major <=> o.major
+        if (majorCompare != 0) {
+            return majorCompare
+        }
+
+        int minorCompare = this.minor <=> o.minor
+        if (minorCompare != 0) {
+            return minorCompare
+        }
+
+        int patchCompare = this.patch <=> o.patch
+        if (patchCompare != 0) {
+            return patchCompare
+        }
+
+        if (this.isSnapshot() && !o.isSnapshot()) {
+            return -1
+        } else if (!this.isSnapshot() && o.isSnapshot()) {
+            return 1
+        } else if (this.isSnapshot() && o.isSnapshot()) {
+            return this.getSnapshot() <=> o.getSnapshot()
+        } else {
+            return 0
+        }
+    }
+}
+
+task createReleasesDropdown {
+    group = 'documentation'
+    description = 'Fetches the releases of a github project via Github v3 API, it then creates an HTML select to change between versions published in github pages'
+    ext.docPage = "/docs/guide/index.html"
+    doLast {
+        String slug = githubSlug as String
+        String repo = slug.split('/')[1]
+        JsonSlurper slurper = new JsonSlurper()
+        String json = new URL("https://api.github.com/repos/${slug}/releases").text
+        def result = slurper.parseText(json)
+        String html = "<select style='margin-top: 10px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'>"
+        result.collect { SoftwareVersion.build(it.tag_name.replace('v', '')) }.sort().reverse().each { softwareVersion ->
+            String versionName = softwareVersion.versionText
+            String href = "https://${slug.split('/')[0]}.github.io/${repo}/${versionName}/guide/index.html"
+            if (slug == 'micronaut-projects/micronaut-core') {
+                href = "https://docs.micronaut.io/${versionName}/guide/index.html"
+            }
+            html += "<option value='${href}'>${versionName}</option>"
+        }
+        html += '</select>'
+        File guide = new File(rootProject.buildDir.getAbsolutePath() + docPage)
+        String tocHtml = '<div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)" class="desktop">'
+        String replacement = "${html}</li><li>$tocHtml"
+        guide.text = guide.text.replace(tocHtml, replacement)
+    }
+    onlyIf {
+        new File(rootProject.buildDir.getAbsolutePath() + docPage).exists()
+    }
+}
+
 processConfigProps.mustRunAfter downloadDocResources
 publishConfigurationReference.mustRunAfter downloadDocResources
 publishGuide.mustRunAfter downloadDocResources
@@ -481,3 +633,5 @@ publishGuide.mustRunAfter processConfigProps
 publishConfigurationReference.mustRunAfter publishGuide
 docs.finalizedBy zipDocs
 
+docs.finalizedBy(createReleasesDropdown)
+createReleasesDropdown.mustRunAfter zipDocs
