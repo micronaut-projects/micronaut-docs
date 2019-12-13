@@ -598,10 +598,10 @@ task createReleasesDropdown {
         String slug = githubSlug as String
         String repo = slug.split('/')[1]
         JsonSlurper slurper = new JsonSlurper()
-        String json = new URL("https://api.github.com/repos/${slug}/releases").text
+        String json = new URL("https://api.github.com/repos/${slug}/tags").text
         def result = slurper.parseText(json)
         String html = "<select style='margin-top: 10px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'>"
-        result.collect { SoftwareVersion.build(it.tag_name.replace('v', '')) }.sort().reverse().each { softwareVersion ->
+        result.findAll { it.name.startsWith('v') }.collect { SoftwareVersion.build(it.name.replace('v', '')) }.sort().reverse().each { softwareVersion ->
             String versionName = softwareVersion.versionText
             String href = "https://${slug.split('/')[0]}.github.io/${repo}/${versionName}/guide/index.html"
             if (slug == 'micronaut-projects/micronaut-core') {
