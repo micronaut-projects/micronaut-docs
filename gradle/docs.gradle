@@ -601,12 +601,12 @@ task createReleasesDropdown {
         JsonSlurper slurper = new JsonSlurper()
         String json = new URL("https://api.github.com/repos/${slug}/tags").text
         def result = slurper.parseText(json)
-        String html = "<select style='margin-top: 10px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'>"
+        String selectHtml = "<select style='margin-top: 10px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'>"
         String snapshotHref = "https://${org}.github.io/${repo}/snapshot/guide/index.html"
         if (projectVersion.endsWith('BUILD-SNAPSHOT')) {
-            html += "<option selected='selected' value='${snapshotHref}'>${projectVersion}</option>"
+            selectHtml += "<option selected='selected' value='${snapshotHref}'>${projectVersion}</option>"
         } else {
-            html += "<option value='${snapshotHref}'>${projectVersion}</option>"
+            selectHtml += "<option value='${snapshotHref}'>${projectVersion}</option>"
         }
         result.findAll { it.name.startsWith('v') }.collect { SoftwareVersion.build(it.name.replace('v', '')) }.sort().reverse().each { softwareVersion ->
             String versionName = softwareVersion.versionText
@@ -615,16 +615,19 @@ task createReleasesDropdown {
                 href = "https://docs.micronaut.io/${versionName}/guide/index.html"
             }
             if (projectVersion == versionName) {
-                html += "<option selected='selected' value='${href}'>${versionName}</option>"
+                selectHtml += "<option selected='selected' value='${href}'>${versionName}</option>"
             } else {
-                html += "<option value='${href}'>${versionName}</option>"
+                selectHtml += "<option value='${href}'>${versionName}</option>"
             }
         }
-        html += '</select>'
+        selectHtml += '</select>'
         File guide = new File(rootProject.buildDir.getAbsolutePath() + docPage)
         String tocHtml = '<div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)" class="desktop">'
-        String replacement = "${html}</li><li>$tocHtml"
+        String replacement = "${selectHtml}</li><li>$tocHtml"
         guide.text = guide.text.replace(tocHtml, replacement)
+        String versionHtml = "<p><strong>Version:</strong> ${projectVersion}</p>"
+        String versionWithSelectHtml = "<p><strong>Version:</strong> ${selectHtml}</p>"
+        guide.text = guide.text.replace(versionHtml, versionWithSelectHtml)
     }
     onlyIf {
         new File(rootProject.buildDir.getAbsolutePath() + docPage).exists()
