@@ -602,6 +602,12 @@ task createReleasesDropdown {
         String json = new URL("https://api.github.com/repos/${slug}/tags").text
         def result = slurper.parseText(json)
         String html = "<select style='margin-top: 10px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'>"
+        String snapshotHref = "https://${org}.github.io/${repo}/snapshot/guide/index.html"
+        if (projectVersion.endsWith('BUILD-SNAPSHOT')) {
+            html += "<option selected='selected' value='${snapshotHref}'>${projectVersion}</option>"
+        } else {
+            html += "<option value='${snapshotHref}'>${projectVersion}</option>"
+        }
         result.findAll { it.name.startsWith('v') }.collect { SoftwareVersion.build(it.name.replace('v', '')) }.sort().reverse().each { softwareVersion ->
             String versionName = softwareVersion.versionText
             String href = "https://${org}.github.io/${repo}/${versionName}/guide/index.html"
