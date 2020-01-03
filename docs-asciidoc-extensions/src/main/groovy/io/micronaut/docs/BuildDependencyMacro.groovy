@@ -97,9 +97,9 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
         String classifier = valueAtAttributes('classifier', attributes)
         String gradleScope = valueAtAttributes('gradleScope', attributes) ?: toGradleScope(attributes) ?: SCOPE_COMPILE
         String mavenScope = valueAtAttributes('mavenScope', attributes) ?: toMavenScope(attributes) ?: SCOPE_COMPILE
-        String content = gradleDepependency(BUILD_GRADLE, groupId, artifactId, version, classifier, gradleScope, MULTILANGUAGECSSCLASS, verbose)
-        content += mavenDepependency(BUILD_MAVEN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS)
-        content += gradleKotlinDepependency(BUILD_GRADLE_KOTLIN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS)
+        String content = gradleDependency(BUILD_GRADLE, groupId, artifactId, version, classifier, gradleScope, MULTILANGUAGECSSCLASS, verbose)
+        content += mavenDependency(BUILD_MAVEN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS)
+        content += gradleKotlinDependency(BUILD_GRADLE_KOTLIN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS)
         createBlock(parent, "pass", [content], attributes, config).convert()
     }
 
@@ -134,7 +134,7 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
 
 
 
-    String gradleDepependency(String build,
+    String gradleDependency(String build,
                               String groupId,
                               String artifactId,
                               String version,
@@ -171,7 +171,7 @@ String html = """\
         html
     }
 
-    String gradleKotlinDepependency(String build,
+    String gradleKotlinDependency(String build,
                               String groupId,
                               String artifactId,
                               String version,
@@ -199,7 +199,7 @@ String html = """\
         html
     }
 
-    String mavenDepependency(String build,
+    String mavenDependency(String build,
                               String groupId,
                               String artifactId,
                               String version,

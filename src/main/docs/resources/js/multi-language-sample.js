@@ -51,7 +51,7 @@ function postProcessCodeBlocks() {
     // Ensure preferred build is valid, defaulting to GRADLE
     function initPreferredBuild() {
         var build = window.localStorage.getItem(LOCALSTORAGE_KEY_BUILD);
-        if (MICRONAUT_SUPPORTED_LANGS.indexOf(build) === -1) {
+        if (MICRONAUT_SUPPORTED_BUILDS.indexOf(build) === -1) {
             window.localStorage.setItem(LOCALSTORAGE_KEY_BUILD, DEFAULT_BUILD);
             build = DEFAULT_BUILD;
         }
@@ -60,11 +60,11 @@ function postProcessCodeBlocks() {
 
     function makeTitleForSnippetSelector(string) {
         var langSlices = string.split("-");
-        var title = ""
+        var title = "";
         langSlices.forEach(function(langPart) {
             console.log(langPart);
             title += langPart.charAt(0).toUpperCase() + langPart.slice(1) + " ";
-        })
+        });
         return title.slice(0, -1);
     }
 
@@ -76,6 +76,12 @@ function postProcessCodeBlocks() {
                 sampleEl.classList.add("hidden");
             } else {
                 sampleEl.classList.remove("hidden");
+            }
+            // This block corrects highlighting issues with Gradle-Kotlin DSL examples
+            if(codeEl.classList.contains("language-" + BUILD_GRADLE_KOTLIN)) {
+                codeEl.classList.remove('language-' + BUILD_GRADLE_KOTLIN);
+                codeEl.classList.add('language-' + BUILD_GRADLE);
+                hljs.highlightBlock(codeEl);
             }
         }
     }
@@ -134,7 +140,6 @@ function postProcessCodeBlocks() {
                 if (sampleCollection[0].previousElementSibling == null ||
                     !sampleCollection[0].previousElementSibling.classList.contains("multi-language-selector")) {
 
-                    
                     var languageSelectorFragment = document.createDocumentFragment();
                     var multiLanguageSelectorElement = document.createElement("div");
                     multiLanguageSelectorElement.classList.add("multi-language-selector");
@@ -151,16 +156,18 @@ function postProcessCodeBlocks() {
 
                         optionEl.addEventListener("click", function updatePreferredLanguage(evt) {
                             var optionId = optionEl.getAttribute("data-lang");
-                            if (isBuild(optionId)) {
+                            var isOptionBuild = isBuild(optionId);
+                            var isOptionLang = isLang(optionId);
+                            if (isOptionBuild) {
                                 window.localStorage.setItem(LOCALSTORAGE_KEY_BUILD, optionId);
                             }
-                            if (isLang(optionId)) {
+                            if (isOptionLang) {
                                 window.localStorage.setItem(LOCALSTORAGE_KEY_LANG, optionId);
                             }
 
-                            switchSampleLanguage(isLang(optionId) ? optionId : initPreferredLanguage(), isBuild(optionId) ? optionId : initPreferredBuild());
-                            
-                            // scroll to multi-lange selector. Offset the scroll a little bit to focus. 
+                            switchSampleLanguage(isOptionLang ? optionId : initPreferredLanguage(), isOptionBuild ? optionId : initPreferredBuild());
+
+                            // scroll to multi-lange selector. Offset the scroll a little bit to focus.
                             optionEl.scrollIntoView();
                             var offset = 150;
                             window.scrollBy(0, -offset);
