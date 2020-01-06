@@ -63,7 +63,7 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
     static final String DEPENDENCY_PREFIX = 'micronaut-'
     static final String GROUPID = 'io.micronaut'
     static final String MULTILANGUAGECSSCLASS = 'multi-language-sample'
-    static final String BUILD_GRADLE = 'gradle'
+    static final String BUILD_GRADLE = 'gradle-groovy'
     static final String BUILD_MAVEN = 'maven'
     static final String BUILD_GRADLE_KOTLIN = 'gradle-kotlin'
     public static final String SCOPE_COMPILE = 'compile'
@@ -98,8 +98,8 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
         String gradleScope = valueAtAttributes('gradleScope', attributes) ?: toGradleScope(attributes) ?: SCOPE_COMPILE
         String mavenScope = valueAtAttributes('mavenScope', attributes) ?: toMavenScope(attributes) ?: SCOPE_COMPILE
         String content = gradleDependency(BUILD_GRADLE, groupId, artifactId, version, classifier, gradleScope, MULTILANGUAGECSSCLASS, verbose)
-        content += mavenDependency(BUILD_MAVEN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS)
         content += gradleKotlinDependency(BUILD_GRADLE_KOTLIN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS)
+        content += mavenDependency(BUILD_MAVEN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS)
         createBlock(parent, "pass", [content], attributes, config).convert()
     }
 
