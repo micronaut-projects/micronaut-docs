@@ -63,8 +63,9 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
     static final String DEPENDENCY_PREFIX = 'micronaut-'
     static final String GROUPID = 'io.micronaut'
     static final String MULTILANGUAGECSSCLASS = 'multi-language-sample'
-    static final String BUILD_GRADLE = 'gradle'
+    static final String BUILD_GRADLE = 'gradle-groovy'
     static final String BUILD_MAVEN = 'maven'
+    static final String BUILD_GRADLE_KOTLIN = 'gradle-kotlin'
     public static final String SCOPE_COMPILE = 'compile'
 
     BuildDependencyMacro(String macroName, Map<String, Object> config) {
@@ -96,8 +97,9 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
         String classifier = valueAtAttributes('classifier', attributes)
         String gradleScope = valueAtAttributes('gradleScope', attributes) ?: toGradleScope(attributes) ?: SCOPE_COMPILE
         String mavenScope = valueAtAttributes('mavenScope', attributes) ?: toMavenScope(attributes) ?: SCOPE_COMPILE
-        String content = gradleDepependency(BUILD_GRADLE, groupId, artifactId, version, classifier, gradleScope, MULTILANGUAGECSSCLASS, verbose)
-        content += mavenDepependency(BUILD_MAVEN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS)
+        String content = gradleDependency(BUILD_GRADLE, groupId, artifactId, version, classifier, gradleScope, MULTILANGUAGECSSCLASS, verbose)
+        content += gradleKotlinDependency(BUILD_GRADLE_KOTLIN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS)
+        content += mavenDependency(BUILD_MAVEN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS)
         createBlock(parent, "pass", [content], attributes, config).convert()
     }
 
@@ -132,7 +134,7 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
 
 
 
-    String gradleDepependency(String build,
+    String gradleDependency(String build,
                               String groupId,
                               String artifactId,
                               String version,
@@ -169,7 +171,35 @@ String html = """\
         html
     }
 
-    String mavenDepependency(String build,
+    String gradleKotlinDependency(String build,
+                              String groupId,
+                              String artifactId,
+                              String version,
+                              String classifier,
+                              String scope,
+                              String multilanguageCssClass) {
+        String html = """\
+        <div class=\"listingblock ${multilanguageCssClass}\">
+<div class=\"content\">
+<pre class=\"highlightjs highlight\"><code class=\"language-kotlin hljs" data-lang="${build}">"""
+
+        html += "${scope}(<span class=\"hljs-string\">\"${groupId}:${artifactId}"
+        if (version) {
+            html += ":${version}"
+        }
+        if (classifier) {
+            html += ":${classifier}"
+        }
+        html += "\")</span>"
+
+        html += """</code></pre>
+</div>
+</div>
+"""
+        html
+    }
+
+    String mavenDependency(String build,
                               String groupId,
                               String artifactId,
                               String version,
