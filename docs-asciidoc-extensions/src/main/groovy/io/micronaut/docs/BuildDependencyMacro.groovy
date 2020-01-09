@@ -97,9 +97,10 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
         String classifier = valueAtAttributes('classifier', attributes)
         String gradleScope = valueAtAttributes('gradleScope', attributes) ?: toGradleScope(attributes) ?: SCOPE_COMPILE
         String mavenScope = valueAtAttributes('mavenScope', attributes) ?: toMavenScope(attributes) ?: SCOPE_COMPILE
-        String content = gradleDependency(BUILD_GRADLE, groupId, artifactId, version, classifier, gradleScope, MULTILANGUAGECSSCLASS, verbose)
-        content += gradleKotlinDependency(BUILD_GRADLE_KOTLIN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS)
-        content += mavenDependency(BUILD_MAVEN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS)
+        String title = valueAtAttributes('title', attributes) ?: ""
+        String content = gradleDependency(BUILD_GRADLE, groupId, artifactId, version, classifier, gradleScope, MULTILANGUAGECSSCLASS, title, verbose)
+        content += gradleKotlinDependency(BUILD_GRADLE_KOTLIN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS, title)
+        content += mavenDependency(BUILD_MAVEN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS, title)
         createBlock(parent, "pass", [content], attributes, config).convert()
     }
 
@@ -141,9 +142,11 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
                               String classifier,
                               String scope,
                               String multilanguageCssClass,
+                              String title,
                               boolean verbose) {
 String html = """\
         <div class=\"listingblock ${multilanguageCssClass}\">
+<div class=\"title\">$title</div>
 <div class=\"content\">
 <pre class=\"highlightjs highlight\"><code class=\"language-groovy hljs" data-lang="${build}">"""
         if (verbose) {
@@ -177,9 +180,12 @@ String html = """\
                               String version,
                               String classifier,
                               String scope,
-                              String multilanguageCssClass) {
+                              String multilanguageCssClass,
+                              String title
+    ) {
         String html = """\
         <div class=\"listingblock ${multilanguageCssClass}\">
+<div class=\"title\">$title</div>
 <div class=\"content\">
 <pre class=\"highlightjs highlight\"><code class=\"language-kotlin hljs" data-lang="${build}">"""
 
@@ -205,12 +211,14 @@ String html = """\
                               String version,
                               String classifier,
                               String scope,
-                              String multilanguageCssClass
-                             ) {
+                              String multilanguageCssClass,
+                              String title
+    ) {
         String html
         if (scope == 'annotationProcessor') {
             html = """\
 <div class=\"listingblock ${multilanguageCssClass}\">
+<div class=\"title\">$title</div>
 <div class=\"content\">
 <pre class=\"highlightjs highlight\"><code class=\"language-xml hljs\" data-lang=\"${build}\">&lt;annotationProcessorPaths&gt;
     &lt;path&gt;
