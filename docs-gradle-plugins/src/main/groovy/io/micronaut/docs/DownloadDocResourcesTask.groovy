@@ -11,6 +11,7 @@ import org.gradle.api.tasks.TaskAction
 class DownloadDocResourcesTask extends DefaultTask {
 
     private static final RESOURCES_FOLDER = 'src/main/docs/resources'
+    private static final String GITHUBRAW = "https://raw.githubusercontent.com/${MicronautDocs.GITHUB_ORG}/${MicronautDocs.GITHUB_REPO}/${MicronautDocs.GIT_BRANCH}/${RESOURCES_FOLDER}"
 
     @OutputDirectory
     File resourceFolder
@@ -18,7 +19,6 @@ class DownloadDocResourcesTask extends DefaultTask {
     @OutputDirectories
     List<File> resourceFolders
 
-    String githubRaw = "https://raw.githubusercontent.com/${MicronautDocs.GITHUB_ORG}/${MicronautDocs.GITHUB_REPO}/${MicronautDocs.GIT_BRANCH}/${RESOURCES_FOLDER}"
 
     @TaskAction
     void downloadResources() {
@@ -38,7 +38,7 @@ class DownloadDocResourcesTask extends DefaultTask {
                 String path = "${resourceFolder.absolutePath}/${k}/" + name
                 File f = new File(path)
                 f.createNewFile()
-                f.text = new URL("${githubRaw}/${k}/${name}").text
+                f.text = new URL("${GITHUBRAW}/${k}/${name}").text
             }
         }
     }
