@@ -1,39 +1,22 @@
 package io.micronaut.docs
 
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
 
+@CompileStatic
 class JavaDocAtValueReplacementTask extends DefaultTask {
 
-    @InputFile
-    private File adocFile
-
-    private String rootProjectDir
-
-    String getRootProjectDir() {
-        return rootProjectDir
-    }
-
-    void setAdocFile(File adocFile) {
-        this.adocFile = adocFile
-    }
-
-    void setRootProjectDir(String rootProjectDir) {
-        this.rootProjectDir = rootProjectDir
-    }
-
-    public String getConfigurationPropertiesFolder() { return configurationPropertiesFolder }
-    public void setConfigurationPropertiesFolder(String configurationPropertiesFolder) { this.configurationPropertiesFolder = configurationPropertiesFolder }
-
-    @Override
-    String getGroup() {
-        'documentation'
-    }
-
+    @Input
+    String adoc
+    
     @TaskAction
     void replaceAtValue() {
-        if (this.adocFile.exists()) {
+        File adocFile = new File(adoc)
+        if (adocFile.exists()) {
 
             String configurationPropertiesClassName
             List<String> accumulator = []
@@ -79,19 +62,28 @@ class JavaDocAtValueReplacementTask extends DefaultTask {
         }
     }
 
-    String calculateResolvedValue(String className, String fieldName) {
-
-        List<String> targetClassNames = []
-        targetClassNames.addAll((className.split('\\.') as List<String>).findAll { it -> Character.isUpperCase(it.charAt(0)) }.collect { it.split('\\$') }.flatten() )
-
-        def classFiles
+    @CompileDynamic
+    Set<File> calculateClassFiles(List<String> targetClassNames) {
+        Set<File> classFiles
         for ( String targetClassName : targetClassNames) {
-            classFiles = project.fileTree(rootProjectDir).filter { it.isFile() && it.name == (targetClassName+".java") }.files
+            classFiles = project.fileTree(project.rootProject.projectDir).filter { it.isFile() && it.name == (targetClassName+".java") }.files
             if (classFiles) {
                 break
             }
         }
+        classFiles
+    }
 
+    @CompileDynamic
+    List<String> calculateTargetClassNames(String className) {
+        List<String> targetClassNames = []
+        targetClassNames.addAll((className.split('\\.') as List<String>).findAll { it -> Character.isUpperCase(it.charAt(0)) }.collect { it.split('\\$') }.flatten() )
+        targetClassNames
+    }
+
+    String calculateResolvedValue(String className, String fieldName) {
+        List<String> targetClassNames = calculateTargetClassNames(className)
+        Set<File> classFiles = calculateClassFiles(targetClassNames)
         if (classFiles) {
             File f = classFiles.first()
             List<String> lines = f.readLines()

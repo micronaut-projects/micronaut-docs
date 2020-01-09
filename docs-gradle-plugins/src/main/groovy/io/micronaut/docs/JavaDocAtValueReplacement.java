@@ -1,7 +1,10 @@
 package io.micronaut.docs;
 
+import groovy.transform.CompileStatic;
+
 import java.lang.reflect.Field;
 
+@CompileStatic
 public class JavaDocAtValueReplacement {
     private static final String OPEN_ATVALUE = "{@value ";
     private static final String CLOSE_ATVALUE = "}";

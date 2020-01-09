@@ -1,5 +1,8 @@
 package io.micronaut.docs;
 
+import groovy.transform.CompileStatic;
+
+@CompileStatic
 public class AtValue {
 
     private String type;

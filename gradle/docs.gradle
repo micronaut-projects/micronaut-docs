@@ -1,4 +1,12 @@
-import groovy.json.JsonSlurper
+import io.micronaut.docs.CleanDocResourcesTask
+import io.micronaut.docs.CreateReleasesDropdownTask
+import io.micronaut.docs.DownloadDocResourcesTask
+import io.micronaut.docs.JavaDocAtValueReplacementTask
+import io.micronaut.docs.MergeConfigurationReferenceTask
+import io.micronaut.docs.MicronautDocsResources
+import io.micronaut.docs.ProcessConfigPropsTask
+import io.micronaut.docs.PublishConfigurationReferenceTask
+import io.micronaut.docs.ReplaceAtLinkTask
 
 buildscript {
     repositories {
@@ -13,7 +21,7 @@ buildscript {
     }
 }
 
-def DOCUMENTATION_GROUP = 'Documentation'
+String DOCUMENTATION_GROUP = 'mndocs'
 
 def commonGithubOrg = 'grails'
 def commonGithubSlug = 'grails-common-build'
@@ -21,104 +29,53 @@ def commonBranch = 'master'
 def docResourcesDir = "${buildDir}/resources/${commonGithubSlug}-${commonBranch}/src/main/resources"
 
 subprojects { subproject ->
-    task moveConfigProps() {
-        group 'documentation'
-        doLast {
+    tasks.register('moveConfigProps') { task ->
+        task.group(DOCUMENTATION_GROUP)
+        task.doLast {
             ant.mkdir(dir:"${rootProject.buildDir}/config-props")
             ant.move(file: "${subproject.buildDir}/classes/java/main/META-INF/config-properties.adoc", tofile:"${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc", failonerror:false, quiet:true)
         }
+        task.dependsOn tasks.named("classes")
+    }
+    tasks.register('javaDocAtReplacement', JavaDocAtValueReplacementTask) { task ->
+        task.group(DOCUMENTATION_GROUP)
+        task.dependsOn('moveConfigProps')
+        adoc = "${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc"
+    }
+    tasks.register('replaceAtLink', ReplaceAtLinkTask) { task ->
+        configProperties = "${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc"
+        task.group(DOCUMENTATION_GROUP)
+        task.dependsOn tasks.named('moveConfigProps')
+        task.mustRunAfter tasks.named('javaDocAtReplacement')
     }
 
-    task javaDocAtReplacement(type: io.micronaut.docs.JavaDocAtValueReplacementTask, dependsOn: moveConfigProps) {
-        adocFile = new File("${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc")
-        rootProjectDir = rootProject.projectDir
+    tasks.register('processConfigProps', ProcessConfigPropsTask) { task ->
+        configPropertiesFileName = "${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc"
+        individualConfigPropsFolder = "${rootProject.buildDir}/generated/configurationProperties"
+        task.group(DOCUMENTATION_GROUP)
+        task.mustRunAfter tasks.named("javadoc")
+        task.mustRunAfter tasks.named("assemble")
+        task.dependsOn tasks.named('replaceAtLink')
+        task.dependsOn tasks.named('javaDocAtReplacement')
     }
-
-    task replaceAtLink(dependsOn: moveConfigProps) {
-        group 'documentation'
-
-        doLast {
-            File file = new File("${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc")
-            if ( file.exists()) {
-                def atLinkReplacer = { String str ->
-                    String newLine = str.substring(0, str.indexOf('{@link io.micronaut.'))
-                    String sub = "api:"+str.substring(str.indexOf('{@link io.micronaut.') + '{@link io.micronaut.'.length())
-                    newLine += sub.substring(0, sub.indexOf('}')) + '[]'
-                    newLine += sub.substring(sub.indexOf('}') + '}'.length())
-                    newLine
-                }
-
-                List<String> lines = file.readLines()
-                List<String> outputLines = []
-                for (String line : lines) {
-                    String proccessedLine = line
-                    while (proccessedLine.contains('{@link io.micronaut.')) {
-                        proccessedLine = atLinkReplacer(proccessedLine)
-                    }
-                    outputLines << proccessedLine
-                }
-                file.text = outputLines.join('\n')
-            }
-        }
-    }
-    task processConfigProps(dependsOn: [replaceAtLink, javaDocAtReplacement]) {
-        group 'documentation'
-        ext {
-            individualConfigPropsFolder = "${rootProject.buildDir}/generated/configurationProperties"
-        }
-        doFirst {
-            if(!new File("${rootProject.buildDir}/generated").exists()) {
-                new File("${rootProject.buildDir}/generated").mkdir()
-            }
-            if(!new File("${rootProject.buildDir}/generated/configurationProperties").exists()) {
-                new File("${rootProject.buildDir}/generated/configurationProperties").mkdir()
-            }
-        }
-        doLast {
-
-            def f = new File("${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc")
-            if (f.exists()) {
-                def lines = f.readLines()
-                def separator = "<<<"
-                List<String> accumulator = []
-                String configurationPropertyName = ''
-                for (String line : lines) {
-
-                    if (line.startsWith('<a id="')) {
-                        String sub = line.substring(line.indexOf('id="') + 'id="'.length())
-                        sub = sub.substring(0, sub.indexOf('"'))
-                        configurationPropertyName = sub
-                    }
-                    if (line == separator) {
-                        File outputfile = new File("${individualConfigPropsFolder}/${configurationPropertyName}.adoc")
-                        outputfile.createNewFile()
-                        outputfile.text = accumulator.join('\n')
-                        accumulator = []
-                        configurationPropertyName = null
-                    } else {
-                        accumulator << line
-                    }
-                }
-            }
-        }
-    }    
 }
-task prepareDocResources {
+tasks.register("prepareDocResources") { task ->
     group = DOCUMENTATION_GROUP
     description = 'Downloads common documentation resoruces and unzips them to build folder'
-    doLast {
+    task.doLast {
         ant.mkdir(dir:buildDir)
         ant.get(src:"https://github.com/${commonGithubOrg}/${commonGithubSlug}/archive/${commonBranch}.zip", dest:"${buildDir}/resources.zip")
         ant.unzip(src:"${buildDir}/resources.zip", dest:"${buildDir}/resources")
     }
 }
 
-task copyLocalDocResources(type: Copy, dependsOn:prepareDocResources) {
+tasks.register("copyLocalDocResources", Copy) { task ->
     group = DOCUMENTATION_GROUP
     description = 'Copy local resources to build folder'
     mustRunAfter prepareDocResources
     from ('src/main/docs/resources')
     into docResourcesDir
+    task.dependsOn tasks.named("prepareDocResources")
 }
 
 configurations {
@@ -168,60 +125,34 @@ task javadoc(type: Javadoc, description: 'Generate javadocs from all child proje
     }
 }
 
-task cleanupPropertyReference {
-    group = DOCUMENTATION_GROUP
-    doLast {
+tasks.register('cleanupPropertyReference') { task ->
+    task.group(DOCUMENTATION_GROUP)
+    task.doLast {
         File f = new File( "${rootProject.buildDir}/docs/guide/configurationreference.html" )
         if(f.exists()) {
             f.delete()
         }
     }
 }
-
-task mergeConfigurationReference() {
-    ext {        
-        inputFileName = "${rootProject.buildDir}/generated/propertyReference.adoc"
+tasks.register('mergeConfigurationReference', MergeConfigurationReferenceTask) { task ->
+    inputFileName = "${rootProject.buildDir}/generated/propertyReference.adoc"
+    inputFiles = fileTree("$project.buildDir/config-props").files
+    task.onlyIf {
+        !fileTree("$project.buildDir/config-props").isEmpty()
     }
-    group = DOCUMENTATION_GROUP
-    inputs.files( fileTree( "$project.buildDir/config-props" ) ).skipWhenEmpty()
-    doLast {
-        File outputFile = new File(inputFileName)
-        outputFile.createNewFile()
-        outputFile.withOutputStream { out ->
-            List<File> files = new ArrayList<>(inputs.files.files).sort { File f -> f.name }
-            for ( file in files ) {
-                String header = "=== " + file.name.replace('.adoc', '').split('-').collect { token ->
-                    "${token.charAt(0).toString().toUpperCase()}${token.substring(1)}"
-                }.join(' ')
-                file.withInputStream {
-                    out << header << '\n' << it << '\n'
-                }
-            }
-        }                
-    }
+    task.group(DOCUMENTATION_GROUP)
 }
-task publishConfigurationReference(dependsOn: mergeConfigurationReference) {
-    ext {
-        destinationFileName = "${rootProject.buildDir}/docs/guide/configurationreference.html"
-    }
-    doLast {
-        String textPage = new File("${rootProject.projectDir}/src/main/docs/resources/style/page.html").text    
-        textPage = textPage.replace("@projectVersion@", projectVersion)
-        textPage = textPage.replace("@pagetitle@", 'Configuration Reference | Micronaut')
-        if (new File(mergeConfigurationReference.inputFileName).exists()) {
-            String html = org.asciidoctor.Asciidoctor.Factory.create().render(new File(mergeConfigurationReference.inputFileName).text, [:])
-            textPage = textPage.replace("@docscontent@", html)
-            File configurationreference = new File(destinationFileName)
-            configurationreference.createNewFile()                    
-            configurationreference.text = textPage
-        } else {
-            logger.quiet "${mergeConfigurationReference.inputFileName} does not exist."
-        }    
-    }
+tasks.register('publishConfigurationReference', PublishConfigurationReferenceTask) { task ->
+    inputFileName = "${rootProject.buildDir}/generated/propertyReference.adoc"
+    destinationFileName = "${rootProject.buildDir}/docs/guide/configurationreference.html"
+    version = projectVersion
+    pageTemplate = file("${rootProject.projectDir}/src/main/docs/resources/style/page.html")
+    task.dependsOn tasks.named('mergeConfigurationReference')
+    task.mustRunAfter tasks.named('downloadDocResources')
+    task.mustRunAfter tasks.named('publishGuide')
 }
-
-task cleanupGuideFiles(type: Delete) {
-    group = DOCUMENTATION_GROUP
+tasks.register('cleanupGuideFiles', Delete) { task ->
+    task.group(DOCUMENTATION_GROUP)
     delete fileTree("${rootProject.buildDir}/docs/guide") {
         include '*.html'
         exclude 'index.html'
@@ -276,10 +207,10 @@ task publishGuide(type: grails.doc.gradle.PublishGuide) {
 '''
     }
 }
-task zipDocs(type:Zip) {
-    group = DOCUMENTATION_GROUP
-    baseName = "${project.name}-${project.version}"
-    destinationDir = new File(project.buildDir, "distributions")
+tasks.register("zipDocs", Zip) { task ->
+    task.group(DOCUMENTATION_GROUP)
+    archiveBaseName = "${project.name}-${project.version}"
+    destinationDirectory = new File(project.buildDir, "distributions")
     from project.files("${buildDir}/docs")
 }
 task assemble() {
@@ -289,360 +220,71 @@ task assemble() {
         }
     }
 }
-task processConfigProps() {
-    subprojects.each { subproject ->
-        if (subproject.tasks.findByName("processConfigProps") != null) {
-            dependsOn subproject.tasks.findByName("processConfigProps")
+
+def processConfigPropsTask = tasks.register('processConfigProps') { task ->
+    task.mustRunAfter tasks.named("downloadDocResources")
+}
+subprojects.each { subproject ->
+    if (subproject.tasks.findByName("processConfigProps") != null) {
+        processConfigPropsTask.configure {
+            processConfigPropsTask.get().dependsOn subproject.tasks.findByName("processConfigProps")
         }
     }
 }
-task downloadDocResources {
-    ext.githubOrg = 'micronaut-projects'
-    ext.githubRepo = 'micronaut-docs'
-    ext.gitBranch = 'master'
-    ext.resourcesFolder = 'src/main/docs/resources'
-    ext.githubRaw = "https://raw.githubusercontent.com/${githubOrg}/${githubRepo}/${gitBranch}/${resourcesFolder}"
-    ext.css = [
-            'custom.css',
-            'multi-language-sample.css',
-            'highlight/agate.css',
-            'highlight/androidstudio.css',
-            'highlight/arduino-light.css',
-            'highlight/arta.css',
-            'highlight/ascetic.css',
-            'highlight/atelier-cave-dark.css',
-            'highlight/atelier-cave-light.css',
-            'highlight/atelier-dune-dark.css',
-            'highlight/atelier-dune-light.css',
-            'highlight/atelier-estuary-dark.css',
-            'highlight/atelier-estuary-light.css',
-            'highlight/atelier-forest-dark.css',
-            'highlight/atelier-forest-light.css',
-            'highlight/atelier-heath-dark.css',
-            'highlight/atelier-heath-light.css',
-            'highlight/atelier-lakeside-dark.css',
-            'highlight/atelier-lakeside-light.css',
-            'highlight/atelier-plateau-dark.css',
-            'highlight/atelier-plateau-light.css',
-            'highlight/atelier-savanna-dark.css',
-            'highlight/atelier-savanna-light.css',
-            'highlight/atelier-seaside-dark.css',
-            'highlight/atelier-seaside-light.css',
-            'highlight/atelier-sulphurpool-dark.css',
-            'highlight/atelier-sulphurpool-light.css',
-            'highlight/atom-one-dark.css',
-            'highlight/atom-one-light.css',
-            'highlight/brown-paper.css',
-            'highlight/brown-papersq.png',
-            'highlight/codepen-embed.css',
-            'highlight/color-brewer.css',
-            'highlight/darcula.css',
-            'highlight/dark.css',
-            'highlight/darkula.css',
-            'highlight/default.css',
-            'highlight/docco.css',
-            'highlight/dracula.css',
-            'highlight/far.css',
-            'highlight/foundation.css',
-            'highlight/github-gist.css',
-            'highlight/github.css',
-            'highlight/googlecode.css',
-            'highlight/grayscale.css',
-            'highlight/gruvbox-dark.css',
-            'highlight/gruvbox-light.css',
-            'highlight/hopscotch.css',
-            'highlight/hybrid.css',
-            'highlight/idea.css',
-            'highlight/ir-black.css',
-            'highlight/kimbie.dark.css',
-            'highlight/kimbie.light.css',
-            'highlight/magula.css',
-            'highlight/mono-blue.css',
-            'highlight/monokai-sublime.css',
-            'highlight/monokai.css',
-            'highlight/obsidian.css',
-            'highlight/ocean.css',
-            'highlight/paraiso-dark.css',
-            'highlight/paraiso-light.css',
-            'highlight/pojoaque.css',
-            'highlight/pojoaque.jpg',
-            'highlight/purebasic.css',
-            'highlight/qtcreator_dark.css',
-            'highlight/qtcreator_light.css',
-            'highlight/railscasts.css',
-            'highlight/rainbow.css',
-            'highlight/routeros.css',
-            'highlight/school-book.css',
-            'highlight/school-book.png',
-            'highlight/solarized-dark.css',
-            'highlight/solarized-light.css',
-            'highlight/sunburst.css',
-            'highlight/tomorrow-night-blue.css',
-            'highlight/tomorrow-night-bright.css',
-            'highlight/tomorrow-night-eighties.css',
-            'highlight/tomorrow-night.css',
-            'highlight/tomorrow.css',
-            'highlight/vs.css',
-            'highlight/vs2015.css',
-            'highlight/xcode.css',
-            'highlight/xt256.css',
-            'highlight/zenburn.css']
-    ext.logo = 'micronaut-logo-white.svg'
-    ext.img = [
-            'micronaut-logo-white.svg'
-    ]
-    ext.js = [
-            'guide.js',
-            'highlight.pack.js',
-            'multi-language-sample.js',
-    ]
-    ext.style = [
-            'layout.html',
-            'page.html',
-            'section.html',
-    ]
-    ext.resources = [
-            "/${resourcesFolder}",
-            "/${resourcesFolder}/css",
-            "/${resourcesFolder}/css/highlight",
-            "/${resourcesFolder}/js",
-            "/${resourcesFolder}/img",
-            "/${resourcesFolder}/style",
-    ]
 
-    onlyIf {
-        boolean existsLogo = new File(getProject().getRootDir().getAbsolutePath() + '/src/main/docs/resources/img/' + logo).exists()
+tasks.register("downloadDocResources", DownloadDocResourcesTask) {  task ->
+    resourceFolder = file(getProject().getRootDir().getAbsolutePath() + '/src/main/docs/resources')
+    resourceFolders = [
+            file(getProject().getRootDir().getAbsolutePath() + '/src/main/docs/resources/css'),
+            file(getProject().getRootDir().getAbsolutePath() + '/src/main/docs/resources/css/highlight'),
+            file(getProject().getRootDir().getAbsolutePath() + '/src/main/docs/resources/js'),
+            file(getProject().getRootDir().getAbsolutePath() + '/src/main/docs/resources/img'),
+            file(getProject().getRootDir().getAbsolutePath() + '/src/main/docs/resources/style'),
+    ]
+    task.onlyIf {
+        boolean existsLogo = new File(getProject().getRootDir().getAbsolutePath() + '/src/main/docs/resources/img/' + MicronautDocsResources.LOGO).exists()
         if (existsLogo) {
             project.getLogger().info("skipping download resources, logo already exists")
         }
         !existsLogo
     }
-    doLast {
-        List<String> arr = resourcesFolder.split('/')
-        List l = new ArrayList()
-        for (int i = 0; i < arr.size(); i++) {
-            l << arr.subList(0,i +1)
-        }
-        (l.collect { it.join('/') } + resources).each { path ->
-            File dir = new File(this.getProject().getRootDir().getAbsolutePath() + path)
-            if (!dir.exists()) {
-                dir.mkdir()
-            }
-        }
-        [
-                css  : css,
-                img  : img,
-                js   : js,
-                style: style,
-        ].each { String k, List<String> v ->
-            v.each { name ->
-                project.getLogger().info("downloading ${k}")
-                String path = getProject().getRootDir().getAbsolutePath() + "/${resourcesFolder}/${k}/" + name
-                File f = new File(path)
-                f.createNewFile()
-                f.text = new URL("${githubRaw}/${k}/${name}").text
-            }
-        }
-    }
 }
-task cleanDocResources {
-    doLast {
-        [
-                css  : downloadDocResources.css,
-                img  : downloadDocResources.img,
-                js   : downloadDocResources.js,
-                style: downloadDocResources.style,
-        ].each { String k, List<String> v ->
-            v.each { name ->
-                project.getLogger().info("deleting ${k}")
-                String path = getProject().getRootDir().getAbsolutePath() + "/${downloadDocResources.resourcesFolder}/${k}/" + name
-                File f = new File(path)
-                if (f.exists()) {
-                    f.delete()
-                }
-            }
-        }
-        downloadDocResources.resources.each { path ->
-            File dir = new File(this.getProject().getRootDir().getAbsolutePath() + path)
-            if (dir.exists()) {
-                dir.deleteDir()
-            }
-        }
-    }
+tasks.register("cleanDocResources", CleanDocResourcesTask) {
+    resourceFolders = [
+            file(getProject().getRootDir().getAbsolutePath() + '/src/main/docs/resources/css'),
+            file(getProject().getRootDir().getAbsolutePath() + '/src/main/docs/resources/css/highlight'),
+            file(getProject().getRootDir().getAbsolutePath() + '/src/main/docs/resources/js'),
+            file(getProject().getRootDir().getAbsolutePath() + '/src/main/docs/resources/img'),
+            file(getProject().getRootDir().getAbsolutePath() + '/src/main/docs/resources/style'),
+    ]
 }
 clean.dependsOn 'cleanDocResources'
 
-class Snapshot implements Comparable<Snapshot> {
-
-    private String text
-
-    int getMilestoneVersion() {
-        text.replace("M", "").toInteger()
-    }
-
-    int getReleaseCandidateVersion() {
-        text.replace("RC", "").toInteger()
-    }
-
-    boolean isBuildSnapshot() {
-        text == "BUILD-SNAPSHOT"
-    }
-
-    boolean isReleaseCandidate() {
-        text.startsWith("RC")
-    }
-
-    boolean isMilestone() {
-        text.startsWith("M")
-    }
-
-    Snapshot(String text) {
-        this.text = text
-    }
-
-    @Override
-    int compareTo(Snapshot o) {
-
-        if (this.buildSnapshot && !o.buildSnapshot) {
-            return 1
-        } else if (!this.buildSnapshot && o.buildSnapshot) {
-            return -1
-        } else if (this.buildSnapshot && o.buildSnapshot) {
-            return 0
-        }
-
-        if (this.releaseCandidate && !o.releaseCandidate) {
-            return 1
-        } else if (!this.releaseCandidate && o.releaseCandidate) {
-            return -1
-        } else if (this.releaseCandidate && o.releaseCandidate) {
-            return this.releaseCandidateVersion <=> o.releaseCandidateVersion
-        }
-
-        if (this.milestone && !o.milestone) {
-            return 1
-        } else if (!this.milestone && o.milestone) {
-            return -1
-        } else if (this.milestone && o.milestone) {
-            return this.milestoneVersion <=> o.milestoneVersion
-        }
-
-        return 0
+tasks.register("createReleasesDropdown", CreateReleasesDropdownTask) { task ->
+    slug = githubSlug as String
+    version = projectVersion
+    doc = file("${buildDir.absolutePath}/docs/guide/index.html")
+    task.mustRunAfter tasks.named("zipDocs")
+    task.onlyIf {
+        new File("${buildDir.absolutePath}/docs/guide/index.html").exists()
     }
 }
 
-class SoftwareVersion implements Comparable<SoftwareVersion> {
-
-    int major
-    int minor
-    int patch
-
-    Snapshot snapshot
-
-    String versionText
-
-    static SoftwareVersion build(String version) {
-        String[] parts = version.split("\\.")
-        SoftwareVersion softVersion
-        if (parts.length >= 3) {
-            softVersion = new SoftwareVersion()
-            softVersion.versionText = version
-            if (parts.length > 3) {
-                softVersion.snapshot = new Snapshot(parts[3])
-            }
-            softVersion.major = parts[0].toInteger()
-            softVersion.minor = parts[1].toInteger()
-            softVersion.patch = parts[2].toInteger()
-        }
-        softVersion
-    }
-
-    boolean isSnapshot() {
-        snapshot != null
-    }
-
-    @Override
-    int compareTo(SoftwareVersion o) {
-        int majorCompare = this.major <=> o.major
-        if (majorCompare != 0) {
-            return majorCompare
-        }
-
-        int minorCompare = this.minor <=> o.minor
-        if (minorCompare != 0) {
-            return minorCompare
-        }
-
-        int patchCompare = this.patch <=> o.patch
-        if (patchCompare != 0) {
-            return patchCompare
-        }
-
-        if (this.isSnapshot() && !o.isSnapshot()) {
-            return -1
-        } else if (!this.isSnapshot() && o.isSnapshot()) {
-            return 1
-        } else if (this.isSnapshot() && o.isSnapshot()) {
-            return this.getSnapshot() <=> o.getSnapshot()
-        } else {
-            return 0
-        }
-    }
-}
-
-task createReleasesDropdown {
-    group = 'documentation'
-    description = 'Fetches the releases of a github project via Github v3 API, it then creates an HTML select to change between versions published in github pages'
-    ext.docPage = "/docs/guide/index.html"
-    doLast {
-        String slug = githubSlug as String
-        String repo = slug.split('/')[1]
-        String org = slug.split('/')[0]
-        JsonSlurper slurper = new JsonSlurper()
-        String json = new URL("https://api.github.com/repos/${slug}/tags").text
-        def result = slurper.parseText(json)
-        String selectHtml = "<select style='margin-top: 10px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'>"
-        String snapshotHref = "https://${org}.github.io/${repo}/snapshot/guide/index.html"
-        if (projectVersion.endsWith('BUILD-SNAPSHOT')) {
-            selectHtml += "<option selected='selected' value='${snapshotHref}'>${projectVersion}</option>"
-        } else {
-            selectHtml += "<option value='${snapshotHref}'>${projectVersion}</option>"
-        }
-        result.findAll { it.name.startsWith('v') }.collect { SoftwareVersion.build(it.name.replace('v', '')) }.sort().reverse().each { softwareVersion ->
-            String versionName = softwareVersion.versionText
-            String href = "https://${org}.github.io/${repo}/${versionName}/guide/index.html"
-            if (slug == 'micronaut-projects/micronaut-core') {
-                href = "https://docs.micronaut.io/${versionName}/guide/index.html"
-            }
-            if (projectVersion == versionName) {
-                selectHtml += "<option selected='selected' value='${href}'>${versionName}</option>"
-            } else {
-                selectHtml += "<option value='${href}'>${versionName}</option>"
-            }
-        }
-        selectHtml += '</select>'
-        File guide = new File(rootProject.buildDir.getAbsolutePath() + docPage)
-        String versionHtml = "<p><strong>Version:</strong> ${projectVersion}</p>"
-        String versionWithSelectHtml = "<p><strong>Version:</strong> ${selectHtml.replaceAll("style='margin-top: 10px'", "style='max-width: 200px'")}</p>"
-        guide.text = guide.text.replace(versionHtml, versionWithSelectHtml)
-    }
-    onlyIf {
-        new File(rootProject.buildDir.getAbsolutePath() + docPage).exists()
-    }
-}
-
-processConfigProps.mustRunAfter downloadDocResources
-publishConfigurationReference.mustRunAfter downloadDocResources
 publishGuide.mustRunAfter downloadDocResources
-task docs(dependsOn: [assemble, javadoc, publishGuide, processConfigProps, publishConfigurationReference, downloadDocResources]) {
-    group = DOCUMENTATION_GROUP
+
+tasks.register("docs") { task ->
+    task.dependsOn tasks.named("assemble")
+    task.dependsOn tasks.named("javadoc")
+    task.dependsOn tasks.named("publishGuide")
+    task.dependsOn tasks.named("processConfigProps")
+    task.dependsOn tasks.named("publishConfigurationReference")
+    task.dependsOn tasks.named("downloadDocResources")
+    task.finalizedBy tasks.named("zipDocs")
+    task.finalizedBy tasks.named("createReleasesDropdown")
 }
 javadoc.mustRunAfter assemble
-processConfigProps.mustRunAfter javadoc
-processConfigProps.mustRunAfter assemble
-publishGuide.mustRunAfter processConfigProps
-publishConfigurationReference.mustRunAfter publishGuide
-docs.finalizedBy zipDocs
 
-docs.finalizedBy(createReleasesDropdown)
-createReleasesDropdown.mustRunAfter zipDocs
+publishGuide.mustRunAfter processConfigProps
+
+
+
