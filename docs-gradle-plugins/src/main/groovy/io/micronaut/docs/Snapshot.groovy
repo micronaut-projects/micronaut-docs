@@ -60,4 +60,11 @@ class Snapshot implements Comparable<Snapshot> {
 
         return 0
     }
+
+    @Override
+    public String toString() {
+        return "Snapshot{" +
+                "text='" + text + '\'' +
+                '}';
+    }
 }
