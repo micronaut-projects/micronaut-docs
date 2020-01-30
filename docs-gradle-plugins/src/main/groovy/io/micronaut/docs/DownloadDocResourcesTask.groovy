@@ -2,7 +2,6 @@ package io.micronaut.docs
 
 import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -10,15 +9,11 @@ import org.gradle.api.tasks.TaskAction
 @CompileStatic
 class DownloadDocResourcesTask extends DefaultTask {
 
-    private static final RESOURCES_FOLDER = 'src/main/docs/resources'
-    private static final String GITHUBRAW = "https://raw.githubusercontent.com/${MicronautDocs.GITHUB_ORG}/${MicronautDocs.GITHUB_REPO}/${MicronautDocs.GIT_BRANCH}/${RESOURCES_FOLDER}"
-
     @OutputDirectory
     File resourceFolder
 
     @OutputDirectories
     List<File> resourceFolders
-
 
     @TaskAction
     void downloadResources() {
@@ -38,7 +33,7 @@ class DownloadDocResourcesTask extends DefaultTask {
                 String path = "${resourceFolder.absolutePath}/${k}/" + name
                 File f = new File(path)
                 f.createNewFile()
-                f.text = new URL("${GITHUBRAW}/${k}/${name}").text
+                f.text = new URL("${MicronautDocs.GITHUBRAW}/${k}/${name}").text
             }
         }
     }
