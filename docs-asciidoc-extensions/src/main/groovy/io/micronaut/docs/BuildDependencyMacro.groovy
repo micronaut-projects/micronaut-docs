@@ -63,9 +63,8 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
     static final String DEPENDENCY_PREFIX = 'micronaut-'
     static final String GROUPID = 'io.micronaut'
     static final String MULTILANGUAGECSSCLASS = 'multi-language-sample'
-    static final String BUILD_GRADLE = 'gradle-groovy'
+    static final String BUILD_GRADLE = 'gradle'
     static final String BUILD_MAVEN = 'maven'
-    static final String BUILD_GRADLE_KOTLIN = 'gradle-kotlin'
     public static final String SCOPE_COMPILE = 'compile'
 
     BuildDependencyMacro(String macroName, Map<String, Object> config) {
@@ -98,8 +97,7 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
         String gradleScope = valueAtAttributes('gradleScope', attributes) ?: toGradleScope(attributes) ?: SCOPE_COMPILE
         String mavenScope = valueAtAttributes('mavenScope', attributes) ?: toMavenScope(attributes) ?: SCOPE_COMPILE
         String title = valueAtAttributes('title', attributes) ?: ""
-        String content = gradleDependency(BUILD_GRADLE, groupId, artifactId, version, classifier, gradleScope, MULTILANGUAGECSSCLASS, title, verbose)
-        content += gradleKotlinDependency(BUILD_GRADLE_KOTLIN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS, title)
+        String content = gradleKotlinAndGroovyDependency(BUILD_GRADLE, groupId, artifactId, version, classifier, gradleScope, MULTILANGUAGECSSCLASS, title)
         content += mavenDependency(BUILD_MAVEN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS, title)
         createBlock(parent, "pass", [content], attributes, config).convert()
     }
@@ -133,48 +131,7 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
         }
     }
 
-
-
-    String gradleDependency(String build,
-                              String groupId,
-                              String artifactId,
-                              String version,
-                              String classifier,
-                              String scope,
-                              String multilanguageCssClass,
-                              String title,
-                              boolean verbose) {
-String html = """\
-        <div class=\"listingblock ${multilanguageCssClass}\">
-<div class=\"title\">$title</div>
-<div class=\"content\">
-<pre class=\"highlightjs highlight\"><code class=\"language-groovy hljs" data-lang="${build}">"""
-        if (verbose) {
-            html += "${scope} <span class=\"hljs-string\">group:</span> <span class=\"hljs-string\">'${groupId}'</span>, <span class=\"hljs-string\">name:</span> <span class=\"hljs-string\">'${artifactId}'</span>"
-            if (version) {
-                html +=", <span class=\"hljs-string\">version:</span> <span class=\"hljs-string\">'${version}'</span>"
-            }
-            if (classifier) {
-                html +=", <span class=\"hljs-string\">classifier:</span> <span class=\"hljs-string\">'${classifier}'</span>"
-            }
-        } else {
-            html += "${scope} <span class=\"hljs-string\">'${groupId}:${artifactId}"
-            if (version) {
-                html += ":${version}"
-            }
-            if (classifier) {
-                html += ":${classifier}"
-            }
-            html += "'</span>"
-        }
-        html += """</code></pre>
-</div>
-</div>
-"""
-        html
-    }
-
-    String gradleKotlinDependency(String build,
+    String gradleKotlinAndGroovyDependency(String build,
                               String groupId,
                               String artifactId,
                               String version,
