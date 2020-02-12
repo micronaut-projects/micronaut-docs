@@ -11,7 +11,7 @@ import org.asciidoctor.extension.InlineMacroProcessor
  * For
  *
  * Gradle
- * compile 'io.micronaut:micronaut-spring:1.0.1'
+ * implementation 'io.micronaut:micronaut-spring:1.0.1'
  *
  * Maven
  * <dependency>
@@ -27,7 +27,7 @@ import org.asciidoctor.extension.InlineMacroProcessor
  * for:
  *
  * Gradle
- * compile group: 'io.micronaut', name: 'micronaut-spring', version: '1.0.1'
+ * implementation group: 'io.micronaut', name: 'micronaut-spring', version: '1.0.1'
  *
  * Maven
  * <dependency>
@@ -67,6 +67,7 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
     static final String BUILD_MAVEN = 'maven'
     static final String BUILD_GRADLE_KOTLIN = 'gradle-kotlin'
     public static final String SCOPE_COMPILE = 'compile'
+    public static final String SCOPE_IMPLEMENTATION = 'implementation'
 
     BuildDependencyMacro(String macroName, Map<String, Object> config) {
         super(macroName, config)
@@ -100,11 +101,11 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
 
         boolean verbose = valueAtAttributes('verbose', attributes) as boolean
         String classifier = valueAtAttributes('classifier', attributes)
-        String gradleScope = valueAtAttributes('gradleScope', attributes) ?: toGradleScope(attributes) ?: SCOPE_COMPILE
+        String gradleScope = valueAtAttributes('gradleScope', attributes) ?: toGradleScope(attributes) ?: SCOPE_IMPLEMENTATION
         String mavenScope = valueAtAttributes('mavenScope', attributes) ?: toMavenScope(attributes) ?: SCOPE_COMPILE
         String title = valueAtAttributes('title', attributes) ?: ""
         String content = gradleDependency(BUILD_GRADLE, groupId, artifactId, version, classifier, gradleScope, MULTILANGUAGECSSCLASS, title, verbose)
-        content += gradleKotlinDependency(BUILD_GRADLE_KOTLIN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS, title)
+        content += gradleKotlinDependency(BUILD_GRADLE_KOTLIN, groupId, artifactId, version, classifier, gradleScope, MULTILANGUAGECSSCLASS, title)
         content += mavenDependency(BUILD_MAVEN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS, title)
         content
     }
@@ -129,15 +130,19 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
     static String toGradleScope(Map<String, Object> attributes) {
         String s = valueAtAttributes('scope', attributes)
         switch (s) {
+            case 'compile':
+                return 'implementation'
+            case 'testCompile':
+                return 'testImplementation'
             case 'test':
-                return 'testCompile'
+                return 'testImplementation'
             break
             case 'provided':
                 return 'developmentOnly'
             default: return s
         }
     }
-    
+
     static String gradleDependency(String build,
                               String groupId,
                               String artifactId,
