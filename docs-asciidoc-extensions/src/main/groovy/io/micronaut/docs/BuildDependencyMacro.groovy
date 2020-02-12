@@ -74,6 +74,11 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
 
     @Override
     protected Object process(AbstractBlock parent, String target, Map<String, Object> attributes) {
+        String content = contentForTargetAndAttributes(target, attributes)
+        createBlock(parent, "pass", [content], attributes, config).convert()
+    }
+
+    static String contentForTargetAndAttributes(String target, Map<String, Object> attributes) {
         String groupId
         String artifactId
         String version
@@ -85,7 +90,7 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
             if (tokens.length == 3) {
                 version = tokens[2]
             } else {
-                version = valueAtAttributes('version', attributes)    
+                version = valueAtAttributes('version', attributes)
             }
         } else {
             groupId = valueAtAttributes('groupId', attributes) ?: GROUPID
@@ -101,10 +106,10 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
         String content = gradleDependency(BUILD_GRADLE, groupId, artifactId, version, classifier, gradleScope, MULTILANGUAGECSSCLASS, title, verbose)
         content += gradleKotlinDependency(BUILD_GRADLE_KOTLIN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS, title)
         content += mavenDependency(BUILD_MAVEN, groupId, artifactId, version, classifier, mavenScope, MULTILANGUAGECSSCLASS, title)
-        createBlock(parent, "pass", [content], attributes, config).convert()
+        content
     }
 
-    private String toMavenScope(Map<String, Object> attributes) {
+    static String toMavenScope(Map<String, Object> attributes) {
         String s = valueAtAttributes('scope', attributes)
         switch (s) {
             case 'api':
@@ -121,7 +126,7 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
         }
     }
 
-    private String toGradleScope(Map<String, Object> attributes) {
+    static String toGradleScope(Map<String, Object> attributes) {
         String s = valueAtAttributes('scope', attributes)
         switch (s) {
             case 'test':
@@ -132,10 +137,8 @@ class BuildDependencyMacro extends InlineMacroProcessor implements ValueAtAttrib
             default: return s
         }
     }
-
-
-
-    String gradleDependency(String build,
+    
+    static String gradleDependency(String build,
                               String groupId,
                               String artifactId,
                               String version,
@@ -174,7 +177,7 @@ String html = """\
         html
     }
 
-    String gradleKotlinDependency(String build,
+    static String gradleKotlinDependency(String build,
                               String groupId,
                               String artifactId,
                               String version,
@@ -205,7 +208,7 @@ String html = """\
         html
     }
 
-    String mavenDependency(String build,
+    static String mavenDependency(String build,
                               String groupId,
                               String artifactId,
                               String version,
