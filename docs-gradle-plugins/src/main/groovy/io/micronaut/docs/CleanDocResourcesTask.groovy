@@ -14,9 +14,26 @@ class CleanDocResourcesTask extends DefaultTask {
     @TaskAction
     void cleanResources() {
         for(File f : resourceFolders) {
-            project.getLogger().info("deleting dir ${f.name}")
             if (f.exists()) {
-                f.deleteDir()
+                project.getLogger().info("deleting dir ${f.name}")
+                [
+                        css  : MicronautDocsResources.CSS,
+                        img  : MicronautDocsResources.IMG,
+                        js   : MicronautDocsResources.JS,
+                        style: MicronautDocsResources.STYLE,
+                ].each { String k, List<String> v ->
+                    v.each { name ->
+                        String path = "${f.absolutePath}/$name"
+                        File resourceFile = new File(path)
+                        if (resourceFile.exists()) {
+                            resourceFile.delete()
+                        }
+                    }
+                }
+                boolean dirIsEmpty = f.listFiles().length == 0
+                if (dirIsEmpty) {
+                    f.deleteDir()
+                }
             }
         }
     }
