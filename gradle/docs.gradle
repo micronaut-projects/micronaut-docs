@@ -27,36 +27,42 @@ def commonGithubOrg = 'grails'
 def commonGithubSlug = 'grails-common-build'
 def commonBranch = 'master'
 def docResourcesDir = "${buildDir}/resources/${commonGithubSlug}-${commonBranch}/src/main/resources"
-
+logger.quiet("Configuring micronaut documentation tasks for subprojects.")
+logger.quiet("Add skipDocumentation=true to a submodule gradle.properties to skip docs")
 subprojects { subproject ->
-    tasks.register('moveConfigProps') { task ->
-        task.group(DOCUMENTATION_GROUP)
-        task.doLast {
-            ant.mkdir(dir:"${rootProject.buildDir}/config-props")
-            ant.move(file: "${subproject.buildDir}/classes/java/main/META-INF/config-properties.adoc", tofile:"${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc", failonerror:false, quiet:true)
-        }
-        task.dependsOn tasks.named("classes")
-    }
-    tasks.register('javaDocAtReplacement', JavaDocAtValueReplacementTask) { task ->
-        task.group(DOCUMENTATION_GROUP)
-        task.dependsOn('moveConfigProps')
-        adoc = "${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc"
-    }
-    tasks.register('replaceAtLink', ReplaceAtLinkTask) { task ->
-        configProperties = "${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc"
-        task.group(DOCUMENTATION_GROUP)
-        task.dependsOn tasks.named('moveConfigProps')
-        task.mustRunAfter tasks.named('javaDocAtReplacement')
-    }
+    boolean skipDocs = project.hasProperty('skipDocumentation') ? project.property('skipDocumentation') as Boolean : false
+    if (tasks.findByName("classes") && !skipDocs) {
 
-    tasks.register('processConfigProps', ProcessConfigPropsTask) { task ->
-        configPropertiesFileName = "${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc"
-        individualConfigPropsFolder = "${rootProject.buildDir}/generated/configurationProperties"
-        task.group(DOCUMENTATION_GROUP)
-        task.mustRunAfter tasks.named("javadoc")
-        task.mustRunAfter tasks.named("assemble")
-        task.dependsOn tasks.named('replaceAtLink')
-        task.dependsOn tasks.named('javaDocAtReplacement')
+        tasks.register('moveConfigProps') { task ->
+            task.group(DOCUMENTATION_GROUP)
+            task.doLast {
+                ant.mkdir(dir:"${rootProject.buildDir}/config-props")
+                ant.move(file: "${subproject.buildDir}/classes/java/main/META-INF/config-properties.adoc", tofile:"${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc", failonerror:false, quiet:true)
+            }
+            task.dependsOn tasks.named("classes")
+        }
+        tasks.register('javaDocAtReplacement', JavaDocAtValueReplacementTask) { task ->
+            task.group(DOCUMENTATION_GROUP)
+            task.dependsOn('moveConfigProps')
+            adoc = "${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc"
+        }
+        tasks.register('replaceAtLink', ReplaceAtLinkTask) { task ->
+            configProperties = "${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc"
+            task.group(DOCUMENTATION_GROUP)
+            task.dependsOn tasks.named('moveConfigProps')
+            task.mustRunAfter tasks.named('javaDocAtReplacement')
+        }
+
+        tasks.register('processConfigProps', ProcessConfigPropsTask) { task ->
+            configPropertiesFileName = "${rootProject.buildDir}/config-props/${subproject.name}-config-properties.adoc"
+            individualConfigPropsFolder = "${rootProject.buildDir}/generated/configurationProperties"
+            task.group(DOCUMENTATION_GROUP)
+            task.mustRunAfter tasks.named("javadoc")
+            task.mustRunAfter tasks.named("assemble")
+            task.dependsOn tasks.named('replaceAtLink')
+            task.dependsOn tasks.named('javaDocAtReplacement')
+        }
+        javadoc.mustRunAfter tasks.named('assemble')
     }
 }
 tasks.register("prepareDocResources") { task ->
