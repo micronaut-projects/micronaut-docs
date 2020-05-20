@@ -66,7 +66,11 @@ class LanguageSnippetMacro extends BlockMacroProcessor implements ValueAtAttribu
             List includes = []
             for (fileName in files) {
                 String baseName = fileName.replace(".", File.separator)
-                File file = new File("$projectDir/src/$sourceType/$sourceFolder/${baseName}.$ext")
+                String pathName = "$projectDir/src/$sourceType/$sourceFolder/${baseName}.$ext"
+                if (System.getProperty("user.dir") != null) {
+                    pathName = "${System.getProperty("user.dir")}${File.separator}${pathName}".toString()
+                }
+                File file = new File(pathName)
                 if (!file.exists()) {
                     println "!!!! WARNING: NO FILE FOUND MATCHING TARGET PASSED IN AT PATH : $file.path"
                     continue
