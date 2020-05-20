@@ -40,9 +40,9 @@ class CreateReleasesDropdownTask extends DefaultTask {
         String selectHtml = "<select style='margin-top: 10px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'>"
         String snapshotHref = "https://${org}.github.io/${repo}/snapshot/guide/index.html"
         if (version.endsWith('BUILD-SNAPSHOT')) {
-            selectHtml += "<option selected='selected' value='${snapshotHref}'>${version}</option>"
+            selectHtml += "<option selected='selected' value='${snapshotHref}'>SNAPSHOT</option>"
         } else {
-            selectHtml += "<option value='${snapshotHref}'>${version}</option>"
+            selectHtml += "<option value='${snapshotHref}'>SNAPSHOT</option>"
         }
         parseSoftwareVersions(result).each { softwareVersion ->
             String versionName = softwareVersion.versionText
