@@ -23,14 +23,15 @@ class CreateReleasesDropdownTask extends DefaultTask {
     @TaskAction
     void modifyHtmlAndAddReleasesDropdown() {
 
-        String selectHtml = composeSelectHtml()
+        String selectHtml = composeSelectHtml(slug, version)
 
         String versionHtml = "<p><strong>Version:</strong> ${version}</p>"
         String versionWithSelectHtml = "<p><strong>Version:</strong> ${selectHtml.replaceAll("style='margin-top: 10px'", "style='max-width: 200px'")}</p>"
         doc.text = doc.text.replace(versionHtml, versionWithSelectHtml)
     }
 
-    String composeSelectHtml() {
+    static String composeSelectHtml(String slug,
+                                    String version) {
         String repo = slug.split('/')[1]
         String org = slug.split('/')[0]
         JsonSlurper slurper = new JsonSlurper()
@@ -38,7 +39,7 @@ class CreateReleasesDropdownTask extends DefaultTask {
         def result = slurper.parseText(json)
 
         String selectHtml = "<select style='margin-top: 10px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'>"
-        String snapshotHref = "https://${org}.github.io/${repo}/snapshot/guide/index.html"
+        String snapshotHref = snapshotRefUrl(org, repo)
         if (version.endsWith('BUILD-SNAPSHOT')) {
             selectHtml += "<option selected='selected' value='${snapshotHref}'>SNAPSHOT</option>"
         } else {
@@ -60,8 +61,17 @@ class CreateReleasesDropdownTask extends DefaultTask {
         selectHtml
     }
 
+    static String snapshotRefUrl(String org, String repo) {
+        final String MICRONAUT_GITHUB_ORGANIZATION = 'micronaut-projects'
+        final String MICRONAUT_CORE_REPOSITORY = 'micronaut-core'
+        if (org == MICRONAUT_GITHUB_ORGANIZATION && repo == MICRONAUT_CORE_REPOSITORY) {
+            return "https://docs.micronaut.io/snapshot/guide/index.html"
+        }
+        "https://${org}.github.io/${repo}/snapshot/guide/index.html"
+    }
+
     @CompileDynamic
-    List<SoftwareVersion> parseSoftwareVersions(Object result) {
+    static List<SoftwareVersion> parseSoftwareVersions(Object result) {
         result.findAll { it.name.startsWith('v') }.collect { SoftwareVersion.build(it.name.replace('v', '')) }.sort().reverse()
     }
 }
