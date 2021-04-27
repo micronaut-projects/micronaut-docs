@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class ReactiveStreamsApiMacro extends ApiMacro {
 
-    private static final String DEFAULT_URI = "https://docs.oracle.com/javase/8/docs/api";
+    private static final String DEFAULT_URI = "https://www.reactive-streams.org/reactive-streams-1.0.3-javadoc";
 
     /**
      * @param macroName The macro name
