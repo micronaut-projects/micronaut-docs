@@ -46,25 +46,10 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew dependencyUpdates check --no-daemon --parallel --continue
         env:
-           TESTCONTAINERS_RYUK_DISABLED: true        
+           TESTCONTAINERS_RYUK_DISABLED: true
       - name: Publish to Sonatype Snapshots
         if: success() && github.event_name == 'push' && matrix.java == '8'
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-        run: ./gradlew publishToSonatype docs --no-daemon
-      - name: Determine docs target repository
-        uses: haya14busa/action-cond@v1
-        id: docs_target
-        with:
-          cond: ${{ github.repository == 'micronaut-projects/micronaut-core' }}
-          if_true: "micronaut-projects/micronaut-docs"
-          if_false: ${{ github.repository }}
-      - name: Publish to Github Pages
-        if: success() && github.event_name == 'push' && matrix.java == '8'
-        uses: micronaut-projects/github-pages-deploy-action@master
-        env:
-          TARGET_REPOSITORY: ${{ steps.docs_target.outputs.value }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: build/docs
+        run: ./gradlew publishToSonatype --no-daemon
