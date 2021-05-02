@@ -1,6 +1,6 @@
 # Micronaut Documentation Repository
 
-[![Build Status](https://travis-ci.org/micronaut-projects/micronaut-docs.svg?branch=master)](https://travis-ci.org/micronaut-projects/micronaut-docs).
+[![Java CI](https://github.com/micronaut-projects/micronaut-docs/actions/workflows/gradle.yml/badge.svg)](https://github.com/micronaut-projects/micronaut-docs/actions/workflows/gradle.yml)
 
 This repository is used purely to host the Github Pages for https://docs.micronaut.io
 
