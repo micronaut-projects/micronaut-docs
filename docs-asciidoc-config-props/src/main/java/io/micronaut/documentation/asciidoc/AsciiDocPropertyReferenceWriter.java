@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.micronaut.documentation.asciidoc;
 
 import io.micronaut.core.util.CollectionUtils;
@@ -83,7 +82,9 @@ public class AsciiDocPropertyReferenceWriter implements ConfigurationMetadataWri
                     for (Map.Entry<ConfigurationMetadata, List<PropertyMetadata>> entry : map.entrySet()) {
                         ConfigurationMetadata cm = entry.getKey();
 
-                        if (cm == null || cm == EMPTY) continue;
+                        if (cm == null || cm == EMPTY) {
+                          continue;
+                        }
 
                         if (entry.getValue() != null) {
                             writeFragmentLink(w, cm.getType());
@@ -105,8 +106,12 @@ public class AsciiDocPropertyReferenceWriter implements ConfigurationMetadataWri
                                 String path = pm.getPath();
                                 String description = pm.getDescription();
 
-                                if (path.contains("..")) continue;
-                                if (StringUtils.isEmpty(description)) description = "";
+                                if (path.contains("..")) {
+                                  continue;
+                                }
+                                if (StringUtils.isEmpty(description)) {
+                                  description = "";
+                                }
 
                                 description = description.trim();
 
@@ -166,4 +171,3 @@ public class AsciiDocPropertyReferenceWriter implements ConfigurationMetadataWri
         return t -> seen.putIfAbsent(ke.apply(t), Boolean.TRUE) == null;
     }
 }
-
