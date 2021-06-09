@@ -35690,9 +35690,21 @@ Previously snapshots were published to Bintray, however due to JFrog shutting th
 </div>
 </div>
 <div class="sect3">
+<h4 id="_cookie_secure_configuration">Cookie Secure Configuration</h4>
+<div class="paragraph">
+<p>Previously the <code>secure</code> configuration for cookies was only respected if the request was determined to be sent over https. Due to a number of factors including proxies, HTTPS requests can be presented to the server as if they are HTTP. In those cases the setting was not having any effect. The setting is now respected regardless of the status of the request. If the setting is not set, cookies will be secure if the request is determined to be HTTPS.</p>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_no_longer_possible_to_inject_a_code_list_code_of_code_provider_code">No Longer Possible to Inject a <code>List</code> of <code>Provider</code></h4>
 <div class="paragraph">
 <p>In Micronaut 2.x it was possible to inject a <code>List&lt;javax.inject.Provider&gt;</code>, although this was undocumented behaviour. In Micronaut 3.x injecting a list of <code>Provider</code> instances is no longer possible and you should instead use the <a href="../api/io/micronaut/context/BeanProvider.html">BeanProvider</a> API which provides <code>stream()</code> and <code>iterator()</code> methods to provide the same functionality.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_injecting_executorservice">Injecting ExecutorService</h4>
+<div class="paragraph">
+<p>In previous versions of Micronaut it was possible to inject an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html">ExecutorService</a> without any qualifiers and the default Netty event loop group would be injected. Because the event loop should not be used for general purpose use cases, the injection will now fail by default with a non unique bean exception. The injection point should be qualified for which executor service is desired.</p>
 </div>
 </div>
 <div class="sect3">
