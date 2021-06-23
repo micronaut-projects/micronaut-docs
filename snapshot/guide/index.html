@@ -32015,7 +32015,7 @@ $ sdk use java 21.1.0.r8-grl</code></pre>
 <p>Micronaut itself does not rely on reflection or dynamic classloading, so it works automatically with GraalVM native, however certain third-party libraries used by Micronaut may require additional input about uses of reflection.</p>
 </div>
 <div class="paragraph">
-<p>Micronaut includes an annotation processor that helps to generate the <code>reflect-config.json</code> and <code>resource-config.json</code> metadata files that are automatically picked up by the <code>native-image</code> tool:</p>
+<p>Micronaut includes an annotation processor that helps to generate the <code>reflect-config.json</code> metadata files that are automatically picked up by the <code>native-image</code> tool:</p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -32044,12 +32044,6 @@ $ sdk use java 21.1.0.r8-grl</code></pre>
 <ul>
 <li>
 <p>A <code>reflect-config.json</code> file in the <code>META-INF/native-image</code> directory in your build classes directory (<code>target/classes</code> with Maven and typically <code>build/classes/java/main</code> with Gradle).</p>
-</li>
-<li>
-<p>A <code>native-image.properties</code> file to read this configuration for all classes annotated with either <a href="../api/io/micronaut/core/annotation/ReflectiveAccess.html">@ReflectiveAccess</a> or <a href="../api/io/micronaut/core/annotation/TypeHint.html">@TypeHint</a>.</p>
-</li>
-<li>
-<p>A <code>resource-config.json</code> file also in the <code>META-INF/native-image</code> directory in your build classes directory containing information about the files in the <code>src/main/resources</code> directory.</p>
 </li>
 </ul>
 </div>
@@ -32085,9 +32079,6 @@ To provide your own <code>reflect.json</code>, add one to <code>src/main/graal/r
 </td>
 </tr>
 </table>
-</div>
-<div class="paragraph">
-<p>Stating with Micronaut 2.0, as the framework automatically generates the <code>resource-config.json</code> file, to include your own additional resources, provide them in <code>src/main/graal/resource-config.json</code> and they will automatically be added to the generated file.</p>
 </div>
 </div>
 <div class="sect2">
@@ -32155,6 +32146,12 @@ To provide your own <code>reflect.json</code>, add one to <code>src/main/graal/r
 </div>
 <div class="paragraph">
 <p>As you can see, the native image startup completes in milliseconds, and memory consumption does not include the overhead of the JVM (a native Micronaut application runs with just 20mb of memory).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_resource_file_generation">Resource file generation</h3>
+<div class="paragraph">
+<p>Starting in Micronaut 3.0 the automatic generation of the <code>resource-config.json</code> file is now part of the <a href="https://github.com/micronaut-projects/micronaut-gradle-plugin">Gradle</a> and <a href="https://github.com/micronaut-projects/micronaut-maven-plugin">Maven</a> plugins.</p>
 </div>
 </div>
 
@@ -35917,6 +35914,9 @@ public class AProvider implements Provider&lt;A&gt; {
 </div>
 <div class="paragraph">
 <p>Starting in Micronaut 3.x the <code>@Introspected</code> annotation doesn&#8217;t add the class to the GraalVM <code>reflect-config.json</code> file anymore, because in most of the cases is not really necessary. If you need to declare a class to be accessed by reflection, use the <code>@ReflectiveAccess</code> annotation instead.</p>
+</div>
+<div class="paragraph">
+<p>Another change is regarding the GraalVM resources created at compile-time. In previous versions of Micronaut adding a dependency on <code>io.micronaut:micronaut-graal</code> triggered the generation of the GraalVM <code>resource-config.json</code> that included all the resources in <code>src/main/resources</code> so they were included in the native image. Starting in Micronaut 3.x that is done in either the Gradle or Maven plugins.</p>
 </div>
 </div>
 </div>
