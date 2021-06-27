@@ -681,6 +681,24 @@
 </div>
 </div>
 <div class="sect3">
+<h4 id="_support_for_controlling_annotation_inheritance">Support for Controlling Annotation Inheritance</h4>
+<div class="paragraph">
+<p><a href="../api/io/micronaut/core/annotation/AnnotationMetadata.html">AnnotationMetadata</a> inheritance can now be controlled via Java&#8217;s <code>@Inherited</code> annotation. If an annotation is not explicitly annotated with <code>@Inherited</code> it will not be included in the metadata. See the <a href="#annotationMetadata">Annotation Inheritance</a> section of the documentation for more information.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This is an important behavioural change from Micronaut 2.x, see the <a href="#breaks">Breaking Changes</a> section for information on how to upgrade.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_support_narrowing_injection_by_generic_type_arguments">Support Narrowing Injection by Generic Type Arguments</h4>
 <div class="paragraph">
 <p>Micronaut can now resolve the correct bean to inject based on the generic type arguments specified on the injection point:</p>
@@ -8060,6 +8078,214 @@ for (BeanDefinition definition : definitions) {
 <p>This approach is not recommended however, as it requires reflection and increases memory consumption due to the use of runtime generated proxies, and should be used as a last resort, for example if you need an instance of the annotation to integrate with a third-party library.</p>
 </div>
 <div class="sect2">
+<h3 id="_annotation_inheritance">Annotation Inheritance</h3>
+<div class="paragraph">
+<p>Micronaut will respect the rules defined in Java&#8217;s <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/AnnotatedElement.html">AnnotatedElement</a> API with regards to annotation inheritance:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Annotations meta-annotated with <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Inherited.html">Inherited</a> will be available via the <code>getAnnotation*</code> methods of the <a href="../api/io/micronaut/core/annotation/AnnotationMetadata.html">AnnotationMetadata</a> API whilst those directly declared are available via the <code>getDeclaredAnnotation*</code> methods.</p>
+</li>
+<li>
+<p>Annotations not meta-annotated with <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Inherited.html">Inherited</a> will not be included in the metadata</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Micronaut differs from the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/AnnotatedElement.html">AnnotatedElement</a> API in that it extends these rules to methods and method parameters such that:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Any annotations annotated with <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Inherited.html">Inherited</a> and present on a method of interface or super class <code>A</code> that is overridden by child interface or class <code>B</code> will be inherited into the <a href="../api/io/micronaut/core/annotation/AnnotationMetadata.html">AnnotationMetadata</a> retrievable via the <a href="../api/io/micronaut/inject/ExecutableMethod.html">ExecutableMethod</a> API from a <a href="../api/io/micronaut/inject/BeanDefinition.html">BeanDefinition</a> or an <a href="#aop">AOP interceptor</a>.</p>
+</li>
+<li>
+<p>Any annotations annotated with <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Inherited.html">Inherited</a> and present on a method parameter of interface or super class <code>A</code> that is overridden by child interface or class <code>B</code> will be inherited into the <a href="../api/io/micronaut/core/annotation/AnnotationMetadata.html">AnnotationMetadata</a> retrievable via the <a href="../api/io/micronaut/core/type/Argument.html">Argument</a> interface from the <code>getArguments</code> method of the <a href="../api/io/micronaut/inject/ExecutableMethod.html">ExecutableMethod</a> API.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In general behaviour which you may wish to override is not inherited by default including <a href="#scopes">Bean Scopes</a>, <a href="#qualifiers">Bean Qualifiers</a>, <a href="#conditionalBeans">Bean Conditions</a>, <a href="#validation">Validation Rules</a> and so on.</p>
+</div>
+<div class="paragraph">
+<p>If you wish a particular scope, qualifier, or set of requirements to be inherited when subclassing then you can define a meta-annotation that is annotated with <code>@Inherited</code>. For example:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Defining Inherited Meta Annotations</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.context.annotation.AliasFor;
+import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.AnnotationMetadata;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
+
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Inherited <b class="conum">(1)</b>
+@Retention(RetentionPolicy.RUNTIME)
+@Requires(property = "datasource.url") <b class="conum">(2)</b>
+@Named <b class="conum">(3)</b>
+@Singleton <b class="conum">(4)</b>
+public @interface SqlRepository {
+    @AliasFor(annotation = Named.class, member = AnnotationMetadata.VALUE_MEMBER) <b class="conum">(5)</b>
+    String value() default "";
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Defining Inherited Meta Annotations</div>
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.context.annotation.AliasFor
+import io.micronaut.context.annotation.Requires
+import io.micronaut.core.annotation.AnnotationMetadata
+import jakarta.inject.Named
+import jakarta.inject.Singleton
+
+import java.lang.annotation.Inherited
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
+@Inherited <b class="conum">(1)</b>
+@Retention(RetentionPolicy.RUNTIME)
+@Requires(property = "datasource.url") <b class="conum">(2)</b>
+@Named <b class="conum">(3)</b>
+@Singleton <b class="conum">(4)</b>
+@interface SqlRepository {
+    @AliasFor(annotation = Named.class, member = AnnotationMetadata.VALUE_MEMBER) <b class="conum">(5)</b>
+    String value() default "";
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Defining Inherited Meta Annotations</div>
+<div class="content">
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.context.annotation.Requires
+import jakarta.inject.Named
+import jakarta.inject.Singleton
+import java.lang.annotation.Inherited
+
+@Inherited <b class="conum">(1)</b>
+@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
+@Requires(property = "datasource.url") <b class="conum">(2)</b>
+@Named <b class="conum">(3)</b>
+@Singleton <b class="conum">(4)</b>
+annotation class SqlRepository(
+    val value: String = ""
+)</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The annotation is declared as <code>@Inherited</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><a href="#conditionalBeans">Bean Conditions</a> will be inherited by child classes</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><a href="#qualifiers">Bean Qualifiers</a> will be inherited by child classes</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><a href="#scopes">Bean Scopes</a> will be inherited by child classes</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>You can also alias annotations and they will be inherited</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With this meta-annotation in place you can add the annotation to a super class:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Using Inherited Meta Annotations on a Super Class</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@SqlRepository
+public abstract class BaseSqlRepository {
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Using Inherited Meta Annotations on a Super Class</div>
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@SqlRepository
+abstract class BaseSqlRepository {
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Using Inherited Meta Annotations on a Super Class</div>
+<div class="content">
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">@SqlRepository
+abstract class BaseSqlRepository</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then a subclass will inherit all the annotations:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Inherting Annotations in a Child Class</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">import jakarta.inject.Named;
+import javax.sql.DataSource;
+
+@Named("bookRepository")
+public class BookRepository extends BaseSqlRepository {
+    private final DataSource dataSource;
+
+    public BookRepository(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Inherting Annotations in a Child Class</div>
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import jakarta.inject.Named
+import javax.sql.DataSource
+
+@Named("bookRepository")
+class BookRepository extends BaseSqlRepository {
+    private final DataSource dataSource
+
+    BookRepository(DataSource dataSource) {
+        this.dataSource = dataSource
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Inherting Annotations in a Child Class</div>
+<div class="content">
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import jakarta.inject.Named
+import javax.sql.DataSource
+
+@Named("bookRepository")
+class BookRepository(private val dataSource: DataSource) : BaseSqlRepository()</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+A child class must at least have one bean definition annotation such as a scope or qualifier.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_aliasing_mapping_annotations">Aliasing / Mapping Annotations</h3>
 <div class="paragraph">
 <p>There are times when you may want to alias the value of an annotation member to the value of another annotation member. To do this, use the <a href="../api/io/micronaut/context/annotation/AliasFor.html">@AliasFor</a> annotation.</p>
@@ -12295,6 +12521,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
 @Adapter(ApplicationEventListener.class) <i class="conum" data-value="1"></i><b>(1)</b>
 @Indexed(ApplicationEventListener.class)
+@Inherited
 public @interface EventListener {
 }</code></pre>
 </div>
@@ -25621,11 +25848,14 @@ open class PetController : PetOperations {
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.http.client.annotation.Client;
 import io.reactivex.Single;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+
 @Client("/pets") <b class="conum">(1)</b>
 public interface PetClient extends PetOperations { <b class="conum">(2)</b>
 
     @Override
-    Single&lt;Pet&gt; save(String name, int age); <b class="conum">(3)</b>
+    Single&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age); <b class="conum">(3)</b>
 }</code></pre>
 </div>
 </div>
@@ -25679,7 +25909,7 @@ interface PetClient : PetOperations { <b class="conum">(2)</b>
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-Notice in the above example we override the <code>save</code> method. This is necessary if you compile without the <code>-parameters</code> option since Java does not retain parameters names in bytecode otherwise. Overriding is not necessary if you compile with <code>-parameters</code>.
+Notice in the above example we override the <code>save</code> method. This is necessary if you compile without the <code>-parameters</code> option since Java does not retain parameters names in bytecode otherwise. Overriding is not necessary if you compile with <code>-parameters</code>. In addition, when overriding methods you should ensure any validation annotations are declared again since these are not <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Inherited.html">Inherited</a> annotations.
 </td>
 </tr>
 </table>
@@ -26710,7 +26940,7 @@ public interface PetClient extends PetOperations {
 interface PetClient extends PetOperations {
 
     @Override
-    Single&lt;Pet&gt; save(String name, int age)
+    Single&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age)
 
     @Get("/{name}")
     Single&lt;Pet&gt; get(String name)
@@ -35674,9 +35904,544 @@ Previously snapshots were published to Bintray, however due to JFrog shutting th
 <div class="sect2">
 <h3 id="_core_changes">Core Changes</h3>
 <div class="sect3">
+<h4 id="_annotation_inheritance">Annotation Inheritance</h4>
+<div class="paragraph">
+<p>Possibly the most important change in Micronaut 3.0 is a difference in how annotations are inherited from parent classes, methods and interfaces.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut 2.x did not respect the rules defined in the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/AnnotatedElement.html">AnnotatedElement</a> and inherited all annotations from parent interfaces and types regardless of the presence of the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Inherited.html">Inherited</a> annotation.</p>
+</div>
+<div class="paragraph">
+<p>With Micronaut 3.x and above only annotations that are explicitly meta-annotated with <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Inherited.html">Inherited</a> are now in fact inherited from parent classes and interfaces.
+This applies to types in the case where one type extends another and methods in the case where one method overrides another.</p>
+</div>
+<div class="paragraph">
+<p>Many of Micronaut&#8217;s core annotations have been annotated with <code>@Inherited</code> so no change will be required, but some annotations that are either outside Micronaut or defined by user code will need changes to code or the annotation.</p>
+</div>
+<div class="paragraph">
+<p>In general behaviour which you may wish to override is not inherited by default in Micronaut 3.x and above including <a href="#scopes">Bean Scopes</a>, <a href="#qualifiers">Bean Qualifiers</a>, <a href="#conditionalBeans">Bean Conditions</a>, <a href="#validation">Validation Rules</a> and so on.</p>
+</div>
+<div class="paragraph">
+<p>The following table summarizes the core Micronaut annotations and which ones are inherited and which annotations are not:</p>
+</div>
+<table class="tableblock frame-topbot grid-all" style="width: 80%;">
+<caption class="title">Table 1. Annotation Inheritance in Micronaut 3.x and above</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Annotation</th>
+<th class="tableblock halign-left valign-top">Inherited</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/aop/Adapter.html">@Adapter</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/aop/Around.html">@Around</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/aop/AroundConstruct.html">@AroundConstruct</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/aop/InterceptorBean.html">@InterceptorBean</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/aop/InterceptorBinding.html">@InterceptorBinding</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/aop/Introduction.html">@Introduction</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/annotation/Blocking.html">@Blocking</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/annotation/Creator.html">@Creator</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/annotation/EntryPoint.html">@EntryPoint</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/annotation/Experimental.html">@Experimental</a> (source level)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/annotation/Indexes.html">@Indexes</a> &amp; <a href="../api/io/micronaut/core/annotation/Indexed.html">@Indexed</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/annotation/Internal.html">@Internal</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/annotation/NonBlocking.html">@NonBlocking</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/annotation/Nullable.html">@Nullable</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/annotation/NonNull.html">@NonNull</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/annotation/Order.html">@Order</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/annotation/ReflectiveAccess.html">@ReflectiveAccess</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/annotation/TypeHint.html">@TypeHint</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/async/annotation/SingleResult.html">@SingleResult</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/bind/annotation/Bindable.html">@Bindable</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/convert/format/Format.html">@Format</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/convert/format/MapFormat.html">@MapFormat</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/convert/format/ReadableBytes.html">@ReadableBytes</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/core/version/annotation/Version.html">@Version</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/AliasFor.html">@AliasFor</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Any.html">@Any</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Bean.html">@Bean</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/BootstrapContextCompatible.html">@BootstrapContextCompatible</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/ConfigurationBuilder.html">@ConfigurationBuilder</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/ConfigurationInject.html">@ConfigurationInject</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/ConfigurationReader.html">@ConfigurationReader</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Context.html">@Context</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/DefaultImplementation.html">@DefaultImplementation</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/DefaultScope.html">@DefaultScope</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/EachBean.html">@EachBean</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Executable.html">@Executable</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Factory.html">@Factory</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/NonBinding.html">@NonBinding</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Parallel.html">@Parallel</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Parameter.html">@Parameter</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Primary.html">@Primary</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Property.html">@Property</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/PropertySource.html">@PropertySource</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Prototype.html">@Prototype</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Replaces.html">@Replaces</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Requirements.html">@Requirements</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Requires.html">@Requires</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Secondary.html">@Secondary</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Type.html">@Type</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/context/annotation/Value.html">@Value</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Controller.html">@Controller</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Body.html">@Body</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Consumes.html">@Consumes</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/CookieValue.html">@CookieValue</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/CustomHttpMethod.html">@CustomHttpMethod</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Delete.html">@Delete</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Error.html">@Error</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Filter.html">@Filter</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/FilterMatcher.html">@FilterMatcher</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Get.html">@Get</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Head.html">@Head</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Header.html">@Header</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Headers.html">@Headers</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/HttpMethodMapping.html">@HttpMethodMapping</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Options.html">@Options</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Part.html">@Part</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Patch.html">@Patch</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/PathVariable.html">@PathVariable</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Post.html">@Post</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Produces.html">@Produces</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Put.html">@Put</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/QueryValue.html">@QueryValue</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/RequestAttribute.html">@RequestAttribute</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/RequestAttributes.html">@RequestAttributes</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/RequestBean.html">@RequestBean</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Status.html">@Status</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/Trace.html">@Trace</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/annotation/UriMapping.html">@UriMapping</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/client/annotation/Client.html">@Client</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/jackson/annotation/JacksonFeatures.html">@JacksonFeatures</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/management/endpoint/annotation/Delete.html">@Delete</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/management/endpoint/annotation/Endpoint.html">@Endpoint</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/management/endpoint/annotation/Read.html">@Read</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/management/endpoint/annotation/Sensitive.html">@Sensitive</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/management/endpoint/annotation/Selector.html">@Selector</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/management/endpoint/annotation/Write.html">@Write</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/management/health/indicator/annotation/Liveness.html">@Liveness</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/management/health/indicator/annotation/Readiness.html">@Readiness</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/messaging/annotation/MessageBody.html">@MessageBody</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/messaging/annotation/MessageHeader.html">@MessageHeader</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/messaging/annotation/MessageHeaders.html">@MessageHeaders</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/messaging/annotation/MessageListener.html">@MessageListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/messaging/annotation/MessageMapping.html">@MessageMapping</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/messaging/annotation/MessageProducer.html">@MessageProducer</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/messaging/annotation/SendTo.html">@SendTo</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/retry/annotation/CircuitBreaker.html">@CircuitBreaker</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/retry/annotation/Fallback.html">@Fallback</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/retry/annotation/Recoverable.html">@Recoverable</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/retry/annotation/Retryable.html">@Retryable</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/runtime/context/scope/Refreshable.html">@Refreshable</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/runtime/context/scope/ScopedProxy.html">@ScopedProxy</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/runtime/context/scope/ThreadLocal.html">@ThreadLocal</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/runtime/http/scope/RequestScope.html">@RequestScope</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/scheduling/annotation/Async.html">@Async</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/scheduling/annotation/ExecuteOn.html">@ExecuteOn</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/scheduling/annotation/Scheduled.html">@Scheduled</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/session/annotation/SessionValue.html">@SessionValue</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/tracing/annotation/ContinueSpan.html">@ContinueSpan</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/tracing/annotation/NewSpan.html">@NewSpan</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/tracing/annotation/SpanTag.html">@SpanTag</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/validation/Validated.html">@Validated</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/websocket/annotation/ClientWebSocket.html">@ClientWebSocket</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/websocket/annotation/OnClose.html">@OnClose</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/websocket/annotation/OnError.html">@OnError</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/websocket/annotation/OnMessage.html">@OnMessage</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/websocket/annotation/OnOpen.html">@OnOpen</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/websocket/annotation/ServerWebSocket.html">@ServerWebSocket</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/websocket/annotation/WebSocketComponent.html">@WebSocketComponent</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">❌</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/websocket/annotation/WebSocketMapping.html">@WebSocketMapping</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>When upgrading an application you may need to take action if you implement an interface or subclass a super class and override a method.</p>
+</div>
+<div class="paragraph">
+<p>For example the annotations defined in <code>javax.validation</code> are not inherited by default so need to be defined again in any overridden or implemented methods.</p>
+</div>
+<div class="paragraph">
+<p>This behaviour grants more flexibility if you need to redefine the validation rules. Note that it is still possible to inherit validation rules through meta-annotations. See the section on <a href="#annotationMetadata">Annotation Inheritance</a> for more information.</p>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_inject_annotations">Inject Annotations</h4>
 <div class="paragraph">
-<p>Micronaut now provides the <code>jakarta.inject</code> annotations as a transitive dependency instead of the <code>javax.inject</code> annotations. To continue using the old annotations, add the following dependency.</p>
+<p>Micronaut now provides the <code>jakarta.inject</code> annotations as a transitive dependency instead of the <code>javax.inject</code> annotations.
+To continue using the old annotations, add the following dependency.</p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -35700,34 +36465,46 @@ Previously snapshots were published to Bintray, however due to JFrog shutting th
 <div class="sect3">
 <h4 id="_nullable_annotations">Nullable Annotations</h4>
 <div class="paragraph">
-<p>Micronaut no longer includes any third party dependency for nullability annotations. Micronaut now provides its own annotations for this purpose (<a href="../api/io/micronaut/core/annotation/Nullable.html">Nullable</a> and <a href="../api/io/micronaut/core/annotation/NonNull.html">NonNull</a>) that are used for our APIs. To continue using other nullability annotations, simply add the relevant dependency.</p>
+<p>Micronaut no longer includes any third party dependency for nullability annotations.
+Micronaut now provides its own annotations for this purpose (<a href="../api/io/micronaut/core/annotation/Nullable.html">Nullable</a> and <a href="../api/io/micronaut/core/annotation/NonNull.html">NonNull</a>) that are used for our APIs.
+To continue using other nullability annotations, simply add the relevant dependency.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_server_filter_behavior">Server Filter Behavior</h4>
 <div class="paragraph">
-<p>In Micronaut 2 server filters could have been called multiple times in the case of an exception being thrown, or sometimes not at all if the error resulted before route execution. This also allowed for filters to handle exceptions thrown from routes. Filters have changed in Micronaut 3 to always be called exactly once for each request, under all conditions. Exceptions are no longer propagated to filters and instead the resulting error response is passed through the reactive stream.</p>
+<p>In Micronaut 2 server filters could have been called multiple times in the case of an exception being thrown, or sometimes not at all if the error resulted before route execution.
+This also allowed for filters to handle exceptions thrown from routes.
+Filters have changed in Micronaut 3 to always be called exactly once for each request, under all conditions.
+Exceptions are no longer propagated to filters and instead the resulting error response is passed through the reactive stream.</p>
 </div>
 <div class="paragraph">
-<p>In the case of a response being created as a result of an exception, the original cause is now stored as a response attribute (<a href="../api/io/micronaut/http/HttpAttributes.html#EXCEPTION">EXCEPTION</a>). That attribute can be read by filters to have context for the error HTTP response.</p>
+<p>In the case of a response being created as a result of an exception, the original cause is now stored as a response attribute (<a href="../api/io/micronaut/http/HttpAttributes.html#EXCEPTION">EXCEPTION</a>).
+That attribute can be read by filters to have context for the error HTTP response.</p>
 </div>
 <div class="paragraph">
-<p>The <a href="../api/io/micronaut/http/filter/OncePerRequestHttpServerFilter.html">OncePerRequestHttpServerFilter</a> class is now deprecated and will be removed in the next major release. The <a href="../api/io/micronaut/http/filter/OncePerRequestHttpServerFilter.html">OncePerRequestHttpServerFilter</a> stores a request attribute when the filter is executed and some functionality may rely on that attribute existing. The class will still create the attribute but it is recommended to instead create a custom attribute in your filter class and use that instead of the one created by <a href="../api/io/micronaut/http/filter/OncePerRequestHttpServerFilter.html">OncePerRequestHttpServerFilter</a>.</p>
+<p>The <a href="../api/io/micronaut/http/filter/OncePerRequestHttpServerFilter.html">OncePerRequestHttpServerFilter</a> class is now deprecated and will be removed in the next major release.
+The <a href="../api/io/micronaut/http/filter/OncePerRequestHttpServerFilter.html">OncePerRequestHttpServerFilter</a> stores a request attribute when the filter is executed and some functionality may rely on that attribute existing.
+The class will still create the attribute but it is recommended to instead create a custom attribute in your filter class and use that instead of the one created by <a href="../api/io/micronaut/http/filter/OncePerRequestHttpServerFilter.html">OncePerRequestHttpServerFilter</a>.</p>
 </div>
 <div class="paragraph">
-<p>There is also a minor behavior change in when the response gets written. Any modifications to the response after the underlying <code>onNext</code> call is made will not have any effect as the response has already been written.</p>
+<p>There is also a minor behavior change in when the response gets written.
+Any modifications to the response after the underlying <code>onNext</code> call is made will not have any effect as the response has already been written.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_decapitalization_strategy">Decapitalization Strategy</h4>
 <div class="paragraph">
-<p>For many cases, one common one being introspections, getter names like <code>getXForwarded()</code> would result in the bean property being <code>XForwarded</code>. The name will now be <code>xForwarded</code>. This can affect many areas of the framework where names like <code>XForwarded</code> are used.</p>
+<p>For many cases, one common one being introspections, getter names like <code>getXForwarded()</code> would result in the bean property being <code>XForwarded</code>.
+The name will now be <code>xForwarded</code>.
+This can affect many areas of the framework where names like <code>XForwarded</code> are used.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_order_default">@Order default</h4>
 <div class="paragraph">
-<p>Previously the default order value for the <code>@Order</code> annotation was the lowest precedence. It is now 0.</p>
+<p>Previously the default order value for the <code>@Order</code> annotation was the lowest precedence.
+It is now 0.</p>
 </div>
 </div>
 <div class="sect3">
@@ -35739,25 +36516,35 @@ Previously snapshots were published to Bintray, however due to JFrog shutting th
 <div class="sect3">
 <h4 id="_reflective_bean_map">Reflective Bean Map</h4>
 <div class="paragraph">
-<p>In several places in Micronaut, it is required to get a map representation of your object. In previous versions, a reflection based strategy was used to retrieve that information if the class was not annotated with <code>@Introspected</code>. That functionality has been removed and it is now required to annotate classes with <code>@Introspected</code> that are being used in this way. Any class may be affected if it is passed as an argument or returned from any controller or client, among other use cases.</p>
+<p>In several places in Micronaut, it is required to get a map representation of your object.
+In previous versions, a reflection based strategy was used to retrieve that information if the class was not annotated with <code>@Introspected</code>.
+That functionality has been removed and it is now required to annotate classes with <code>@Introspected</code> that are being used in this way.
+Any class may be affected if it is passed as an argument or returned from any controller or client, among other use cases.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_cookie_secure_configuration">Cookie Secure Configuration</h4>
 <div class="paragraph">
-<p>Previously the <code>secure</code> configuration for cookies was only respected if the request was determined to be sent over https. Due to a number of factors including proxies, HTTPS requests can be presented to the server as if they are HTTP. In those cases the setting was not having any effect. The setting is now respected regardless of the status of the request. If the setting is not set, cookies will be secure if the request is determined to be HTTPS.</p>
+<p>Previously the <code>secure</code> configuration for cookies was only respected if the request was determined to be sent over https.
+Due to a number of factors including proxies, HTTPS requests can be presented to the server as if they are HTTP.
+In those cases the setting was not having any effect.
+The setting is now respected regardless of the status of the request.
+If the setting is not set, cookies will be secure if the request is determined to be HTTPS.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_server_error_route_priority">Server Error Route Priority</h4>
 <div class="paragraph">
-<p>Previously if a route could not be satisfied, or an <code>HttpStatusException</code> was thrown, routes for the relevant HTTP status was searched before routes that handled the specific exception. In Micronaut 3 routes that handle the exception will be searched first, then routes that handle the HTTP status.</p>
+<p>Previously if a route could not be satisfied, or an <code>HttpStatusException</code> was thrown, routes for the relevant HTTP status was searched before routes that handled the specific exception.
+In Micronaut 3 routes that handle the exception will be searched first, then routes that handle the HTTP status.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_status_route_default_response_status">Status Route Default Response Status</h4>
 <div class="paragraph">
-<p>Status error routes will now default to produce responses with the same HTTP status as specified in the <code>@Error</code> annotation. In previous versions a 200 OK response was created. For example:</p>
+<p>Status error routes will now default to produce responses with the same HTTP status as specified in the <code>@Error</code> annotation.
+In previous versions a 200 OK response was created.
+For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -35768,25 +36555,31 @@ String unsupportedMediaTypeHandler() {
 </div>
 </div>
 <div class="paragraph">
-<p>The above method will result in a response of HTTP status 415 with a body of "not supported". Previously it would have been a response of HTTP status 200 with a body of "not supported". To specify the desired response status, either annotate the method with <code>@Status</code> or return an <code>HttpResponse</code>.</p>
+<p>The above method will result in a response of HTTP status 415 with a body of "not supported".
+Previously it would have been a response of HTTP status 200 with a body of "not supported".
+To specify the desired response status, either annotate the method with <code>@Status</code> or return an <code>HttpResponse</code>.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_no_longer_possible_to_inject_a_code_list_code_of_code_provider_code">No Longer Possible to Inject a <code>List</code> of <code>Provider</code></h4>
 <div class="paragraph">
-<p>In Micronaut 2.x it was possible to inject a <code>List&lt;javax.inject.Provider&gt;</code>, although this was undocumented behaviour. In Micronaut 3.x injecting a list of <code>Provider</code> instances is no longer possible and you should instead use the <a href="../api/io/micronaut/context/BeanProvider.html">BeanProvider</a> API which provides <code>stream()</code> and <code>iterator()</code> methods to provide the same functionality.</p>
+<p>In Micronaut 2.x it was possible to inject a <code>List&lt;javax.inject.Provider&gt;</code>, although this was undocumented behaviour.
+In Micronaut 3.x injecting a list of <code>Provider</code> instances is no longer possible and you should instead use the <a href="../api/io/micronaut/context/BeanProvider.html">BeanProvider</a> API which provides <code>stream()</code> and <code>iterator()</code> methods to provide the same functionality.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_injecting_executorservice">Injecting ExecutorService</h4>
 <div class="paragraph">
-<p>In previous versions of Micronaut it was possible to inject an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html">ExecutorService</a> without any qualifiers and the default Netty event loop group would be injected. Because the event loop should not be used for general purpose use cases, the injection will now fail by default with a non unique bean exception. The injection point should be qualified for which executor service is desired.</p>
+<p>In previous versions of Micronaut it was possible to inject an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html">ExecutorService</a> without any qualifiers and the default Netty event loop group would be injected.
+Because the event loop should not be used for general purpose use cases, the injection will now fail by default with a non unique bean exception.
+The injection point should be qualified for which executor service is desired.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_only_the_exported_type_from_factories_is_injectable">Only the Exported Type from Factories is Injectable</h4>
 <div class="paragraph">
-<p>It is no longer possible to inject the internal implementation type from beans produced via factories. For example in the following example:</p>
+<p>It is no longer possible to inject the internal implementation type from beans produced via factories.
+For example in the following example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -35803,7 +36596,9 @@ public class ExecutorFactory {
 </div>
 </div>
 <div class="paragraph">
-<p>In the above case, if the <code>ExecutorService</code> had been created previously a call to <code>context.getBean(ForkJoinPool.class)</code> would locate the already created bean. This behaviour was inconsistent because if the bean had not yet been created then this lookup would not work. In Micronaut 3 for consistency this is no longer possible.</p>
+<p>In the above case, if the <code>ExecutorService</code> had been created previously a call to <code>context.getBean(ForkJoinPool.class)</code> would locate the already created bean.
+This behaviour was inconsistent because if the bean had not yet been created then this lookup would not work.
+In Micronaut 3 for consistency this is no longer possible.</p>
 </div>
 <div class="paragraph">
 <p>You can however restore the behaviour by using the new <code>typed</code> member of the <a href="../api/io/micronaut/context/annotation/Bean.html">@Bean</a> annotation:</p>
@@ -35827,7 +36622,8 @@ public class ExecutorFactory {
 <div class="sect3">
 <h4 id="_no_longer_possible_to_define_aop_advice_on_a_bean_produced_from_a_factory_with_constructor_arguments">No Longer Possible to Define AOP Advice on a Bean Produced from a Factory with Constructor arguments</h4>
 <div class="paragraph">
-<p>In previous versions of Micronaut it was possible to define AOP advice to a factory method that returned a class that featured constructor arguments. This could lead to undefined behaviour since the argument of the generated proxy which would be dependency injected by the framework may be different from manually constructed proxy target.</p>
+<p>In previous versions of Micronaut it was possible to define AOP advice to a factory method that returned a class that featured constructor arguments.
+This could lead to undefined behaviour since the argument of the generated proxy which would be dependency injected by the framework may be different from manually constructed proxy target.</p>
 </div>
 <div class="paragraph">
 <p>The following definition is now invalid in Micronaut 3 and above and will lead to a compilation error:</p>
@@ -35876,7 +36672,9 @@ public class AProvider implements Provider&lt;A&gt; {
 </div>
 </div>
 <div class="paragraph">
-<p>In the above example a bean of type <code>A</code> would automatically be exposed by Micronaut. This behaviour is no longer supported and instead the <a href="../api/io/micronaut/context/annotation/Factory.html">@Factory</a> annotation should be used to express the same behaviour. For example:</p>
+<p>In the above example a bean of type <code>A</code> would automatically be exposed by Micronaut.
+This behaviour is no longer supported and instead the <a href="../api/io/micronaut/context/annotation/Factory.html">@Factory</a> annotation should be used to express the same behaviour.
+For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -35898,7 +36696,8 @@ public class AProvider implements Provider&lt;A&gt; {
 <div class="sect3">
 <h4 id="_fewer_executable_methods_generated_for_controllers_and_message_listeners">Fewer Executable Methods Generated for Controllers and Message Listeners</h4>
 <div class="paragraph">
-<p>Previous versions of Micronaut specified the <a href="../api/io/micronaut/context/annotation/Executable.html">@Executable</a> annotation as a meta-annotation on the <a href="../api/io/micronaut/http/annotation/Controller.html">@Controller</a>, <a href="../api/io/micronaut/http/annotation/Filter.html">@Filter</a> and <a href="../api/io/micronaut/messaging/annotation/MessageListener.html">@MessageListener</a> annotations. This resulted in generating executable method all non-private methods of classes annotated with these annotations.</p>
+<p>Previous versions of Micronaut specified the <a href="../api/io/micronaut/context/annotation/Executable.html">@Executable</a> annotation as a meta-annotation on the <a href="../api/io/micronaut/http/annotation/Controller.html">@Controller</a>, <a href="../api/io/micronaut/http/annotation/Filter.html">@Filter</a> and <a href="../api/io/micronaut/messaging/annotation/MessageListener.html">@MessageListener</a> annotations.
+This resulted in generating executable method all non-private methods of classes annotated with these annotations.</p>
 </div>
 <div class="paragraph">
 <p>In Micronaut 3.x and above the <a href="../api/io/micronaut/context/annotation/Executable.html">@Executable</a> has been moved to a meta-annotation of <a href="../api/io/micronaut/http/annotation/HttpMethodMapping.html">@HttpMethodMapping</a> and <a href="../api/io/micronaut/messaging/annotation/MessageMapping.html">@MessageMapping</a> instead to reduce memory consumption and improve efficiency.</p>
@@ -35910,10 +36709,12 @@ public class AProvider implements Provider&lt;A&gt; {
 <div class="sect3">
 <h4 id="_graalvm_changes">GraalVM changes</h4>
 <div class="paragraph">
-<p>In previous versions of Micronaut annotating a class with <code>@Introspected</code> automatically added it to the GraalVM <code>reflect-config.json</code> file. The original intended usage of the annotation is to generate <a href="#introspection">Bean Introspection Metadata</a> so Micronaut can instantiate the class and call getters and setters without using reflection.</p>
+<p>In previous versions of Micronaut annotating a class with <code>@Introspected</code> automatically added it to the GraalVM <code>reflect-config.json</code> file.
+The original intended usage of the annotation is to generate <a href="#introspection">Bean Introspection Metadata</a> so Micronaut can instantiate the class and call getters and setters without using reflection.</p>
 </div>
 <div class="paragraph">
-<p>Starting in Micronaut 3.x the <code>@Introspected</code> annotation doesn&#8217;t add the class to the GraalVM <code>reflect-config.json</code> file anymore, because in most of the cases is not really necessary. If you need to declare a class to be accessed by reflection, use the <code>@ReflectiveAccess</code> annotation instead.</p>
+<p>Starting in Micronaut 3.x the <code>@Introspected</code> annotation doesn&#8217;t add the class to the GraalVM <code>reflect-config.json</code> file anymore, because in most of the cases is not really necessary.
+If you need to declare a class to be accessed by reflection, use the <code>@ReflectiveAccess</code> annotation instead.</p>
 </div>
 <div class="paragraph">
 <p>Another change is regarding the GraalVM resources created at compile-time. In previous versions of Micronaut adding a dependency on <code>io.micronaut:micronaut-graal</code> triggered the generation of the GraalVM <code>resource-config.json</code> that included all the resources in <code>src/main/resources</code> so they were included in the native image. Starting in Micronaut 3.x that is done in either the Gradle or Maven plugins.</p>
