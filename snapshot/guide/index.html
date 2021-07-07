@@ -11803,6 +11803,7 @@ annotation class NotNull</code></pre>
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.type.MutableArgumentValue;
 
 import jakarta.inject.Singleton;
@@ -11813,6 +11814,7 @@ import java.util.Optional;
 @Singleton
 @InterceptorBean(NotNull.class) <b class="conum">(1)</b>
 public class NotNullInterceptor implements MethodInterceptor&lt;Object, Object&gt; { <b class="conum">(2)</b>
+    @Nullable
     @Override
     public Object intercept(MethodInvocationContext&lt;Object, Object&gt; context) {
         Optional&lt;Map.Entry&lt;String, MutableArgumentValue&lt;?&gt;&gt;&gt; nullParam = context.getParameters()
@@ -11837,6 +11839,7 @@ public class NotNullInterceptor implements MethodInterceptor&lt;Object, Object&g
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.aop.InterceptorBean
 import io.micronaut.aop.MethodInterceptor
 import io.micronaut.aop.MethodInvocationContext
+import io.micronaut.core.annotation.Nullable
 import io.micronaut.core.type.MutableArgumentValue
 
 import jakarta.inject.Singleton
@@ -11844,6 +11847,7 @@ import jakarta.inject.Singleton
 @Singleton
 @InterceptorBean(NotNull) <b class="conum">(1)</b>
 class NotNullInterceptor implements MethodInterceptor&lt;Object, Object&gt; { <b class="conum">(2)</b>
+    @Nullable
     @Override
     Object intercept(MethodInvocationContext&lt;Object, Object&gt; context) {
         Optional&lt;Map.Entry&lt;String, MutableArgumentValue&lt;?&gt;&gt;&gt; nullParam = context.parameters
@@ -11874,7 +11878,7 @@ import jakarta.inject.Singleton
 @Singleton
 @InterceptorBean(NotNull::class) <b class="conum">(1)</b>
 class NotNullInterceptor : MethodInterceptor&lt;Any, Any&gt; { <b class="conum">(2)</b>
-    override fun intercept(context: MethodInvocationContext&lt;Any, Any&gt;): Any {
+    override fun intercept(context: MethodInvocationContext&lt;Any, Any&gt;): Any? {
         val nullParam = context.parameters
                 .entries
                 .stream()
@@ -12309,12 +12313,14 @@ annotation class Stub(val value: String = "")</code></pre>
 <div class="title">StubIntroduction</div>
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.aop.*;
+import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
 
 @Singleton
 @InterceptorBean(Stub.class) <b class="conum">(1)</b>
 public class StubIntroduction implements MethodInterceptor&lt;Object,Object&gt; { <b class="conum">(2)</b>
 
+    @Nullable
     @Override
     public Object intercept(MethodInvocationContext&lt;Object, Object&gt; context) {
         return context.getValue( <b class="conum">(3)</b>
@@ -12331,12 +12337,14 @@ public class StubIntroduction implements MethodInterceptor&lt;Object,Object&gt; 
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.aop.MethodInterceptor
 import io.micronaut.aop.MethodInvocationContext
 import io.micronaut.aop.InterceptorBean
+import io.micronaut.core.annotation.Nullable
 import jakarta.inject.Singleton
 
 @Singleton
 @InterceptorBean(Stub) <b class="conum">(1)</b>
 class StubIntroduction implements MethodInterceptor&lt;Object,Object&gt; { <b class="conum">(2)</b>
 
+    @Nullable
     @Override
     Object intercept(MethodInvocationContext&lt;Object, Object&gt; context) {
         context.getValue( <b class="conum">(3)</b>
