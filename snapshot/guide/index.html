@@ -430,11 +430,13 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-reactiveConfigs"><a href="#reactiveConfigs"><strong>12.1</strong><span>Configurations for Reactive Programming</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-rxjava3"><a href="#rxjava3"><strong>12.1.1</strong><span>RxJava 3 Support</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-reactor"><a href="#reactor"><strong>12.1.1</strong><span>Reactor Support</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-reactor"><a href="#reactor"><strong>12.1.2</strong><span>Reactor Support</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-rxjava3"><a href="#rxjava3"><strong>12.1.2</strong><span>RxJava 3 Support</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-rxjava1"><a href="#rxjava1"><strong>12.1.3</strong><span>RxJava 1 Support</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-rxjava2"><a href="#rxjava2"><strong>12.1.3</strong><span>RxJava 2 Support</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-rxjava1"><a href="#rxjava1"><strong>12.1.4</strong><span>RxJava 1 Support</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-dataAccess"><a href="#dataAccess"><strong>12.2</strong><span>Configurations for Data Access</span></a></div>
         
@@ -1009,6 +1011,13 @@ class User {
 <h4 id="_random_configuration_values">Random Configuration Values</h4>
 <div class="paragraph">
 <p>It is now possible to set a max and a range for random numbers in configuration. For example to set an integer between 0 and 9, <code>${random.int(10)}</code> can be used as the configuration value. See the <a href="#propertySource">documentation</a> under "Using Random Properties" for more information.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_project_reactor_used_internally_instead_of_rxjava2">Project Reactor used internally instead of RxJava2</h4>
+<div class="paragraph">
+<p>Micronaut 3 uses internally <a href="https://projectreactor.io">Project Reactor</a> instead <a href="https://github.com/ReactiveX/RxJava">RxJava 2</a>. Project Reactor allows
+Micronaut 3 to simplify instrumentation, thanks to <a href="https://projectreactor.io/docs/core/release/api/reactor/util/context/Context.html">Reactor&#8217;s Context</a>,  simplifies conversion login and eases the integration with R2DBC drivers. We recommend users to migrate to Reactor. However, it is possible to continue to use RxJava. See <a href="#reactiveConfigs">Reactive Programming section</a>.</p>
 </div>
 </div>
 </div>
@@ -1734,13 +1743,15 @@ class HelloControllerSpec {
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.client.annotation.Client;
-import io.reactivex.Single;
+import org.reactivestreams.Publisher;
+import io.micronaut.core.async.annotation.SingleResult;
 
 @Client("/hello") <b class="conum">(1)</b>
 public interface HelloClient {
 
     @Get(consumes = MediaType.TEXT_PLAIN) <b class="conum">(2)</b>
-    Single&lt;String&gt; hello(); <b class="conum">(3)</b>
+    @SingleResult
+    Publisher&lt;String&gt; hello(); <b class="conum">(3)</b>
 }</code></pre>
 </div>
 </div>
@@ -1748,13 +1759,15 @@ public interface HelloClient {
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
-import io.reactivex.Single
+import org.reactivestreams.Publisher
+import io.micronaut.core.async.annotation.SingleResult
 
 @Client("/hello") <b class="conum">(1)</b>
 interface HelloClient {
 
     @Get(consumes = MediaType.TEXT_PLAIN) <b class="conum">(2)</b>
-    Single&lt;String&gt; hello() <b class="conum">(3)</b>
+    @SingleResult
+    Publisher&lt;String&gt; hello() <b class="conum">(3)</b>
 }</code></pre>
 </div>
 </div>
@@ -1763,13 +1776,15 @@ interface HelloClient {
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
-import io.reactivex.Single
+import io.micronaut.core.async.annotation.SingleResult
+import org.reactivestreams.Publisher
 
 @Client("/hello") <b class="conum">(1)</b>
 interface HelloClient {
 
     @Get(consumes = [MediaType.TEXT_PLAIN]) <b class="conum">(2)</b>
-    fun hello(): Single&lt;String&gt;  <b class="conum">(3)</b>
+    @SingleResult
+    fun hello(): Publisher&lt;String&gt;  <b class="conum">(3)</b>
 }</code></pre>
 </div>
 </div>
@@ -1785,7 +1800,7 @@ interface HelloClient {
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>An RxJava <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> is returned with the value read from the server</td>
+<td>A <code>Publisher</code> annotated with <code>SingleResult</code> is returned with the value read from the server</td>
 </tr>
 </table>
 </div>
@@ -1796,8 +1811,10 @@ interface HelloClient {
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.junit.jupiter.api.Test;
+import io.micronaut.core.async.annotation.SingleResult;
 
 import jakarta.inject.Inject;
+import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -1809,7 +1826,7 @@ public class HelloClientSpec  {
 
     @Test
     public void testHelloWorldResponse(){
-        assertEquals("Hello World", client.hello().blockingGet());<b class="conum">(3)</b>
+        assertEquals("Hello World", Mono.from(client.hello()).block());<b class="conum">(3)</b>
     }
 }</code></pre>
 </div>
@@ -1817,6 +1834,7 @@ public class HelloClientSpec  {
 <div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.test.extensions.spock.annotation.MicronautTest
+import reactor.core.publisher.Mono
 import spock.lang.Specification
 
 import jakarta.inject.Inject
@@ -1828,7 +1846,7 @@ class HelloClientSpec extends Specification {
 
     void "test hello world response"() {
         expect:
-        client.hello().blockingGet() == "Hello World" <b class="conum">(3)</b>
+        Mono.from(client.hello()).block() == "Hello World" <b class="conum">(3)</b>
     }
 
 }</code></pre>
@@ -1841,6 +1859,8 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import jakarta.inject.Inject
+import reactor.core.publisher.Mono
+
 
 @MicronautTest <b class="conum">(1)</b>
 class HelloClientSpec {
@@ -1850,7 +1870,7 @@ class HelloClientSpec {
 
     @Test
     fun testHelloWorldResponse() {
-        assertEquals("Hello World", client.hello().blockingGet())<b class="conum">(3)</b>
+        assertEquals("Hello World", Mono.from(client.hello()).block())<b class="conum">(3)</b>
     }
 }</code></pre>
 </div>
@@ -1867,7 +1887,7 @@ class HelloClientSpec {
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The client is invoked using the RxJava <code>blockingGet</code> method</td>
+<td>The client is invoked using the <a href="https://projectreactor.io">Project Reactor</a> <code>Mono::block</code> method</td>
 </tr>
 </table>
 </div>
@@ -13415,13 +13435,13 @@ fun  aroundInvoke(): MethodInterceptor&lt;Product, Any&gt; { <b class="conum">(1
 <h2 id="_reactive_retry">Reactive Retry</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><code>@Retryable</code> advice can also be applied to methods that return reactive types, such as an RxJava <code>Flowable</code>. For example:</p>
+<p><code>@Retryable</code> advice can also be applied to methods that return reactive types, such as <code>Publisher</code> (<a href="https://projectreactor.io">Project Reactor</a>'s <code>Flux</code> or <a href="https://github.com/ReactiveX/RxJava">RxJava</a>'s <code>Flowable</code>). For example:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Applying Retry Policy to Reactive Types</div>
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">    @Retryable
-    public Flowable&lt;Book&gt; streamBooks() {
+    public Publisher&lt;Book&gt; streamBooks() {
         // ...</code></pre>
 </div>
 </div>
@@ -13429,7 +13449,7 @@ fun  aroundInvoke(): MethodInterceptor&lt;Product, Any&gt; { <b class="conum">(1
 <div class="title">Applying Retry Policy to Reactive Types</div>
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">    @Retryable
-    Flowable&lt;Book&gt; streamBooks() {
+    Flux&lt;Book&gt; streamBooks() {
         // ...</code></pre>
 </div>
 </div>
@@ -13437,7 +13457,7 @@ fun  aroundInvoke(): MethodInterceptor&lt;Product, Any&gt; { <b class="conum">(1
 <div class="title">Applying Retry Policy to Reactive Types</div>
 <div class="content">
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">    @Retryable
-    open fun streamBooks(): Flowable&lt;Book&gt; {
+    open fun streamBooks(): Flux&lt;Book&gt; {
         // ...</code></pre>
 </div>
 </div>
@@ -14578,7 +14598,7 @@ import io.kotlintest.shouldNotBe
 import io.kotlintest.shouldThrow
 import io.kotlintest.specs.StringSpec
 import io.micronaut.context.ApplicationContext
-import io.micronaut.http.client.RxHttpClient
+import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.runtime.server.EmbeddedServer
 
@@ -14590,7 +14610,7 @@ class IssuesControllerTest: StringSpec() {
 
     val client = autoClose( <b class="conum">(2)</b>
         embeddedServer.applicationContext.createBean(
-            RxHttpClient::class.java,
+            HttpClient::class.java,
             embeddedServer.url) <b class="conum">(1)</b>
     )
 
@@ -17138,20 +17158,21 @@ Generally speaking for database operations you want a thread pool configured tha
 </table>
 </div>
 <div class="paragraph">
-<p>An alternative to the <a href="../api/io/micronaut/scheduling/annotation/ExecuteOn.html">@ExecuteOn</a> annotation is to use the facility provided by the reactive library you have chosen. RxJava for example features a <code>subscribeOn</code> method which lets you alter which thread executes user code. For example:</p>
+<p>An alternative to the <a href="../api/io/micronaut/scheduling/annotation/ExecuteOn.html">@ExecuteOn</a> annotation is to use the facility provided by the reactive library you have chosen. Reactive implementations such as <a href="https://projectreactor.io">Project Reactor</a> or <a href="https://github.com/ReactiveX/RxJava">RxJava</a> feature a <code>subscribeOn</code> method which lets you alter which thread executes user code. For example:</p>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">RxJava subscribeOn Example</div>
+<div class="title">Reactive subscribeOn Example</div>
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.docs.ioc.beans.Person;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.scheduling.TaskExecutors;
-import io.reactivex.Scheduler;
-import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
-
 import jakarta.inject.Named;
+import org.reactivestreams.Publisher;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
+import io.micronaut.core.async.annotation.SingleResult;
 import java.util.concurrent.ExecutorService;
 
 @Controller("/subscribeOn/people")
@@ -17163,13 +17184,14 @@ public class PersonController {
     PersonController(
             @Named(TaskExecutors.IO) ExecutorService executorService, <b class="conum">(1)</b>
             PersonService personService) {
-        this.scheduler = Schedulers.from(executorService);
+        this.scheduler = Schedulers.fromExecutorService(executorService);
         this.personService = personService;
     }
 
     @Get("/{name}")
-    Single&lt;Person&gt; byName(String name) {
-        return Single
+    @SingleResult
+    Publisher&lt;Person&gt; byName(String name) {
+        return Mono
                 .fromCallable(() -&gt; personService.findByName(name)) <b class="conum">(2)</b>
                 .subscribeOn(scheduler); <b class="conum">(3)</b>
     }
@@ -17177,17 +17199,16 @@ public class PersonController {
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">RxJava subscribeOn Example</div>
+<div class="title">Reactive subscribeOn Example</div>
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.docs.ioc.beans.Person
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.scheduling.TaskExecutors
-import io.reactivex.Scheduler
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
-
 import jakarta.inject.Named
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Scheduler
+import reactor.core.scheduler.Schedulers
 import java.util.concurrent.ExecutorService
 
 @Controller("/subscribeOn/people")
@@ -17199,13 +17220,13 @@ class PersonController {
     PersonController(
             @Named(TaskExecutors.IO) ExecutorService executorService, <b class="conum">(1)</b>
             PersonService personService) {
-        this.scheduler = Schedulers.from(executorService)
+        this.scheduler = Schedulers.fromExecutorService(executorService)
         this.personService = personService
     }
 
     @Get("/{name}")
-    Single&lt;Person&gt; byName(String name) {
-        return Single
+    Mono&lt;Person&gt; byName(String name) {
+        return Mono
                 .fromCallable({ -&gt; personService.findByName(name) }) <b class="conum">(2)</b>
                 .subscribeOn(scheduler) <b class="conum">(3)</b>
     }
@@ -17213,28 +17234,29 @@ class PersonController {
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">RxJava subscribeOn Example</div>
+<div class="title">Reactive subscribeOn Example</div>
 <div class="content">
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.docs.ioc.beans.Person
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.scheduling.TaskExecutors
-import io.reactivex.Scheduler
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.ExecutorService
 import jakarta.inject.Named
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Scheduler
+import reactor.core.scheduler.Schedulers
+
 
 @Controller("/subscribeOn/people")
 class PersonController internal constructor(
     @Named(TaskExecutors.IO) executorService: ExecutorService, <b class="conum">(1)</b>
     private val personService: PersonService) {
 
-    private val scheduler: Scheduler = Schedulers.from(executorService)
+    private val scheduler: Scheduler = Schedulers.fromExecutorService(executorService)
 
     @Get("/{name}")
-    fun byName(name: String): Single&lt;Person&gt; {
-        return Single
+    fun byName(name: String): Mono&lt;Person&gt; {
+        return Mono
             .fromCallable { personService.findByName(name) } <b class="conum">(2)</b>
             .subscribeOn(scheduler) <b class="conum">(3)</b>
     }
@@ -17249,11 +17271,11 @@ class PersonController internal constructor(
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The RxJava <code>fromCallable</code> method wraps the blocking operation</td>
+<td>The <code>Mono::fromCallable</code> method wraps the blocking operation</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The RxJava <code>subscribeOn</code> method schedules the operation on the I/O thread pool</td>
+<td>The <a href="https://projectreactor.io">Project Reactor</a> <code>subscribeOn</code> method schedules the operation on the I/O thread pool</td>
 </tr>
 </table>
 </div>
@@ -17278,22 +17300,20 @@ class PersonController internal constructor(
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;
-import io.micronaut.scheduling.TaskExecutors;
-import io.micronaut.scheduling.annotation.ExecuteOn;
-import io.reactivex.Flowable;
-import io.reactivex.Single;
-
 import javax.validation.constraints.Size;
-import java.io.InputStream;
+
+@Controller("/receive")
+public class MessageController {
 
     @Post(value = "/echo", consumes = MediaType.TEXT_PLAIN) <b class="conum">(1)</b>
     String echo(@Size(max = 1024) @Body String text) { <b class="conum">(2)</b>
         return text; <b class="conum">(3)</b>
-    }</code></pre>
+    }
+
+}</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -17301,21 +17321,20 @@ import java.io.InputStream;
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
-import io.micronaut.http.MutableHttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Post
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import io.reactivex.Flowable
-import io.reactivex.Single
-
 import javax.validation.constraints.Size
+
+@Controller("/receive")
+class MessageController {
 
     @Post(value = "/echo", consumes = MediaType.TEXT_PLAIN) <b class="conum">(1)</b>
     String echo(@Size(max = 1024) @Body String text) { <b class="conum">(2)</b>
         text <b class="conum">(3)</b>
-    }</code></pre>
+    }
+
+}</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -17323,21 +17342,20 @@ import javax.validation.constraints.Size
 <div class="content">
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
-import io.micronaut.http.MutableHttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Post
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import io.reactivex.Flowable
-import io.reactivex.Single
-import java.io.InputStream
 import javax.validation.constraints.Size
+
+@Controller("/receive")
+open class MessageController {
 
     @Post(value = "/echo", consumes = [MediaType.TEXT_PLAIN]) <b class="conum">(1)</b>
     open fun echo(@Size(max = 1024) @Body text: String): String { <b class="conum">(2)</b>
         return text <b class="conum">(3)</b>
-    }</code></pre>
+    }
+
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -17372,50 +17390,92 @@ The <code>micronaut.server.maxRequestSize</code> setting in <code>application.ym
 </table>
 </div>
 <div class="paragraph">
-<p>Regardless of the limit, for a large amount of data accumulating the data into a String in-memory may lead to memory strain on the server. A better approach is to include a Reactive library in your project (such as <code>RxJava 2.x</code>, <code>Reactor</code> or <code>Akka</code>) that supports the Reactive streams implementation and stream the data it becomes available:</p>
+<p>Regardless of the limit, for a large amount of data accumulating the data into a String in-memory may lead to memory strain on the server. A better approach is to include a Reactive library in your project (such as <code>Reactor</code>, <code>RxJava</code>,or <code>Akka</code>) that supports the Reactive streams implementation and stream the data it becomes available:</p>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Using RxJava 2 to Read the request body</div>
+<div class="title">Using Reactive Streams to Read the request body</div>
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">    @Post(value = "/echo-flow", consumes = MediaType.TEXT_PLAIN) <b class="conum">(1)</b>
-    Single&lt;MutableHttpResponse&lt;String&gt;&gt; echoFlow(@Body Flowable&lt;String&gt; text) { <b class="conum">(2)</b>
-        return text
+<pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.http.HttpResponse;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Post;
+import javax.validation.constraints.Size;
+
+
+@Controller("/receive")
+public class MessageController {
+
+    @Post(value = "/echo-publisher", consumes = MediaType.TEXT_PLAIN) <b class="conum">(1)</b>
+    @SingleResult
+    Publisher&lt;HttpResponse&lt;String&gt;&gt; echoFlow(@Body Publisher&lt;String&gt; text) { <b class="conum">(2)</b>
+        return Flux.from(text)
                 .collect(StringBuffer::new, StringBuffer::append) <b class="conum">(3)</b>
                 .map(buffer -&gt; HttpResponse.ok(buffer.toString()));
-    }</code></pre>
+    }
+
+}</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Using RxJava 2 to Read the request body</div>
+<div class="title">Using Reactive Streams to Read the request body</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">    @Post(value = "/echo-flow", consumes = MediaType.TEXT_PLAIN) <b class="conum">(1)</b>
-    Single&lt;MutableHttpResponse&lt;String&gt;&gt; echoFlow(@Body Flowable&lt;String&gt; text) { <b class="conum">(2)</b>
-        return text
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.http.HttpResponse
+import io.micronaut.http.MediaType
+import io.micronaut.http.annotation.Body
+import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Post
+import javax.validation.constraints.Size
+
+
+@Controller("/receive")
+class MessageController {
+
+    @Post(value = "/echo-publisher", consumes = MediaType.TEXT_PLAIN) <b class="conum">(1)</b>
+    @SingleResult
+    Publisher&lt;HttpResponse&lt;String&gt;&gt; echoFlow(@Body Publisher&lt;String&gt; text) { <b class="conum">(2)</b>
+        return Flux.from(text)
                 .collect({ x -&gt; new StringBuffer() }, { StringBuffer sb, String s -&gt; sb.append(s) }) <b class="conum">(3)</b>
                 .map({ buffer -&gt; HttpResponse.ok(buffer.toString()) });
-    }</code></pre>
+    }
+
+}</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Using RxJava 2 to Read the request body</div>
+<div class="title">Using Reactive Streams to Read the request body</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">    @Post(value = "/echo-flow", consumes = [MediaType.TEXT_PLAIN]) <b class="conum">(1)</b>
-    open fun echoFlow(@Body text: Flowable&lt;String&gt;): Single&lt;MutableHttpResponse&lt;String&gt;&gt; { <b class="conum">(2)</b>
-        return text
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.http.HttpResponse
+import io.micronaut.http.MediaType
+import io.micronaut.http.annotation.Body
+import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Post
+import javax.validation.constraints.Size
+
+
+@Controller("/receive")
+open class MessageController {
+
+    @Post(value = "/echo-publisher", consumes = [MediaType.TEXT_PLAIN]) <b class="conum">(1)</b>
+    @SingleResult
+    open fun echoFlow(@Body text: Publisher&lt;String&gt;): Publisher&lt;HttpResponse&lt;String&gt;&gt; { <b class="conum">(2)</b>
+        return Flux.from(text)
             .collect({ StringBuffer() }, { obj, str -&gt; obj.append(str) }) <b class="conum">(3)</b>
             .map { buffer -&gt; HttpResponse.ok(buffer.toString()) }
-    }</code></pre>
+    }
+
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>In this case the method is altered to receive and return an RxJava 2.x <code>Flowable</code> type</td>
+<td>In this case the method is altered to receive and return an <code>Publisher</code> type.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>A <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> is returned so Micronaut only emits the response once the operation completes without blocking.</td>
+<td>This example uses <a href="https://projectreactor.io">Project Reactor</a> and returns a single item. Because of that the response type is annotated also with <a href="../api/io/micronaut/core/async/annotation/SingleResult.html">SingleResult</a>. Micronaut only emits the response once the operation completes without blocking.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
@@ -17446,16 +17506,40 @@ Body arguments of types that do not require conversion cause Micronaut to skip d
 
 
 <div class="paragraph">
-<p>The previous section introduced the notion of Reactive programming using RxJava 2.x and Micronaut.</p>
+<p>The previous section introduced the notion of Reactive programming using <a href="https://projectreactor.io">Project Reactor</a> and Micronaut.</p>
 </div>
 <div class="paragraph">
-<p>Micronaut supports returning common reactive types such as <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> or <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Observable.html">Observable</a> (or the <code>Mono</code> type from Reactor 3.x), an instance of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> or <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a> from any controller method.</p>
+<p>Micronaut supports returning common reactive types such as reactor:Mono[] (or <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Maybe.html">Maybe</a> <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Observable.html">Observable</a> types from RxJava), an instance of <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> or <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a> from any controller method.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+To use <a href="https://projectreactor.io">Project Reactor</a>'s <code>Flux</code> or <code>Mono</code> you need to add the Micronaut&#8217;s Reactor dependency to your project to include the necessary converters.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+To use <a href="https://github.com/ReactiveX/RxJava">RxJava</a>'s <code>Flowable</code>, <code>Single</code> or <code>Maybe</code> you need to add the Micronaut&#8217;s RxJava dependency to your project to include the necessary converters.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>The argument designated as the body of the request using the <a href="../api/io/micronaut/http/annotation/Body.html">Body</a> annotation can also be a reactive type or a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a>.</p>
 </div>
 <div class="paragraph">
-<p>When returning a reactive type, Micronaut subscribes to the returned reactive type on the same thread as the request (a Netty Event Loop thread). It is therefore important that if you perform any blocking operations, you offload those operations to an appropriately configured thread pool, for example using the RxJava <code>subscribeOn(..)</code> facility or <a href="../api/io/micronaut/scheduling/annotation/ExecuteOn.html">@ExecuteOn</a>.</p>
+<p>When returning a reactive type, Micronaut subscribes to the returned reactive type on the same thread as the request (a Netty Event Loop thread). It is therefore important that if you perform any blocking operations, you offload those operations to an appropriately configured thread pool, for example using the <a href="https://projectreactor.io">Project Reactor</a> or <a href="https://github.com/ReactiveX/RxJava">RxJava</a> <code>subscribeOn(..)</code> facility or <a href="../api/io/micronaut/scheduling/annotation/ExecuteOn.html">@ExecuteOn</a>.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -17490,7 +17574,7 @@ See the section on <a href="#threadPools">Configuring Thread Pools</a> for infor
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Any type that implements the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> interface</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flowable&lt;String&gt; hello()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Publisher&lt;String&gt; hello()</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a></p></td>
@@ -17500,7 +17584,7 @@ See the section on <a href="#threadPools">Configuring Thread Pools</a> for infor
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">An <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> and optional response body</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HttpResponse&lt;Flowable&lt;String&gt;&gt; hello()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HttpResponse&lt;Publisher&lt;String&gt;&gt; hello()</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/CharSequence.html">CharSequence</a></p></td>
@@ -17521,7 +17605,7 @@ See the section on <a href="#threadPools">Configuring Thread Pools</a> for infor
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-When returning a Reactive type, its type affects the returned response. For example, when returning a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a>, Micronaut cannot know the size of the response, so <code>Transfer-Encoding</code> type of <code>Chunked</code> is used. Whilst for types that emit a single result such as <code><a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a></code> the <code>Content-Length</code> header is populated.
+When returning a Reactive type, its type affects the returned response. For example, when returning a reactor:Flux[], Micronaut cannot know the size of the response, so <code>Transfer-Encoding</code> type of <code>Chunked</code> is used. Whilst for types that emit a single result such as <code>reactor:Mono[]</code> the <code>Content-Length</code> header is populated.
 </td>
 </tr>
 </table>
@@ -17549,10 +17633,10 @@ When returning a Reactive type, its type affects the returned response. For exam
 <h2 id="_binding_using_reactive_frameworks">Binding using Reactive Frameworks</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>From a developer perspective however, you can generally just work with Plain Old Java Objects (POJOs) and can optionally use a Reactive framework such as RxJava or Reactor. The following is an example of a controller that reads and saves an incoming POJO in a non-blocking way from JSON:</p>
+<p>From a developer perspective however, you can generally just work with Plain Old Java Objects (POJOs) and can optionally use a Reactive framework such as <a href="https://github.com/ReactiveX/RxJava">RxJava</a> or <a href="https://projectreactor.io">Project Reactor</a>. The following is an example of a controller that reads and saves an incoming POJO in a non-blocking way from JSON:</p>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Using RxJava 2 to Read the JSON</div>
+<div class="title">Using Reactive Streams to Read the JSON</div>
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">@Controller("/people")
 public class PersonController {
@@ -17560,8 +17644,9 @@ public class PersonController {
     Map&lt;String, Person&gt; inMemoryDatastore = new ConcurrentHashMap&lt;&gt;();
 
     @Post("/saveReactive")
-    public Single&lt;HttpResponse&lt;Person&gt;&gt; save(@Body Single&lt;Person&gt; person) { <b class="conum">(1)</b>
-        return person.map(p -&gt; {
+    @SingleResult
+    public Publisher&lt;HttpResponse&lt;Person&gt;&gt; save(@Body Publisher&lt;Person&gt; person) { <b class="conum">(1)</b>
+        return Mono.from(person).map(p -&gt; {
                     inMemoryDatastore.put(p.getFirstName(), p); <b class="conum">(2)</b>
                     return HttpResponse.created(p); <b class="conum">(3)</b>
                 }
@@ -17572,7 +17657,7 @@ public class PersonController {
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Using RxJava 2 to Read the JSON</div>
+<div class="title">Using Reactive Streams to Read the JSON</div>
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">@Controller("/people")
 class PersonController {
@@ -17580,8 +17665,9 @@ class PersonController {
     Map&lt;String, Person&gt; inMemoryDatastore = new ConcurrentHashMap&lt;&gt;()
 
     @Post("/saveReactive")
-    Single&lt;HttpResponse&lt;Person&gt;&gt; save(@Body Single&lt;Person&gt; person) { <b class="conum">(1)</b>
-        person.map({ p -&gt;
+    @SingleResult
+    Publisher&lt;HttpResponse&lt;Person&gt;&gt; save(@Body Publisher&lt;Person&gt; person) { <b class="conum">(1)</b>
+        Mono.from(person).map({ p -&gt;
             inMemoryDatastore.put(p.getFirstName(), p) <b class="conum">(2)</b>
             HttpResponse.created(p) <b class="conum">(3)</b>
         })
@@ -17591,7 +17677,7 @@ class PersonController {
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Using RxJava 2 to Read the JSON</div>
+<div class="title">Using Reactive Streams to Read the JSON</div>
 <div class="content">
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">@Controller("/people")
 class PersonController {
@@ -17599,8 +17685,9 @@ class PersonController {
     internal var inMemoryDatastore: MutableMap&lt;String, Person&gt; = ConcurrentHashMap()
 
     @Post("/saveReactive")
-    fun save(@Body person: Single&lt;Person&gt;): Single&lt;HttpResponse&lt;Person&gt;&gt; { <b class="conum">(1)</b>
-        return person.map { p -&gt;
+    @SingleResult
+    fun save(@Body person: Publisher&lt;Person&gt;): Publisher&lt;HttpResponse&lt;Person&gt;&gt; { <b class="conum">(1)</b>
+        return Mono.from(person).map { p -&gt;
             inMemoryDatastore[p.firstName] = p <b class="conum">(2)</b>
             HttpResponse.created(p) <b class="conum">(3)</b>
         }
@@ -17613,7 +17700,7 @@ class PersonController {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The method receives an RxJava <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> which emits the POJO once the JSON has been read</td>
+<td>The method receives a <code>Publisher</code> which emits the POJO once the JSON has been read</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -19172,19 +19259,20 @@ internal class VersionedController {
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.client.annotation.Client;
-import io.reactivex.Single;
+import org.reactivestreams.Publisher;
+import io.micronaut.core.async.annotation.SingleResult;
 
 @Client("/hello")
 @Version("1") <b class="conum">(1)</b>
-public
-interface HelloClient {
+public interface HelloClient {
 
     @Get("/greeting/{name}")
     String sayHello(String name);
 
     @Version("2")
     @Get("/greeting/{name}")
-    Single&lt;String&gt; sayHelloTwo(String name); <b class="conum">(2)</b>
+    @SingleResult
+    Publisher&lt;String&gt; sayHelloTwo(String name); <b class="conum">(2)</b>
 }</code></pre>
 </div>
 </div>
@@ -19193,7 +19281,8 @@ interface HelloClient {
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.core.version.annotation.Version
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
-import io.reactivex.Single
+import reactor.core.publisher.Mono
+
 
 @Client("/hello")
 @Version("1") <b class="conum">(1)</b>
@@ -19204,7 +19293,7 @@ interface HelloClient {
 
     @Version("2")
     @Get("/greeting/{name}")
-    Single&lt;String&gt; sayHelloTwo(String name) <b class="conum">(2)</b>
+    Mono&lt;String&gt; sayHelloTwo(String name) <b class="conum">(2)</b>
 }</code></pre>
 </div>
 </div>
@@ -19213,7 +19302,7 @@ interface HelloClient {
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.core.version.annotation.Version
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
-import io.reactivex.Single
+import reactor.core.publisher.Mono
 
 @Client("/hello")
 @Version("1") <b class="conum">(1)</b>
@@ -19224,7 +19313,7 @@ interface HelloClient {
 
     @Version("2")
     @Get("/greeting/{name}")
-    fun sayHelloTwo(name : String) : Single&lt;String&gt;  <b class="conum">(2)</b>
+    fun sayHelloTwo(name : String) : Mono&lt;String&gt;  <b class="conum">(2)</b>
 }</code></pre>
 </div>
 </div>
@@ -19483,16 +19572,28 @@ class PersonController {
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flowable&lt;byte[]&gt;</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> that emits each chunk of content as a <code>byte[]</code> without blocking</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Publisher&lt;String&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> that emits each chunk of content as a String</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flux&lt;byte[]&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A reactor:Flux[] that emits each chunk of content as a <code>byte[]</code> without blocking</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flux&lt;ByteBuf&gt;</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">A Reactor <code>Flux</code> that emits each chunk as a Netty <code>ByteBuf</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Publisher&lt;String&gt;</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> that emits each chunk of content as a String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flux&lt;Book&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">When emitting a POJO, each emitted object is encoded as JSON by default without blocking</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flowable&lt;byte[]&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A reactor:Flux[] that emits each chunk of content as a <code>byte[]</code> without blocking</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flowable&lt;ByteBuf&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A Reactor <code>Flux</code> that emits each chunk as a Netty <code>ByteBuf</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flowable&lt;Book&gt;</code></p></td>
@@ -19514,6 +19615,30 @@ class PersonController {
 </td>
 <td class="content">
 It is up to the implementation of the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> to schedule any blocking I/O work that may be done as a result of subscribing to the publisher.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+To use <a href="https://projectreactor.io">Project Reactor</a>'s <code>Flux</code> or <code>Mono</code> you need to add the Micronaut&#8217;s Reactor dependency to your project to include the necessary converters.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+To use <a href="https://github.com/ReactiveX/RxJava">RxJava</a>'s <code>Flowable</code>, <code>Single</code> or <code>Maybe</code> you need to add the Micronaut&#8217;s RxJava dependency to your project to include the necessary converters.
 </td>
 </tr>
 </table>
@@ -19761,8 +19886,9 @@ public class BooksController {
     }
 
     @Get("/maybestock/{isbn}")
-    public Maybe&lt;Map&gt; maybestock(String isbn) {
-        return Maybe.empty(); <b class="conum">(2)</b>
+    @SingleResult
+    public Publisher&lt;Map&gt; maybestock(String isbn) {
+        return Mono.empty(); <b class="conum">(2)</b>
     }
 }</code></pre>
 </div>
@@ -19778,8 +19904,8 @@ class BooksController {
     }
 
     @Get("/maybestock/{isbn}")
-    Maybe&lt;Map&gt; maybestock(String isbn) {
-        Maybe.empty() <b class="conum">(2)</b>
+    Mono&lt;Map&gt; maybestock(String isbn) {
+        Mono.empty() <b class="conum">(2)</b>
     }
 }</code></pre>
 </div>
@@ -19795,8 +19921,8 @@ class BooksController {
     }
 
     @Get("/maybestock/{isbn}")
-    fun maybestock(isbn: String): Maybe&lt;Map&lt;*, *&gt;&gt; {
-        return Maybe.empty() <b class="conum">(2)</b>
+    fun maybestock(isbn: String): Mono&lt;Map&lt;*, *&gt;&gt; {
+        return Mono.empty() <b class="conum">(2)</b>
     }
 }</code></pre>
 </div>
@@ -19809,7 +19935,7 @@ class BooksController {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Returning an empty <code>Maybe</code> triggers a 404 (Not Found) response.</td>
+<td>Returning an empty <code>Mono</code> triggers a 404 (Not Found) response.</td>
 </tr>
 </table>
 </div>
@@ -19820,7 +19946,7 @@ class BooksController {
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Responding with an empty <code>Publisher</code> or <code>Flowable</code> results in an empty array being returned if the content type is JSON.
+Responding with an empty <code>Publisher</code> or <code>Flux</code> results in an empty array being returned if the content type is JSON.
 </td>
 </tr>
 </table>
@@ -19896,9 +20022,9 @@ Data can only be retrieved from a <a href="../api/io/micronaut/http/multipart/Pa
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.multipart.StreamingFileUpload;
-import io.reactivex.Single;
 import org.reactivestreams.Publisher;
-
+import reactor.core.publisher.Mono;
+import io.micronaut.core.async.annotation.SingleResult;
 import java.io.File;
 import java.io.IOException;
 
@@ -19910,17 +20036,18 @@ import static io.micronaut.http.MediaType.TEXT_PLAIN;
 public class UploadController {
 
     @Post(value = "/", consumes = MULTIPART_FORM_DATA, produces = TEXT_PLAIN) <b class="conum">(1)</b>
-    public Single&lt;HttpResponse&lt;String&gt;&gt; upload(StreamingFileUpload file) { <b class="conum">(2)</b>
+    @SingleResult
+    public Publisher&lt;HttpResponse&lt;String&gt;&gt; upload(StreamingFileUpload file) { <b class="conum">(2)</b>
 
         File tempFile;
         try {
             tempFile = File.createTempFile(file.getFilename(), "temp");
         } catch (IOException e) {
-            return Single.error(e);
+            return Mono.error(e);
         }
         Publisher&lt;Boolean&gt; uploadPublisher = file.transferTo(tempFile); <b class="conum">(3)</b>
 
-        return Single.fromPublisher(uploadPublisher)  <b class="conum">(4)</b>
+        return Mono.from(uploadPublisher)  <b class="conum">(4)</b>
             .map(success -&gt; {
                 if (success) {
                     return HttpResponse.ok("Uploaded");
@@ -19940,8 +20067,8 @@ public class UploadController {
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.multipart.StreamingFileUpload
-import io.reactivex.Single
 import org.reactivestreams.Publisher
+import reactor.core.publisher.Mono
 
 import static io.micronaut.http.HttpStatus.CONFLICT
 import static io.micronaut.http.MediaType.MULTIPART_FORM_DATA
@@ -19951,12 +20078,12 @@ import static io.micronaut.http.MediaType.TEXT_PLAIN
 class UploadController {
 
     @Post(value = "/", consumes = MULTIPART_FORM_DATA, produces = TEXT_PLAIN) <b class="conum">(1)</b>
-    Single&lt;HttpResponse&lt;String&gt;&gt; upload(StreamingFileUpload file) { <b class="conum">(2)</b>
+    Mono&lt;HttpResponse&lt;String&gt;&gt; upload(StreamingFileUpload file) { <b class="conum">(2)</b>
 
         File tempFile = File.createTempFile(file.filename, "temp")
         Publisher&lt;Boolean&gt; uploadPublisher = file.transferTo(tempFile) <b class="conum">(3)</b>
 
-        Single.fromPublisher(uploadPublisher)  <b class="conum">(4)</b>
+        Mono.from(uploadPublisher)  <b class="conum">(4)</b>
             .map({ success -&gt;
                 if (success) {
                     HttpResponse.ok("Uploaded")
@@ -19979,19 +20106,19 @@ import io.micronaut.http.MediaType.TEXT_PLAIN
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.multipart.StreamingFileUpload
-import io.reactivex.Single
+import reactor.core.publisher.Mono
 import java.io.File
 
 @Controller("/upload")
 class UploadController {
 
     @Post(value = "/", consumes = [MULTIPART_FORM_DATA], produces = [TEXT_PLAIN]) <b class="conum">(1)</b>
-    fun upload(file: StreamingFileUpload): Single&lt;HttpResponse&lt;String&gt;&gt; { <b class="conum">(2)</b>
+    fun upload(file: StreamingFileUpload): Mono&lt;HttpResponse&lt;String&gt;&gt; { <b class="conum">(2)</b>
 
         val tempFile = File.createTempFile(file.filename, "temp")
         val uploadPublisher = file.transferTo(tempFile) <b class="conum">(3)</b>
 
-        return Single.fromPublisher(uploadPublisher)  <b class="conum">(4)</b>
+        return Mono.from(uploadPublisher)  <b class="conum">(4)</b>
             .map { success -&gt;
                 if (success) {
                     HttpResponse.ok("Uploaded")
@@ -20020,7 +20147,7 @@ class UploadController {
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>The returned <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a> subscribes to the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> and outputs a response once the upload is complete, without blocking.</td>
+<td>The returned reactor:Mono[] subscribes to the <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> and outputs a response once the upload is complete, without blocking.</td>
 </tr>
 </table>
 </div>
@@ -20333,10 +20460,11 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.http.multipart.CompletedFileUpload;
 import io.micronaut.http.multipart.CompletedPart;
 import io.micronaut.http.server.multipart.MultipartBody;
-import io.reactivex.Single;
+import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-
+import reactor.core.publisher.Mono;
+import io.micronaut.core.async.annotation.SingleResult;
 import static io.micronaut.http.MediaType.MULTIPART_FORM_DATA;
 import static io.micronaut.http.MediaType.TEXT_PLAIN;
 
@@ -20344,9 +20472,10 @@ import static io.micronaut.http.MediaType.TEXT_PLAIN;
 public class WholeBodyUploadController {
 
     @Post(value = "/whole-body", consumes = MULTIPART_FORM_DATA, produces = TEXT_PLAIN) <b class="conum">(1)</b>
-    public Single&lt;String&gt; uploadBytes(@Body MultipartBody body) { <b class="conum">(2)</b>
+    @SingleResult
+    public Publisher&lt;String&gt; uploadBytes(@Body MultipartBody body) { <b class="conum">(2)</b>
 
-        return Single.create(emitter -&gt; {
+        return Mono.create(emitter -&gt; {
             body.subscribe(new Subscriber&lt;CompletedPart&gt;() {
                 private Subscription s;
 
@@ -20366,12 +20495,12 @@ public class WholeBodyUploadController {
 
                 @Override
                 public void onError(Throwable t) {
-                    emitter.onError(t);
+                    emitter.error(t);
                 }
 
                 @Override
                 public void onComplete() {
-                    emitter.onSuccess("Uploaded");
+                    emitter.success("Uploaded");
                 }
             });
         });
@@ -20388,9 +20517,9 @@ import io.micronaut.http.annotation.Post
 import io.micronaut.http.multipart.CompletedFileUpload
 import io.micronaut.http.multipart.CompletedPart
 import io.micronaut.http.server.multipart.MultipartBody
-import io.reactivex.Single
 import org.reactivestreams.Subscriber
 import org.reactivestreams.Subscription
+import reactor.core.publisher.Mono
 
 import static io.micronaut.http.MediaType.MULTIPART_FORM_DATA
 import static io.micronaut.http.MediaType.TEXT_PLAIN
@@ -20399,9 +20528,9 @@ import static io.micronaut.http.MediaType.TEXT_PLAIN
 class WholeBodyUploadController {
 
     @Post(value = "/whole-body", consumes = MULTIPART_FORM_DATA, produces = TEXT_PLAIN) <b class="conum">(1)</b>
-    Single&lt;String&gt; uploadBytes(@Body MultipartBody body) { <b class="conum">(2)</b>
+    Mono&lt;String&gt; uploadBytes(@Body MultipartBody body) { <b class="conum">(2)</b>
 
-        Single.&lt;String&gt;create({ emitter -&gt;
+        Mono.&lt;String&gt;create({ emitter -&gt;
             body.subscribe(new Subscriber&lt;CompletedPart&gt;() {
                 private Subscription s
 
@@ -20421,12 +20550,12 @@ class WholeBodyUploadController {
 
                 @Override
                 void onError(Throwable t) {
-                    emitter.onError(t)
+                    emitter.error(t)
                 }
 
                 @Override
                 void onComplete() {
-                    emitter.onSuccess("Uploaded")
+                    emitter.success("Uploaded")
                 }
             })
         })
@@ -20445,17 +20574,16 @@ import io.micronaut.http.annotation.Post
 import io.micronaut.http.multipart.CompletedFileUpload
 import io.micronaut.http.multipart.CompletedPart
 import io.micronaut.http.server.multipart.MultipartBody
-import io.reactivex.Single
 import org.reactivestreams.Subscriber
 import org.reactivestreams.Subscription
+import reactor.core.publisher.Mono
 
 @Controller("/upload")
 class WholeBodyUploadController {
 
     @Post(value = "/whole-body", consumes = [MULTIPART_FORM_DATA], produces = [TEXT_PLAIN]) <b class="conum">(1)</b>
-    fun uploadBytes(@Body body: MultipartBody): Single&lt;String&gt; { <b class="conum">(2)</b>
-
-        return Single.create { emitter -&gt;
+    fun uploadBytes(@Body body: MultipartBody): Mono&lt;String&gt; { <b class="conum">(2)</b>
+        return Mono.create { emitter -&gt;
             body.subscribe(object : Subscriber&lt;CompletedPart&gt; {
                 private var s: Subscription? = null
 
@@ -20472,11 +20600,11 @@ class WholeBodyUploadController {
                 }
 
                 override fun onError(t: Throwable) {
-                    emitter.onError(t)
+                    emitter.error(t)
                 }
 
                 override fun onComplete() {
-                    emitter.onSuccess("Uploaded")
+                    emitter.success("Uploaded")
                 }
             })
         }
@@ -20692,81 +20820,90 @@ Filters execute in the event loop, so blocking operations must be offloaded to a
 <p>You should not block the underlying Netty event loop in your filter; instead the filter should proceed with execution once any I/O is complete.</p>
 </div>
 <div class="paragraph">
-<p>As an example, consider this <code>TraceService</code> that uses RxJava to compose an I/O operation:</p>
+<p>As an example, consider this <code>TraceService</code> that uses <a href="https://projectreactor.io">Project Reactor</a> to compose an I/O operation:</p>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">A TraceService Example using RxJava</div>
+<div class="title">A TraceService Example using Reactive Streams</div>
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.http.HttpRequest;
-import io.reactivex.Flowable;
-import io.reactivex.schedulers.Schedulers;
+import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import jakarta.inject.Singleton;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Singleton
 public class TraceService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TraceService.class);
 
-    Flowable&lt;Boolean&gt; trace(HttpRequest&lt;?&gt; request) {
-        return Flowable.fromCallable(() -&gt; { <b class="conum">(1)</b>
+    Publisher&lt;Boolean&gt; trace(HttpRequest&lt;?&gt; request) {
+        return Mono.fromCallable(() -&gt; { <b class="conum">(1)</b>
             LOG.debug("Tracing request: {}", request.getUri());
             // trace logic here, potentially performing I/O <b class="conum">(2)</b>
             return true;
-        }).subscribeOn(Schedulers.io()); <b class="conum">(3)</b>
+        }).subscribeOn(Schedulers.boundedElastic()) <b class="conum">(3)</b>
+                .flux();
     }
 }</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">A TraceService Example using RxJava</div>
+<div class="title">A TraceService Example using Reactive Streams</div>
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.http.HttpRequest
-import io.reactivex.Flowable
-import io.reactivex.schedulers.Schedulers
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import jakarta.inject.Singleton
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
+
+import java.util.concurrent.Callable
+
 
 @Singleton
 class TraceService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TraceService.class)
 
-    Flowable&lt;Boolean&gt; trace(HttpRequest&lt;?&gt; request) {
-        Flowable.fromCallable({ -&gt;  <b class="conum">(1)</b>
+    Flux&lt;Boolean&gt; trace(HttpRequest&lt;?&gt; request) {
+        Mono.fromCallable(() -&gt;  {  <b class="conum">(1)</b>
             LOG.debug('Tracing request: {}', request.uri)
             // trace logic here, potentially performing I/O <b class="conum">(2)</b>
             return true
-        }).subscribeOn(Schedulers.io()) <b class="conum">(3)</b>
+        }).flux().subscribeOn(Schedulers.boundedElastic()) <b class="conum">(3)</b>
+
     }
 }</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">A TraceService Example using RxJava</div>
+<div class="title">A TraceService Example using Reactive Streams</div>
 <div class="content">
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.http.HttpRequest
-import io.reactivex.Flowable
-import io.reactivex.schedulers.Schedulers
 import org.slf4j.LoggerFactory
 import jakarta.inject.Singleton
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
+
 
 @Singleton
 class TraceService {
 
     private val LOG = LoggerFactory.getLogger(TraceService::class.java)
 
-    internal fun trace(request: HttpRequest&lt;*&gt;): Flowable&lt;Boolean&gt; {
-        return Flowable.fromCallable {
+    internal fun trace(request: HttpRequest&lt;*&gt;): Flux&lt;Boolean&gt; {
+        return Mono.fromCallable {
             <b class="conum">(1)</b>
             LOG.debug("Tracing request: {}", request.uri)
             // trace logic here, potentially performing I/O <b class="conum">(2)</b>
             true
-        }.subscribeOn(Schedulers.io()) <b class="conum">(3)</b>
+        }.subscribeOn(Schedulers.boundedElastic()) <b class="conum">(3)</b>
+            .flux()
     }
 }</code></pre>
 </div>
@@ -20775,7 +20912,7 @@ class TraceService {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> type creates logic that executes potentially blocking operations to write the trace data from the request</td>
+<td>The reactor:Mono[] type creates logic that executes potentially blocking operations to write the trace data from the request</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -20783,7 +20920,7 @@ class TraceService {
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The RxJava I/O scheduler executes the logic</td>
+<td>The <code>Schedulers.boundedElastic</code> executes the logic</td>
 </tr>
 </table>
 </div>
@@ -20799,6 +20936,7 @@ import io.micronaut.http.annotation.Filter;
 import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
 
 @Filter("/hello/**") <b class="conum">(1)</b>
 public class TraceFilter implements HttpServerFilter { <b class="conum">(2)</b>
@@ -20877,8 +21015,8 @@ class TraceFilter(<b class="conum">(2)</b>
 <pre class="highlight"><code class="language-java" data-lang="java">    @Override
     public Publisher&lt;MutableHttpResponse&lt;?&gt;&gt; doFilter(HttpRequest&lt;?&gt; request,
                                                       ServerFilterChain chain) {
-        return traceService
-                .trace(request) <b class="conum">(1)</b>
+        return Flux.from(traceService
+                .trace(request)) <b class="conum">(1)</b>
                 .switchMap(aBoolean -&gt; chain.proceed(request)) <b class="conum">(2)</b>
                 .doOnNext(res -&gt;
                     res.getHeaders().add("X-Trace-Enabled", "true") <b class="conum">(3)</b>
@@ -20922,11 +21060,11 @@ class TraceFilter(<b class="conum">(2)</b>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>If the call succeeds, the filter resumes request processing using the RxJava <code>switchMap</code> method, which invokes the <code>proceed</code> method of the <a href="../api/io/micronaut/http/filter/ServerFilterChain.html">ServerFilterChain</a></td>
+<td>If the call succeeds, the filter resumes request processing using <a href="https://projectreactor.io">Project Reactor</a>'s <code>switchMap</code> method, which invokes the <code>proceed</code> method of the <a href="../api/io/micronaut/http/filter/ServerFilterChain.html">ServerFilterChain</a></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Finally, the RxJava <code>doOnNext</code> method adds a <code>X-Trace-Enabled</code> header to the response.</td>
+<td>Finally, the <a href="https://projectreactor.io">Project Reactor</a>'s <code>doOnNext</code> method adds a <code>X-Trace-Enabled</code> header to the response.</td>
 </tr>
 </table>
 </div>
@@ -20940,7 +21078,7 @@ class TraceFilter(<b class="conum">(2)</b>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-The examples use RxJava, however you can use any reactive framework that supports the Reactive streams specifications
+The examples use <a href="https://projectreactor.io">Project Reactor</a>, however you can use any reactive framework that supports the Reactive streams specifications
 </td>
 </tr>
 </table>
@@ -21274,8 +21412,8 @@ class ShoppingController {
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">        HttpResponse&lt;Cart&gt; response = client.exchange(HttpRequest.GET("/shopping/cart"), Cart.class) <b class="conum">(1)</b>
-                                            .blockingFirst();
+<pre class="highlight"><code class="language-java" data-lang="java">        HttpResponse&lt;Cart&gt; response = Flux.from(client.exchange(HttpRequest.GET("/shopping/cart"), Cart.class)) <b class="conum">(1)</b>
+                                            .blockFirst();
         Cart cart = response.body();
 
         assertNotNull(response.header(HttpHeaders.AUTHORIZATION_INFO)); <b class="conum">(2)</b>
@@ -21287,7 +21425,7 @@ class ShoppingController {
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">        when: "The shopping cart is retrieved"
         HttpResponse&lt;Cart&gt; response = client.exchange(HttpRequest.GET('/shopping/cart'), Cart) <b class="conum">(1)</b>
-                                                .blockingFirst()
+                                                .blockFirst()
         Cart cart = response.body()
 
         then: "The shopping cart is present as well as a session id header"
@@ -21298,8 +21436,8 @@ class ShoppingController {
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">            var response = client.exchange(HttpRequest.GET&lt;Cart&gt;("/shopping/cart"), Cart::class.java) <b class="conum">(1)</b>
-                                 .blockingFirst()
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">            var response = Flux.from(client.exchange(HttpRequest.GET&lt;Cart&gt;("/shopping/cart"), Cart::class.java)) <b class="conum">(1)</b>
+                                 .blockFirst()
             var cart = response.body()
 
             assertNotNull(response.header(HttpHeaders.AUTHORIZATION_INFO)) <b class="conum">(2)</b>
@@ -21326,9 +21464,9 @@ class ShoppingController {
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">        String sessionId = response.header(HttpHeaders.AUTHORIZATION_INFO); <b class="conum">(1)</b>
 
-        response = client.exchange(HttpRequest.POST("/shopping/cart/Apple", "")
-                         .header(HttpHeaders.AUTHORIZATION_INFO, sessionId), Cart.class) <b class="conum">(2)</b>
-                         .blockingFirst();
+        response = Flux.from(client.exchange(HttpRequest.POST("/shopping/cart/Apple", "")
+                         .header(HttpHeaders.AUTHORIZATION_INFO, sessionId), Cart.class)) <b class="conum">(2)</b>
+                         .blockFirst();
         cart = response.body();</code></pre>
 </div>
 </div>
@@ -21338,7 +21476,7 @@ class ShoppingController {
 
         response = client.exchange(HttpRequest.POST('/shopping/cart/Apple', "")
                          .header(HttpHeaders.AUTHORIZATION_INFO, sessionId), Cart) <b class="conum">(2)</b>
-                         .blockingFirst()
+                         .blockFirst()
         cart = response.body()</code></pre>
 </div>
 </div>
@@ -21346,9 +21484,9 @@ class ShoppingController {
 <div class="content">
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">            val sessionId = response.header(HttpHeaders.AUTHORIZATION_INFO) <b class="conum">(1)</b>
 
-            response = client.exchange(HttpRequest.POST("/shopping/cart/Apple", "")
-                             .header(HttpHeaders.AUTHORIZATION_INFO, sessionId), Cart::class.java) <b class="conum">(2)</b>
-                             .blockingFirst()
+            response = Flux.from(client.exchange(HttpRequest.POST("/shopping/cart/Apple", "")
+                             .header(HttpHeaders.AUTHORIZATION_INFO, sessionId), Cart::class.java)) <b class="conum">(2)</b>
+                             .blockFirst()
             cart = response.body()</code></pre>
 </div>
 </div>
@@ -21551,7 +21689,7 @@ class ShoppingController {
 </div>
 </div>
 <div class="paragraph">
-<p>To emit news headline events, write a controller that returns a <a href="https://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> of <a href="../api/io/micronaut/http/sse/Event.html">Event</a> instances using whichever Reactive library you prefer. The example below uses RxJava 2&#8217;s <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> via the <code>generate</code> method:</p>
+<p>To emit news headline events, write a controller that returns a <a href="https://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> of <a href="../api/io/micronaut/http/sse/Event.html">Event</a> instances using whichever Reactive library you prefer. The example below uses <a href="https://projectreactor.io">Project Reactor</a>'s reactor:Flux[] via the <code>generate</code> method:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Publishing Server Sent Events from a Controller</div>
@@ -21562,8 +21700,8 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.sse.Event;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
-import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
 
 @Controller("/headlines")
 public class HeadlineController {
@@ -21572,14 +21710,13 @@ public class HeadlineController {
     @Get(produces = MediaType.TEXT_EVENT_STREAM)
     public Publisher&lt;Event&lt;Headline&gt;&gt; index() { <b class="conum">(1)</b>
         String[] versions = {"1.0", "2.0"}; <b class="conum">(2)</b>
-
-        return Flowable.generate(() -&gt; 0, (i, emitter) -&gt; { <b class="conum">(3)</b>
+        return Flux.generate(() -&gt; 0, (i, emitter) -&gt; { <b class="conum">(3)</b>
             if (i &lt; versions.length) {
-                emitter.onNext( <b class="conum">(4)</b>
+                emitter.next( <b class="conum">(4)</b>
                     Event.of(new Headline("Micronaut " + versions[i] + " Released", "Come and get it"))
                 );
             } else {
-                emitter.onComplete(); <b class="conum">(5)</b>
+                emitter.complete(); <b class="conum">(5)</b>
             }
             return ++i;
         });
@@ -21596,10 +21733,8 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.sse.Event
 import io.micronaut.scheduling.TaskExecutors
 import io.micronaut.scheduling.annotation.ExecuteOn
-import io.reactivex.Emitter
-import io.reactivex.Flowable
-import io.reactivex.functions.BiFunction
 import org.reactivestreams.Publisher
+import reactor.core.publisher.Flux
 
 @Controller("/headlines")
 class HeadlineController {
@@ -21608,17 +21743,16 @@ class HeadlineController {
     @Get(produces = MediaType.TEXT_EVENT_STREAM)
     Publisher&lt;Event&lt;Headline&gt;&gt; index() { <b class="conum">(1)</b>
         String[] versions = ["1.0", "2.0"] <b class="conum">(2)</b>
-
-        return Flowable.generate({ -&gt; 0 }, { int i, Emitter emitter -&gt;  <b class="conum">(3)</b>
+        Flux.generate(() -&gt; 0, (i, emitter) -&gt; {
             if (i &lt; versions.length) {
-                emitter.onNext( <b class="conum">(4)</b>
+                emitter.next( <b class="conum">(4)</b>
                         Event.of(new Headline("Micronaut ${versions[i]} Released", "Come and get it"))
                 )
             } else {
-                emitter.onComplete() <b class="conum">(5)</b>
+                emitter.complete() <b class="conum">(5)</b>
             }
-            return ++i
-        } as BiFunction&lt;Integer, Emitter&lt;Event&lt;Headline&gt;&gt;, Integer&gt;)
+            return i + 1
+        })
     }
 }</code></pre>
 </div>
@@ -21632,11 +21766,12 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.sse.Event
 import io.micronaut.scheduling.TaskExecutors
 import io.micronaut.scheduling.annotation.ExecuteOn
-import io.reactivex.Emitter
-import io.reactivex.Flowable
-import io.reactivex.functions.BiFunction
 import org.reactivestreams.Publisher
+import reactor.core.publisher.Flux
+import reactor.core.publisher.SynchronousSink
 import java.util.concurrent.Callable
+import java.util.function.BiFunction
+
 
 @Controller("/headlines")
 class HeadlineController {
@@ -21645,19 +21780,22 @@ class HeadlineController {
     @Get(produces = [MediaType.TEXT_EVENT_STREAM])
     fun index(): Publisher&lt;Event&lt;Headline&gt;&gt; { <b class="conum">(1)</b>
         val versions = arrayOf("1.0", "2.0") <b class="conum">(2)</b>
-
-        return Flowable.generate(Callable { 0 }, BiFunction { <b class="conum">(3)</b>
-            i: Int, emitter: Emitter&lt;Event&lt;Headline&gt;&gt; -&gt;
-            var nextInt: Int = i
-            if (i &lt; versions.size) {
-                emitter.onNext( <b class="conum">(4)</b>
-                        Event.of&lt;Headline&gt;(Headline("Micronaut ${versions[i]} Released", "Come and get it"))
-                )
-            } else {
-                emitter.onComplete() <b class="conum">(5)</b>
-            }
-            ++nextInt
-        })
+        return Flux.generate(
+            { 0 },
+            BiFunction { i: Int, emitter: SynchronousSink&lt;Event&lt;Headline&gt;&gt; -&gt;  <b class="conum">(3)</b>
+                if (i &lt; versions.size) {
+                    emitter.next( <b class="conum">(4)</b>
+                        Event.of(
+                            Headline(
+                                "Micronaut " + versions[i] + " Released", "Come and get it"
+                            )
+                        )
+                    )
+                } else {
+                    emitter.complete() <b class="conum">(5)</b>
+                }
+                return@BiFunction i + 1
+            })
     }
 }</code></pre>
 </div>
@@ -21674,7 +21812,7 @@ class HeadlineController {
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> type&#8217;s <code>generate</code> method generates a <a href="https://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a>. The <code>generate</code> method accepts an initial value and a lambda that accepts the value and a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Emitter.html">Emitter</a>. Note that this example executes on the same thread as the controller action, but you could use <code>subscribeOn</code> or map an existing "hot" <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a>.</td>
+<td>The reactor:Flux[] type&#8217;s <code>generate</code> method generates a <a href="https://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a>. The <code>generate</code> method accepts an initial value and a lambda that accepts the value and a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Emitter.html">Emitter</a>. Note that this example executes on the same thread as the controller action, but you could use <code>subscribeOn</code> or map an existing "hot" <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flux.html">Flux</a>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
@@ -22117,8 +22255,8 @@ import io.micronaut.websocket.WebSocketSession;
 import io.micronaut.websocket.annotation.ClientWebSocket;
 import io.micronaut.websocket.annotation.OnMessage;
 import io.micronaut.websocket.annotation.OnOpen;
-import io.reactivex.Single;
-
+import org.reactivestreams.Publisher;
+import io.micronaut.core.async.annotation.SingleResult;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
@@ -22175,10 +22313,11 @@ import io.micronaut.websocket.WebSocketSession
 import io.micronaut.websocket.annotation.ClientWebSocket
 import io.micronaut.websocket.annotation.OnMessage
 import io.micronaut.websocket.annotation.OnOpen
-import io.reactivex.Single
-
+import org.reactivestreams.Publisher
+import reactor.core.publisher.Mono
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Future
+import io.micronaut.core.async.annotation.SingleResult
 
 @ClientWebSocket("/chat/{topic}/{username}") <b class="conum">(1)</b>
 abstract class ChatClientWebSocket implements AutoCloseable { <b class="conum">(2)</b>
@@ -22232,7 +22371,7 @@ import io.micronaut.websocket.WebSocketSession
 import io.micronaut.websocket.annotation.ClientWebSocket
 import io.micronaut.websocket.annotation.OnMessage
 import io.micronaut.websocket.annotation.OnOpen
-import io.reactivex.Single
+import reactor.core.publisher.Mono
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Future
 
@@ -22303,11 +22442,11 @@ abstract class ChatClientWebSocket : AutoCloseable { <b class="conum">(2)</b>
 <div class="listingblock">
 <div class="title">WebSocket Send Methods</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public abstract io.reactivex.Single&lt;String&gt; send(String message);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public abstract reactor.core.publisher.Mono&lt;String&gt; send(String message);</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The above example defines a send method that returns a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html">Single</a>.</p>
+<p>The above example defines a send method that returns a reactor:Mono[].</p>
 </div>
 <div class="listingblock">
 <div class="title">WebSocket Send Methods</div>
@@ -22326,7 +22465,7 @@ abstract class ChatClientWebSocket : AutoCloseable { <b class="conum">(2)</b>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ChatClientWebSocket chatClient = webSocketClient
     .connect(ChatClientWebSocket.class, "/chat/football/fred")
-    .blockingFirst();
+    .blockFirst();
 chatClient.send("Hello World!");</code></pre>
 </div>
 </div>
@@ -22337,7 +22476,7 @@ chatClient.send("Hello World!");</code></pre>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-For illustration purposes we use <code>blockingFirst()</code> to obtain the client. It is however possible to combine <code>connect</code> (which returns a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a>) to perform non-blocking interaction via WebSocket.
+For illustration purposes we use <code>blockFirst()</code> to obtain the client. It is however possible to combine <code>connect</code> (which returns a reactor:Flux[]) to perform non-blocking interaction via WebSocket.
 </td>
 </tr>
 </table>
@@ -22485,7 +22624,7 @@ For illustration purposes we use <code>blockingFirst()</code> to obtain the clie
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Inject
 @Client(httpVersion=HttpVersion.HTTP_2_0)
-RxHttpClient client;</code></pre>
+ReactorHttpClient client;</code></pre>
 </div>
 </div>
 </div>
@@ -23987,7 +24126,10 @@ Regardless whether you choose to use Micronaut&#8217;s HTTP server, you may wish
 <p>The <a href="../api/io/micronaut/http/client/HttpClient.html">HttpClient</a> interface forms the basis for the low-level API. This interfaces declares methods to help ease executing HTTP requests and receiving responses.</p>
 </div>
 <div class="paragraph">
-<p>The majority of the methods in the <a href="../api/io/micronaut/http/client/HttpClient.html">HttpClient</a> interface return Reactive Streams <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> instances, which is not always the most useful interface to work against. A sub-interface named <a href="../api/io/micronaut/http/client/RxHttpClient.html">RxHttpClient</a> is included that provides a variation of the <a href="../api/io/micronaut/http/client/HttpClient.html">HttpClient</a> interface that returns RxJava <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> types.</p>
+<p>The majority of the methods in the <a href="../api/io/micronaut/http/client/HttpClient.html">HttpClient</a> interface return Reactive Streams <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> instances, which is not always the most useful interface to work against.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut&#8217;s Reactor HTTP Client dependency ships with a sub-interface named <a href="../api/io/micronaut/http/client/ReactorHttpClient.html">ReactorHttpClient</a>. It provides a variation of the <a href="../api/io/micronaut/http/client/HttpClient.html">HttpClient</a> interface that returns <a href="https://projectreactor.io">Project Reactor</a> reactor:Flux[] types.</p>
 </div>
 
 <h2 id="clientBasics"><a class="anchor" href="#clientBasics"></a>7.1.1 Sending your first HTTP request</h2>
@@ -24007,7 +24149,7 @@ Regardless whether you choose to use Micronaut&#8217;s HTTP server, you may wish
 <div class="listingblock">
 <div class="title">Injecting an HTTP client</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("https://api.twitter.com/1.1") @Inject RxHttpClient httpClient;</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("https://api.twitter.com/1.1") @Inject HttpClient httpClient;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -24015,7 +24157,7 @@ Regardless whether you choose to use Micronaut&#8217;s HTTP server, you may wish
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@field:Client("\${myapp.api.twitter.url}") @Inject lateinit var httpClient: RxHttpClient</code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@field:Client("\${myapp.api.twitter.url}") @Inject lateinit var httpClient: HttpClient</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -24041,13 +24183,13 @@ Regardless whether you choose to use Micronaut&#8217;s HTTP server, you may wish
 </ul>
 </div>
 <div class="paragraph">
-<p>Another way to create an <code>HttpClient</code> is with the static <code>create</code> method of <a href="../api/io/micronaut/http/client/RxHttpClient.html">RxHttpClient</a>, however this approach is not recommended as you must ensure you manually shutdown the client, and of course no dependency injection will occur for the created client.</p>
+<p>Another way to create an <code>HttpClient</code> is with the static <code>create</code> method of <a href="../api/io/micronaut/http/client/HttpClient.html">HttpClient</a>, however this approach is not recommended as you must ensure you manually shutdown the client, and of course no dependency injection will occur for the created client.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_performing_an_http_get">Performing an HTTP GET</h4>
 <div class="paragraph">
-<p>Generally there are two methods of interest when working with the <code>HttpClient</code>. The first is <code>retrieve</code>, which executes an HTTP request and returns the body in whichever type you request (by default a <code>String</code>) as an RxJava <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a>.</p>
+<p>Generally there are two methods of interest when working with the <code>HttpClient</code>. The first is <code>retrieve</code>, which executes an HTTP request and returns the body in whichever type you request (by default a <code>String</code>) as <code>Publisher</code>.</p>
 </div>
 <div class="paragraph">
 <p>The <code>retrieve</code> method accepts an <a href="../api/io/micronaut/http/HttpRequest.html">HttpRequest</a> or a <code>String</code> URI to the endpoint you wish to request.</p>
@@ -24111,18 +24253,19 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Status;
-import io.micronaut.http.client.RxHttpClient;
+import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
-import io.reactivex.Maybe;
-
+import org.reactivestreams.Publisher;
+import reactor.core.publisher.Mono;
+import io.micronaut.core.async.annotation.SingleResult;
 import static io.micronaut.http.HttpRequest.GET;
 import static io.micronaut.http.HttpStatus.CREATED;
 import static io.micronaut.http.MediaType.TEXT_PLAIN;
 
     @Get("/hello/{name}")
-    Maybe&lt;String&gt; hello(String name) { <b class="conum">(1)</b>
-        return httpClient.retrieve( GET("/hello/" + name) )
-                         .firstElement(); <b class="conum">(2)</b>
+    @SingleResult
+    Publisher&lt;String&gt; hello(String name) { <b class="conum">(1)</b>
+        return Mono.from(httpClient.retrieve(GET("/hello/" + name))); <b class="conum">(2)</b>
     }</code></pre>
 </div>
 </div>
@@ -24134,18 +24277,19 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.Status
-import io.micronaut.http.client.RxHttpClient
+import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
-import io.reactivex.Maybe
-
+import org.reactivestreams.Publisher
+import io.micronaut.core.async.annotation.SingleResult
+import reactor.core.publisher.Mono
 import static io.micronaut.http.HttpRequest.GET
 import static io.micronaut.http.HttpStatus.CREATED
 import static io.micronaut.http.MediaType.TEXT_PLAIN
 
     @Get("/hello/{name}")
-    Maybe&lt;String&gt; hello(String name) { <b class="conum">(1)</b>
-        httpClient.retrieve( GET("/hello/" + name) )
-                  .firstElement() <b class="conum">(2)</b>
+    @SingleResult
+    Publisher&lt;String&gt; hello(String name) { <b class="conum">(1)</b>
+        Mono.from(httpClient.retrieve( GET("/hello/" + name))) <b class="conum">(2)</b>
     }</code></pre>
 </div>
 </div>
@@ -24160,14 +24304,17 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.Status
-import io.micronaut.http.client.RxHttpClient
+import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
-import io.reactivex.Maybe
+import org.reactivestreams.Publisher
+import reactor.core.publisher.Flux
+import io.micronaut.core.async.annotation.SingleResult
 
     @Get("/hello/{name}")
-    internal fun hello(name: String): Maybe&lt;String&gt; { <b class="conum">(1)</b>
-        return httpClient.retrieve(GET&lt;Any&gt;("/hello/$name"))
-                         .firstElement() <b class="conum">(2)</b>
+    @SingleResult
+    internal fun hello(name: String): Publisher&lt;String&gt; { <b class="conum">(1)</b>
+        return Flux.from(httpClient.retrieve(GET&lt;Any&gt;("/hello/$name")))
+                         .next() <b class="conum">(2)</b>
     }</code></pre>
 </div>
 </div>
@@ -24175,11 +24322,11 @@ import io.reactivex.Maybe
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <code>hello</code> method returns a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Maybe.html">Maybe</a> which may or may not emit an item. If an item is not emitted, a 404 is returned.</td>
+<td>The <code>hello</code> method returns a reactor:Mono[] which may or may not emit an item. If an item is not emitted, a 404 is returned.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <code>retrieve</code> method is called which returns a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a>. This has a <code>firstElement</code> method that returns the first emitted item or nothing</td>
+<td>The <code>retrieve</code> method is called which returns a reactor:Flux[]. This has a <code>firstElement</code> method that returns the first emitted item or nothing</td>
 </tr>
 </table>
 </div>
@@ -24190,7 +24337,7 @@ import io.reactivex.Maybe
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Using RxJava (or Reactor if you prefer) you can easily and efficiently compose multiple HTTP client calls without blocking (which limits the throughput and scalability of your application).
+Using Reactor (or RxJava if you prefer) you can easily and efficiently compose multiple HTTP client calls without blocking (which limits the throughput and scalability of your application).
 </td>
 </tr>
 </table>
@@ -24244,19 +24391,19 @@ Using RxJava (or Reactor if you prefer) you can easily and efficiently compose m
 <div class="listingblock multi-language-sample">
 <div class="title">Passing an HttpRequest to retrieve</div>
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">        Flowable&lt;String&gt; response = client.retrieve(
+<pre class="highlight"><code class="language-java" data-lang="java">        Flux&lt;String&gt; response = Flux.from(client.retrieve(
                 GET("/hello/John")
                 .header("X-My-Header", "SomeValue")
-        );</code></pre>
+        ));</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Passing an HttpRequest to retrieve</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flowable&lt;String&gt; response = client.retrieve(
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flux&lt;String&gt; response = Flux.from(client.retrieve(
                 GET("/hello/John")
                 .header("X-My-Header", "SomeValue")
-        )</code></pre>
+        ))</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -24376,25 +24523,25 @@ Jackson annotations are used to map the constructor
 <div class="listingblock multi-language-sample">
 <div class="title">Decoding the response body to a Map</div>
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">        Flowable&lt;Map&gt; response = client.retrieve(
+<pre class="highlight"><code class="language-java" data-lang="java">        Flux&lt;Map&gt; response = Flux.from(client.retrieve(
                 GET("/greet/John"), Map.class
-        );</code></pre>
+        ));</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Decoding the response body to a Map</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flowable&lt;Map&gt; response = client.retrieve(
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flux&lt;Map&gt; response = Flux.from(client.retrieve(
                 GET("/greet/John"), Map
-        )</code></pre>
+        ))</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Decoding the response body to a Map</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">            var response: Flowable&lt;Map&lt;*, *&gt;&gt; = client.retrieve(
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">            var response: Flux&lt;Map&lt;*, *&gt;&gt; = Flux.from(client.retrieve(
                     GET&lt;Any&gt;("/greet/John"), Map::class.java
-            )</code></pre>
+            ))</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -24403,28 +24550,28 @@ Jackson annotations are used to map the constructor
 <div class="listingblock multi-language-sample">
 <div class="title">Decoding the response body to a Map</div>
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">        response = client.retrieve(
+<pre class="highlight"><code class="language-java" data-lang="java">        response = Flux.from(client.retrieve(
                 GET("/greet/John"),
                 Argument.of(Map.class, String.class, String.class) <b class="conum">(1)</b>
-        );</code></pre>
+        ));</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Decoding the response body to a Map</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">        response = client.retrieve(
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">        response = Flux.from(client.retrieve(
                 GET("/greet/John"),
                 Argument.of(Map, String, String) <b class="conum">(1)</b>
-        )</code></pre>
+        ))</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Decoding the response body to a Map</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">            response = client.retrieve(
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">            response = Flux.from(client.retrieve(
                     GET&lt;Any&gt;("/greet/John"),
                     Argument.of(Map::class.java, String::class.java, String::class.java) <b class="conum">(1)</b>
-            )</code></pre>
+            ))</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -24441,33 +24588,33 @@ Jackson annotations are used to map the constructor
 <div class="listingblock multi-language-sample">
 <div class="title">Decoding the response body to a POJO</div>
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">        Flowable&lt;Message&gt; response = client.retrieve(
+<pre class="highlight"><code class="language-java" data-lang="java">        Flux&lt;Message&gt; response = Flux.from(client.retrieve(
                 GET("/greet/John"), Message.class
-        );
+        ));
 
-        assertEquals("Hello John", response.blockingFirst().getText());</code></pre>
+        assertEquals("Hello John", response.blockFirst().getText());</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Decoding the response body to a POJO</div>
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">        when:
-        Flowable&lt;Message&gt; response = client.retrieve(
+        Flux&lt;Message&gt; response = Flux.from(client.retrieve(
                 GET("/greet/John"), Message
-        )
+        ))
 
         then:
-        "Hello John" == response.blockingFirst().getText()</code></pre>
+        "Hello John" == response.blockFirst().getText()</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Decoding the response body to a POJO</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">            val response = client.retrieve(
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">            val response = Flux.from(client.retrieve(
                     GET&lt;Any&gt;("/greet/John"), Message::class.java
-            )
+            ))
 
-            response.blockingFirst().text shouldBe "Hello John"</code></pre>
+            response.blockFirst().text shouldBe "Hello John"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -24491,11 +24638,11 @@ Jackson annotations are used to map the constructor
 <div class="listingblock multi-language-sample">
 <div class="title">Receiving the Full HTTP Response</div>
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">        Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
+<pre class="highlight"><code class="language-java" data-lang="java">        Flux&lt;HttpResponse&lt;Message&gt;&gt; call = Flux.from(client.exchange(
                 GET("/greet/John"), Message.class <b class="conum">(1)</b>
-        );
+        ));
 
-        HttpResponse&lt;Message&gt; response = call.blockingFirst();
+        HttpResponse&lt;Message&gt; response = call.blockFirst();
         Optional&lt;Message&gt; message = response.getBody(Message.class); <b class="conum">(2)</b>
         // check the status
         assertEquals(HttpStatus.OK, response.getStatus()); <b class="conum">(3)</b>
@@ -24508,11 +24655,11 @@ Jackson annotations are used to map the constructor
 <div class="title">Receiving the Full HTTP Response</div>
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">        when:
-        Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
+        Flux&lt;HttpResponse&lt;Message&gt;&gt; call = Flux.from(client.exchange(
                 GET("/greet/John"), Message <b class="conum">(1)</b>
-        )
+        ))
 
-        HttpResponse&lt;Message&gt; response = call.blockingFirst();
+        HttpResponse&lt;Message&gt; response = call.blockFirst();
         Optional&lt;Message&gt; message = response.getBody(Message) <b class="conum">(2)</b>
         // check the status
         then:
@@ -24529,7 +24676,7 @@ Jackson annotations are used to map the constructor
                     GET&lt;Any&gt;("/greet/John"), Message::class.java <b class="conum">(1)</b>
             )
 
-            val response = call.blockingFirst()
+            val response = Flux.from(call).blockFirst()
             val message = response.getBody(Message::class.java) <b class="conum">(2)</b>
             // check the status
             response.status shouldBe HttpStatus.OK <b class="conum">(3)</b>
@@ -24632,23 +24779,23 @@ Jackson annotations are used to map the constructor
 <div class="listingblock multi-language-sample">
 <div class="title">Sending a <code>String</code> body</div>
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">        Flowable&lt;HttpResponse&lt;String&gt;&gt; call = client.exchange(
+<pre class="highlight"><code class="language-java" data-lang="java">        Flux&lt;HttpResponse&lt;String&gt;&gt; call = Flux.from(client.exchange(
                 POST("/hello", "Hello John") <b class="conum">(1)</b>
                     .contentType(MediaType.TEXT_PLAIN_TYPE)
                     .accept(MediaType.TEXT_PLAIN_TYPE), <b class="conum">(2)</b>
                 String.class <b class="conum">(3)</b>
-        );</code></pre>
+        ));</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Sending a <code>String</code> body</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flowable&lt;HttpResponse&lt;String&gt;&gt; call = client.exchange(
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flux&lt;HttpResponse&lt;String&gt;&gt; call = Flux.from(client.exchange(
                 POST("/hello", "Hello John") <b class="conum">(1)</b>
                     .contentType(MediaType.TEXT_PLAIN_TYPE)
                     .accept(MediaType.TEXT_PLAIN_TYPE), <b class="conum">(2)</b>
                 String <b class="conum">(3)</b>
-        )</code></pre>
+        ))</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -24689,19 +24836,19 @@ Jackson annotations are used to map the constructor
 <div class="listingblock multi-language-sample">
 <div class="title">Sending a JSON body</div>
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">        Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
+<pre class="highlight"><code class="language-java" data-lang="java">        Flux&lt;HttpResponse&lt;Message&gt;&gt; call = Flux.from(client.exchange(
                 POST("/greet", new Message("Hello John")), <b class="conum">(1)</b>
                 Message.class <b class="conum">(2)</b>
-        );</code></pre>
+        ));</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Sending a JSON body</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flowable&lt;HttpResponse&lt;Message&gt;&gt; call = client.exchange(
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flux&lt;HttpResponse&lt;Message&gt;&gt; call = Flux.from(client.exchange(
                 POST("/greet", new Message("Hello John")), <b class="conum">(1)</b>
                 Message <b class="conum">(2)</b>
-        )</code></pre>
+        ))</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -24750,16 +24897,16 @@ Jackson annotations are used to map the constructor
 <div class="listingblock multi-language-sample">
 <div class="title">Sending a JSON body with a URI template</div>
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">        Flowable&lt;HttpResponse&lt;Book&gt;&gt; call = client.exchange(
+<pre class="highlight"><code class="language-java" data-lang="java">        Flux&lt;HttpResponse&lt;Book&gt;&gt; call = Flux.from(client.exchange(
                 POST("/amazon/book/{title}", new Book("The Stand")),
                 Book.class
-        );</code></pre>
+        ));</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Sending a JSON body with a URI template</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flowable&lt;HttpResponse&lt;Book&gt;&gt; call = client.exchange(
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flux&lt;HttpResponse&lt;Book&gt;&gt; call = client.exchange(
                 POST("/amazon/book/{title}", new Book("The Stand")),
                 Book
         );</code></pre>
@@ -24788,17 +24935,17 @@ Jackson annotations are used to map the constructor
 <div class="listingblock multi-language-sample">
 <div class="title">Sending a Form Data</div>
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">        Flowable&lt;HttpResponse&lt;Book&gt;&gt; call = client.exchange(
+<pre class="highlight"><code class="language-java" data-lang="java">        Flux&lt;HttpResponse&lt;Book&gt;&gt; call = Flux.from(client.exchange(
                 POST("/amazon/book/{title}", new Book("The Stand"))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED),
                 Book.class
-        );</code></pre>
+        ));</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Sending a Form Data</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flowable&lt;HttpResponse&lt;Book&gt;&gt; call = client.exchange(
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flux&lt;HttpResponse&lt;Book&gt;&gt; call = client.exchange(
                 POST("/amazon/book/{title}", new Book("The Stand"))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED),
                 Book
@@ -24958,7 +25105,7 @@ import org.reactivestreams.Publisher
 
 
 <div class="paragraph">
-<p>Micronaut&#8217;s HTTP client includes support for streaming data over HTTP via the <a href="../api/io/micronaut/http/client/RxStreamingHttpClient.html">RxStreamingHttpClient</a> interface which includes methods specific to streaming including:</p>
+<p>Micronaut&#8217;s HTTP client includes support for streaming data over HTTP via the <a href="../api/io/micronaut/http/client/ReactorStreamingHttpClient.html">ReactorStreamingHttpClient</a> interface which includes methods specific to streaming including:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 1. HTTP Streaming Methods</caption>
@@ -24975,11 +25122,11 @@ import org.reactivestreams.Publisher
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataStream(HttpRequest&lt;I&gt; request)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Returns a stream of data as a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> of <a href="../api/io/micronaut/core/io/buffer/ByteBuffer.html">ByteBuffer</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Returns a stream of data as a reactor:Flux[] of <a href="../api/io/micronaut/core/io/buffer/ByteBuffer.html">ByteBuffer</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>exchangeStream(HttpRequest&lt;I&gt; request)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Returns the <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> wrapping a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> of <a href="../api/io/micronaut/core/io/buffer/ByteBuffer.html">ByteBuffer</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Returns the <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> wrapping a reactor:Flux[] of <a href="../api/io/micronaut/core/io/buffer/ByteBuffer.html">ByteBuffer</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>jsonStream(HttpRequest&lt;I&gt; request)</code></p></td>
@@ -24996,19 +25143,21 @@ import org.reactivestreams.Publisher
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
-import io.reactivex.Flowable;
-
+import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.util.concurrent.TimeUnit;
+import java.time.temporal.ChronoUnit;
 
     @Get(value = "/headlines", processes = MediaType.APPLICATION_JSON_STREAM) <b class="conum">(1)</b>
-    Flowable&lt;Headline&gt; streamHeadlines() {
-        return Flowable.fromCallable(() -&gt; {  <b class="conum">(2)</b>
+    Publisher&lt;Headline&gt; streamHeadlines() {
+        return Mono.fromCallable(() -&gt; {  <b class="conum">(2)</b>
             Headline headline = new Headline();
             headline.setText("Latest Headline at " + ZonedDateTime.now());
             return headline;
         }).repeat(100) <b class="conum">(3)</b>
-          .delay(1, TimeUnit.SECONDS); <b class="conum">(4)</b>
+          .delayElements(Duration.of(1, ChronoUnit.SECONDS)); <b class="conum">(4)</b>
     }</code></pre>
 </div>
 </div>
@@ -25018,17 +25167,20 @@ import java.util.concurrent.TimeUnit;
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
-import io.reactivex.Flowable
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
+import java.time.Duration
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
     @Get(value = "/headlines", processes = MediaType.APPLICATION_JSON_STREAM) <b class="conum">(1)</b>
-    Flowable&lt;Headline&gt; streamHeadlines() {
-        Flowable.fromCallable({ <b class="conum">(2)</b>
+    Flux&lt;Headline&gt; streamHeadlines() {
+        Mono.fromCallable({ <b class="conum">(2)</b>
             new Headline(text: "Latest Headline at ${ZonedDateTime.now()}")
         }).repeat(100) <b class="conum">(3)</b>
-          .delay(1, TimeUnit.SECONDS) <b class="conum">(4)</b>
+                .delayElements(Duration.of(1, ChronoUnit.SECONDS)) <b class="conum">(4)</b>
     }</code></pre>
 </div>
 </div>
@@ -25038,18 +25190,21 @@ import java.util.concurrent.TimeUnit
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.http.MediaType.APPLICATION_JSON_STREAM
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
-import io.reactivex.Flowable
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import java.time.Duration
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit.SECONDS
 
     @Get(value = "/headlines", processes = [APPLICATION_JSON_STREAM]) <b class="conum">(1)</b>
-    internal fun streamHeadlines(): Flowable&lt;Headline&gt; {
-        return Flowable.fromCallable { <b class="conum">(2)</b>
+    internal fun streamHeadlines(): Flux&lt;Headline&gt; {
+        return Mono.fromCallable { <b class="conum">(2)</b>
             val headline = Headline()
             headline.text = "Latest Headline at ${ZonedDateTime.now()}"
             headline
         }.repeat(100) <b class="conum">(3)</b>
-         .delay(1, SECONDS) <b class="conum">(4)</b>
+         .delayElements(Duration.of(1, ChronoUnit.SECONDS)) <b class="conum">(4)</b>
     }</code></pre>
 </div>
 </div>
@@ -25061,15 +25216,15 @@ import java.util.concurrent.TimeUnit.SECONDS
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>A <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> is created from a <code>Callable</code> function (note no blocking occurs within the function, so this is ok, otherwise you should <code>subscribeOn</code> an I/O thread pool).</td>
+<td>A reactor:Flux[] is created from a <code>Callable</code> function (note no blocking occurs within the function, so this is ok, otherwise you should <code>subscribeOn</code> an I/O thread pool).</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> repeats 100 times</td>
+<td>The reactor:Flux[] repeats 100 times</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>The <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> emits items with a delay of one second between each</td>
+<td>The reactor:Flux[] emits items with a delay of one second between each</td>
 </tr>
 </table>
 </div>
@@ -25091,8 +25246,8 @@ The server does not have to be written in Micronaut, any server that supports JS
 <div class="listingblock multi-language-sample">
 <div class="title">Streaming JSON on the Client</div>
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">        Flowable&lt;Headline&gt; headlineStream = client.jsonStream(
-                GET("/streaming/headlines"), Headline.class); <b class="conum">(1)</b>
+<pre class="highlight"><code class="language-java" data-lang="java">        Flux&lt;Headline&gt; headlineStream = Flux.from(client.jsonStream(
+                GET("/streaming/headlines"), Headline.class)); <b class="conum">(1)</b>
         CompletableFuture&lt;Headline&gt; future = new CompletableFuture&lt;&gt;(); <b class="conum">(2)</b>
         headlineStream.subscribe(new Subscriber&lt;Headline&gt;() {
             @Override
@@ -25121,8 +25276,8 @@ The server does not have to be written in Micronaut, any server that supports JS
 <div class="listingblock multi-language-sample">
 <div class="title">Streaming JSON on the Client</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flowable&lt;Headline&gt; headlineStream = client.jsonStream(
-                GET("/streaming/headlines"), Headline) <b class="conum">(1)</b>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">        Flux&lt;Headline&gt; headlineStream = Flux.from(client.jsonStream(
+                GET("/streaming/headlines"), Headline)) <b class="conum">(1)</b>
         CompletableFuture&lt;Headline&gt; future = new CompletableFuture&lt;&gt;() <b class="conum">(2)</b>
         headlineStream.subscribe(new Subscriber&lt;Headline&gt;() {
             @Override
@@ -25178,7 +25333,7 @@ The server does not have to be written in Micronaut, any server that supports JS
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <code>jsonStream</code> method returns a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a></td>
+<td>The <code>jsonStream</code> method returns a reactor:Flux[]</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -25268,7 +25423,7 @@ The server does not have to be written in Micronaut, any server that supports JS
 <div class="listingblock">
 <div class="title">Injecting an HTTP client</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("foo") @Inject RxHttpClient httpClient;</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("foo") @Inject ReactorHttpClient httpClient;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -25292,7 +25447,7 @@ class TwitterHttpClientConfiguration extends HttpClientConfiguration {
 <div class="listingblock">
 <div class="title">Injecting an HTTP client</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("twitter") @Inject RxHttpClient httpClient;</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client("twitter") @Inject ReactorHttpClient httpClient;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -25304,7 +25459,7 @@ class TwitterHttpClientConfiguration extends HttpClientConfiguration {
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Client(value = "https://api.twitter.com/1.1",
         configuration = TwitterHttpClientConfiguration.class)
 @Inject
-RxHttpClient httpClient;</code></pre>
+ReactorHttpClient httpClient;</code></pre>
 </div>
 </div>
 </div>
@@ -25876,15 +26031,16 @@ The <a href="../api/io/micronaut/http/client/ProxyHttpClient.html">ProxyHttpClie
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.http.annotation.Post;
 import io.micronaut.validation.Validated;
-import io.reactivex.Single;
-
+import org.reactivestreams.Publisher;
+import io.micronaut.core.async.annotation.SingleResult;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
 @Validated
 public interface PetOperations {
     @Post
-    Single&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age);
+    @SingleResult
+    Publisher&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age);
 }</code></pre>
 </div>
 </div>
@@ -25893,15 +26049,16 @@ public interface PetOperations {
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.http.annotation.Post
 import io.micronaut.validation.Validated
-import io.reactivex.Single
-
+import org.reactivestreams.Publisher
+import io.micronaut.core.async.annotation.SingleResult
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotBlank
 
 @Validated
 interface PetOperations {
     @Post
-    Single&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age)
+    @SingleResult
+    Publisher&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age)
 }</code></pre>
 </div>
 </div>
@@ -25910,14 +26067,16 @@ interface PetOperations {
 <div class="content">
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.http.annotation.Post
 import io.micronaut.validation.Validated
-import io.reactivex.Single
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotBlank
+import io.micronaut.core.async.annotation.SingleResult
+import org.reactivestreams.Publisher
 
 @Validated
 interface PetOperations {
     @Post
-    fun save(@NotBlank name: String, @Min(1L) age: Int): Single&lt;Pet&gt;
+    @SingleResult
+    fun save(@NotBlank name: String, @Min(1L) age: Int): Publisher&lt;Pet&gt;
 }</code></pre>
 </div>
 </div>
@@ -25963,18 +26122,21 @@ Be aware that some annotations, such as <a href="../api/io/micronaut/http/annota
 <div class="title">PetController.java</div>
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.http.annotation.Controller;
-import io.reactivex.Single;
+import org.reactivestreams.Publisher;
+import reactor.core.publisher.Mono;
+import io.micronaut.core.async.annotation.SingleResult;
 
 @Controller("/pets")
 public class PetController implements PetOperations {
 
     @Override
-    public Single&lt;Pet&gt; save(String name, int age) {
+    @SingleResult
+    public Publisher&lt;Pet&gt; save(String name, int age) {
         Pet pet = new Pet();
         pet.setName(name);
         pet.setAge(age);
         // save to database or something
-        return Single.just(pet);
+        return Mono.just(pet);
     }
 }</code></pre>
 </div>
@@ -25983,16 +26145,19 @@ public class PetController implements PetOperations {
 <div class="title">PetController.java</div>
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.http.annotation.Controller
-import io.reactivex.Single
+import org.reactivestreams.Publisher
+import io.micronaut.core.async.annotation.SingleResult
+import reactor.core.publisher.Mono
 
 @Controller("/pets")
 class PetController implements PetOperations {
 
     @Override
-    Single&lt;Pet&gt; save(String name, int age) {
+    @SingleResult
+    Publisher&lt;Pet&gt; save(String name, int age) {
         Pet pet = new Pet(name: name, age: age)
         // save to database or something
-        return Single.just(pet)
+        return Mono.just(pet)
     }
 }</code></pre>
 </div>
@@ -26001,17 +26166,20 @@ class PetController implements PetOperations {
 <div class="title">PetController.java</div>
 <div class="content">
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.http.annotation.Controller
-import io.reactivex.Single
+import reactor.core.publisher.Mono
+import io.micronaut.core.async.annotation.SingleResult
+import org.reactivestreams.Publisher
 
 @Controller("/pets")
 open class PetController : PetOperations {
 
-    override fun save(name: String, age: Int): Single&lt;Pet&gt; {
+    @SingleResult
+    override fun save(name: String, age: Int): Publisher&lt;Pet&gt; {
         val pet = Pet()
         pet.name = name
         pet.age = age
         // save to database or something
-        return Single.just(pet)
+        return Mono.just(pet)
     }
 }</code></pre>
 </div>
@@ -26023,8 +26191,8 @@ open class PetController : PetOperations {
 <div class="title">PetClient.java</div>
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.http.client.annotation.Client;
-import io.reactivex.Single;
-
+import org.reactivestreams.Publisher;
+import io.micronaut.core.async.annotation.SingleResult;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
@@ -26032,7 +26200,8 @@ import javax.validation.constraints.NotBlank;
 public interface PetClient extends PetOperations { <b class="conum">(2)</b>
 
     @Override
-    Single&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age); <b class="conum">(3)</b>
+    @SingleResult
+    Publisher&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age); <b class="conum">(3)</b>
 }</code></pre>
 </div>
 </div>
@@ -26040,13 +26209,15 @@ public interface PetClient extends PetOperations { <b class="conum">(2)</b>
 <div class="title">PetClient.java</div>
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.http.client.annotation.Client
-import io.reactivex.Single
+import org.reactivestreams.Publisher
+import io.micronaut.core.async.annotation.SingleResult
 
 @Client("/pets") <b class="conum">(1)</b>
 interface PetClient extends PetOperations { <b class="conum">(2)</b>
 
     @Override
-    Single&lt;Pet&gt; save(String name, int age) <b class="conum">(3)</b>
+    @SingleResult
+    Publisher&lt;Pet&gt; save(String name, int age) <b class="conum">(3)</b>
 }</code></pre>
 </div>
 </div>
@@ -26054,12 +26225,14 @@ interface PetClient extends PetOperations { <b class="conum">(2)</b>
 <div class="title">PetClient.java</div>
 <div class="content">
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.http.client.annotation.Client
-import io.reactivex.Single
+import io.micronaut.core.async.annotation.SingleResult
+import org.reactivestreams.Publisher
 
 @Client("/pets") <b class="conum">(1)</b>
 interface PetClient : PetOperations { <b class="conum">(2)</b>
 
-    override fun save(name: String, age: Int): Single&lt;Pet&gt; <b class="conum">(3)</b>
+    @SingleResult
+    override fun save(name: String, age: Int): Publisher&lt;Pet&gt; <b class="conum">(3)</b>
 }</code></pre>
 </div>
 </div>
@@ -26140,12 +26313,12 @@ Notice in the above example we override the <code>save</code> method. This is ne
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Any type that implements the <a href="https://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> interface</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flowable&lt;String&gt; hello()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flux&lt;String&gt; hello()</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">An <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> and optional response body type</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Single&lt;HttpResponse&lt;String&gt;&gt; hello()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Mono&lt;HttpResponse&lt;String&gt;&gt; hello()</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a></p></td>
@@ -26192,7 +26365,8 @@ Notice in the above example we override the <code>save</code> method. This is ne
 <div class="title">PetOperations.java</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Post
-Single&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age);</code></pre>
+@SingleResult
+Publisher&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -26214,7 +26388,7 @@ Single&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age);</code></pre>
 <div class="title">PetOperations.java</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Post("/{name}")
-Single&lt;Pet&gt; save(
+Mono&lt;Pet&gt; save(
     @NotBlank String name, <i class="conum" data-value="1"></i><b>(1)</b>
     @Body @Valid Pet pet) <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
@@ -26705,22 +26879,22 @@ class MetadataClientArgumentBinder : TypedClientArgumentRequestBinder&lt;Metadat
 <div class="sect2">
 <h3 id="_streaming_json_with_client">Streaming JSON with @Client</h3>
 <div class="paragraph">
-<p>For example, to write a client that streams data from the controller defined in the <a href="#clientStreaming">JSON Streaming</a> section of the documentation, you can define a client that returns an unbound <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> such as a RxJava <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> or Reactor <code>Flux</code>:</p>
+<p>For example, to write a client that streams data from the controller defined in the <a href="#clientStreaming">JSON Streaming</a> section of the documentation, you can define a client that returns an unbound <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> such as Reactor&#8217;s reactor:Flux[] or a RxJava&#8217;s <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a>:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">HeadlineClient.java</div>
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.http.annotation.Get;
 import io.micronaut.http.client.annotation.Client;
-import io.reactivex.Flowable;
-
+import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
 import static io.micronaut.http.MediaType.APPLICATION_JSON_STREAM;
 
 @Client("/streaming")
 public interface HeadlineClient {
 
     @Get(value = "/headlines", processes = APPLICATION_JSON_STREAM) <b class="conum">(1)</b>
-    Flowable&lt;Headline&gt; streamHeadlines(); <b class="conum">(2)</b></code></pre>
+    Publisher&lt;Headline&gt; streamHeadlines(); <b class="conum">(2)</b></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -26728,7 +26902,7 @@ public interface HeadlineClient {
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
-import io.reactivex.Flowable
+import org.reactivestreams.Publisher
 
 import static io.micronaut.http.MediaType.APPLICATION_JSON_STREAM
 
@@ -26736,7 +26910,7 @@ import static io.micronaut.http.MediaType.APPLICATION_JSON_STREAM
 interface HeadlineClient {
 
     @Get(value = "/headlines", processes = APPLICATION_JSON_STREAM) <b class="conum">(1)</b>
-    Flowable&lt;Headline&gt; streamHeadlines() <b class="conum">(2)</b>
+    Publisher&lt;Headline&gt; streamHeadlines() <b class="conum">(2)</b>
 
 }</code></pre>
 </div>
@@ -26747,13 +26921,14 @@ interface HeadlineClient {
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.http.MediaType.APPLICATION_JSON_STREAM
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
-import io.reactivex.Flowable
+import reactor.core.publisher.Flux
+
 
 @Client("/streaming")
 interface HeadlineClient {
 
     @Get(value = "/headlines", processes = [APPLICATION_JSON_STREAM]) <b class="conum">(1)</b>
-    fun streamHeadlines(): Flowable&lt;Headline&gt;  <b class="conum">(2)</b></code></pre>
+    fun streamHeadlines(): Flux&lt;Headline&gt;  <b class="conum">(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -26764,7 +26939,7 @@ interface HeadlineClient {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The return type is <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a></td>
+<td>The return type is <code>Publisher</code></td>
 </tr>
 </table>
 </div>
@@ -26781,9 +26956,9 @@ interface HeadlineClient {
                                                 .getApplicationContext()
                                                 .getBean(HeadlineClient.class); <b class="conum">(1)</b>
 
-            Maybe&lt;Headline&gt; firstHeadline = headlineClient.streamHeadlines().firstElement(); <b class="conum">(2)</b>
+            Mono&lt;Headline&gt; firstHeadline = Mono.from(headlineClient.streamHeadlines()); <b class="conum">(2)</b>
 
-            Headline headline = firstHeadline.blockingGet(); <b class="conum">(3)</b>
+            Headline headline = firstHeadline.block(); <b class="conum">(3)</b>
 
             assertNotNull(headline);
             assertTrue(headline.getText().startsWith("Latest Headline"));
@@ -26799,9 +26974,9 @@ interface HeadlineClient {
         def headlineClient = embeddedServer.applicationContext
                                            .getBean(HeadlineClient) <b class="conum">(1)</b>
 
-        Maybe&lt;Headline&gt; firstHeadline = headlineClient.streamHeadlines().firstElement() <b class="conum">(2)</b>
+        Mono&lt;Headline&gt; firstHeadline = Mono.from(headlineClient.streamHeadlines()) <b class="conum">(2)</b>
 
-        Headline headline = firstHeadline.blockingGet() <b class="conum">(3)</b>
+        Headline headline = firstHeadline.block() <b class="conum">(3)</b>
 
         then:
         headline
@@ -26817,9 +26992,9 @@ interface HeadlineClient {
                     .applicationContext
                     .getBean(HeadlineClient::class.java) <b class="conum">(1)</b>
 
-            val firstHeadline = headlineClient.streamHeadlines().firstElement() <b class="conum">(2)</b>
+            val firstHeadline = headlineClient.streamHeadlines().next() <b class="conum">(2)</b>
 
-            val headline = firstHeadline.blockingGet() <b class="conum">(3)</b>
+            val headline = firstHeadline.block() <b class="conum">(3)</b>
 
             headline shouldNotBe null
             headline.text shouldStartWith "Latest Headline"
@@ -26834,11 +27009,11 @@ interface HeadlineClient {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <code>firstElement</code> method returns the first emitted item from the <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> as a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Maybe.html">Maybe</a>.</td>
+<td>The <code>next</code> method emits the first element emmited by the reactor:Flux[] into a reactor:Mono[].</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The <code>blockingGet()</code> method retrieves the result in the test.</td>
+<td>The <code>block()</code> method retrieves the result in the test.</td>
 </tr>
 </table>
 </div>
@@ -26871,7 +27046,7 @@ interface HeadlineClient {
 <p>Micronaut&#8217;s client does however support streaming of both individual JSON objects via <code>application/x-json-stream</code> and also JSON arrays defined with <code>application/json</code>.</p>
 </div>
 <div class="paragraph">
-<p>If the server returns <code>application/json</code> and a non-single <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> is returned (such as a <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a> or a Reactor <code>Flux</code>), the client streams the array elements as they become available.</p>
+<p>If the server returns <code>application/json</code> and a non-single <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a> is returned (such as a Reactor&#8217;s reactor:Flux[] or a RxJava&#8217;s <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a>), the client streams the array elements as they become available.</p>
 </div>
 </div>
 <div class="sect2">
@@ -26925,15 +27100,15 @@ Although SSE streams are typically consumed by a browser <code>EventSource</code
 <div class="title">SSE Controller</div>
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">    @Get(value = "/headlines", processes = MediaType.TEXT_EVENT_STREAM) <b class="conum">(1)</b>
-    Flowable&lt;Event&lt;Headline&gt;&gt; streamHeadlines() {
-        return Flowable.&lt;Event&lt;Headline&gt;&gt;create((emitter) -&gt; {  <b class="conum">(2)</b>
+    Publisher&lt;Event&lt;Headline&gt;&gt; streamHeadlines() {
+        return Flux.&lt;Event&lt;Headline&gt;&gt;create((emitter) -&gt; {  <b class="conum">(2)</b>
             Headline headline = new Headline();
             headline.setText("Latest Headline at " + ZonedDateTime.now());
-            emitter.onNext(Event.of(headline));
-            emitter.onComplete();
-        }, BackpressureStrategy.BUFFER)
+            emitter.next(Event.of(headline));
+            emitter.complete();
+        }, FluxSink.OverflowStrategy.BUFFER)
                 .repeat(100) <b class="conum">(3)</b>
-                .delay(1, TimeUnit.SECONDS); <b class="conum">(4)</b>
+                .delayElements(Duration.of(1, ChronoUnit.SECONDS)); <b class="conum">(4)</b>
     }</code></pre>
 </div>
 </div>
@@ -26941,14 +27116,14 @@ Although SSE streams are typically consumed by a browser <code>EventSource</code
 <div class="title">SSE Controller</div>
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">    @Get(value = "/headlines", processes = MediaType.TEXT_EVENT_STREAM) <b class="conum">(1)</b>
-    Flowable&lt;Event&lt;Headline&gt;&gt; streamHeadlines() {
-        Flowable.&lt;Event&lt;Headline&gt;&gt;create( { emitter -&gt; <b class="conum">(2)</b>
+    Flux&lt;Event&lt;Headline&gt;&gt; streamHeadlines() {
+        Flux.&lt;Event&lt;Headline&gt;&gt;create( { emitter -&gt; <b class="conum">(2)</b>
             Headline headline = new Headline(text: "Latest Headline at ${ZonedDateTime.now()}")
-            emitter.onNext(Event.of(headline))
-            emitter.onComplete()
-        }, BackpressureStrategy.BUFFER)
+            emitter.next(Event.of(headline))
+            emitter.complete()
+        }, FluxSink.OverflowStrategy.BUFFER)
                 .repeat(100) <b class="conum">(3)</b>
-                .delay(1, TimeUnit.SECONDS) <b class="conum">(4)</b>
+                .delayElements(Duration.of(1, ChronoUnit.SECONDS)) <b class="conum">(4)</b>
     }</code></pre>
 </div>
 </div>
@@ -26956,15 +27131,15 @@ Although SSE streams are typically consumed by a browser <code>EventSource</code
 <div class="title">SSE Controller</div>
 <div class="content">
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">    @Get(value = "/headlines", processes = [TEXT_EVENT_STREAM]) <b class="conum">(1)</b>
-    internal fun streamHeadlines(): Flowable&lt;Event&lt;Headline&gt;&gt; {
-        return Flowable.create&lt;Event&lt;Headline&gt;&gt;( { emitter -&gt; <b class="conum">(2)</b>
+    internal fun streamHeadlines(): Flux&lt;Event&lt;Headline&gt;&gt; {
+        return Flux.create&lt;Event&lt;Headline&gt;&gt;( { emitter -&gt; <b class="conum">(2)</b>
             val headline = Headline()
             headline.text = "Latest Headline at ${ZonedDateTime.now()}"
-            emitter.onNext(Event.of(headline))
-            emitter.onComplete()
-        }, BackpressureStrategy.BUFFER)
+            emitter.next(Event.of(headline))
+            emitter.complete()
+        }, FluxSink.OverflowStrategy.BUFFER)
             .repeat(100) <b class="conum">(3)</b>
-            .delay(1, SECONDS) <b class="conum">(4)</b>
+            .delayElements(Duration.of(1, ChronoUnit.SECONDS)) <b class="conum">(4)</b>
     }</code></pre>
 </div>
 </div>
@@ -27001,7 +27176,7 @@ Although SSE streams are typically consumed by a browser <code>EventSource</code
 public interface HeadlineClient {
 
     @Get(value = "/headlines", processes = TEXT_EVENT_STREAM)
-    Flowable&lt;Event&lt;Headline&gt;&gt; streamHeadlines();
+    Publisher&lt;Event&lt;Headline&gt;&gt; streamHeadlines();
 }</code></pre>
 </div>
 </div>
@@ -27012,7 +27187,7 @@ public interface HeadlineClient {
 interface HeadlineClient {
 
     @Get(value = "/headlines", processes = TEXT_EVENT_STREAM)
-    Flowable&lt;Event&lt;Headline&gt;&gt; streamHeadlines()
+    Flux&lt;Event&lt;Headline&gt;&gt; streamHeadlines()
 }</code></pre>
 </div>
 </div>
@@ -27023,12 +27198,12 @@ interface HeadlineClient {
 interface HeadlineClient {
 
     @Get(value = "/headlines", processes = [TEXT_EVENT_STREAM])
-    fun streamHeadlines(): Flowable&lt;Event&lt;Headline&gt;&gt;
+    fun streamHeadlines(): Flux&lt;Event&lt;Headline&gt;&gt;
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The generic type of the <code>Flux</code> or <code>Flowable</code> can be either an <a href="../api/io/micronaut/http/sse/Event.html">Event</a>, in which case you will receive the full event object, or a POJO, in which case you will receive only the data contained within the event converted from JSON.</p>
+<p>The generic type of the <code>Flux</code> can be either an <a href="../api/io/micronaut/http/sse/Event.html">Event</a>, in which case you will receive the full event object, or a POJO, in which case you will receive only the data contained within the event converted from JSON.</p>
 </div>
 </div>
 
@@ -27102,10 +27277,12 @@ The one exception to this rule is HTTP Not Found (404) responses. This exception
 public interface PetClient extends PetOperations {
 
     @Override
-    Single&lt;Pet&gt; save(String name, int age);
+    @SingleResult
+    Publisher&lt;Pet&gt; save(String name, int age);
 
     @Get("/{name}")
-    Single&lt;Pet&gt; get(String name);
+    @SingleResult
+    Publisher&lt;Pet&gt; get(String name);
 }</code></pre>
 </div>
 </div>
@@ -27117,10 +27294,12 @@ public interface PetClient extends PetOperations {
 interface PetClient extends PetOperations {
 
     @Override
-    Single&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age)
+    @SingleResult
+    Publisher&lt;Pet&gt; save(@NotBlank String name, @Min(1L) int age)
 
     @Get("/{name}")
-    Single&lt;Pet&gt; get(String name)
+    @SingleResult
+    Publisher&lt;Pet&gt; get(String name)
 }</code></pre>
 </div>
 </div>
@@ -27131,10 +27310,12 @@ interface PetClient extends PetOperations {
 @Header(name = "X-Pet-Client", value = "\${pet.client.id}")
 interface PetClient : PetOperations {
 
-    override fun save(name: String, age: Int): Single&lt;Pet&gt;
+    @SingleResult
+    override fun save(name: String, age: Int): Publisher&lt;Pet&gt;
 
     @Get("/{name}")
-    operator fun get(name: String): Single&lt;Pet&gt;
+    @SingleResult
+    operator fun get(name: String): Publisher&lt;Pet&gt;
 }</code></pre>
 </div>
 </div>
@@ -27256,7 +27437,8 @@ If the customization offered by <code>JacksonFeatures</code> is not enough, you 
 public interface PetClient extends PetOperations {
 
     @Override
-    Single&lt;Pet&gt; save(String name, int age);
+    @SingleResult
+    Publisher&lt;Pet&gt; save(String name, int age);
 }</code></pre>
 </div>
 </div>
@@ -27268,7 +27450,7 @@ public interface PetClient extends PetOperations {
 interface PetClient extends PetOperations {
 
     @Override
-    Single&lt;Pet&gt; save(String name, int age)
+    Mono&lt;Pet&gt; save(String name, int age)
 }</code></pre>
 </div>
 </div>
@@ -27279,7 +27461,7 @@ interface PetClient extends PetOperations {
 @Retryable
 interface PetClient : PetOperations {
 
-    override fun save(name: String, age: Int): Single&lt;Pet&gt;
+    override fun save(name: String, age: Int): Mono&lt;Pet&gt;
 }</code></pre>
 </div>
 </div>
@@ -27320,11 +27502,12 @@ interface PetClient : PetOperations {
 <pre class="highlight"><code class="language-java" data-lang="java">@Fallback
 public class PetFallback implements PetOperations {
     @Override
-    public Single&lt;Pet&gt; save(String name, int age) {
+    @SingleResult
+    public Publisher&lt;Pet&gt; save(String name, int age) {
         Pet pet = new Pet();
         pet.setAge(age);
         pet.setName(name);
-        return Single.just(pet);
+        return Mono.just(pet);
     }
 }</code></pre>
 </div>
@@ -27335,9 +27518,9 @@ public class PetFallback implements PetOperations {
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">@Fallback
 class PetFallback implements PetOperations {
     @Override
-    Single&lt;Pet&gt; save(String name, int age) {
+    Mono&lt;Pet&gt; save(String name, int age) {
         Pet pet = new Pet(age: age, name: name)
-        return Single.just(pet)
+        return Mono.just(pet)
     }
 }</code></pre>
 </div>
@@ -27347,11 +27530,11 @@ class PetFallback implements PetOperations {
 <div class="content">
 <pre class="highlight"><code class="language-kotlin" data-lang="kotlin">@Fallback
 open class PetFallback : PetOperations {
-    override fun save(name: String, age: Int): Single&lt;Pet&gt; {
+    override fun save(name: String, age: Int): Mono&lt;Pet&gt; {
         val pet = Pet()
         pet.age = age
         pet.name = name
-        return Single.just(pet)
+        return Mono.just(pet)
     }
 }</code></pre>
 </div>
@@ -27449,7 +27632,7 @@ String hello(String name) {
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-This works for reactive return types such as <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html">Flowable</a>, and the reactive type will be wrapped in a <code>HystrixObservableCommand</code>.
+This works for reactive return types such as reactor:Flux[], and the reactive type will be wrapped in a <code>HystrixObservableCommand</code>.
 </td>
 </tr>
 </table>
@@ -27520,24 +27703,24 @@ For information on how to customize the Hystrix thread pool, group, and properti
 
 @Singleton
 class BintrayService {
-    final RxHttpClient client;
+    final HttpClient client;
     final String org;
 
     BintrayService(
-            @Client(BintrayApi.URL) RxHttpClient client,           <b class="conum">(1)</b>
+            @Client(BintrayApi.URL) HttpClient client,           <b class="conum">(1)</b>
             @Value("${bintray.organization}") String org ) {
         this.client = client;
         this.org = org;
     }
 
-    Flowable&lt;HttpResponse&lt;String&gt;&gt; fetchRepositories() {
-        return client.exchange(HttpRequest.GET(
-                "/repos/" + org), String.class); <b class="conum">(2)</b>
+    Flux&lt;HttpResponse&lt;String&gt;&gt; fetchRepositories() {
+        return Flux.from(client.exchange(HttpRequest.GET(
+                "/repos/" + org), String.class)); <b class="conum">(2)</b>
     }
 
-    Flowable&lt;HttpResponse&lt;String&gt;&gt; fetchPackages(String repo) {
-        return client.exchange(HttpRequest.GET(
-                "/repos/" + org + "/" + repo + "/packages"), String.class); <b class="conum">(2)</b>
+    Flux&lt;HttpResponse&lt;String&gt;&gt; fetchPackages(String repo) {
+        return Flux.from(client.exchange(HttpRequest.GET(
+                "/repos/" + org + "/" + repo + "/packages"), String.class)); <b class="conum">(2)</b>
     }
 }</code></pre>
 </div>
@@ -27550,21 +27733,21 @@ class BintrayService {
 
 @Singleton
 class BintrayService {
-    final RxHttpClient client
+    final HttpClient client
     final String org
 
     BintrayService(
-            @Client(BintrayApi.URL) RxHttpClient client, <b class="conum">(1)</b>
+            @Client(BintrayApi.URL) HttpClient client, <b class="conum">(1)</b>
             @Value('${bintray.organization}') String org ) {
         this.client = client
         this.org = org
     }
 
-    Flowable&lt;HttpResponse&lt;String&gt;&gt; fetchRepositories() {
+    Flux&lt;HttpResponse&lt;String&gt;&gt; fetchRepositories() {
         client.exchange(HttpRequest.GET("/repos/$org"), String) <b class="conum">(2)</b>
     }
 
-    Flowable&lt;HttpResponse&lt;String&gt;&gt; fetchPackages(String repo) {
+    Flux&lt;HttpResponse&lt;String&gt;&gt; fetchPackages(String repo) {
         client.exchange(HttpRequest.GET("/repos/${org}/${repo}/packages"), String) <b class="conum">(2)</b>
     }
 }</code></pre>
@@ -27578,15 +27761,15 @@ class BintrayService {
 
 @Singleton
 internal class BintrayService(
-        @param:Client(BintrayApi.URL) val client: RxHttpClient, <b class="conum">(1)</b>
-        @param:Value("\${bintray.organization}") val org: String) {
+    @param:Client(BintrayApi.URL) val client: HttpClient, <b class="conum">(1)</b>
+    @param:Value("\${bintray.organization}") val org: String) {
 
-    fun fetchRepositories(): Flowable&lt;HttpResponse&lt;String&gt;&gt; {
-        return client.exchange(HttpRequest.GET&lt;Any&gt;("/repos/$org"), String::class.java) <b class="conum">(2)</b>
+    fun fetchRepositories(): Flux&lt;HttpResponse&lt;String&gt;&gt; {
+        return Flux.from(client.exchange(HttpRequest.GET&lt;Any&gt;("/repos/$org"), String::class.java)) <b class="conum">(2)</b>
     }
 
-    fun fetchPackages(repo: String): Flowable&lt;HttpResponse&lt;String&gt;&gt; {
-        return client.exchange(HttpRequest.GET&lt;Any&gt;("/repos/$org/$repo/packages"), String::class.java) <b class="conum">(2)</b>
+    fun fetchPackages(repo: String): Flux&lt;HttpResponse&lt;String&gt;&gt; {
+        return Flux.from(client.exchange(HttpRequest.GET&lt;Any&gt;("/repos/$org/$repo/packages"), String::class.java)) <b class="conum">(2)</b>
     }
 }</code></pre>
 </div>
@@ -27595,7 +27778,7 @@ internal class BintrayService(
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>An <a href="../api/io/micronaut/http/client/RxHttpClient.html">RxHttpClient</a> is injected for the Bintray API</td>
+<td>An <a href="../api/io/micronaut/http/client/ReactorHttpClient.html">ReactorHttpClient</a> is injected for the Bintray API</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -27694,53 +27877,51 @@ internal class BintrayFilter(
 <div class="sect2">
 <h3 id="_injecting_another_client_into_a_httpclientfilter">Injecting Another Client into a HttpClientFilter</h3>
 <div class="paragraph">
-<p>To create an <a href="../api/io/micronaut/http/client/RxHttpClient.html">RxHttpClient</a>, Micronaut needs to resolve all <code>HttpClientFilter</code> instances, which creates a circular dependency when injecting another <a href="../api/io/micronaut/http/client/RxHttpClient.html">RxHttpClient</a> or a <code>@Client</code> bean into an instance of a <code>HttpClientFilter</code>.</p>
+<p>To create an <a href="../api/io/micronaut/http/client/ReactorHttpClient.html">ReactorHttpClient</a>, Micronaut needs to resolve all <code>HttpClientFilter</code> instances, which creates a circular dependency when injecting another <a href="../api/io/micronaut/http/client/ReactorHttpClient.html">ReactorHttpClient</a> or a <code>@Client</code> bean into an instance of a <code>HttpClientFilter</code>.</p>
 </div>
 <div class="paragraph">
-<p>To resolve this issue, use the <a href="../api/io/micronaut/context/BeanProvider.html">BeanProvider</a> interface to inject another <a href="../api/io/micronaut/http/client/RxHttpClient.html">RxHttpClient</a> or a <code>@Client</code> bean into an instance of <code>HttpClientFilter</code>.</p>
+<p>To resolve this issue, use the <a href="../api/io/micronaut/context/BeanProvider.html">BeanProvider</a> interface to inject another <a href="../api/io/micronaut/http/client/ReactorHttpClient.html">ReactorHttpClient</a> or a <code>@Client</code> bean into an instance of <code>HttpClientFilter</code>.</p>
 </div>
 <div class="paragraph">
 <p>The following example which implements a filter allowing <a href="https://cloud.google.com/run/docs/authenticating/service-to-service">authentication between services on Google Cloud Run</a> demonstrates how to use <a href="../api/io/micronaut/context/BeanProvider.html">BeanProvider</a> to inject another client:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.context.annotation.Requires;
+<pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.context.BeanProvider;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.env.Environment;
+import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpRequest;
-import io.micronaut.context.BeanProvider;
 import io.micronaut.http.annotation.Filter;
-import io.micronaut.http.client.RxHttpClient;
+import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.filter.ClientFilterChain;
 import io.micronaut.http.filter.HttpClientFilter;
-import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
+import reactor.core.publisher.Mono;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 
-import static io.micronaut.http.HttpRequest.GET;
-
 @Requires(env = Environment.GOOGLE_COMPUTE)
 @Filter(patterns = "/google-auth/api/**")
 public class GoogleAuthFilter implements HttpClientFilter {
 
-    private final BeanProvider&lt;RxHttpClient&gt; authClientProvider;
+    private final BeanProvider&lt;HttpClient&gt; authClientProvider;
 
-    public GoogleAuthFilter(BeanProvider&lt;RxHttpClient&gt; httpClientProvider) { <b class="conum">(1)</b>
+    public GoogleAuthFilter(BeanProvider&lt;HttpClient&gt; httpClientProvider) { <b class="conum">(1)</b>
         this.authClientProvider = httpClientProvider;
     }
 
     @Override
     public Publisher&lt;? extends HttpResponse&lt;?&gt;&gt; doFilter(MutableHttpRequest&lt;?&gt; request,
                                                          ClientFilterChain chain) {
-        Flowable&lt;String&gt; token = Flowable.fromCallable(() -&gt; encodeURI(request))
-                .flatMap(authURI -&gt; authClientProvider.get().retrieve(GET(authURI).header( <b class="conum">(2)</b>
-                        "Metadata-Flavor", "Google"
-                )));
-
-        return token.flatMap(t -&gt; chain.proceed(request.bearerAuth(t)));
+        return Mono.fromCallable(() -&gt; encodeURI(request))
+                .flux()
+                .flatMap(uri -&gt; authClientProvider.get().retrieve(HttpRequest.GET(uri) <b class="conum">(2)</b>
+                        .header("Metadata-Flavor", "Google")))
+                .flatMap(t -&gt; chain.proceed(request.bearerAuth(t)));
     }
 
     private String encodeURI(MutableHttpRequest&lt;?&gt; request) throws UnsupportedEncodingException {
@@ -27757,16 +27938,15 @@ public class GoogleAuthFilter implements HttpClientFilter {
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.context.annotation.Requires
 import io.micronaut.context.env.Environment
 import io.micronaut.context.BeanProvider
-import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MutableHttpRequest
 import io.micronaut.http.annotation.Filter
-import io.micronaut.http.client.RxHttpClient
+import io.micronaut.http.client.HttpClient
 import io.micronaut.http.filter.ClientFilterChain
 import io.micronaut.http.filter.HttpClientFilter
-import io.reactivex.Flowable
 import org.reactivestreams.Publisher
-
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 import static io.micronaut.http.HttpRequest.GET
 
@@ -27774,16 +27954,16 @@ import static io.micronaut.http.HttpRequest.GET
 @Filter(patterns = "/google-auth/api/**")
 class GoogleAuthFilter implements HttpClientFilter {
 
-    private final BeanProvider&lt;RxHttpClient&gt; authClientProvider
+    private final BeanProvider&lt;HttpClient&gt; authClientProvider
 
-    GoogleAuthFilter(BeanProvider&lt;RxHttpClient&gt; httpClientProvider) { <b class="conum">(1)</b>
+    GoogleAuthFilter(BeanProvider&lt;HttpClient&gt; httpClientProvider) { <b class="conum">(1)</b>
         this.authClientProvider = httpClientProvider
     }
 
     @Override
     Publisher&lt;? extends HttpResponse&lt;?&gt;&gt; doFilter(MutableHttpRequest&lt;?&gt; request,
                                                   ClientFilterChain chain) {
-        Flowable&lt;String&gt; token = Flowable.fromCallable(() -&gt; encodeURI(request))
+        Flux&lt;String&gt; token = Mono.fromCallable(() -&gt; encodeURI(request))
                 .flatMap(authURI -&gt; authClientProvider.get().retrieve(GET(authURI).header( <b class="conum">(2)</b>
                         "Metadata-Flavor", "Google"
                 )))
@@ -27801,35 +27981,34 @@ class GoogleAuthFilter implements HttpClientFilter {
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.context.annotation.Requires
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.context.BeanProvider
+import io.micronaut.context.annotation.Requires
 import io.micronaut.context.env.Environment
-import io.micronaut.context.BeanProvider
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MutableHttpRequest
 import io.micronaut.http.annotation.Filter
-import io.micronaut.http.client.RxHttpClient
+import io.micronaut.http.client.HttpClient
 import io.micronaut.http.filter.ClientFilterChain
 import io.micronaut.http.filter.HttpClientFilter
-import io.reactivex.Flowable
 import org.reactivestreams.Publisher
+import reactor.core.publisher.Mono
 import java.net.URLEncoder
 
 @Requires(env = [Environment.GOOGLE_COMPUTE])
 @Filter(patterns = ["/google-auth/api/**"])
 class GoogleAuthFilter (
-    private val authClientProvider: BeanProvider&lt;RxHttpClient&gt;) : HttpClientFilter { <b class="conum">(1)</b>
+    private val authClientProvider: BeanProvider&lt;HttpClient&gt;) : HttpClientFilter { <b class="conum">(1)</b>
 
     override fun doFilter(request: MutableHttpRequest&lt;*&gt;,
                           chain: ClientFilterChain): Publisher&lt;out HttpResponse&lt;*&gt;?&gt; {
-
-        val token = Flowable.fromCallable { encodeURI(request) }
-                .flatMap { authURI: String -&gt;
-                    authClientProvider.get().retrieve(HttpRequest.GET&lt;Any&gt;(authURI).header( <b class="conum">(2)</b>
-                            "Metadata-Flavor", "Google"
-                    ))
-                }
-        return token.flatMap { t -&gt; chain.proceed(request.bearerAuth(t)) }
+        return Mono.fromCallable { encodeURI(request) }
+            .flux()
+            .map { authURI: String -&gt;
+                authClientProvider.get().retrieve(HttpRequest.GET&lt;Any&gt;(authURI)
+                    .header("Metadata-Flavor", "Google") <b class="conum">(2)</b>
+                )
+            }.flatMap { t -&gt; chain.proceed(request.bearerAuth(t.toString())) }
     }
 
     private fun encodeURI(request: MutableHttpRequest&lt;*&gt;): String {
@@ -28300,7 +28479,7 @@ The Netflix Ribbon client-side load balancer can be configured to use the metada
 <div class="title">Obtaining Metadata for a Service instance</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">LoadBalancer loadBalancer = loadBalancerResolver.resolve("some-service");
-Flowable.fromPublisher(
+Flux.from(
     loadBalancer.select()
 ).subscribe((instance) -&gt;
     ConvertibleValues&lt;String&gt; metaData = instance.getMetadata();
@@ -28968,8 +29147,8 @@ micronaut:
 <div class="title">Sample code for client</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">DiscoveryClient discoveryClient = embeddedServer.getApplicationContext().getBean(DiscoveryClient.class);
-List&lt;String&gt; serviceIds = Flowable.fromPublisher(discoveryClient.getServiceIds()).blockingFirst();
-List&lt;ServiceInstance&gt; instances = Flowable.fromPublisher(discoveryClient.getInstances(serviceIds.get(0))).blockingFirst();</code></pre>
+List&lt;String&gt; serviceIds = Flux.from(discoveryClient.getServiceIds()).blockFirst();
+List&lt;ServiceInstance&gt; instances = Flux.from(discoveryClient.getInstances(serviceIds.get(0))).blockFirst();</code></pre>
 </div>
 </div>
 <div class="sect3">
@@ -30218,63 +30397,10 @@ $ unzip example.zip -d example</pre>
 
 
 <div class="paragraph">
-<p>RxJava 2 is the default reactive programming library used by Micronaut, however individual modules for other reactive libraries have been added.</p>
+<p><a href="https://projectreactor.io">Project Reactor</a> is used internally by Micronaut. However to use Reactor or other reactive libraries (e.g. RxJava) types in your controller and/or HTTP Client methods you need to include dependencies.</p>
 </div>
 
-<h2 id="rxjava3"><a class="anchor" href="#rxjava3"></a>12.1.1 RxJava 3 Support</h2>
-
-<div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/3.0.x/src/main/docs/guide/configurations/reactiveConfigs/rxjava3.adoc"'>
-        <i class='fa fa-pencil-square-o'></i> Improve this doc
-    </button>
-</div>
-
-
-<div class="paragraph">
-<p>To add support for RxJava 3, add the following module:</p>
-</div>
-<div class="paragraph">
-<p>        <div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.rxjava3:micronaut-rxjava3")</span></code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
-    &lt;groupId&gt;io.micronaut.rxjava3&lt;/groupId&gt;
-    &lt;artifactId&gt;micronaut-rxjava3&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre>
-</div>
-</div>
-</p>
-</div>
-<div class="paragraph">
-<p>To use the RxJava 3 HTTP client, add the following dependency:</p>
-</div>
-<div class="paragraph">
-<p>        <div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.rxjava3:micronaut-rxjava3-http-client")</span></code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
-    &lt;groupId&gt;io.micronaut.rxjava3&lt;/groupId&gt;
-    &lt;artifactId&gt;micronaut-rxjava3-http-client&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre>
-</div>
-</div>
-</p>
-</div>
-<div class="paragraph">
-<p>For more information see the documentation for <a href="https://micronaut-projects.github.io/micronaut-rxjava3/latest/guide/">Micronaut RxJava 3</a>.</p>
-</div>
-
-<h2 id="reactor"><a class="anchor" href="#reactor"></a>12.1.2 Reactor Support</h2>
+<h2 id="reactor"><a class="anchor" href="#reactor"></a>12.1.1 Reactor Support</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/3.0.x/src/main/docs/guide/configurations/reactiveConfigs/reactor.adoc"'>
@@ -30327,7 +30453,113 @@ $ unzip example.zip -d example</pre>
 <p>For more information see the documentation for <a href="https://micronaut-projects.github.io/micronaut-reactor/latest/guide/">Micronaut Reactor</a>.</p>
 </div>
 
-<h2 id="rxjava1"><a class="anchor" href="#rxjava1"></a>12.1.3 RxJava 1 Support</h2>
+<h2 id="rxjava3"><a class="anchor" href="#rxjava3"></a>12.1.2 RxJava 3 Support</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/3.0.x/src/main/docs/guide/configurations/reactiveConfigs/rxjava3.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To add support for RxJava 3, add the following module:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.rxjava3:micronaut-rxjava3")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.rxjava3&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-rxjava3&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>To use the RxJava 3 HTTP client, add the following dependency:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.rxjava3:micronaut-rxjava3-http-client")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.rxjava3&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-rxjava3-http-client&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>For more information see the documentation for <a href="https://micronaut-projects.github.io/micronaut-rxjava3/latest/guide/">Micronaut RxJava 3</a>.</p>
+</div>
+
+<h2 id="rxjava2"><a class="anchor" href="#rxjava2"></a>12.1.3 RxJava 2 Support</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/3.0.x/src/main/docs/guide/configurations/reactiveConfigs/rxjava2.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To add support for RxJava 2, add the following module:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.rxjava2:micronaut-rxjava2")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.rxjava2&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-rxjava2&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>To use the RxJava 2 HTTP client, add the following dependency:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.rxjava2:micronaut-rxjava2-http-client")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.rxjava2&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-rxjava2-http-client&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>For more information see the documentation for <a href="https://micronaut-projects.github.io/micronaut-rxjava2/latest/guide/">Micronaut RxJava 2</a>.</p>
+</div>
+
+<h2 id="rxjava1"><a class="anchor" href="#rxjava1"></a>12.1.4 RxJava 1 Support</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/3.0.x/src/main/docs/guide/configurations/reactiveConfigs/rxjava1.adoc"'>
@@ -33542,7 +33774,7 @@ this should be used with care because private and sensitive information will be 
 <p>The beans endpoint is composed of a bean definition data collector and a bean data implementation. The bean definition data collector (<a href="../api/io/micronaut/management/endpoint/beans/BeanDefinitionDataCollector.html">BeanDefinitionDataCollector</a>) is responsible for returning a publisher that returns the data used in the response. The bean definition data (<a href="../api/io/micronaut/management/endpoint/beans/BeanDefinitionData.html">BeanDefinitionData</a>) is responsible for returning data about an individual bean definition.</p>
 </div>
 <div class="paragraph">
-<p>To override the default behavior for either of the helper classes, either extend the default implementations (<a href="../api/io/micronaut/management/endpoint/beans/impl/RxJavaBeanDefinitionDataCollector.html">RxJavaBeanDefinitionDataCollector</a>, <a href="../api/io/micronaut/management/endpoint/beans/impl/DefaultBeanDefinitionData.html">DefaultBeanDefinitionData</a>), or implement the relevant interface directly. To ensure your implementation is used instead of the default, add the <a href="../api/io/micronaut/context/annotation/Replaces.html">@Replaces</a> annotation to your class with the value being the default implementation.</p>
+<p>To override the default behavior for either of the helper classes, either extend the default implementations (<a href="../api/io/micronaut/management/endpoint/beans/impl/DefaultBeanDefinitionDataCollector.html">DefaultBeanDefinitionDataCollector</a>, <a href="../api/io/micronaut/management/endpoint/beans/impl/DefaultBeanDefinitionData.html">DefaultBeanDefinitionData</a>), or implement the relevant interface directly. To ensure your implementation is used instead of the default, add the <a href="../api/io/micronaut/context/annotation/Replaces.html">@Replaces</a> annotation to your class with the value being the default implementation.</p>
 </div>
 </div>
 </div>
@@ -33980,7 +34212,7 @@ info.demo.map = [key: 'value', other_key: 123]</code></pre>
 <p>The routes endpoint is composed of a route data collector and a route data implementation. The route data collector (<a href="../api/io/micronaut/management/endpoint/routes/RouteDataCollector.html">RouteDataCollector</a>) is responsible for returning a publisher that returns the data used in the response. The route data (<a href="../api/io/micronaut/management/endpoint/routes/RouteData.html">RouteData</a>) is responsible for returning data about an individual route.</p>
 </div>
 <div class="paragraph">
-<p>To override the default behavior for either of the helper classes, either extend the default implementations (<a href="../api/io/micronaut/management/endpoint/routes/impl/RxJavaRouteDataCollector.html">RxJavaRouteDataCollector</a>, <a href="../api/io/micronaut/management/endpoint/routes/impl/DefaultRouteData.html">DefaultRouteData</a>), or implement the relevant interface directly. To ensure your implementation is used instead of the default, add the <a href="../api/io/micronaut/context/annotation/Replaces.html">@Replaces</a> annotation to your class with the value being the default implementation.</p>
+<p>To override the default behavior for either of the helper classes, either extend the default implementations (<a href="../api/io/micronaut/management/endpoint/routes/impl/DefaultRouteDataCollector.html">DefaultRouteDataCollector</a>, <a href="../api/io/micronaut/management/endpoint/routes/impl/DefaultRouteData.html">DefaultRouteData</a>), or implement the relevant interface directly. To ensure your implementation is used instead of the default, add the <a href="../api/io/micronaut/context/annotation/Replaces.html">@Replaces</a> annotation to your class with the value being the default implementation.</p>
 </div>
 </div>
 </div>
@@ -36561,6 +36793,22 @@ This can affect many areas of the framework where names like <code>XForwarded</c
 <div class="paragraph">
 <p>Previously the default order value for the <code>@Order</code> annotation was the lowest precedence.
 It is now 0.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_classes_renaming">Classes Renaming</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><code>RxJavaRouteDataCollector</code> has been renamed to <code>DefaultRouteDataCollector</code>.</p>
+</li>
+<li>
+<p><code>RxJavaBeanDefinitionDataCollector.html</code> has been renamed to <code>DefaultBeanDefinitionDataCollector</code>.</p>
+</li>
+<li>
+<p><code>RxJavaHealthAggregator</code> has been renamed to <code>DefaultHealthAggregator</code></p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect3">
