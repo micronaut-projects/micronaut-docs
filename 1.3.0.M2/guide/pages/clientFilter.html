@@ -1,0 +1,536 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>7.3 HTTP Client Filters 1.3.0.M2</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="https://docs.micronaut.io/docsassets/css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="https://docs.micronaut.io/docsassets/css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/quickStart.html"><strong>2</strong><span>Quick Start</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/ioc.html"><strong>3</strong><span>Inversion of Control</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/config.html"><strong>4</strong><span>Application Configuration</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/aop.html"><strong>5</strong><span>Aspect Oriented Programming</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpServer.html"><strong>6</strong><span>The HTTP Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/httpClient.html"><strong>7</strong><span>The HTTP Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/serverlessFunctions.html"><strong>9</strong><span>Serverless Functions</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/messaging.html"><strong>10</strong><span>Message-Driven Microservices</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/commandLineApps.html"><strong>11</strong><span>Standalone Command Line Applications</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configurations.html"><strong>12</strong><span>Configurations</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/languageSupport.html"><strong>13</strong><span>Language Support</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/management.html"><strong>14</strong><span>Management &amp; Monitoring</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/security.html"><strong>15</strong><span>Security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/multitenancy.html"><strong>16</strong><span>Multi-Tenancy</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>17</strong><span>Micronaut CLI</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendix.html"><strong>18</strong><span>Appendices</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/httpServer.html">&lt;&lt; <strong>6</strong><span>The HTTP Server</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>7.3 HTTP Client Filters</h1>
+
+                    <p><strong>Version:</strong> 1.3.0.M2</p>
+                </div>
+
+                
+
+                
+<h2 id="clientFilter"><a class="anchor" href="#clientFilter"></a>7.3 HTTP Client Filters</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/master/src/main/docs/guide/httpClient/clientFilter.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Often, you need to include the same HTTP headers or URL parameters in a set of requests against a third-party API or when calling another Microservice.</p>
+</div>
+<div class="paragraph">
+<p>To simplify this, Micronaut includes the ability to define <a href="../api/io/micronaut/http/filter/HttpClientFilter.html">HttpClientFilter</a> classes that are applied to all matching HTTP clients.</p>
+</div>
+<div class="paragraph">
+<p>As an example say you want to build a client to communicate with the <a href="https://bintray.com/docs/api/">Bintray REST API</a>. It would be terribly tedious to have to specify authentication for every single HTTP call.</p>
+</div>
+<div class="paragraph">
+<p>To resolve this burden you can define a filter. The following is an example <code>BintrayService</code>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">class BintrayApi {
+    public static final String URL = 'https://api.bintray.com'
+}
+
+@Singleton
+class BintrayService {
+    final RxHttpClient client;
+    final String org;
+
+    BintrayService(
+            @Client(BintrayApi.URL) RxHttpClient client,           <b class="conum">(1)</b>
+            @Value("${bintray.organization}") String org ) {
+        this.client = client;
+        this.org = org;
+    }
+
+    Flowable&lt;HttpResponse&lt;String&gt;&gt; fetchRepositories() {
+        return client.exchange(HttpRequest.GET("/repos/" + org), String.class); <b class="conum">(2)</b>
+    }
+
+    Flowable&lt;HttpResponse&lt;String&gt;&gt; fetchPackages(String repo) {
+        return client.exchange(HttpRequest.GET("/repos/" + org + "/" + repo + "/packages"), String.class); <b class="conum">(2)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class BintrayApi {
+    public static final String URL = 'https://api.bintray.com'
+}
+
+@Singleton
+class BintrayService {
+    final RxHttpClient client
+    final String org
+
+    BintrayService(
+            @Client(BintrayApi.URL) RxHttpClient client,           <b class="conum">(1)</b>
+            @Value('${bintray.organization}') String org ) {
+        this.client = client
+        this.org = org
+    }
+
+    Flowable&lt;HttpResponse&lt;String&gt;&gt; fetchRepositories() {
+        return client.exchange(HttpRequest.GET("/repos/$org"), String) <b class="conum">(2)</b>
+    }
+
+    Flowable&lt;HttpResponse&lt;String&gt;&gt; fetchPackages(String repo) {
+        return client.exchange(HttpRequest.GET("/repos/${org}/${repo}/packages"), String) <b class="conum">(2)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">class BintrayApi {
+    public static final String URL = 'https://api.bintray.com'
+}
+
+@Singleton
+internal class BintrayService(
+        @param:Client(BintrayApi.URL) val client: RxHttpClient, <b class="conum">(1)</b>
+        @param:Value("\${bintray.organization}") val org: String) {
+
+    fun fetchRepositories(): Flowable&lt;HttpResponse&lt;String&gt;&gt; {
+        return client.exchange(HttpRequest.GET&lt;Any&gt;("/repos/$org"), String::class.java) <b class="conum">(2)</b>
+    }
+
+    fun fetchPackages(repo: String): Flowable&lt;HttpResponse&lt;String&gt;&gt; {
+        return client.exchange(HttpRequest.GET&lt;Any&gt;("/repos/$org/$repo/packages"), String::class.java) <b class="conum">(2)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>An <a href="../api/io/micronaut/http/client/RxHttpClient.html">RxHttpClient</a> is injected for the Bintray API</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The organization is configurable via configuration</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The Bintray API is secured. To authenticate you need to add an <code>Authorization</code> header for every request. You could modify <code>fetchRepositories</code> and <code>fetchPackages</code> methods to include the necessary HTTP Header for each request. Using a filter is much simpler though:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Filter("/repos/**") <b class="conum">(1)</b>
+class BintrayFilter implements HttpClientFilter {
+
+    final String username;
+    final String token;
+
+    BintrayFilter(
+            @Value("${bintray.username}") String username, <b class="conum">(2)</b>
+            @Value("${bintray.token}") String token ) { <b class="conum">(2)</b>
+        this.username = username;
+        this.token = token;
+    }
+
+    @Override
+    public Publisher&lt;? extends HttpResponse&lt;?&gt;&gt; doFilter(MutableHttpRequest&lt;?&gt; request, ClientFilterChain chain) {
+        return chain.proceed(
+                request.basicAuth(username, token) <b class="conum">(3)</b>
+        );
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Filter('/repos/**') <b class="conum">(1)</b>
+class BintrayFilter implements HttpClientFilter {
+
+
+    final String username
+    final String token
+
+    BintrayFilter(
+            @Value('${bintray.username}') String username, <b class="conum">(2)</b>
+            @Value('${bintray.token}') String token ) { <b class="conum">(2)</b>
+        this.username = username
+        this.token = token
+    }
+
+    @Override
+    Publisher&lt;? extends HttpResponse&lt;?&gt;&gt; doFilter(MutableHttpRequest&lt;?&gt; request, ClientFilterChain chain) {
+        return chain.proceed(
+                request.basicAuth(username, token) <b class="conum">(3)</b>
+        )
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">@Filter("/repos/**") <b class="conum">(1)</b>
+internal class BintrayFilter(
+        @param:Value("\${bintray.username}") val username: String, <b class="conum">(2)</b>
+        @param:Value("\${bintray.token}") val token: String)<b class="conum">(2)</b>
+    : HttpClientFilter {
+
+    override fun doFilter(request: MutableHttpRequest&lt;*&gt;, chain: ClientFilterChain): Publisher&lt;out HttpResponse&lt;*&gt;&gt; {
+        return chain.proceed(
+                request.basicAuth(username, token) <b class="conum">(3)</b>
+        )
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>You can match only a subset of paths with a Client filter.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>username</code> and <code>token</code> are injected via configuration</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>basicAuth</code> method is used include the HTTP BASIC credentials</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now, whenever you invoke the <code>bintrayService.fetchRepositories()</code> method, the <code>Authorization</code> HTTP header is included in the request.</p>
+</div>
+<div class="sect2">
+<h3 id="_filter_matching_by_annotation"><a class="anchor" href="#_filter_matching_by_annotation"></a>Filter Matching By Annotation</h3>
+<div class="paragraph">
+<p>For cases where a filter should be applied to a client, regardless of the URL, filters can be matched by the presence of an annotation applied to both the filter and the client. Given the following client:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.http.annotation.Get;
+import io.micronaut.http.client.annotation.Client;
+
+@BasicAuth <b class="conum">(1)</b>
+@Client("/message")
+public interface BasicAuthClient {
+
+    @Get
+    String getMessage();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.http.annotation.Get
+import io.micronaut.http.client.annotation.Client
+
+@BasicAuth <b class="conum">(1)</b>
+@Client("/message")
+interface BasicAuthClient {
+
+    @Get
+    String getMessage()
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.http.annotation.Get
+import io.micronaut.http.client.annotation.Client
+
+@BasicAuth <b class="conum">(1)</b>
+@Client("/message")
+interface BasicAuthClient {
+
+    @Get
+    fun getMessage(): String
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>@BasicAuth</code> annotation is applied to the client</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following filter will filter the client requests:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.http.HttpResponse;
+import io.micronaut.http.MutableHttpRequest;
+import io.micronaut.http.filter.ClientFilterChain;
+import io.micronaut.http.filter.HttpClientFilter;
+import org.reactivestreams.Publisher;
+
+import javax.inject.Singleton;
+
+@BasicAuth <b class="conum">(1)</b>
+@Singleton <b class="conum">(2)</b>
+public class BasicAuthClientFilter implements HttpClientFilter {
+
+    @Override
+    public Publisher&lt;? extends HttpResponse&lt;?&gt;&gt; doFilter(MutableHttpRequest&lt;?&gt; request, ClientFilterChain chain) {
+        return chain.proceed(request.basicAuth("user", "pass"));
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.http.HttpResponse
+import io.micronaut.http.MutableHttpRequest
+import io.micronaut.http.filter.ClientFilterChain
+import io.micronaut.http.filter.HttpClientFilter
+import org.reactivestreams.Publisher
+
+import javax.inject.Singleton
+
+@BasicAuth <b class="conum">(1)</b>
+@Singleton <b class="conum">(2)</b>
+class BasicAuthClientFilter implements HttpClientFilter {
+
+    @Override
+    Publisher&lt;? extends HttpResponse&lt;?&gt;&gt; doFilter(MutableHttpRequest&lt;?&gt; request, ClientFilterChain chain) {
+        chain.proceed(request.basicAuth("user", "pass"))
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.http.HttpResponse
+import io.micronaut.http.MutableHttpRequest
+import io.micronaut.http.filter.ClientFilterChain
+import io.micronaut.http.filter.HttpClientFilter
+import org.reactivestreams.Publisher
+
+import javax.inject.Singleton
+
+@BasicAuth <b class="conum">(1)</b>
+@Singleton <b class="conum">(2)</b>
+class BasicAuthClientFilter : HttpClientFilter {
+
+    override fun doFilter(request: MutableHttpRequest&lt;*&gt;, chain: ClientFilterChain): Publisher&lt;out HttpResponse&lt;*&gt;&gt; {
+        return chain.proceed(request.basicAuth("user", "pass"))
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The same annotation, <code>@BasicAuth</code>, is applied to the filter</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Normally the <code>@Filter</code> annotation makes filters singletons by default. Because the <code>@Filter</code> annotation is not used, the desired scope must be applied</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>@BasicAuth</code> annotation is just an example and can be replaced with your own custom annotation.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">import io.micronaut.http.annotation.FilterMatcher;
+
+import java.lang.annotation.*;
+
+@FilterMatcher <b class="conum">(1)</b>
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.PARAMETER})
+public @interface BasicAuth {
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import io.micronaut.http.annotation.FilterMatcher
+
+import java.lang.annotation.*
+
+@FilterMatcher <b class="conum">(1)</b>
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target([ElementType.TYPE, ElementType.PARAMETER])
+@interface BasicAuth {
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">import io.micronaut.http.annotation.FilterMatcher
+
+@FilterMatcher <b class="conum">(1)</b>
+@MustBeDocumented
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.VALUE_PARAMETER)
+annotation class BasicAuth</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The only requirement for custom annotations is that the <a href="../api/io/micronaut/http/annotation/HttpFilterStereotype.html">@HttpFilterStereotype</a> annotation must be present</td>
+</tr>
+</table>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/httpServer.html">&lt;&lt; <strong>6</strong><span>The HTTP Server</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/cloud.html"><strong>8</strong><span>Cloud Native Features</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="https://docs.micronaut.io/docsassets/js/docs.js"></script>
+
+</body>
+</html>
