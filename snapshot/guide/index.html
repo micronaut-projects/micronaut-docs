@@ -11973,16 +11973,23 @@ import java.util.Optional;
 
 @Prototype
 public class MapToLocalDateConverter implements TypeConverter&lt;Map, LocalDate&gt; { // <b class="conum">(1)</b>
+
+    private final ConversionService  conversionService;
+
+    public MapToLocalDateConverter(ConversionService conversionService) { // <b class="conum">(2)</b>
+        this.conversionService = conversionService;
+    }
+
     @Override
     public Optional&lt;LocalDate&gt; convert(Map propertyMap, Class&lt;LocalDate&gt; targetType, ConversionContext context) {
-        Optional&lt;Integer&gt; day = ConversionService.SHARED.convert(propertyMap.get("day"), Integer.class);
-        Optional&lt;Integer&gt; month = ConversionService.SHARED.convert(propertyMap.get("month"), Integer.class);
-        Optional&lt;Integer&gt; year = ConversionService.SHARED.convert(propertyMap.get("year"), Integer.class);
+        Optional&lt;Integer&gt; day = conversionService.convert(propertyMap.get("day"), Integer.class);
+        Optional&lt;Integer&gt; month = conversionService.convert(propertyMap.get("month"), Integer.class);
+        Optional&lt;Integer&gt; year = conversionService.convert(propertyMap.get("year"), Integer.class);
         if (day.isPresent() &amp;&amp; month.isPresent() &amp;&amp; year.isPresent()) {
             try {
-                return Optional.of(LocalDate.of(year.get(), month.get(), day.get())); // <b class="conum">(2)</b>
+                return Optional.of(LocalDate.of(year.get(), month.get(), day.get())); // <b class="conum">(3)</b>
             } catch (DateTimeException e) {
-                context.reject(propertyMap, e); // <b class="conum">(3)</b>
+                context.reject(propertyMap, e); // <b class="conum">(4)</b>
                 return Optional.empty();
             }
         }
@@ -12002,16 +12009,23 @@ import java.time.LocalDate
 
 @Prototype
 class MapToLocalDateConverter implements TypeConverter&lt;Map, LocalDate&gt; { // <b class="conum">(1)</b>
+
+    final ConversionService  conversionService
+
+    MapToLocalDateConverter(ConversionService conversionService) { // <b class="conum">(2)</b>
+        this.conversionService = conversionService;
+    }
+
     @Override
     Optional&lt;LocalDate&gt; convert(Map propertyMap, Class&lt;LocalDate&gt; targetType, ConversionContext context) {
-        Optional&lt;Integer&gt; day = ConversionService.SHARED.convert(propertyMap.day, Integer)
-        Optional&lt;Integer&gt; month = ConversionService.SHARED.convert(propertyMap.month, Integer)
-        Optional&lt;Integer&gt; year = ConversionService.SHARED.convert(propertyMap.year, Integer)
+        Optional&lt;Integer&gt; day = conversionService.convert(propertyMap.day, Integer)
+        Optional&lt;Integer&gt; month = conversionService.convert(propertyMap.month, Integer)
+        Optional&lt;Integer&gt; year = conversionService.convert(propertyMap.year, Integer)
         if (day.present &amp;&amp; month.present &amp;&amp; year.present) {
             try {
-                return Optional.of(LocalDate.of(year.get(), month.get(), day.get())) // <b class="conum">(2)</b>
+                return Optional.of(LocalDate.of(year.get(), month.get(), day.get())) // <b class="conum">(3)</b>
             } catch (DateTimeException e) {
-                context.reject(propertyMap, e) // <b class="conum">(3)</b>
+                context.reject(propertyMap, e) // <b class="conum">(4)</b>
                 return Optional.empty()
             }
         }
@@ -12029,19 +12043,22 @@ import io.micronaut.core.convert.TypeConverter
 import java.time.DateTimeException
 import java.time.LocalDate
 import java.util.Optional
-import jakarta.inject.Singleton
 
 @Prototype
-class MapToLocalDateConverter : TypeConverter&lt;Map&lt;*, *&gt;, LocalDate&gt; { // <b class="conum">(1)</b>
+class MapToLocalDateConverter(
+    private val conversionService: ConversionService // <b class="conum">(2)</b>
+)
+    : TypeConverter&lt;Map&lt;*, *&gt;, LocalDate&gt; { // <b class="conum">(1)</b>
+
     override fun convert(propertyMap: Map&lt;*, *&gt;, targetType: Class&lt;LocalDate&gt;, context: ConversionContext): Optional&lt;LocalDate&gt; {
-        val day = ConversionService.SHARED.convert(propertyMap["day"], Int::class.java)
-        val month = ConversionService.SHARED.convert(propertyMap["month"], Int::class.java)
-        val year = ConversionService.SHARED.convert(propertyMap["year"], Int::class.java)
+        val day = conversionService.convert(propertyMap["day"], Int::class.java)
+        val month = conversionService.convert(propertyMap["month"], Int::class.java)
+        val year = conversionService.convert(propertyMap["year"], Int::class.java)
         if (day.isPresent &amp;&amp; month.isPresent &amp;&amp; year.isPresent) {
             try {
-                return Optional.of(LocalDate.of(year.get(), month.get(), day.get())) // <b class="conum">(2)</b>
+                return Optional.of(LocalDate.of(year.get(), month.get(), day.get())) // <b class="conum">(3)</b>
             } catch (e: DateTimeException) {
-                context.reject(propertyMap, e) // <b class="conum">(3)</b>
+                context.reject(propertyMap, e) // <b class="conum">(4)</b>
                 return Optional.empty()
             }
         }
@@ -12059,10 +12076,14 @@ class MapToLocalDateConverter : TypeConverter&lt;Map&lt;*, *&gt;, LocalDate&gt; 
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The implementation delegates to the default shared conversion service to convert the values from the Map used to create a <code>LocalDate</code></td>
+<td>The constructor injects a bean of type <code>ConversionService</code>, introduced in Micronaut 4, instead of making static calls to <code>ConversionService.SHARED</code> used in previous versions</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The implementation delegates to the injected conversion service to convert the values from the Map used to create a <code>LocalDate</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
 <td>If an exception occurs during binding, call <code>reject(..)</code> which propagates additional information to the container</td>
 </tr>
 </table>
@@ -12074,7 +12095,7 @@ class MapToLocalDateConverter : TypeConverter&lt;Map&lt;*, *&gt;, LocalDate&gt; 
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-It&#8217;s possible to add a custom type converter into <code>ConversionService.SHARED</code> by registering it via the service loader.
+Register new type converters by declaring a bean of type <a href="../api/io/micronaut/core/convert/TypeConverter.html">TypeConverter</a>. <code>ConversionService.SHARED</code> is deprecated,  and it will be removed in a future version of the Micronaut Framework.
 </td>
 </tr>
 </table>
