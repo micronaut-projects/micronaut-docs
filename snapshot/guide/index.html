@@ -27287,10 +27287,9 @@ import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.http.netty.channel.ChannelPipelineCustomizer;
 import io.micronaut.http.server.netty.NettyServerCustomizer;
 import io.netty.channel.Channel;
+import jakarta.inject.Singleton;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.netty.LogbookServerHandler;
-
-import jakarta.inject.Singleton;
 
 @Requires(beans = Logbook.class)
 @Singleton
@@ -27326,7 +27325,7 @@ public class LogbookNettyServerCustomizer
         @Override
         public void onStreamPipelineBuilt() {
             channel.pipeline().addBefore( // <b class="conum">(5)</b>
-                ChannelPipelineCustomizer.HANDLER_HTTP_STREAM,
+                ChannelPipelineCustomizer.HANDLER_MICRONAUT_INBOUND,
                 "logbook",
                 new LogbookServerHandler(logbook)
             );
@@ -27424,7 +27423,7 @@ class LogbookNettyServerCustomizer(private val logbook: Logbook) :
 
         override fun onStreamPipelineBuilt() {
             channel!!.pipeline().addBefore( // <b class="conum">(5)</b>
-                ChannelPipelineCustomizer.HANDLER_HTTP_STREAM,
+                ChannelPipelineCustomizer.HANDLER_MICRONAUT_INBOUND,
                 "logbook",
                 LogbookServerHandler(logbook)
             )

@@ -111,14 +111,19 @@ extends <a href="HttpBody.html" title="interface in io.micronaut.http.server.net
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Fully buffer this body.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="ByteBody.html" title="interface in io.micronaut.http.server.netty.body">ByteBody</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#of(io.netty.handler.codec.http.HttpRequest)" class="member-name-link">of</a><wbr>(io.netty.handler.codec.http.HttpRequest&nbsp;request)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>io.netty.handler.codec.http.HttpRequest</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#claimForReuse(io.netty.handler.codec.http.HttpRequest)" class="member-name-link">claimForReuse</a><wbr>(io.netty.handler.codec.http.HttpRequest&nbsp;request)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Claim this body and convert it back to a <code>HttpRequest</code>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="ByteBody.html" title="interface in io.micronaut.http.server.netty.body">ByteBody</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#of(io.netty.handler.codec.http.HttpRequest)" class="member-name-link">of</a><wbr>(io.netty.handler.codec.http.HttpRequest&nbsp;request)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Create a byte body for the given request.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="MultiObjectBody.html" title="interface in io.micronaut.http.server.netty.body">MultiObjectBody</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#processMulti(io.micronaut.http.server.netty.HttpContentProcessor)" class="member-name-link">processMulti</a><wbr>(<a href="../HttpContentProcessor.html" title="interface in io.micronaut.http.server.netty">HttpContentProcessor</a>&nbsp;processor)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="MultiObjectBody.html" title="interface in io.micronaut.http.server.netty.body">MultiObjectBody</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#processMulti(io.micronaut.http.server.netty.HttpContentProcessor)" class="member-name-link">processMulti</a><wbr>(<a href="../HttpContentProcessor.html" title="interface in io.micronaut.http.server.netty">HttpContentProcessor</a>&nbsp;processor)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Process this body using the given processor.</div>
 </div>
 </div>
@@ -165,6 +170,21 @@ extends <a href="HttpBody.html" title="interface in io.micronaut.http.server.net
 <dd><code>alloc</code> - The allocator for storage</dd>
 <dt>Returns:</dt>
 <dd>A flow that completes when all data has been read</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="claimForReuse(io.netty.handler.codec.http.HttpRequest)">
+<h3>claimForReuse</h3>
+<div class="member-signature"><span class="return-type">io.netty.handler.codec.http.HttpRequest</span>&nbsp;<span class="element-name">claimForReuse</span><wbr><span class="parameters">(io.netty.handler.codec.http.HttpRequest&nbsp;request)</span></div>
+<div class="block">Claim this body and convert it back to a <code>HttpRequest</code>. This is used for proxying,
+ where the request received by the server is reused by the client.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>request</code> - The input request (headers and such)</dd>
+<dt>Returns:</dt>
+<dd>The request including the body, either a <code>FullHttpRequest</code> or a
+ <a href="../../../netty/stream/StreamedHttpRequest.html" title="interface in io.micronaut.http.netty.stream"><code>StreamedHttpRequest</code></a></dd>
 </dl>
 </section>
 </li>
