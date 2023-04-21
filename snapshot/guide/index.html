@@ -41456,7 +41456,7 @@ class Test {
 </table>
 </div>
 <div class="paragraph">
-<p>Inspired by Spring Boot and Grails, the Micronaut <code>management</code> dependency adds support for monitoring of your application via <strong>endpoints</strong>: special URIs that return details about the health and state of your application. The <code>management</code> endpoints are also integrated with Micronaut&#8217;s <code>security</code> dependency, allowing for sensitive data to be restricted to authenticated users in your security system (see <a href="https://micronaut-projects.github.io/micronaut-security/3.9.4/guide/#builtInEndpointsAccess">Built-in Endpoints Access</a> in the Security section).</p>
+<p>Inspired by Spring Boot and Grails, the Micronaut <code>management</code> dependency adds support for monitoring of your application via <strong>endpoints</strong>: special URIs that return details about the health and state of your application. The <code>management</code> endpoints are also integrated with Micronaut&#8217;s <code>security</code> dependency, allowing for sensitive data to be restricted to authenticated users in your security system (see <a href="https://micronaut-projects.github.io/micronaut-security/3.11.0/guide/#builtInEndpointsAccess">Built-in Endpoints Access</a> in the Security section).</p>
 </div>
 <div class="paragraph">
 <p>To use the <code>management</code> features described in this section, add this dependency to your build:</p>
@@ -47439,6 +47439,41 @@ There have been several core differences in Groovy parsing and behavior for vers
 <div class="paragraph">
 <p>New type converters can be added to <a href="../api/io/micronaut/core/convert/MutableConversionService.html">MutableConversionService</a> retrieved from the bean context or by declaring a bean of type <a href="../api/io/micronaut/core/convert/TypeConverter.html">TypeConverter</a>.
 To register a type converter into <code>ConversionService.SHARED</code>, the registration needs to be done via the service loader.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_exceptionhandler_with_pojo_response_type_no_longer_results_in_an_error_response"><code>ExceptionHandler</code> with POJO response type no longer results in an error response</h4>
+<div class="paragraph">
+<p>Previously if you had an ExceptionHandler such as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Singleton
+public class MyExceptionHandler implements ExceptionHandler&lt;MyException, String&gt; {
+
+    @Override
+    public String handle(HttpRequest request, MyException exception) {
+        return "caught!";
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This would result in an internal server error response with <code>caught!</code> as the body.
+This now returns an OK response.
+If you want to return a POJO response as an error, you should use the <code>HttpResponse</code> type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Singleton
+public class MyExceptionHandler implements ExceptionHandler&lt;MyException, HttpResponse&lt;String&gt;&gt; {
+
+    @Override
+    public HttpResponse&lt;String&gt; handle(HttpRequest request, MyException exception) {
+        return HttpResponse.badRequest("caught!");
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
