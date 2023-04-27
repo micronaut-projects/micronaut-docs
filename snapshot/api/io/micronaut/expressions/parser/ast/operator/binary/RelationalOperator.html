@@ -51,7 +51,7 @@ loadScripts(document, 'script');</script>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -73,9 +73,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance"><a href="../../ExpressionNode.html" title="class in io.micronaut.expressions.parser.ast">io.micronaut.expressions.parser.ast.ExpressionNode</a>
-<div class="inheritance"><a href="BinaryOperator.html" title="class in io.micronaut.expressions.parser.ast.operator.binary">io.micronaut.expressions.parser.ast.operator.binary.BinaryOperator</a>
 <div class="inheritance">io.micronaut.expressions.parser.ast.operator.binary.RelationalOperator</div>
-</div>
 </div>
 </div>
 <section class="class-description" id="class-description">
@@ -86,9 +84,14 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="annotations"><a href="../../../../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
 </span><span class="modifiers">public abstract sealed class </span><span class="element-name type-name-label">RelationalOperator</span>
-<span class="extends-implements">extends <a href="BinaryOperator.html" title="class in io.micronaut.expressions.parser.ast.operator.binary">BinaryOperator</a></span>
+<span class="extends-implements">extends <a href="../../ExpressionNode.html" title="class in io.micronaut.expressions.parser.ast">ExpressionNode</a></span>
 <span class="permits">permits <a href="GtOperator.html" title="class in io.micronaut.expressions.parser.ast.operator.binary">GtOperator</a>, <a href="GteOperator.html" title="class in io.micronaut.expressions.parser.ast.operator.binary">GteOperator</a>, <a href="LtOperator.html" title="class in io.micronaut.expressions.parser.ast.operator.binary">LtOperator</a>, <a href="LteOperator.html" title="class in io.micronaut.expressions.parser.ast.operator.binary">LteOperator</a></span></div>
-<div class="block">Abstract expression AST node for relational operators.</div>
+<div class="block">Abstract expression AST node for relational operations. Relational operations can
+ be applied to numeric types or types that are <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Comparable.html" title="class or interface in java.lang" class="external-link"><code>Comparable</code></a> to each other. It
+ is unclear at AST building stage what kind of relational operation will be performed, so
+ this node does not directly include bytecode generation logic. At type resolution stage it
+ instantiates either <a href="NumericComparisonOperation.html" title="class in io.micronaut.expressions.parser.ast.operator.binary"><code>NumericComparisonOperation</code></a> or <a href="ComparablesComparisonOperation.html" title="class in io.micronaut.expressions.parser.ast.operator.binary"><code>ComparablesComparisonOperation</code></a>
+ and delegates bytecode generation to respective node instance.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>4.0.0</dd>
@@ -102,9 +105,18 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="field-summary" id="field-summary">
 <h2>Field Summary</h2>
-<div class="inherited-list">
-<h3 id="fields-inherited-from-class-io.micronaut.expressions.parser.ast.operator.binary.BinaryOperator">Fields inherited from class&nbsp;io.micronaut.expressions.parser.ast.operator.binary.<a href="BinaryOperator.html" title="class in io.micronaut.expressions.parser.ast.operator.binary">BinaryOperator</a></h3>
-<code><a href="BinaryOperator.html#leftOperand">leftOperand</a>, <a href="BinaryOperator.html#rightOperand">rightOperand</a></code></div>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>protected final <a href="../../ExpressionNode.html" title="class in io.micronaut.expressions.parser.ast">ExpressionNode</a></code></div>
+<div class="col-second even-row-color"><code><a href="#leftOperand" class="member-name-link">leftOperand</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected final <a href="../../ExpressionNode.html" title="class in io.micronaut.expressions.parser.ast">ExpressionNode</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#rightOperand" class="member-name-link">rightOperand</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+</div>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-io.micronaut.expressions.parser.ast.ExpressionNode">Fields inherited from class&nbsp;io.micronaut.expressions.parser.ast.<a href="../../ExpressionNode.html" title="class in io.micronaut.expressions.parser.ast">ExpressionNode</a></h3>
 <code><a href="../../ExpressionNode.html#classElement">classElement</a>, <a href="../../ExpressionNode.html#nodeType">nodeType</a></code></div>
@@ -135,30 +147,28 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#generateBytecode(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)" class="member-name-link">generateBytecode</a><wbr>(<a href="../../../compilation/ExpressionVisitorContext.html" title="class in io.micronaut.expressions.parser.compilation">ExpressionVisitorContext</a>&nbsp;ctx)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected org.objectweb.asm.Type</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#doResolveType(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)" class="member-name-link">doResolveType</a><wbr>(<a href="../../../compilation/ExpressionVisitorContext.html" title="class in io.micronaut.expressions.parser.compilation">ExpressionVisitorContext</a>&nbsp;ctx)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Resolves expression AST node type.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#generateBytecode(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)" class="member-name-link">generateBytecode</a><wbr>(<a href="../../../compilation/ExpressionVisitorContext.html" title="class in io.micronaut.expressions.parser.compilation">ExpressionVisitorContext</a>&nbsp;ctx)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Generates bytecode for this AST node.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#intComparisonOpcode()" class="member-name-link">intComparisonOpcode</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#nonIntComparisonOpcode()" class="member-name-link">nonIntComparisonOpcode</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#intComparisonOpcode()" class="member-name-link">intComparisonOpcode</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected org.objectweb.asm.Type</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveOperationType(org.objectweb.asm.Type,org.objectweb.asm.Type)" class="member-name-link">resolveOperationType</a><wbr>(org.objectweb.asm.Type&nbsp;leftOperandType,
- org.objectweb.asm.Type&nbsp;rightOperandType)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#nonIntComparisonOpcode()" class="member-name-link">nonIntComparisonOpcode</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 </div>
 </div>
 </div>
-<div class="inherited-list">
-<h3 id="methods-inherited-from-class-io.micronaut.expressions.parser.ast.operator.binary.BinaryOperator">Methods inherited from class&nbsp;io.micronaut.expressions.parser.ast.operator.binary.<a href="BinaryOperator.html" title="class in io.micronaut.expressions.parser.ast.operator.binary">BinaryOperator</a></h3>
-<code><a href="BinaryOperator.html#doResolveClassElement(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)">doResolveClassElement</a>, <a href="BinaryOperator.html#doResolveType(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)">doResolveType</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.micronaut.expressions.parser.ast.ExpressionNode">Methods inherited from class&nbsp;io.micronaut.expressions.parser.ast.<a href="../../ExpressionNode.html" title="class in io.micronaut.expressions.parser.ast">ExpressionNode</a></h3>
-<code><a href="../../ExpressionNode.html#compile(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)">compile</a>, <a href="../../ExpressionNode.html#resolveClassElement(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)">resolveClassElement</a>, <a href="../../ExpressionNode.html#resolveType(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)">resolveType</a></code></div>
+<code><a href="../../ExpressionNode.html#compile(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)">compile</a>, <a href="../../ExpressionNode.html#doResolveClassElement(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)">doResolveClassElement</a>, <a href="../../ExpressionNode.html#resolveClassElement(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)">resolveClassElement</a>, <a href="../../ExpressionNode.html#resolveType(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)">resolveType</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
@@ -168,6 +178,26 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="leftOperand">
+<h3>leftOperand</h3>
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="../../ExpressionNode.html" title="class in io.micronaut.expressions.parser.ast">ExpressionNode</a></span>&nbsp;<span class="element-name">leftOperand</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="rightOperand">
+<h3>rightOperand</h3>
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="../../ExpressionNode.html" title="class in io.micronaut.expressions.parser.ast">ExpressionNode</a></span>&nbsp;<span class="element-name">rightOperand</span></div>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
@@ -189,13 +219,30 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="resolveOperationType(org.objectweb.asm.Type,org.objectweb.asm.Type)">
-<h3>resolveOperationType</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">org.objectweb.asm.Type</span>&nbsp;<span class="element-name">resolveOperationType</span><wbr><span class="parameters">(org.objectweb.asm.Type&nbsp;leftOperandType,
- org.objectweb.asm.Type&nbsp;rightOperandType)</span></div>
+<section class="detail" id="intComparisonOpcode()">
+<h3>intComparisonOpcode</h3>
+<div class="member-signature"><span class="modifiers">protected abstract</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></span>&nbsp;<span class="element-name">intComparisonOpcode</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="nonIntComparisonOpcode()">
+<h3>nonIntComparisonOpcode</h3>
+<div class="member-signature"><span class="modifiers">protected abstract</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></span>&nbsp;<span class="element-name">nonIntComparisonOpcode</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="doResolveType(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)">
+<h3>doResolveType</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">org.objectweb.asm.Type</span>&nbsp;<span class="element-name">doResolveType</span><wbr><span class="parameters">(<a href="../../../compilation/ExpressionVisitorContext.html" title="class in io.micronaut.expressions.parser.compilation">ExpressionVisitorContext</a>&nbsp;ctx)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="../../ExpressionNode.html#doResolveType(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)">ExpressionNode</a></code></span></div>
+<div class="block">Resolves expression AST node type.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="BinaryOperator.html#resolveOperationType(org.objectweb.asm.Type,org.objectweb.asm.Type)">resolveOperationType</a></code>&nbsp;in class&nbsp;<code><a href="BinaryOperator.html" title="class in io.micronaut.expressions.parser.ast.operator.binary">BinaryOperator</a></code></dd>
+<dd><code><a href="../../ExpressionNode.html#doResolveType(io.micronaut.expressions.parser.compilation.ExpressionVisitorContext)">doResolveType</a></code>&nbsp;in class&nbsp;<code><a href="../../ExpressionNode.html" title="class in io.micronaut.expressions.parser.ast">ExpressionNode</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>ctx</code> - expression compilation context</dd>
+<dt>Returns:</dt>
+<dd>resolved type</dd>
 </dl>
 </section>
 </li>
@@ -211,18 +258,6 @@ loadScripts(document, 'script');</script>
 <dt>Parameters:</dt>
 <dd><code>ctx</code> - expression compilation context</dd>
 </dl>
-</section>
-</li>
-<li>
-<section class="detail" id="intComparisonOpcode()">
-<h3>intComparisonOpcode</h3>
-<div class="member-signature"><span class="modifiers">protected abstract</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></span>&nbsp;<span class="element-name">intComparisonOpcode</span>()</div>
-</section>
-</li>
-<li>
-<section class="detail" id="nonIntComparisonOpcode()">
-<h3>nonIntComparisonOpcode</h3>
-<div class="member-signature"><span class="modifiers">protected abstract</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></span>&nbsp;<span class="element-name">nonIntComparisonOpcode</span>()</div>
 </section>
 </li>
 </ul>
