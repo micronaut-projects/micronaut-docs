@@ -122,9 +122,16 @@ extends <a href="HttpBody.html" title="interface in io.micronaut.http.server.net
 <div class="block">Create a byte body for the given request.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="MultiObjectBody.html" title="interface in io.micronaut.http.server.netty.body">MultiObjectBody</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#processMulti(io.micronaut.http.server.netty.HttpContentProcessor)" class="member-name-link">processMulti</a><wbr>(<a href="../HttpContentProcessor.html" title="interface in io.micronaut.http.server.netty">HttpContentProcessor</a>&nbsp;processor)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#processMulti(io.micronaut.http.server.netty.FormDataHttpContentProcessor)" class="member-name-link">processMulti</a><wbr>(<a href="../FormDataHttpContentProcessor.html" title="class in io.micronaut.http.server.netty">FormDataHttpContentProcessor</a>&nbsp;processor)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Process this body using the given processor.</div>
+<div class="block">Process this body using the given processor.<br>
+ Only used for form processing now.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="MultiObjectBody.html" title="interface in io.micronaut.http.server.netty.body">MultiObjectBody</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#rawContent(io.micronaut.http.server.HttpServerConfiguration)" class="member-name-link">rawContent</a><wbr>(<a href="../../HttpServerConfiguration.html" title="class in io.micronaut.http.server">HttpServerConfiguration</a>&nbsp;configuration)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Transform this body to a <a href="MultiObjectBody.html" title="interface in io.micronaut.http.server.netty.body"><code>MultiObjectBody</code></a> containing <code>ByteBuf</code>s
+ with the raw body.</div>
 </div>
 </div>
 </div>
@@ -144,11 +151,12 @@ extends <a href="HttpBody.html" title="interface in io.micronaut.http.server.net
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="processMulti(io.micronaut.http.server.netty.HttpContentProcessor)">
+<section class="detail" id="processMulti(io.micronaut.http.server.netty.FormDataHttpContentProcessor)">
 <h3>processMulti</h3>
-<div class="member-signature"><span class="return-type"><a href="MultiObjectBody.html" title="interface in io.micronaut.http.server.netty.body">MultiObjectBody</a></span>&nbsp;<span class="element-name">processMulti</span><wbr><span class="parameters">(<a href="../HttpContentProcessor.html" title="interface in io.micronaut.http.server.netty">HttpContentProcessor</a>&nbsp;processor)</span>
+<div class="member-signature"><span class="return-type"><a href="MultiObjectBody.html" title="interface in io.micronaut.http.server.netty.body">MultiObjectBody</a></span>&nbsp;<span class="element-name">processMulti</span><wbr><span class="parameters">(<a href="../FormDataHttpContentProcessor.html" title="class in io.micronaut.http.server.netty">FormDataHttpContentProcessor</a>&nbsp;processor)</span>
                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a></span></div>
-<div class="block">Process this body using the given processor.</div>
+<div class="block">Process this body using the given processor.<br>
+ Only used for form processing now.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>processor</code> - The processor to apply</dd>
@@ -156,7 +164,27 @@ extends <a href="HttpBody.html" title="interface in io.micronaut.http.server.net
 <dd>The new processed body</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a></code> - Any exception thrown by the processor. Not all processing failures may
- throw immediately, however</dd>
+                   throw immediately, however</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="rawContent(io.micronaut.http.server.HttpServerConfiguration)">
+<h3>rawContent</h3>
+<div class="member-signature"><span class="return-type"><a href="MultiObjectBody.html" title="interface in io.micronaut.http.server.netty.body">MultiObjectBody</a></span>&nbsp;<span class="element-name">rawContent</span><wbr><span class="parameters">(<a href="../../HttpServerConfiguration.html" title="class in io.micronaut.http.server">HttpServerConfiguration</a>&nbsp;configuration)</span>
+                    throws <span class="exceptions"><a href="../../../exceptions/ContentLengthExceededException.html" title="class in io.micronaut.http.exceptions">ContentLengthExceededException</a></span></div>
+<div class="block">Transform this body to a <a href="MultiObjectBody.html" title="interface in io.micronaut.http.server.netty.body"><code>MultiObjectBody</code></a> containing <code>ByteBuf</code>s
+ with the raw body. There is a check against
+ <a href="../../HttpServerConfiguration.html#getMaxRequestSize()"><code>HttpServerConfiguration.getMaxRequestSize()</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>configuration</code> - The configuration for request size limits</dd>
+<dt>Returns:</dt>
+<dd>The body containing <code>ByteBuf</code>s</dd>
+<dt>Throws:</dt>
+<dd><code><a href="../../../exceptions/ContentLengthExceededException.html" title="class in io.micronaut.http.exceptions">ContentLengthExceededException</a></code> - If the content length exceeds the configured request
+                                        size. May also appear delayed for
+                                        <a href="StreamingMultiObjectBody.html" title="class in io.micronaut.http.server.netty.body"><code>StreamingMultiObjectBody</code></a></dd>
 </dl>
 </section>
 </li>
