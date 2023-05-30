@@ -85,13 +85,13 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="../../../core/attr/AttributeHolder.html" title="interface in io.micronaut.core.attr">AttributeHolder</a></code>, <code><a href="../../../core/attr/MutableAttributeHolder.html" title="interface in io.micronaut.core.attr">MutableAttributeHolder</a></code>, <code><a href="../../HttpMessage.html" title="interface in io.micronaut.http">HttpMessage</a>&lt;T&gt;</code>, <code><a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;T&gt;</code>, <code><a href="../../netty/NettyHttpRequestBuilder.html" title="interface in io.micronaut.http.netty">NettyHttpRequestBuilder</a></code>, <code><a href="../../PushCapableHttpRequest.html" title="interface in io.micronaut.http">PushCapableHttpRequest</a>&lt;T&gt;</code>, <code>io.netty.util.AttributeMap</code></dd>
+<dd><code><a href="../../../core/attr/AttributeHolder.html" title="interface in io.micronaut.core.attr">AttributeHolder</a></code>, <code><a href="../../../core/attr/MutableAttributeHolder.html" title="interface in io.micronaut.core.attr">MutableAttributeHolder</a></code>, <code><a href="../../FullHttpRequest.html" title="interface in io.micronaut.http">FullHttpRequest</a>&lt;T&gt;</code>, <code><a href="../../HttpMessage.html" title="interface in io.micronaut.http">HttpMessage</a>&lt;T&gt;</code>, <code><a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;T&gt;</code>, <code><a href="../../netty/NettyHttpRequestBuilder.html" title="interface in io.micronaut.http.netty">NettyHttpRequestBuilder</a></code>, <code><a href="../../PushCapableHttpRequest.html" title="interface in io.micronaut.http">PushCapableHttpRequest</a>&lt;T&gt;</code>, <code>io.netty.util.AttributeMap</code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="annotations"><a href="../../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">NettyHttpRequest&lt;T&gt;</span>
 <span class="extends-implements">extends <a href="../../netty/AbstractNettyHttpRequest.html" title="class in io.micronaut.http.netty">AbstractNettyHttpRequest</a>&lt;T&gt;
-implements <a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;T&gt;, <a href="../../PushCapableHttpRequest.html" title="interface in io.micronaut.http">PushCapableHttpRequest</a>&lt;T&gt;</span></div>
+implements <a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;T&gt;, <a href="../../PushCapableHttpRequest.html" title="interface in io.micronaut.http">PushCapableHttpRequest</a>&lt;T&gt;, <a href="../../FullHttpRequest.html" title="interface in io.micronaut.http">FullHttpRequest</a>&lt;T&gt;</span></div>
 <div class="block">Delegates to the Netty <code>HttpRequest</code> instance.</div>
 <dl class="notes">
 <dt>Since:</dt>
@@ -144,91 +144,107 @@ implements <a href="../../HttpRequest.html" title="interface in io.micronaut.htt
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addRouteWaitsFor(io.micronaut.core.execution.ExecutionFlow)" class="member-name-link">addRouteWaitsFor</a><wbr>(<a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;?&gt;&nbsp;executionFlow)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="NettyHttpRequest.html" title="class in io.micronaut.http.server.netty">NettyHttpRequest</a>&lt;?&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSafe(io.netty.handler.codec.http.HttpRequest,io.netty.channel.ChannelHandlerContext,io.micronaut.core.convert.ConversionService,io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration)" class="member-name-link">createSafe</a><wbr>(io.netty.handler.codec.http.HttpRequest&nbsp;request,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="../../../core/io/buffer/ByteBuffer.html" title="interface in io.micronaut.core.io.buffer">ByteBuffer</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#bufferContents()" class="member-name-link">bufferContents</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the contents of this request as a buffer.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="body/ByteBody.html" title="interface in io.micronaut.http.server.netty.body">ByteBody</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#byteBody()" class="member-name-link">byteBody</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the <i>last</i> byte body of this request, be it claimed or unclaimed.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/io/buffer/ByteBuffer.html" title="interface in io.micronaut.core.io.buffer">ByteBuffer</a>&lt;?&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#contents()" class="member-name-link">contents</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="NettyHttpRequest.html" title="class in io.micronaut.http.server.netty">NettyHttpRequest</a>&lt;?&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSafe(io.netty.handler.codec.http.HttpRequest,io.netty.channel.ChannelHandlerContext,io.micronaut.core.convert.ConversionService,io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration)" class="member-name-link">createSafe</a><wbr>(io.netty.handler.codec.http.HttpRequest&nbsp;request,
  io.netty.channel.ChannelHandlerContext&nbsp;ctx,
  <a href="../../../core/convert/ConversionService.html" title="interface in io.micronaut.core.convert">ConversionService</a>&nbsp;conversionService,
  <a href="configuration/NettyHttpServerConfiguration.html" title="class in io.micronaut.http.server.netty.configuration">NettyHttpServerConfiguration</a>&nbsp;serverConfiguration)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="FormRouteCompleter.html" title="class in io.micronaut.http.server.netty">FormRouteCompleter</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#formRouteCompleter()" class="member-name-link">formRouteCompleter</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAttribute(java.lang.CharSequence)" class="member-name-link">getAttribute</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/CharSequence.html" title="class or interface in java.lang" class="external-link">CharSequence</a>&nbsp;name)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="FormRouteCompleter.html" title="class in io.micronaut.http.server.netty">FormRouteCompleter</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#formRouteCompleter()" class="member-name-link">formRouteCompleter</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAttribute(java.lang.CharSequence)" class="member-name-link">getAttribute</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/CharSequence.html" title="class or interface in java.lang" class="external-link">CharSequence</a>&nbsp;name)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Obtain the value of an attribute on the HTTP method.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/convert/value/MutableConvertibleValues.html" title="interface in io.micronaut.core.convert.value">MutableConvertibleValues</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAttributes()" class="member-name-link">getAttributes</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/convert/value/MutableConvertibleValues.html" title="interface in io.micronaut.core.convert.value">MutableConvertibleValues</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAttributes()" class="member-name-link">getAttributes</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">A <a href="../../../core/convert/value/MutableConvertibleValues.html" title="interface in io.micronaut.core.convert.value"><code>MutableConvertibleValues</code></a> of the attributes for this HTTP message.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="NettyHttpRequest.html" title="type parameter in NettyHttpRequest">T</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBody()" class="member-name-link">getBody</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T1&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T1&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBody(io.micronaut.core.convert.ArgumentConversionContext)" class="member-name-link">getBody</a><wbr>(<a href="../../../core/convert/ArgumentConversionContext.html" title="interface in io.micronaut.core.convert">ArgumentConversionContext</a>&lt;T1&gt;&nbsp;conversionContext)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="NettyHttpRequest.html" title="type parameter in NettyHttpRequest">T</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBody()" class="member-name-link">getBody</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T1&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T1&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBody(io.micronaut.core.convert.ArgumentConversionContext)" class="member-name-link">getBody</a><wbr>(<a href="../../../core/convert/ArgumentConversionContext.html" title="interface in io.micronaut.core.convert">ArgumentConversionContext</a>&lt;T1&gt;&nbsp;conversionContext)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Return the body, will use the provided conversion context if needed.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T1&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T1&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBody(java.lang.Class)" class="member-name-link">getBody</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T1&gt;&nbsp;type)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T1&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T1&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBody(java.lang.Class)" class="member-name-link">getBody</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T1&gt;&nbsp;type)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Return the body as the given type.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/security/cert/Certificate.html" title="class or interface in java.security.cert" class="external-link">Certificate</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCertificate()" class="member-name-link">getCertificate</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/security/cert/Certificate.html" title="class or interface in java.security.cert" class="external-link">Certificate</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCertificate()" class="member-name-link">getCertificate</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Retrieves the Certificate used for mutual authentication.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.netty.channel.ChannelHandlerContext</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getChannelHandlerContext()" class="member-name-link">getChannelHandlerContext</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getContentLength()" class="member-name-link">getContentLength</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.netty.channel.ChannelHandlerContext</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getChannelHandlerContext()" class="member-name-link">getChannelHandlerContext</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../MediaType.html" title="class in io.micronaut.http">MediaType</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getContentType()" class="member-name-link">getContentType</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getContentLength()" class="member-name-link">getContentLength</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../MediaType.html" title="class in io.micronaut.http">MediaType</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getContentType()" class="member-name-link">getContentType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The request or response content type.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../cookie/Cookies.html" title="interface in io.micronaut.http.cookie">Cookies</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCookies()" class="member-name-link">getCookies</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../HttpHeaders.html" title="interface in io.micronaut.http">HttpHeaders</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHeaders()" class="member-name-link">getHeaders</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../cookie/Cookies.html" title="interface in io.micronaut.http.cookie">Cookies</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCookies()" class="member-name-link">getCookies</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../HttpVersion.html" title="enum class in io.micronaut.http">HttpVersion</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHttpVersion()" class="member-name-link">getHttpVersion</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../HttpHeaders.html" title="interface in io.micronaut.http">HttpHeaders</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHeaders()" class="member-name-link">getHeaders</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.netty.handler.codec.http.HttpRequest</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNativeRequest()" class="member-name-link">getNativeRequest</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../HttpVersion.html" title="enum class in io.micronaut.http">HttpVersion</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHttpVersion()" class="member-name-link">getHttpVersion</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOrigin()" class="member-name-link">getOrigin</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.netty.handler.codec.http.HttpRequest</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNativeRequest()" class="member-name-link">getNativeRequest</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOrigin()" class="member-name-link">getOrigin</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the origin header.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/InetSocketAddress.html" title="class or interface in java.net" class="external-link">InetSocketAddress</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRemoteAddress()" class="member-name-link">getRemoteAddress</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;?&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRouteWaitsFor()" class="member-name-link">getRouteWaitsFor</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/InetSocketAddress.html" title="class or interface in java.net" class="external-link">InetSocketAddress</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRemoteAddress()" class="member-name-link">getRemoteAddress</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/InetSocketAddress.html" title="class or interface in java.net" class="external-link">InetSocketAddress</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getServerAddress()" class="member-name-link">getServerAddress</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;?&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRouteWaitsFor()" class="member-name-link">getRouteWaitsFor</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getServerName()" class="member-name-link">getServerName</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/InetSocketAddress.html" title="class or interface in java.net" class="external-link">InetSocketAddress</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getServerAddress()" class="member-name-link">getServerAddress</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasFormRouteCompleter()" class="member-name-link">hasFormRouteCompleter</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getServerName()" class="member-name-link">getServerName</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/charset/Charset.html" title="class or interface in java.nio.charset" class="external-link">Charset</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initCharset(java.nio.charset.Charset)" class="member-name-link">initCharset</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/charset/Charset.html" title="class or interface in java.nio.charset" class="external-link">Charset</a>&nbsp;characterEncoding)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasFormRouteCompleter()" class="member-name-link">hasFormRouteCompleter</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isFormOrMultipartData()" class="member-name-link">isFormOrMultipartData</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/charset/Charset.html" title="class or interface in java.nio.charset" class="external-link">Charset</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initCharset(java.nio.charset.Charset)" class="member-name-link">initCharset</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/charset/Charset.html" title="class or interface in java.nio.charset" class="external-link">Charset</a>&nbsp;characterEncoding)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isFormOrMultipartData()" class="member-name-link">isFormOrMultipartData</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isFull()" class="member-name-link">isFull</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSecure()" class="member-name-link">isSecure</a>()</code></div>
@@ -240,7 +256,9 @@ implements <a href="../../HttpRequest.html" title="interface in io.micronaut.htt
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="body/HttpBody.html" title="interface in io.micronaut.http.server.netty.body">HttpBody</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lastBody()" class="member-name-link">lastBody</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the <i>last</i> body of this request, of any type.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../MutableHttpRequest.html" title="interface in io.micronaut.http">MutableHttpRequest</a>&lt;<a href="NettyHttpRequest.html" title="type parameter in NettyHttpRequest">T</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mutate()" class="member-name-link">mutate</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -256,7 +274,9 @@ implements <a href="../../HttpRequest.html" title="interface in io.micronaut.htt
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="body/ByteBody.html" title="interface in io.micronaut.http.server.netty.body">ByteBody</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#rootBody()" class="member-name-link">rootBody</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the initial body of this request.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../PushCapableHttpRequest.html" title="interface in io.micronaut.http">PushCapableHttpRequest</a>&lt;<a href="NettyHttpRequest.html" title="type parameter in NettyHttpRequest">T</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#serverPush(io.micronaut.http.HttpRequest)" class="member-name-link">serverPush</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -362,12 +382,43 @@ implements <a href="../../HttpRequest.html" title="interface in io.micronaut.htt
 <section class="detail" id="rootBody()">
 <h3>rootBody</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="body/ByteBody.html" title="interface in io.micronaut.http.server.netty.body">ByteBody</a></span>&nbsp;<span class="element-name">rootBody</span>()</div>
+<div class="block">Get the initial body of this request. This is always a <a href="body/ByteBody.html" title="interface in io.micronaut.http.server.netty.body"><code>ByteBody</code></a>. In most cases you
+ should use <a href="#byteBody()"><code>byteBody()</code></a> instead.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The root body</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="byteBody()">
+<h3>byteBody</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="body/ByteBody.html" title="interface in io.micronaut.http.server.netty.body">ByteBody</a></span>&nbsp;<span class="element-name">byteBody</span>()</div>
+<div class="block">Get the <i>last</i> byte body of this request, be it claimed or unclaimed. Basically, there
+ are two options: For buffered requests (rootBody is immediate), this is just the root body.
+ For streaming requests (rootBody is streaming), this can be that root body, or if someone
+ called <a href="body/ByteBody.html#buffer(io.netty.buffer.ByteBufAllocator)"><code>ByteBody.buffer(io.netty.buffer.ByteBufAllocator)</code></a> (and the buffering has completed), it can be the buffered
+ immediate body.<br>
+ The returned byte body may have been claimed already.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The byte body of this request</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="lastBody()">
 <h3>lastBody</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="body/HttpBody.html" title="interface in io.micronaut.http.server.netty.body">HttpBody</a></span>&nbsp;<span class="element-name">lastBody</span>()</div>
+<div class="block">Get the <i>last</i> body of this request, of any type. This is a weird method to use, avoid
+ it. It's sometimes necessary to "piggy-back" off other code that parses the body. For
+ example in <a href="#getBody()"><code>getBody()</code></a>, we want to return whatever we can, even if the body has
+ already been claimed for a <code>@Body</code> parameter or form parsing or something. So we take
+ the last step in the parse chain and do our best with it.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The last body of this request</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -829,6 +880,45 @@ implements <a href="../../HttpRequest.html" title="interface in io.micronaut.htt
 <dd><code><a href="../../HttpMessage.html#getContentLength()">getContentLength</a></code>&nbsp;in interface&nbsp;<code><a href="../../HttpMessage.html" title="interface in io.micronaut.http">HttpMessage</a>&lt;<a href="NettyHttpRequest.html" title="type parameter in NettyHttpRequest">T</a>&gt;</code></dd>
 <dt>Returns:</dt>
 <dd>The value of the Content-Length header or -1L if none specified</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isFull()">
+<h3>isFull</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isFull</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../FullHttpRequest.html#isFull()">isFull</a></code>&nbsp;in interface&nbsp;<code><a href="../../FullHttpRequest.html" title="interface in io.micronaut.http">FullHttpRequest</a>&lt;<a href="NettyHttpRequest.html" title="type parameter in NettyHttpRequest">T</a>&gt;</code></dd>
+<dt>Returns:</dt>
+<dd>Is the request full.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="contents()">
+<h3>contents</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../core/io/buffer/ByteBuffer.html" title="interface in io.micronaut.core.io.buffer">ByteBuffer</a>&lt;?&gt;</span>&nbsp;<span class="element-name">contents</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../FullHttpRequest.html#contents()">contents</a></code>&nbsp;in interface&nbsp;<code><a href="../../FullHttpRequest.html" title="interface in io.micronaut.http">FullHttpRequest</a>&lt;<a href="NettyHttpRequest.html" title="type parameter in NettyHttpRequest">T</a>&gt;</code></dd>
+<dt>Returns:</dt>
+<dd>The body contents or null if there are none or they are not obtainable.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="bufferContents()">
+<h3>bufferContents</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="../../../core/io/buffer/ByteBuffer.html" title="interface in io.micronaut.core.io.buffer">ByteBuffer</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">bufferContents</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../FullHttpRequest.html#bufferContents()">FullHttpRequest</a></code></span></div>
+<div class="block">Get the contents of this request as a buffer. If this is a streaming request, the returned
+ flow may be delayed.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../FullHttpRequest.html#bufferContents()">bufferContents</a></code>&nbsp;in interface&nbsp;<code><a href="../../FullHttpRequest.html" title="interface in io.micronaut.http">FullHttpRequest</a>&lt;<a href="NettyHttpRequest.html" title="type parameter in NettyHttpRequest">T</a>&gt;</code></dd>
+<dt>Returns:</dt>
+<dd>The request content</dd>
 </dl>
 </section>
 </li>
