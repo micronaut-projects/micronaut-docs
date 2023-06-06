@@ -47240,9 +47240,19 @@ error handler, Micronaut HTTP is now stricter about allowed types. In doubt, for
 <div class="sect3">
 <h4 id="_textplain_messages_are_more_restrictive_about_allowed_types"><code>text/plain</code> messages are more restrictive about allowed types</h4>
 <div class="paragraph">
-<p>For <code>text/plain</code> request and response body writing, in 3.x, any type would be allowed and would be "serialized" using
-<code>toString()</code>. This is not permitted anymore. The body must be a <code>CharSequence</code> or one of a few standard library types
-(e.g. number types).</p>
+<p>For <code>text/plain</code> request and response body reading and writing, in 3.x, any type was allowed. For writing, the object
+would be converted using <code>toString</code>, and for reading, the object would be converted using <code>ConversionService</code>. For
+example, if you have a controller that returns an <code>Instant</code> as <code>text/plain</code>, it would write it using <code>toString</code> like
+<code>2023-05-25T13:25:02.925Z</code>. In the other direction, if you have a controller with a <code>@Body Instant instant</code>
+parameter, the same text would be converted to <code>Instant</code> using <code>ConversionService</code>.</p>
+</div>
+<div class="paragraph">
+<p>This is not permitted anymore for 4.x, except for some restricted types. The recommended fix is to move to
+<code>application/json</code> as the content type. <code>toString</code> is not a stable serialization format, JSON is more reliable.</p>
+</div>
+<div class="paragraph">
+<p>Alternatively, you can set the <code>micronaut.http.legacy-text-conversion</code> configuration option to <code>true</code> to restore the
+old behavior.</p>
 </div>
 </div>
 </div>
