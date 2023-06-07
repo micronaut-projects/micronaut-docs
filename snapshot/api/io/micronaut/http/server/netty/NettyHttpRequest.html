@@ -156,7 +156,9 @@ implements <a href="../../HttpRequest.html" title="interface in io.micronaut.htt
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/io/buffer/ByteBuffer.html" title="interface in io.micronaut.core.io.buffer">ByteBuffer</a>&lt;?&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#contents()" class="member-name-link">contents</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the raw body of this request.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="NettyHttpRequest.html" title="class in io.micronaut.http.server.netty">NettyHttpRequest</a>&lt;?&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSafe(io.netty.handler.codec.http.HttpRequest,io.netty.channel.ChannelHandlerContext,io.micronaut.core.convert.ConversionService,io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration)" class="member-name-link">createSafe</a><wbr>(io.netty.handler.codec.http.HttpRequest&nbsp;request,
  io.netty.channel.ChannelHandlerContext&nbsp;ctx,
@@ -245,7 +247,9 @@ implements <a href="../../HttpRequest.html" title="interface in io.micronaut.htt
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isFull()" class="member-name-link">isFull</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Shortcut for <code>contents() != null</code>.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSecure()" class="member-name-link">isSecure</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -887,6 +891,8 @@ implements <a href="../../HttpRequest.html" title="interface in io.micronaut.htt
 <section class="detail" id="isFull()">
 <h3>isFull</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isFull</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../FullHttpRequest.html#isFull()">FullHttpRequest</a></code></span></div>
+<div class="block">Shortcut for <code>contents() != null</code>.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../FullHttpRequest.html#isFull()">isFull</a></code>&nbsp;in interface&nbsp;<code><a href="../../FullHttpRequest.html" title="interface in io.micronaut.http">FullHttpRequest</a>&lt;<a href="NettyHttpRequest.html" title="type parameter in NettyHttpRequest">T</a>&gt;</code></dd>
@@ -899,6 +905,9 @@ implements <a href="../../HttpRequest.html" title="interface in io.micronaut.htt
 <section class="detail" id="contents()">
 <h3>contents</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../core/io/buffer/ByteBuffer.html" title="interface in io.micronaut.core.io.buffer">ByteBuffer</a>&lt;?&gt;</span>&nbsp;<span class="element-name">contents</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../FullHttpRequest.html#contents()">FullHttpRequest</a></code></span></div>
+<div class="block">Get the raw body of this request. May be called multiple times. Buffer ownership is not
+ transferred to the caller.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../FullHttpRequest.html#contents()">contents</a></code>&nbsp;in interface&nbsp;<code><a href="../../FullHttpRequest.html" title="interface in io.micronaut.http">FullHttpRequest</a>&lt;<a href="NettyHttpRequest.html" title="type parameter in NettyHttpRequest">T</a>&gt;</code></dd>
@@ -913,12 +922,14 @@ implements <a href="../../HttpRequest.html" title="interface in io.micronaut.htt
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="../../../core/io/buffer/ByteBuffer.html" title="interface in io.micronaut.core.io.buffer">ByteBuffer</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">bufferContents</span>()</div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../FullHttpRequest.html#bufferContents()">FullHttpRequest</a></code></span></div>
 <div class="block">Get the contents of this request as a buffer. If this is a streaming request, the returned
- flow may be delayed.</div>
+ flow may be delayed. If buffering is not supported for this request, this may return
+ <code>null</code>. Once the returned flow completes, <a href="../../FullHttpRequest.html#contents()"><code>FullHttpRequest.contents()</code></a> must return the same
+ value.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../FullHttpRequest.html#bufferContents()">bufferContents</a></code>&nbsp;in interface&nbsp;<code><a href="../../FullHttpRequest.html" title="interface in io.micronaut.http">FullHttpRequest</a>&lt;<a href="NettyHttpRequest.html" title="type parameter in NettyHttpRequest">T</a>&gt;</code></dd>
 <dt>Returns:</dt>
-<dd>The request content</dd>
+<dd>The request content, or <code>null</code> if buffering is not supported</dd>
 </dl>
 </section>
 </li>
