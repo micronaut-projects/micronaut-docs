@@ -11,7 +11,7 @@
 <link rel="stylesheet" type="text/css" href="../../../../script-dir/jquery-ui.min.css" title="Style">
 <link rel="stylesheet" type="text/css" href="../../../../jquery-ui.overrides.css" title="Style">
 <script type="text/javascript" src="../../../../script.js"></script>
-<script type="text/javascript" src="../../../../script-dir/jquery-3.6.1.min.js"></script>
+<script type="text/javascript" src="../../../../script-dir/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" src="../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
@@ -85,13 +85,18 @@ loadScripts(document, 'script');</script>
      returned by the continuation will be the response produced by the downstream, and can be
      modified and returned. Note that if you call a non-reactive continuation, the call will
      block, which may block the netty event loop. For that reason, always mark such a filter with
-     <a href="../../scheduling/annotation/ExecuteOn.html" title="annotation interface in io.micronaut.scheduling.annotation"><code>ExecuteOn</code></a>.</li>
+     <a href="../../scheduling/annotation/ExecuteOn.html" title="annotation interface in io.micronaut.scheduling.annotation"><code>ExecuteOn</code></a></li>
+     <li>A <code>@</code><a href="Header.html" title="annotation interface in io.micronaut.http.annotation"><code>Header</code></a>, <code>@</code><a href="QueryValue.html" title="annotation interface in io.micronaut.http.annotation"><code>QueryValue</code></a> or <code>@</code><a href="CookieValue.html" title="annotation interface in io.micronaut.http.annotation"><code>CookieValue</code></a>
+     parameter</li>
+     <li>A <code>@</code><a href="Body.html" title="annotation interface in io.micronaut.http.annotation"><code>Body</code></a> parameter of type <code>byte[]</code>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> or
+     <a href="../../core/io/buffer/ByteBuffer.html" title="interface in io.micronaut.core.io.buffer"><code>ByteBuffer</code></a>. Only supported for some HTTP server implementations.</li>
  </ul>
 
  The return value may be:
 
  <ul>
-     <li><code>void</code> to immediately continue execution</li>
+     <li><code>void</code> or <code>null</code> to immediately continue execution, without changing the
+     request or response</li>
      <li>An updated <a href="../HttpRequest.html" title="interface in io.micronaut.http"><code>HttpRequest</code></a></li>
      <li>A <a href="../HttpResponse.html" title="interface in io.micronaut.http"><code>HttpResponse</code></a> to skip execution of the request</li>
      <li>A <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link"><code>Publisher</code></a> (or other reactive type) that produces any of these return types, to

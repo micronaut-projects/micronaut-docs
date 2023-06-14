@@ -311,6 +311,8 @@
         
         <div class="toc-item" style="margin-left:30px" id="toc-item-continuations"><a href="#continuations"><strong>6.23.2.3</strong><span>Continuations</span></a></div>
         
+        <div class="toc-item" style="margin-left:30px" id="toc-item-order"><a href="#order"><strong>6.23.2.4</strong><span>Filter Order</span></a></div>
+        
         <div class="toc-item" style="margin-left:20px" id="toc-item-httpServerFilter"><a href="#httpServerFilter"><strong>6.23.3</strong><span>HttpServerFilter</span></a></div>
         
         <div class="toc-item" style="margin-left:30px" id="toc-item-httpServerFilterExample"><a href="#httpServerFilterExample"><strong>6.23.3.1</strong><span>HttpServerFilter Example</span></a></div>
@@ -23695,7 +23697,37 @@ Using <code>FilterPatternStyle.ANT</code> is preferred as the pattern matching i
 <p>A filter method must be declared in a bean annotated with <a href="../api/io/micronaut/http/annotation/ServerFilter.html">ServerFilter</a>, or <a href="../api/io/micronaut/http/annotation/ClientFilter.html">ClientFilter</a> if it should instead intercept requests made by the HTTP client. Each filter method must also be annotated with <a href="../api/io/micronaut/http/annotation/RequestFilter.html">RequestFilter</a>, to run before the request is processed, or <a href="../api/io/micronaut/http/annotation/ResponseFilter.html">ResponseFilter</a>, to run after the request has completed to process the response.</p>
 </div>
 <div class="paragraph">
-<p>A filter method can take various parameters, such as the <a href="../api/io/micronaut/http/HttpRequest.html">HttpRequest</a> and the <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> (only for response filters). The return type can be <code>void</code> or an updated <a href="../api/io/micronaut/http/HttpRequest.html">HttpRequest</a> (only for request filters) or <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a>. The different supported parameter and return types are described in the documentation of <a href="../api/io/micronaut/http/annotation/RequestFilter.html">RequestFilter</a> and <a href="../api/io/micronaut/http/annotation/ResponseFilter.html">ResponseFilter</a>.</p>
+<p>A filter method can take various parameters, such as the <a href="../api/io/micronaut/http/HttpRequest.html">HttpRequest</a> and the <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> (only for response filters). The return type can be <code>void</code> or <code>null</code> to continue execution as normal, or an updated <a href="../api/io/micronaut/http/HttpRequest.html">HttpRequest</a> (only for request filters) or <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a>. The different supported parameter and return types are described in the documentation of <a href="../api/io/micronaut/http/annotation/RequestFilter.html">RequestFilter</a> and <a href="../api/io/micronaut/http/annotation/ResponseFilter.html">ResponseFilter</a>.</p>
+</div>
+<div class="paragraph">
+<p>Request filters can bind the full request body using the <a href="../api/io/micronaut/http/annotation/Body.html">Body</a> annotation. This is useful e.g. to
+verify a signed request body.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Accessing the full body should be done with care. It forces the body to be fully buffered, even if the
+controller supports streaming (e.g. <code>@Body InputStream</code> parameter), leading to potential negative performance impact.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Body binding is supported by the netty-based HTTP server, but may not be supported by all other HTTP server
+backends.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>To write asynchronous filters, you can return a reactive publisher.</p>
@@ -24063,6 +24095,43 @@ The call to <code>FilterContinuation.proceed</code> is blocking by default, so i
 </td>
 </tr>
 </table>
+</div>
+
+<h2 id="order"><a class="anchor" href="#order"></a>6.23.2.4 Filter Order</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.0.x/src/main/docs/guide/httpServer/filters/filtermethods/order.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Filters can be ordered in one of three ways:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>An <a href="../api/io/micronaut/order/Order.html">Order</a> annotation on the filter method</p>
+</li>
+<li>
+<p>Implementing <a href="../api/io/micronaut/order/Ordered.html">Ordered</a> in the filter class</p>
+</li>
+<li>
+<p>An <a href="../api/io/micronaut/order/Order.html">Order</a> annotation on the filter class</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Request filters are executed in order from highest precedence (smallest integer value, as defined by <code>Ordered.HIGHEST_PRECEDENCE</code>) to lowest precedence (biggest integer value, as defined by <code>Ordered.LOWEST_PRECEDENCE</code>). Response filters are executed in reverse order.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/filter-order.svg" alt="filter order">
+</div>
+</div>
+<div class="paragraph">
+<p>Request filter A is executed first, because it has the higher precedence (-100), followed by request filter B with the lower precedence (100). Then the controller is executed. Response filter C is executed first, because it has the lower precedence (100), and finally response filter D with the higher precedence (-100) is executed last.</p>
 </div>
 
 <h2 id="httpServerFilter"><a class="anchor" href="#httpServerFilter"></a>6.23.3 HttpServerFilter</h2>
