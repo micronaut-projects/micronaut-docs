@@ -16966,12 +16966,83 @@ fun dateFormat(@Format("dd/MM/yyyy hh:mm:ss a z") @Header date: ZonedDateTime): 
 <p>If there is a <code>@Body</code> and request allows the body, bind the body to it.</p>
 </li>
 <li>
-<p>If the request can have a body and no <code>@Body</code> is defined then try to parse the body (either JSON or form data) and bind the method arguments from the body.</p>
+<p>If the request can have a body and no <code>@Body</code> is defined then try to parse the body (either JSON or form data) and bind the method arguments from the body (see the example).</p>
 </li>
 <li>
 <p>Finally, if the method arguments cannot be populated return <code>400 BAD REQUEST</code>.</p>
 </li>
 </ol>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Binding Method Arguments From Body with no <code>@Body</code></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Controller("/point")
+public class PointController {
+
+    @Post(uri = "/no-body-json")
+    @Status(HttpStatus.CREATED)
+    Point noBodyJson(Integer x, Integer y) { // (1)
+        return new Point(x,y);
+    }
+
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Post("/no-body-form")
+    @Status(HttpStatus.CREATED)
+    Point noBodyForm(Integer x, Integer y) {  // (2)
+        return new Point(x,y);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Binding Method Arguments From Body with no <code>@Body</code></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Controller("/point")
+class PointController {
+
+    @Post(uri = "/no-body-json")
+    @Status(HttpStatus.CREATED)
+    Point noBodyJson(Integer x, Integer y) { // (1)
+        new Point(x,y)
+    }
+
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Post("/no-body-form")
+    @Status(HttpStatus.CREATED)
+    Point noBodyForm(Integer x, Integer y) {  // (2)
+        new Point(x,y)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Binding Method Arguments From Body with no <code>@Body</code></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Controller("/point")
+class PointController {
+
+    @Post(uri = "/no-body-json")
+    @Status(HttpStatus.CREATED)
+    fun noBodyJson(x: Int, y: Int) = Point(x,y) // (1)
+
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Post("/no-body-form")
+    @Status(HttpStatus.CREATED)
+    fun noBodyForm(x: Int, y: Int) = Point(x,y)  // (2)
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>JSON request body binds to method controller arguments, e.g. '{"x":10,"y":20}' (with "application/json")</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Form data also works, e.g. 'x=10&amp;y=20' (with "application/x-www-form-urlencoded")</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
