@@ -15,8 +15,10 @@
  */
 package io.micronaut.documentation.asciidoc;
 
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
+import io.micronaut.inject.ast.Element;
 import io.micronaut.inject.configuration.ConfigurationMetadata;
 import io.micronaut.inject.configuration.ConfigurationMetadataBuilder;
 import io.micronaut.inject.configuration.ConfigurationMetadataWriter;
@@ -26,7 +28,12 @@ import io.micronaut.inject.writer.GeneratedFile;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -42,7 +49,8 @@ import java.util.stream.Collectors;
  */
 public class AsciiDocPropertyReferenceWriter implements ConfigurationMetadataWriter {
 
-    private static final Pattern PARAM_PATTERN = Pattern.compile("@param\\s*\\w+\\s*(.+)");
+    private static final String AT_PARAM = "@param";
+    private static final Pattern PARAM_PATTERN = Pattern.compile(AT_PARAM + "\\s*\\w+\\s*(.+)");
     private static final ConfigurationMetadata EMPTY = new ConfigurationMetadata() {
         @Override
         public String getName() {
@@ -51,29 +59,30 @@ public class AsciiDocPropertyReferenceWriter implements ConfigurationMetadataWri
     };
 
     @Override
-    public void write(ConfigurationMetadataBuilder<?> metadataBuilder, ClassWriterOutputVisitor classWriterOutputVisitor) throws IOException {
+    public void write(ConfigurationMetadataBuilder metadataBuilder, ClassWriterOutputVisitor classWriterOutputVisitor) throws IOException {
 
         List<PropertyMetadata> props = new ArrayList<>(metadataBuilder.getProperties())
                 .stream()
-                .filter(distinctByKey(PropertyMetadata::getPath)).collect(Collectors.toList());
+                .filter(distinctByKey(PropertyMetadata::getPath)).toList();
 
         List<ConfigurationMetadata> configs = new ArrayList<>(metadataBuilder.getConfigurations())
                 .stream()
                 .sorted(Comparator.comparing(ConfigurationMetadata::getName))
-                .collect(Collectors.toList());
-
-        Collections.reverse(configs);
+                .collect(Collectors.collectingAndThen(Collectors.toList(), list -> {
+                    Collections.reverse(list);
+                    return list;
+                }));
 
         Map<ConfigurationMetadata, List<PropertyMetadata>> map = props.stream().collect(Collectors.groupingBy(propertyMetadata ->
-                configs.stream().filter(cm -> propertyMetadata.getPath().startsWith(cm.getName())).findFirst().orElseGet(() -> {
-//                    System.err.println("WARNING: No configuration found for property " + propertyMetadata.getPath());
-                    return EMPTY;
-                }))
-        );
+                configs.stream()
+                        .filter(cm -> propertyMetadata.getPath().startsWith(cm.getName()))
+                        .findFirst()
+                        .orElse(EMPTY)
+        ));
 
         if (CollectionUtils.isNotEmpty(map)) {
 
-            Optional<GeneratedFile> file = classWriterOutputVisitor.visitMetaInfFile("config-properties.adoc");
+            Optional<GeneratedFile> file = classWriterOutputVisitor.visitMetaInfFile("config-properties.adoc", Element.EMPTY_ELEMENT_ARRAY);
 
             if (file.isPresent()) {
 
@@ -83,73 +92,78 @@ public class AsciiDocPropertyReferenceWriter implements ConfigurationMetadataWri
                         ConfigurationMetadata cm = entry.getKey();
 
                         if (cm == null || cm == EMPTY) {
-                          continue;
+                            continue;
                         }
 
                         if (entry.getValue() != null) {
-                            writeFragmentLink(w, cm.getType());
-                            w.newLine();
-                            w.append(".Configuration Properties for api:").append(cm.getType()).append("[]");
-                            w.newLine();
-                            w.append("|===");
-                            w.newLine();
-                            w.append("|Property |Type |Description");
-                            w.newLine();
-
-                            for (PropertyMetadata pm : entry.getValue()) {
-                                //ignore setters of configuration properties classes
-                                final String pmType = pm.getType();
-                                if (pmType == null || pmType.equals(cm.getType())) {
-                                    continue;
-                                }
-
-                                String path = pm.getPath();
-                                String description = pm.getDescription();
-
-                                if (path.contains("..")) {
-                                  continue;
-                                }
-                                if (StringUtils.isEmpty(description)) {
-                                  description = "";
-                                }
-
-                                description = description.trim();
-
-                                if (description.startsWith("@param")) {
-                                    Matcher match = PARAM_PATTERN.matcher(description);
-                                    if (match.find()) {
-                                        description = match.group(1);
-                                    }
-                                } else if (description.contains("@param")) {
-                                    description = description.substring(0, description.indexOf("@param")).trim();
-                                }
-
-                                String type = pm.getType();
-
-                                if (type.startsWith("io.micronaut")) {
-                                    type = "api:" + type + "[]";
-                                }
-
-                                w.newLine();
-                                w.append("| `+").append(path).append("+`");
-                                w.newLine();
-                                w.append("|").append(type);
-                                w.newLine();
-                                w.append("|").append(description);
-                                w.newLine();
-                                w.newLine();
-                            }
-
-                            w.newLine();
-                            w.append("|===");
-                            w.newLine();
-                            w.append("<<<");
+                            write(w, cm, entry.getValue());
                         }
 
                     }
                 }
             }
         }
+    }
+
+    @SuppressWarnings({"java:S135", "java:S3776"}) // Ignore complexity and too many breaks/continues
+    private void write(BufferedWriter w, ConfigurationMetadata cm, @NonNull List<PropertyMetadata> value) throws IOException {
+        writeFragmentLink(w, cm.getType());
+        w.newLine();
+        w.append(".Configuration Properties for api:").append(cm.getType()).append("[]");
+        w.newLine();
+        w.append("|===");
+        w.newLine();
+        w.append("|Property |Type |Description");
+        w.newLine();
+
+        for (PropertyMetadata pm : value) {
+            //ignore setters of configuration properties classes
+            final String pmType = pm.getType();
+            if (pmType == null || pmType.equals(cm.getType())) {
+                continue;
+            }
+
+            String path = pm.getPath();
+            String description = pm.getDescription();
+
+            if (path.contains("..")) {
+                continue;
+            }
+            if (StringUtils.isEmpty(description)) {
+                description = "";
+            }
+
+            description = description.trim();
+
+            if (description.startsWith(AT_PARAM)) {
+                Matcher match = PARAM_PATTERN.matcher(description);
+                if (match.find()) {
+                    description = match.group(1);
+                }
+            } else if (description.contains(AT_PARAM)) {
+                description = description.substring(0, description.indexOf(AT_PARAM)).trim();
+            }
+
+            String type = pm.getType();
+
+            if (type.startsWith("io.micronaut")) {
+                type = "api:" + type + "[]";
+            }
+
+            w.newLine();
+            w.append("| `+").append(path).append("+`");
+            w.newLine();
+            w.append("|").append(type);
+            w.newLine();
+            w.append("|").append(description);
+            w.newLine();
+            w.newLine();
+        }
+
+        w.newLine();
+        w.append("|===");
+        w.newLine();
+        w.append("<<<");
     }
 
     private void writeFragmentLink(BufferedWriter w, String type) throws IOException {
