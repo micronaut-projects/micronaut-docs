@@ -265,7 +265,7 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-reactiveResponses"><a href="#reactiveResponses"><strong>6.13.2</strong><span>Reactive Responses</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-jsonBinding"><a href="#jsonBinding"><strong>6.14</strong><span>JSON Binding with Jackson</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-jsonBinding"><a href="#jsonBinding"><strong>6.14</strong><span>JSON Binding</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-datavalidation"><a href="#datavalidation"><strong>6.15</strong><span>Data Validation</span></a></div>
         
@@ -12187,8 +12187,17 @@ class DataSourceFactory {
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>Note that <code>@EachBean</code> requires that the parent bean has a <code>@Named</code> qualifier, since the qualifier is inherited by each bean created by <code>@EachBean</code>.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>@EachBean</code> requires that the parent bean has a <code>@Named</code> qualifier, since the qualifier is inherited by each bean created by <code>@EachBean</code>.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>In other words, to retrieve the <code>DataSource</code> created by <code>test.datasource.one</code> you can do:</p>
@@ -19295,7 +19304,7 @@ When returning a Reactive type, its type affects the returned response. For exam
 </table>
 </div>
 
-<h2 id="jsonBinding"><a class="anchor" href="#jsonBinding"></a>6.14 JSON Binding with Jackson</h2>
+<h2 id="jsonBinding"><a class="anchor" href="#jsonBinding"></a>6.14 JSON Binding</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.0.x/src/main/docs/guide/httpServer/jsonBinding.adoc"'>
@@ -19308,10 +19317,89 @@ When returning a Reactive type, its type affects the returned response. For exam
 <p>The most common data interchange format nowadays is JSON.</p>
 </div>
 <div class="paragraph">
-<p>In fact, the defaults in the <a href="../api/io/micronaut/http/annotation/Controller.html">Controller</a> annotation specify that the controllers in Micronaut framework consume and produce JSON by default.</p>
+<p>By default, the <a href="../api/io/micronaut/http/annotation/Controller.html">Controller</a> annotation specifies that the controllers in Micronaut framework consume and produce JSON by default.</p>
 </div>
 <div class="paragraph">
-<p>To do so in a non-blocking manner, Micronaut framework builds on the <a href="https://github.com/FasterXML/jackson">Jackson</a> Asynchronous JSON parsing API and Netty, such that the reading of incoming JSON is done in a non-blocking manner.</p>
+<p>Since Micronaut Framework 4.0, users must choose how they want to serialize (Jackson Databind or Micronaut Serialization). Both approaches allow the usage of <a href="https://micronaut-projects.github.io/micronaut-serialization/latest/guide/index.html#jacksonAnnotations">Jackson Annotations</a>.</p>
+</div>
+<div class="paragraph">
+<p>With either approach, the Micronaut framework reads incoming JSON in a non-blocking manner.</p>
+</div>
+<div class="sect1">
+<h2 id="_serialize_using_micronaut_serialization">Serialize using Micronaut Serialization</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://micronaut-projects.github.io/micronaut-serialization/latest/guide/index.html#quickStart">Micronaut Serialization</a> offers reflection-free serialization using build-time <a href="#introspection">Bean Introspections</a>. It supports alternative formats such as <a href="https://micronaut-projects.github.io/micronaut-serialization/latest/guide/index.html#jsonpQuick">JSON-P or JSON-B</a>. You need to add the following dependencies:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">annotationProcessor(<span class="hljs-string">"io.micronaut.serde:micronaut-serde-processor")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;annotationProcessorPaths&gt;
+    &lt;path&gt;
+        &lt;groupId&gt;io.micronaut.serde&lt;/groupId&gt;
+        &lt;artifactId&gt;micronaut-serde-processor&lt;/artifactId&gt;
+    &lt;/path&gt;
+&lt;/annotationProcessorPaths&gt;</code></pre>
+</div>
+</div>
+        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.serde:micronaut-serde-jackson")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.serde&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-serde-jackson&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_serialization_using_jackson_databind">Serialization using Jackson Databind</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To serialize using <a href="https://github.com/FasterXML/jackson">Jackson</a> Databind include the following dependency:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut:micronaut-jackson-databind")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-jackson-databind&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jsonmapper">JsonMapper</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You may be used to work with <a href="https://fasterxml.github.io/jackson-databind/javadoc/2.7/com/fasterxml/jackson/databind/ObjectMapper.html">Jackson&#8217;s <code>ObjectMapper</code></a>. However, we don&#8217;t recommend using Jackson&#8217;s <code>ObjectMapper</code> directly; instead you should use <a href="../api/io/micronaut/json/JsonMapper.html">JsonMapper</a>, an API almost identical to Jackson&#8217;s <code>ObjectMapper</code>. Moreover, both <a href="#jsonBinding">Micronaut Serialization and Micronaut Jackson Databind</a> implement <a href="../api/io/micronaut/json/JsonMapper.html">JsonMapper</a>.</p>
+</div>
+<div class="paragraph">
+<p>You can inject a bean of type <code>JsonMapper</code> or manually instantiate one via <code>JsonMapper.createDefault()</code>.</p>
+</div>
+</div>
 </div>
 <div class="sect1">
 <h2 id="_binding_using_reactive_frameworks">Binding using Reactive Frameworks</h2>
@@ -19543,7 +19631,7 @@ fun save(@Body person: Person): HttpResponse&lt;Person&gt; {
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-The output produced by Jackson can be customized in a variety of ways, from defining Jackson modules to using <a href="https://github.com/FasterXML/jackson-annotations/wiki/Jackson-Annotations">Jackson annotations</a>
+You can customize the output in various ways, such as using <a href="https://github.com/FasterXML/jackson-annotations/wiki/Jackson-Annotations">Jackson annotations</a>.
 </td>
 </tr>
 </table>
@@ -19554,7 +19642,7 @@ The output produced by Jackson can be customized in a variety of ways, from defi
 <h2 id="_jackson_configuration">Jackson Configuration</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The Jackson <code>ObjectMapper</code> can be configured through configuration with the <a href="../api/io/micronaut/jackson/JacksonConfiguration.html">JacksonConfiguration</a> class.</p>
+<p>If you use <a href="#jsonBinding"><code>micronaut-jackson-databind</code></a>, the Jackson&#8217;s <code>ObjectMapper</code> can be configured through configuration with the <a href="../api/io/micronaut/jackson/JacksonConfiguration.html">JacksonConfiguration</a> class.</p>
 </div>
 <div class="paragraph">
 <p>All Jackson configuration keys start with <code>jackson</code>.</p>
@@ -19650,7 +19738,7 @@ The output produced by Jackson can be customized in a variety of ways, from defi
 <div class="sect2">
 <h3 id="_features">Features</h3>
 <div class="paragraph">
-<p>All features can be configured with their name as the key and a boolean to indicate enabled or disabled.</p>
+<p>If you use <a href="#jsonBinding"><code>micronaut-jackson-databind</code></a>, all Jackson&#8217;s features can be configured with their name as the key and a boolean to indicate enabled or disabled.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -19778,14 +19866,14 @@ jackson.deserialization.failOnUnknownProperties=false</code></pre>
 <div class="sect2">
 <h3 id="_further_customising_jsonfactory">Further customising <code>JsonFactory</code></h3>
 <div class="paragraph">
-<p>There may be situations where you wish to customise the <code>JsonFactory</code> used by the <code>ObjectMapper</code> beyond the configuration of features (for example to allow custom character escaping).
+<p>If you use <a href="#jsonBinding"><code>micronaut-jackson-databind</code></a>, there may be situations where you wish to customise the <code>JsonFactory</code> used by the <code>ObjectMapper</code> beyond the configuration of features (for example to allow custom character escaping).
 This can be achieved by providing your own <code>JsonFactory</code> bean, or by providing a <code>BeanCreatedEventListener&lt;JsonFactory&gt;</code> which configures the default bean on startup.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_support_for_jsonview">Support for <code>@JsonView</code></h3>
 <div class="paragraph">
-<p>You can use the <code>@JsonView</code> annotation on controller methods if you set <code>jackson.json-view.enabled</code> to <code>true</code> in your configuration file (e.g <code>application.yml</code>).</p>
+<p>If you use <a href="#jsonBinding"><code>micronaut-jackson-databind</code></a>, you can use the <code>@JsonView</code> annotation on controller methods if you set <code>jackson.json-view.enabled</code> to <code>true</code> in your configuration file (e.g <code>application.yml</code>).</p>
 </div>
 <div class="paragraph">
 <p>Jackson&#8217;s <code>@JsonView</code> annotation lets you control which properties are exposed on a per-response basis. See <a href="https://www.baeldung.com/jackson-json-view-annotation">Jackson JSON Views</a> for more information.</p>
@@ -19794,7 +19882,7 @@ This can be achieved by providing your own <code>JsonFactory</code> bean, or by 
 <div class="sect2">
 <h3 id="_beans">Beans</h3>
 <div class="paragraph">
-<p>In addition to configuration, beans can be registered to customize Jackson. All beans that extend any of the following classes are registered with the object mapper:</p>
+<p>If you use <a href="#jsonBinding"><code>micronaut-jackson-databind</code></a>, in addition to configuration, beans can be registered to customize Jackson. All beans that extend any of the following classes are registered with the object mapper:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -47454,6 +47542,12 @@ old behavior.</p>
 <h4 id="_cors_support_with_the_crossorigin_annotation">CORS support with the <code>@CrossOrigin</code> annotation</h4>
 <div class="paragraph">
 <p>Micronaut Framework 4 changes <code>@CrossOrigin</code>  behavior to match configuration-based CORS behavior. A method annotated with <code>@CrossOrigin</code> allows any origin if you don&#8217;t specify any value for the <code>allowedOrigins</code> and <code>allowedOriginsRegex</code> members.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_eachbean_requires_a_named_qualifier"><code>@EachBean</code> requires a `@Named qualifier</h4>
+<div class="paragraph">
+<p><code>@EachBean</code> throws a "multiple possible bean candidates found" exception if any parent bean lacks a name qualifier.</p>
 </div>
 </div>
 </div>
