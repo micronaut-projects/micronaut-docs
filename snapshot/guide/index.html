@@ -179,6 +179,26 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-introspection"><a href="#introspection"><strong>3.15</strong><span>Bean Introspection</span></a></div>
         
+        <div class="toc-item" style="margin-left:20px" id="toc-item-atIntrospected"><a href="#atIntrospected"><strong>3.15.1</strong><span>Use the @Introspected Annotation</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedAccessorsStyle"><a href="#introspectedAccessorsStyle"><strong>3.15.2</strong><span>Use @Introspected with @AccessorsStyle</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-accessKind"><a href="#accessKind"><strong>3.15.3</strong><span>Bean Fields</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-atCreator"><a href="#atCreator"><strong>3.15.4</strong><span>Constructor Methods</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-staticAtCreator"><a href="#staticAtCreator"><strong>3.15.5</strong><span>Static Creator Methods</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionEnums"><a href="#introspectionEnums"><strong>3.15.6</strong><span>Introspect Enums</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedAnnotationOnAConfigurationClass"><a href="#introspectedAnnotationOnAConfigurationClass"><strong>3.15.7</strong><span>Use the @Introspected Annotation on a Configuration Class</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectExistingAnnotations"><a href="#introspectExistingAnnotations"><strong>3.15.8</strong><span>Write an AnnotationMapper to Introspect Existing Annotations</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-beanWrapperApi"><a href="#beanWrapperApi"><strong>3.15.9</strong><span>The BeanWrapper API</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-jacksonAndBeanIntrospection"><a href="#jacksonAndBeanIntrospection"><strong>3.15.10</strong><span>Jackson and Bean Introspection</span></a></div>
+        
         <div class="toc-item" style="margin-left:10px" id="toc-item-beanValidation"><a href="#beanValidation"><strong>3.16</strong><span>Bean Validation</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-annotationMetadata"><a href="#annotationMetadata"><strong>3.17</strong><span>Bean Annotation Metadata</span></a></div>
@@ -7356,6 +7376,800 @@ This feature is currently experimental and may be subject to change in the futur
 </tr>
 </table>
 </div>
+</div>
+
+<h2 id="atIntrospected"><a class="anchor" href="#atIntrospected"></a>3.15.1 Use the @Introspected Annotation</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.0.x/src/main/docs/guide/ioc/introspection/atIntrospected.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a> annotation can be used on any class to make it available for introspection. Simply annotate the class with <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.annotation.Introspected;
+
+@Introspected
+public class Person {
+
+    private String name;
+    private int age = 18;
+
+    public Person(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import groovy.transform.Canonical
+import io.micronaut.core.annotation.Introspected
+
+@Introspected
+@Canonical
+class Person {
+
+    String name
+    int age = 18
+
+    Person(String name) {
+        this.name = name
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.core.annotation.Introspected
+
+@Introspected
+data class Person(var name : String) {
+    var age : Int = 18
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once introspection data has been produced at compile time, retrieve it via the <a href="../api/io/micronaut/core/beans/BeanIntrospection.html">BeanIntrospection</a> API:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">final BeanIntrospection&lt;Person&gt; introspection = BeanIntrospection.getIntrospection(Person.class); // <b class="conum">(1)</b>
+Person person = introspection.instantiate("John"); // <b class="conum">(2)</b>
+System.out.println("Hello " + person.getName());
+
+final BeanProperty&lt;Person, String&gt; property = introspection.getRequiredProperty("name", String.class); // <b class="conum">(3)</b>
+property.set(person, "Fred"); // <b class="conum">(4)</b>
+String name = property.get(person); // <b class="conum">(5)</b>
+System.out.println("Hello " + person.getName());</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">def introspection = BeanIntrospection.getIntrospection(Person) // <b class="conum">(1)</b>
+Person person = introspection.instantiate("John") // <b class="conum">(2)</b>
+println("Hello $person.name")
+
+BeanProperty&lt;Person, String&gt; property = introspection.getRequiredProperty("name", String) // <b class="conum">(3)</b>
+property.set(person, "Fred") // <b class="conum">(4)</b>
+String name = property.get(person) // <b class="conum">(5)</b>
+println("Hello $person.name")</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val introspection = BeanIntrospection.getIntrospection(Person::class.java) // <b class="conum">(1)</b>
+val person : Person = introspection.instantiate("John") // <b class="conum">(2)</b>
+print("Hello ${person.name}")
+
+val property : BeanProperty&lt;Person, String&gt; = introspection.getRequiredProperty("name", String::class.java) // <b class="conum">(3)</b>
+property.set(person, "Fred") // <b class="conum">(4)</b>
+val name = property.get(person) // <b class="conum">(5)</b>
+print("Hello ${person.name}")</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>You can retrieve a <a href="../api/io/micronaut/core/beans/BeanIntrospection.html">BeanIntrospection</a> with the static <code>getIntrospection</code> method</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Once you have a <a href="../api/io/micronaut/core/beans/BeanIntrospection.html">BeanIntrospection</a> you can instantiate a bean with the <code>instantiate</code> method.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>A <a href="../api/io/micronaut/core/beans/BeanProperty.html">BeanProperty</a> can be retrieved from the introspection</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Use the <code>set</code> method to set the property value</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Use the <code>get</code> method to retrieve the property value</td>
+</tr>
+</table>
+</div>
+
+<h2 id="introspectedAccessorsStyle"><a class="anchor" href="#introspectedAccessorsStyle"></a>3.15.2 Use @Introspected with @AccessorsStyle</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.0.x/src/main/docs/guide/ioc/introspection/introspectedAccessorsStyle.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>It is possible to use <a href="#configurationPropertiesAccessorsStyle">the <code>@AccessorsStyle</code> annotation</a> with <code>@Introspected</code>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.annotation.AccessorsStyle;
+import io.micronaut.core.annotation.Introspected;
+
+@Introspected
+@AccessorsStyle(readPrefixes = "", writePrefixes = "") // <b class="conum">(1)</b>
+public class Person {
+
+    private String name;
+    private int age;
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String name() { // <b class="conum">(2)</b>
+        return name;
+    }
+
+    public void name(String name) { // <b class="conum">(2)</b>
+        this.name = name;
+    }
+
+    public int age() { // <b class="conum">(2)</b>
+        return age;
+    }
+
+    public void age(int age) { // <b class="conum">(2)</b>
+        this.age = age;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.annotation.AccessorsStyle
+import io.micronaut.core.annotation.Introspected
+
+@Introspected
+@AccessorsStyle(readPrefixes = "", writePrefixes = "") // <b class="conum">(1)</b>
+class Person {
+
+    private String name
+    private int age
+
+    Person(String name, int age) {
+        this.name = name
+        this.age = age
+    }
+
+    String name() { // <b class="conum">(2)</b>
+        return name
+    }
+
+    void name(String name) { // <b class="conum">(2)</b>
+        this.name = name
+    }
+
+    int age() { // <b class="conum">(2)</b>
+        return age
+    }
+
+    void age(int age) { // <b class="conum">(2)</b>
+        this.age = age
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.core.annotation.AccessorsStyle
+import io.micronaut.core.annotation.Introspected
+
+@Introspected
+@AccessorsStyle(readPrefixes = [""], writePrefixes = [""]) // <b class="conum">(1)</b>
+class Person(private var name: String, private var age: Int) {
+    fun name(): String { // <b class="conum">(2)</b>
+        return name
+    }
+
+    fun name(name: String) { // <b class="conum">(2)</b>
+        this.name = name
+    }
+
+    fun age(): Int { // <b class="conum">(2)</b>
+        return age
+    }
+
+    fun age(age: Int) { // <b class="conum">(2)</b>
+        this.age = age
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Annotate the class with <code>@AccessorsStyle</code> to define empty read and write prefixes for getters and setters.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Define the getters and setters without a prefix.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now it is possible to retrieve the compile time generated introspection using the <a href="../api/io/micronaut/core/beans/BeanIntrospection.html">BeanIntrospection</a> API:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">        BeanIntrospection&lt;Person&gt; introspection = BeanIntrospection.getIntrospection(Person)
+        Person person = introspection.instantiate('John', 42)
+
+        person.name() == 'John'
+        person.age() == 42</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">        val introspection = BeanIntrospection.getIntrospection(Person::class.java)
+        val person = introspection.instantiate("John", 42)
+
+        Assertions.assertEquals("John", person.name())
+        Assertions.assertEquals(42, person.age())</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre></pre>
+</div>
+</div>
+
+<h2 id="accessKind"><a class="anchor" href="#accessKind"></a>3.15.3 Bean Fields</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.0.x/src/main/docs/guide/ioc/introspection/accessKind.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>By default Java introspections treat only JavaBean getters/setters or Java 16 record components as bean properties. You can however define classes with public or package protected fields in Java using the <code>accessKind</code> member of the <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a> annotation:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.annotation.Introspected;
+
+@Introspected(accessKind = Introspected.AccessKind.FIELD)
+public class User {
+    public final String name; // <b class="conum">(1)</b>
+    public int age = 18; // <b class="conum">(2)</b>
+
+    public User(String name) {
+        this.name = name;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.annotation.Introspected
+
+@Introspected(accessKind = Introspected.AccessKind.FIELD)
+class User {
+    public final String name // <b class="conum">(1)</b>
+    public int age = 18 // <b class="conum">(2)</b>
+
+    User(String name) {
+        this.name = name
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Introspected(accessKind = [Introspected.AccessKind.FIELD])
+class User(
+    val name: String // <b class="conum">(1)</b>
+) {
+    var age = 18 // <b class="conum">(2)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Final fields are treated like read-only properties</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Mutable fields are treated like read-write properties</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>accessKind</code> accepts an array so it is possible to allow for both types of accessors but prefer one or the other depending on the order they appear in the annotation. The first one in the list has priority.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Introspections on fields are not possible in Kotlin because it is not possible to declare fields directly.
+</td>
+</tr>
+</table>
+</div>
+
+<h2 id="atCreator"><a class="anchor" href="#atCreator"></a>3.15.4 Constructor Methods</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.0.x/src/main/docs/guide/ioc/introspection/atCreator.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>For classes with multiple constructors, apply the <a href="../api/io/micronaut/core/annotation/Creator.html">@Creator</a> annotation to the constructor to use.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.annotation.Creator;
+import io.micronaut.core.annotation.Introspected;
+
+import javax.annotation.concurrent.Immutable;
+
+@Introspected
+@Immutable
+public class Vehicle {
+
+    private final String make;
+    private final String model;
+    private final int axles;
+
+    public Vehicle(String make, String model) {
+        this(make, model, 2);
+    }
+
+    @Creator // <b class="conum">(1)</b>
+    public Vehicle(String make, String model, int axles) {
+        this.make = make;
+        this.model = model;
+        this.axles = axles;
+    }
+
+    public String getMake() {
+        return make;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public int getAxles() {
+        return axles;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.annotation.Creator
+import io.micronaut.core.annotation.Introspected
+
+import javax.annotation.concurrent.Immutable
+
+@Introspected
+@Immutable
+class Vehicle {
+
+    final String make
+    final String model
+    final int axles
+
+    Vehicle(String make, String model) {
+        this(make, model, 2)
+    }
+
+    @Creator // <b class="conum">(1)</b>
+    Vehicle(String make, String model, int axles) {
+        this.make = make
+        this.model = model
+        this.axles = axles
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.core.annotation.Creator
+import io.micronaut.core.annotation.Introspected
+
+import javax.annotation.concurrent.Immutable
+
+@Introspected
+@Immutable
+class Vehicle @Creator constructor(val make: String, val model: String, val axles: Int) { // <b class="conum">(1)</b>
+
+    constructor(make: String, model: String) : this(make, model, 2) {}
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/core/annotation/Creator.html">@Creator</a> annotation denotes which constructor to use</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This class has no default constructor, so calls to instantiate without arguments throw an <a href="../api/io/micronaut/core/reflect/exception/InstantiationException.html">InstantiationException</a>.
+</td>
+</tr>
+</table>
+</div>
+
+<h2 id="staticAtCreator"><a class="anchor" href="#staticAtCreator"></a>3.15.5 Static Creator Methods</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.0.x/src/main/docs/guide/ioc/introspection/staticAtCreator.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/core/annotation/Creator.html">@Creator</a> annotation can be applied to static methods that create class instances.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.annotation.Creator;
+import io.micronaut.core.annotation.Introspected;
+
+import javax.annotation.concurrent.Immutable;
+
+@Introspected
+@Immutable
+public class Business {
+
+    private final String name;
+
+    private Business(String name) {
+        this.name = name;
+    }
+
+    @Creator // <b class="conum">(1)</b>
+    public static Business forName(String name) {
+        return new Business(name);
+    }
+
+    public String getName() {
+        return name;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.annotation.Creator
+import io.micronaut.core.annotation.Introspected
+
+import javax.annotation.concurrent.Immutable
+
+@Introspected
+@Immutable
+class Business {
+
+    final String name
+
+    private Business(String name) {
+        this.name = name
+    }
+
+    @Creator // <b class="conum">(1)</b>
+    static Business forName(String name) {
+        new Business(name)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.core.annotation.Creator
+import io.micronaut.core.annotation.Introspected
+
+import javax.annotation.concurrent.Immutable
+
+@Introspected
+@Immutable
+class Business private constructor(val name: String) {
+    companion object {
+
+        @Creator // <b class="conum">(1)</b>
+        fun forName(name: String): Business {
+            return Business(name)
+        }
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/core/annotation/Creator.html">@Creator</a> annotation is applied to the static method which instantiates the class</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+There can be multiple "creator" methods annotated. If there is one without arguments, it will be the default construction method. The first method with arguments will be used as the primary construction method.
+</td>
+</tr>
+</table>
+</div>
+
+<h2 id="introspectionEnums"><a class="anchor" href="#introspectionEnums"></a>3.15.6 Introspect Enums</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.0.x/src/main/docs/guide/ioc/introspection/introspectionEnums.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>It is possible to introspect enums as well. Add the annotation to the enum, and it can be constructed through the standard <code>valueOf</code> method.</p>
+</div>
+
+<h2 id="introspectedAnnotationOnAConfigurationClass"><a class="anchor" href="#introspectedAnnotationOnAConfigurationClass"></a>3.15.7 Use the @Introspected Annotation on a Configuration Class</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.0.x/src/main/docs/guide/ioc/introspection/introspectedAnnotationOnAConfigurationClass.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If the class to introspect is already compiled and not under your control, an alternative option is to define a configuration class with the <code>classes</code> member of the <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a> annotation set.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.annotation.Introspected;
+
+@Introspected(classes = Person.class)
+public class PersonConfiguration {
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.annotation.Introspected
+
+@Introspected(classes = Person)
+class PersonConfiguration {
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.core.annotation.Introspected
+
+@Introspected(classes = [Person::class])
+class PersonConfiguration</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example the <code>PersonConfiguration</code> class generates introspections for the <code>Person</code> class.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You can also use the <code>packages</code> member of the <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a> which package scans at compile time and generates introspections for all classes within a package. Note however this feature is currently regarded as experimental.
+</td>
+</tr>
+</table>
+</div>
+
+<h2 id="introspectExistingAnnotations"><a class="anchor" href="#introspectExistingAnnotations"></a>3.15.8 Write an AnnotationMapper to Introspect Existing Annotations</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.0.x/src/main/docs/guide/ioc/introspection/introspectExistingAnnotations.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If there is an existing annotation that you wish to introspect by default you can write an <a href="../api/io/micronaut/inject/annotation/AnnotationMapper.html">AnnotationMapper</a>.</p>
+</div>
+<div class="paragraph">
+<p>An example of this is <a href="https://github.com/micronaut-projects/micronaut-core/blob/master/inject/src/main/java/io/micronaut/inject/beans/visitor/EntityIntrospectedAnnotationMapper.java">EntityIntrospectedAnnotationMapper</a> which ensures all beans annotated with <code>javax.persistence.Entity</code> are introspectable by default.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>AnnotationMapper</code> must be on the annotation processor classpath.
+</td>
+</tr>
+</table>
+</div>
+
+<h2 id="beanWrapperApi"><a class="anchor" href="#beanWrapperApi"></a>3.15.9 The BeanWrapper API</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.0.x/src/main/docs/guide/ioc/introspection/beanWrapperApi.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A <a href="../api/io/micronaut/core/beans/BeanProperty.html">BeanProperty</a> provides raw access to read and write a property value for a given class and does not provide any automatic type conversion.</p>
+</div>
+<div class="paragraph">
+<p>It is expected that the values you pass to the <code>set</code> and <code>get</code> methods match the underlying property type, otherwise an exception will occur.</p>
+</div>
+<div class="paragraph">
+<p>To provide additional type conversion smarts the <a href="../api/io/micronaut/core/beans/BeanWrapper.html">BeanWrapper</a> interface allows wrapping an existing bean instance and setting and getting properties from the bean, plus performing type conversion as necessary.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">final BeanWrapper&lt;Person&gt; wrapper = BeanWrapper.getWrapper(new Person("Fred")); // <b class="conum">(1)</b>
+
+wrapper.setProperty("age", "20"); // <b class="conum">(2)</b>
+int newAge = wrapper.getRequiredProperty("age", int.class); // <b class="conum">(3)</b>
+
+System.out.println("Person's age now " + newAge);</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">final BeanWrapper&lt;Person&gt; wrapper = BeanWrapper.getWrapper(new Person("Fred")) // <b class="conum">(1)</b>
+
+wrapper.setProperty("age", "20") // <b class="conum">(2)</b>
+int newAge = wrapper.getRequiredProperty("age", Integer) // <b class="conum">(3)</b>
+
+println("Person's age now $newAge")</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val wrapper = BeanWrapper.getWrapper(Person("Fred")) // <b class="conum">(1)</b>
+
+wrapper.setProperty("age", "20") // <b class="conum">(2)</b>
+val newAge = wrapper.getRequiredProperty("age", Int::class.java) // <b class="conum">(3)</b>
+
+println("Person's age now $newAge")</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use the static <code>getWrapper</code> method to obtain a <a href="../api/io/micronaut/core/beans/BeanWrapper.html">BeanWrapper</a> for a bean instance.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>You can set properties, and the <a href="../api/io/micronaut/core/beans/BeanWrapper.html">BeanWrapper</a> will perform type conversion, or throw <a href="../api/io/micronaut/core/convert/exceptions/ConversionErrorException.html">ConversionErrorException</a> if conversion is not possible.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>You can retrieve a property using <code>getRequiredProperty</code> and request the appropriate type. If the property doesn&#8217;t exist a <a href="../api/io/micronaut/core/beans/exceptions/IntrospectionException.html">IntrospectionException</a> is thrown, and if it cannot be converted a <a href="../api/io/micronaut/core/convert/exceptions/ConversionErrorException.html">ConversionErrorException</a> is thrown.</td>
+</tr>
+</table>
+</div>
+
+<h2 id="jacksonAndBeanIntrospection"><a class="anchor" href="#jacksonAndBeanIntrospection"></a>3.15.10 Jackson and Bean Introspection</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.0.x/src/main/docs/guide/ioc/introspection/jacksonAndBeanIntrospection.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Jackson is configured to use the <a href="../api/io/micronaut/core/beans/BeanIntrospection.html">BeanIntrospection</a> API to read and write property values and construct objects, resulting in reflection-free serialization/deserialization. This is beneficial from a performance perspective and requires less configuration to operate correctly with runtimes such as GraalVM native.</p>
+</div>
+<div class="paragraph">
+<p>This feature is enabled by default; disable it by setting the <code>jackson.bean-introspection-module</code> configuration to <code>false</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Currently only bean properties (private field with public getter/setter) are supported and usage of public fields is not supported.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This feature is currently experimental and may be subject to change in the future.
+</td>
+</tr>
+</table>
 </div>
 
 <h2 id="beanValidation"><a class="anchor" href="#beanValidation"></a>3.16 Bean Validation</h2>
