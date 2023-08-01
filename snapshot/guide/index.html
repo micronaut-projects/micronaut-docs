@@ -27854,7 +27854,7 @@ public class LogbookNettyClientCustomizer
         @Override
         public void onRequestPipelineBuilt() {
             channel.pipeline().addBefore( // <b class="conum">(5)</b>
-                ChannelPipelineCustomizer.HANDLER_HTTP_STREAM,
+                ChannelPipelineCustomizer.HANDLER_MICRONAUT_HTTP_RESPONSE,
                 "logbook",
                 new LogbookClientHandler(logbook)
             );
@@ -27866,8 +27866,7 @@ public class LogbookNettyClientCustomizer
 <div class="listingblock multi-language-sample">
 <div class="title">Customizing the Netty server pipeline for Logbook</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.event.BeanCreatedEventListener
-import io.micronaut.http.client.netty.NettyClientCustomizer
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.client.netty.NettyClientCustomizer
 import io.micronaut.http.netty.channel.ChannelPipelineCustomizer
 import io.netty.channel.Channel
 import jakarta.inject.Singleton
@@ -27909,7 +27908,7 @@ class LogbookNettyClientCustomizer
         @Override
         void onRequestPipelineBuilt() {
             channel.pipeline().addBefore( // <b class="conum">(5)</b>
-                    ChannelPipelineCustomizer.HANDLER_HTTP_STREAM,
+                    ChannelPipelineCustomizer.HANDLER_MICRONAUT_HTTP_RESPONSE,
                     "logbook",
                     new LogbookClientHandler(logbook)
             )
@@ -27950,7 +27949,7 @@ class LogbookNettyClientCustomizer(private val logbook: Logbook) :
 
         override fun onRequestPipelineBuilt() {
             channel!!.pipeline().addBefore( // <b class="conum">(5)</b>
-                ChannelPipelineCustomizer.HANDLER_HTTP_STREAM,
+                ChannelPipelineCustomizer.HANDLER_MICRONAUT_HTTP_RESPONSE,
                 "logbook",
                 LogbookClientHandler(logbook)
             )
@@ -28159,7 +28158,7 @@ class LogbookNettyServerCustomizer(private val logbook: Logbook) :
 
         override fun onStreamPipelineBuilt() {
             channel!!.pipeline().addBefore( // <b class="conum">(5)</b>
-                ChannelPipelineCustomizer.HANDLER_MICRONAUT_INBOUND,
+                ChannelPipelineCustomizer.HANDLER_MICRONAUT_HTTP_RESPONSE,
                 "logbook",
                 LogbookServerHandler(logbook)
             )
