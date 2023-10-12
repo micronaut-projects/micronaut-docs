@@ -44304,6 +44304,121 @@ endpoints.health.status.http-mapping=Map&lt;String, HttpStatus&gt;</code></pre>
 <div class="paragraph">
 <p>The "worst" status is returned as the overall status. A non-operational status is selected over an operational status. A higher severity is selected over a lower severity.</p>
 </div>
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/management/health/aggregator/DefaultHealthAggregator.html">DefaultHealthAggregator</a> also emits log statements for health indicator status and details. To log this information use <code>Level.DEBUG</code> for just health indicator status or use Level.TRACE for both status and details. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;logger name="io.micronaut.management.health.aggregator.DefaultHealthAggregator" level="trace" /&gt; <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use <code>level="debug"</code> for health indicator status, use <code>level="trace"</code> to add health indicator details</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_health_monitor_task">Health Monitor Task</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A continuous health monitor that updates the <a href="../api/io/micronaut/health/CurrentHealthStatus.html">CurrentHealthStatus</a> in a background thread can be enabled when using <a href="../api/io/micronaut/runtime/server/EmbeddedServer.html">EmbeddedServer</a> with the following application configuration:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.application.name=foo
+micronaut.health.monitor.enabled=true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  application:
+    name: foo
+  health:
+    monitor:
+      enabled: true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.application]
+    name="foo"
+  [micronaut.health]
+    [micronaut.health.monitor]
+      enabled=true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  application {
+    name = "foo"
+  }
+  health {
+    monitor {
+      enabled = true
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    application {
+      name = "foo"
+    }
+    health {
+      monitor {
+        enabled = true
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "application": {
+      "name": "foo"
+    },
+    "health": {
+      "monitor": {
+        "enabled": true
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Both configuration properties are required to enable the monitor background task.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Similarly to <code>DefaultHealthAggregator</code> it also emits log statements for health indicator status and details. To log this use the following logger configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;logger name="io.micronaut.management.health.monitor.HealthMonitorTask" level="trace" /&gt;</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
