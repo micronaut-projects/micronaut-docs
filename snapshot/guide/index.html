@@ -1145,7 +1145,7 @@ For Windows the ./ before commands is not needed
 </table>
 </div>
 <div class="paragraph">
-<p>By default the Micronaut HTTP server is configured to run on port 8080. See the section <a href="#runningSpecificPort">Running Server on a Specific Port</a> for more options.</p>
+<p>By default, the Micronaut HTTP server is configured to run on port 8080. See the section <a href="#runningSpecificPort">Running Server on a Specific Port</a> for more options.</p>
 </div>
 <div class="paragraph">
 <p>To create a service that responds to "Hello World" you first need a controller. The following is an example:</p>
@@ -1389,7 +1389,7 @@ It is not possible to have both the official <a href="https://marketplace.visual
 </table>
 </div>
 <div class="paragraph">
-<p>The <a href="https://marketplace.visualstudio.com/items?itemName=oracle-labs-graalvm.graalvm">GraalVM Tools for Java</a> are preferred since they delegate to the build system for running applications and tests which means there is no additional setup or differences with regards to how javac is configured for annotation processing when compared to the <a href="https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack">Java Extension Pack</a> which is based on the Eclipse compiler.</p>
+<p>The <a href="https://marketplace.visualstudio.com/items?itemName=oracle-labs-graalvm.graalvm">GraalVM Tools for Java</a> are preferred since they delegate to the build system for running applications and tests which means there is no additional setup or differences with regard to how javac is configured for annotation processing when compared to the <a href="https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack">Java Extension Pack</a> which is based on the Eclipse compiler.</p>
 </div>
 <div class="paragraph">
 <p>The GraalVM Extension Pack also includes the <a href="https://marketplace.visualstudio.com/items?itemName=oracle-labs-graalvm.micronaut">GraalVM Tools for Micronaut</a> extension which features:</p>
@@ -3875,7 +3875,7 @@ If your bean fails to initialize in parallel, the application will be automatica
 <div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Refreshable // <b class="conum">(1)</b>
-public static class WeatherService {
+static class WeatherService {
     private String forecast;
 
     @PostConstruct
@@ -6046,16 +6046,17 @@ public class SampleEventListener implements ApplicationEventListener&lt;SampleEv
     }
 }
 
+
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.docs.context.events.SampleEventEmitterBean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SampleEventListenerSpec {
+class SampleEventListenerSpec {
 
     @Test
-    public void testEventListenerIsNotified() {
+    void testEventListenerIsNotified() {
         try (ApplicationContext context = ApplicationContext.run()) {
             SampleEventEmitterBean emitter = context.getBean(SampleEventEmitterBean.class);
             SampleEventListener listener = context.getBean(SampleEventListener.class);
@@ -6279,19 +6280,20 @@ public class SampleEventListener {
     }
 }
 
+
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.docs.context.events.SampleEventEmitterBean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SampleEventListenerSpec {
+class SampleEventListenerSpec {
 
     @Test
-    public void testEventListenerIsNotified() {
+    void testEventListenerIsNotified() {
         try (ApplicationContext context = ApplicationContext.run()) {
             SampleEventEmitterBean emitter = context.getBean(SampleEventEmitterBean.class);
             SampleEventListener listener = context.getBean(SampleEventListener.class);
@@ -7057,7 +7059,7 @@ class Person(private var name: String, private var age: Int) {
 
 
 <div class="paragraph">
-<p>By default Java introspections treat only JavaBean getters/setters or Java 16 record components as bean properties. You can however define classes with public or package protected fields in Java using the <code>accessKind</code> member of the <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a> annotation:</p>
+<p>By default, Java introspections treat only JavaBean getters/setters or Java 16 record components as bean properties. You can however define classes with public or package protected fields in Java using the <code>accessKind</code> member of the <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a> annotation:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
@@ -7118,7 +7120,7 @@ class User(
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The <code>accessKind</code> accepts an array so it is possible to allow for both types of accessors but prefer one or the other depending on the order they appear in the annotation. The first one in the list has priority.
+The <code>accessKind</code> accepts an array, so it is possible to allow for both types of accessors but prefer one or the other depending on the order they appear in the annotation. The first one in the list has priority.
 </td>
 </tr>
 </table>
@@ -8877,8 +8879,8 @@ environment.activeNames.contains("android")</code></pre>
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val applicationContext = ApplicationContext.run("test", "android")
 val environment = applicationContext.environment
 
-assertTrue(environment.activeNames.contains("test"))
-assertTrue(environment.activeNames.contains("android"))</code></pre>
+environment.activeNames shouldContain "test"
+environment.activeNames shouldContain "android"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -8960,7 +8962,7 @@ This also applies to <code>@MicronautTest(environments = &#8230;&#8203;)</code>
 <div class="title">Using ApplicationContextBuilder to disable environment deduction</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
-public void testDisableEnvironmentDeductionViaBuilder() {
+void testDisableEnvironmentDeductionViaBuilder() {
     ApplicationContext ctx = ApplicationContext.builder()
             .deduceEnvironment(false)
             .properties(Collections.singletonMap("micronaut.server.port", -1))
@@ -8990,7 +8992,7 @@ public void testDisableEnvironmentDeductionViaBuilder() {
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">"test disable environment deduction via builder"() {
     val ctx = ApplicationContext.builder().deduceEnvironment(false).start()
-    assertFalse(ctx.environment.activeNames.contains(Environment.TEST))
+    ctx.environment.activeNames.shouldNotContain(Environment.TEST)
     ctx.close()
 }</code></pre>
 </div>
@@ -9116,10 +9118,7 @@ Previously, we recommended using <code>Micronaut.defaultEnvironments("dev")</cod
         "test", "android");
 Environment environment = applicationContext.getEnvironment();
 
-assertEquals(
-        "foo",
-        environment.getProperty("micronaut.server.host", String.class).orElse("localhost")
-);</code></pre>
+assertEquals("foo", environment.getProperty("micronaut.server.host", String.class).orElse("localhost"));</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -9156,10 +9155,7 @@ then:
 )
 val environment = applicationContext.environment
 
-assertEquals(
-    "foo",
-    environment.getProperty("micronaut.server.host", String::class.java).orElse("localhost")
-)</code></pre>
+environment.getProperty("micronaut.server.host", String::class.java).orElse("localhost") shouldBe "foo"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -10355,7 +10351,7 @@ double injectedValue;</code></pre>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Expressions are currently not supported for "type use" annotations (annotations that declare <code>ElementType.TYPE_USE</code>).
+Expressions are currently not supported for "type use" annotations (that declare <code>ElementType.TYPE_USE</code>).
 </td>
 </tr>
 </table>
@@ -12369,10 +12365,10 @@ class MyConfigurationProperties {
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">private static ApplicationContext ctx;
 
-@BeforeClass
-public static void setupCtx() {
+@BeforeAll
+static void setupCtx() {
     ctx = ApplicationContext.run(
-            new LinkedHashMap&lt;String, Object&gt;() {{
+            new LinkedHashMap&lt;&gt;() {{
                 put("myapp.updatedAt", // <b class="conum">(1)</b>
                         new LinkedHashMap&lt;String, Integer&gt;() {{
                             put("day", 28);
@@ -12384,8 +12380,8 @@ public static void setupCtx() {
     );
 }
 
-@AfterClass
-public static void teardownCtx() {
+@AfterAll
+static void teardownCtx() {
     if(ctx != null) {
         ctx.stop();
     }
@@ -12420,7 +12416,7 @@ fun setup() {
 
 @AfterEach
 fun teardown() {
-    ctx?.close()
+    ctx.close()
 }</code></pre>
 </div>
 </div>
@@ -12718,13 +12714,15 @@ Micronaut configuration uses kebap case, not lower camel case. For example, usin
 <div class="listingblock multi-language-sample">
 <div class="title">Providing Configuration to @EachProperty</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val applicationContext = ApplicationContext.run(PropertySource.of(
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val applicationContext = ApplicationContext.run(
+    PropertySource.of(
         "test",
         mapOf(
-                "test.datasource.one.url" to "jdbc:mysql://localhost/one",
-                "test.datasource.two.url" to "jdbc:mysql://localhost/two"
+            "test.datasource.one.url" to "jdbc:mysql://localhost/one",
+            "test.datasource.two.url" to "jdbc:mysql://localhost/two"
         )
-))</code></pre>
+    )
+)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -12741,10 +12739,7 @@ DataSourceConfiguration firstConfig = applicationContext.getBean(
         Qualifiers.byName("one") // <b class="conum">(2)</b>
 );
 
-assertEquals(
-        new URI("jdbc:mysql://localhost/one"),
-        firstConfig.getUrl()
-);</code></pre>
+assertEquals(new URI("jdbc:mysql://localhost/one"), firstConfig.getUrl());</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -12752,8 +12747,11 @@ assertEquals(
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">when:
 Collection&lt;DataSourceConfiguration&gt; beansOfType = applicationContext.getBeansOfType(DataSourceConfiguration.class)
-assertEquals(2, beansOfType.size()) // <b class="conum">(1)</b>
 
+then:
+beansOfType.size() == 2 // <b class="conum">(1)</b>
+
+when:
 DataSourceConfiguration firstConfig = applicationContext.getBean(
         DataSourceConfiguration.class,
         Qualifiers.byName("one") // <b class="conum">(2)</b>
@@ -12767,17 +12765,14 @@ new URI("jdbc:mysql://localhost/one") == firstConfig.getUrl()</code></pre>
 <div class="title">Evaluating Beans Built by @EachProperty</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val beansOfType = applicationContext.getBeansOfType(DataSourceConfiguration::class.java)
-assertEquals(2, beansOfType.size) // <b class="conum">(1)</b>
+beansOfType.size shouldBe 2 // <b class="conum">(1)</b>
 
 val firstConfig = applicationContext.getBean(
-        DataSourceConfiguration::class.java,
-        Qualifiers.byName("one") // <b class="conum">(2)</b>
+    DataSourceConfiguration::class.java,
+    Qualifiers.byName("one") // <b class="conum">(2)</b>
 )
 
-assertEquals(
-        URI("jdbc:mysql://localhost/one"),
-        firstConfig.url
-)</code></pre>
+firstConfig.url shouldBe URI("jdbc:mysql://localhost/one")</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -13006,8 +13001,11 @@ DataSource firstConfig = applicationContext.getBean(
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">when:
 Collection&lt;DataSource&gt; beansOfType = applicationContext.getBeansOfType(DataSource)
-assertEquals(2, beansOfType.size()) // <b class="conum">(1)</b>
 
+then:
+beansOfType.size() == 2 // <b class="conum">(1)</b>
+
+when:
 DataSource firstConfig = applicationContext.getBean(
         DataSource,
         Qualifiers.byName("one") // <b class="conum">(2)</b>
@@ -13018,7 +13016,7 @@ DataSource firstConfig = applicationContext.getBean(
 <div class="title">Using a Qualifier</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val beansOfType = applicationContext.getBeansOfType(DataSource::class.java)
-assertEquals(2, beansOfType.size) // <b class="conum">(1)</b>
+beansOfType.size shouldBe 2 // <b class="conum">(1)</b>
 
 val firstConfig = applicationContext.getBean(
         DataSource::class.java,
@@ -13974,20 +13972,7 @@ open class NotNullExample {
 <div class="listingblock multi-language-sample">
 <div class="title">Around Advice Test</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Rule
-public ExpectedException thrown = ExpectedException.none();
-
-@Test
-public void testNotNull() {
-    try (ApplicationContext applicationContext = ApplicationContext.run()) {
-        NotNullExample exampleBean = applicationContext.getBean(NotNullExample.class);
-
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Null parameter [taskName] not allowed");
-
-        exampleBean.doWork(null);
-    }
-}</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java"></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -16447,8 +16432,8 @@ template.expand(["name": "John"]) == "/hello/John" // <b class="conum">(2)</b></
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val template = UriMatchTemplate.of("/hello/{name}")
 
-assertTrue(template.match("/hello/John").isPresent) // <b class="conum">(1)</b>
-assertEquals("/hello/John", template.expand(mapOf("name" to "John")))  // <b class="conum">(2)</b></code></pre>
+template.match("/hello/John").isPresent.shouldBeTrue() // <b class="conum">(1)</b>
+template.expand(mapOf("name" to "John")) shouldBe "/hello/John"  // <b class="conum">(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -16555,29 +16540,29 @@ class IssuesController {
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.runtime.server.EmbeddedServer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class IssuesControllerTest {
+class IssuesControllerTest {
 
     private static EmbeddedServer server;
     private static HttpClient client;
 
-    @BeforeClass // <b class="conum">(1)</b>
-    public static void setupServer() {
+    @BeforeAll // <b class="conum">(1)</b>
+    static void setupServer() {
         server = ApplicationContext.run(EmbeddedServer.class);
         client = server
                     .getApplicationContext()
                     .createBean(HttpClient.class, server.getURL());
     }
 
-    @AfterClass // <b class="conum">(2)</b>
-    public static void stopServer() {
+    @AfterAll // <b class="conum">(2)</b>
+    static void stopServer() {
         if (server != null) {
             server.stop();
         }
@@ -16587,7 +16572,7 @@ public class IssuesControllerTest {
     }
 
     @Test
-    public void testIssue() {
+    void testIssue() {
         String body = client.toBlocking().retrieve("/issues/12"); // <b class="conum">(3)</b>
 
         assertNotNull(body);
@@ -16595,7 +16580,7 @@ public class IssuesControllerTest {
     }
 
     @Test
-    public void testShowWithInvalidInteger() {
+    void testShowWithInvalidInteger() {
         HttpClientResponseException e = assertThrows(HttpClientResponseException.class, () -&gt;
                 client.toBlocking().exchange("/issues/hello"));
 
@@ -16603,7 +16588,7 @@ public class IssuesControllerTest {
     }
 
     @Test
-    public void testIssueWithoutNumber() {
+    void testIssueWithoutNumber() {
         HttpClientResponseException e = assertThrows(HttpClientResponseException.class, () -&gt;
                 client.toBlocking().exchange("/issues/"));
 
@@ -17435,7 +17420,7 @@ open class BookmarkController {
 <h2 id="_binding_from_multiple_bindable_values">Binding from Multiple Bindable values</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Instead of binding just query values, it is also possible to bind any Bindable value to a POJO (e.g. to bind <code>HttpRequest</code>, <code>@PathVariable</code>, <code>@QueryValue</code> and <code>@Header</code> to a single POJO). This can be achieved with the <code>@RequestBean</code> annotation and a custom Bean class with fields with Bindable annotations, or fields that can be bound by type (e.g. <code>HttpRequest</code>, <code>BasicAuth</code>, <code>Authentication</code>, etc.).</p>
+<p>Instead of binding just query values, it is also possible to bind any Bindable value to a POJO (e.g. to bind <code>HttpRequest</code>, <code>@PathVariable</code>, <code>@QueryValue</code> and <code>@Header</code> to a single POJO). This can be achieved with the <code>@RequestBean</code> annotation and a custom Bean class with fields with Bindable annotations, or fields that can be bound by type (e.g. <code>HttpRequest</code>, <code>BasicAuth</code>, <code>Authentication</code>, etc).</p>
 </div>
 <div class="paragraph">
 <p>For example:</p>
@@ -17639,7 +17624,7 @@ fun headerInferred(@Header contentType: String): String {
 </div>
 </div>
 <div class="paragraph">
-<p>In this case, if the HTTP header <code>Content-Type</code> is not present in the request, the route is considered invalid, since it cannot be satisfied, and a HTTP 400 <code>BAD REQUEST</code> is returned.</p>
+<p>In this case, if the HTTP header <code>Content-Type</code> is not present in the request, the route is considered invalid, since it cannot be satisfied, and an HTTP 400 <code>BAD REQUEST</code> is returned.</p>
 </div>
 <div class="paragraph">
 <p>To make the <code>Content-Type</code> header optional, you can instead write:</p>
@@ -17872,7 +17857,7 @@ capable of binding to the arguments in controller methods. The default implement
 <p>If no fitting annotation is found, the Micronaut framework tries to find an argument binder that supports the argument type.</p>
 </div>
 <div class="paragraph">
-<p>An argument binder returns a <a href="../api/io/micronaut/core/bind/ArgumentBinder.BindingResult.html">ArgumentBinder.BindingResult</a>. The binding result gives the Micronaut framework more information than just the value. Binding results are either satisfied or unsatisfied, and either empty or not empty. If an argument binder returns an unsatisfied result, the binder may be called again at different times in request processing. Argument binders are initially called before the body is read and before any filters are executed. If a binder relies on any of that data and it is not present, return a <a href="../api/io/micronaut/core/bind/ArgumentBinder.BindingResult.html#UNSATISFIED">ArgumentBinder.BindingResult#UNSATISFIED</a> result. Returning an <a href="../api/io/micronaut/core/bind/ArgumentBinder.BindingResult.html#EMPTY">ArgumentBinder.BindingResult#EMPTY</a> or satisfied result will be the final result and the binder will not be called again for that request.</p>
+<p>An argument binder returns a <a href="../api/io/micronaut/core/bind/ArgumentBinder.BindingResult.html">ArgumentBinder.BindingResult</a>. The binding result gives the Micronaut framework more information than just the value. Binding results are either satisfied or unsatisfied, and either empty or not empty. If an argument binder returns an unsatisfied result, the binder may be called again at different times in request processing. Argument binders are initially called before the body is read and before any filters are executed. If a binder relies on any of that data, and it is not present, return a <a href="../api/io/micronaut/core/bind/ArgumentBinder.BindingResult.html#UNSATISFIED">ArgumentBinder.BindingResult#UNSATISFIED</a> result. Returning an <a href="../api/io/micronaut/core/bind/ArgumentBinder.BindingResult.html#EMPTY">ArgumentBinder.BindingResult#EMPTY</a> or satisfied result will be the final result and the binder will not be called again for that request.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -18915,7 +18900,7 @@ fun helloStatic(): HttpResponse&lt;String&gt; {
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-Generally <a href="../api/io/micronaut/http/context/ServerRequestContext.html">ServerRequestContext</a> is available within reactive flow, but the recommended approach is consume the request as an argument as shown in the previous example. If the request is needed in downstream methods it should be passed as an argument to those methods. There are cases where the context is not propagated because other threads are used to emit the data.
+Generally <a href="../api/io/micronaut/http/context/ServerRequestContext.html">ServerRequestContext</a> is available within reactive flow, but the recommended approach is consumed the request as an argument as shown in the previous example. If the request is needed in downstream methods it should be passed as an argument to those methods. There are cases where the context is not propagated because other threads are used to emit the data.
 </td>
 </tr>
 </table>
@@ -21009,8 +20994,8 @@ open class EmailController {
 <div class="title">Example Test</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
-public void testParametersAreValidated() {
-    HttpClientResponseException e = Assertions.assertThrows(HttpClientResponseException.class, () -&gt;
+void testParametersAreValidated() {
+    HttpClientResponseException e = assertThrows(HttpClientResponseException.class, () -&gt;
         client.toBlocking().exchange("/email/send?subject=Hi&amp;recipient="));
     HttpResponse&lt;?&gt; response = e.getResponse();
 
@@ -21226,7 +21211,7 @@ open class EmailController {
 <div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
-public void testPojoValidation() {
+void testPojoValidation() {
     HttpClientResponseException e = assertThrows(HttpClientResponseException.class, () -&gt; {
         Email email = new Email();
         email.subject = "Hi";
@@ -21534,7 +21519,7 @@ open class EmailController {
 <div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
-public void testPojoValidation_defaultGroup() {
+void testPojoValidation_defaultGroup() {
     HttpClientResponseException e = assertThrows(HttpClientResponseException.class, () -&gt; {
         Email email = new Email();
         email.subject = "";
@@ -21603,7 +21588,7 @@ public void testPojoValidation_defaultGroup() {
 <div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
-public void testPojoValidation_finalValidationGroup() {
+void testPojoValidation_finalValidationGroup() {
     HttpClientResponseException e = assertThrows(HttpClientResponseException.class, () -&gt; {
         Email email = new Email();
         email.subject = "Hi";
@@ -30714,7 +30699,7 @@ micronaut.server.netty.access-logger.exclusions[1]=/path/.+</code></pre>
 <p>The Micronaut framework supports the programmatic creation of additional Netty servers through the <a href="../api/io/micronaut/http/server/netty/NettyEmbeddedServerFactory.html">NettyEmbeddedServerFactory</a> interface.</p>
 </div>
 <div class="paragraph">
-<p>This is useful in cases where you, for example, need to expose distinct servers over different ports with potentially differing configurations (HTTPS, thread resources etc.).</p>
+<p>This is useful in cases where you, for example, need to expose distinct servers over different ports with potentially differing configurations (HTTPS, thread resources etc).</p>
 </div>
 <div class="paragraph">
 <p>The following example demonstrates how to define a <a href="#factories">Factory Bean</a> that starts an additional server using a programmatically created configuration:</p>
@@ -32364,7 +32349,7 @@ The server does not have to be written in Micronaut, any server that supports JS
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flux&lt;Headline&gt; headlineStream = Flux.from(client.jsonStream(
         GET("/streaming/headlines"), Headline.class)); // <b class="conum">(1)</b>
 CompletableFuture&lt;Headline&gt; future = new CompletableFuture&lt;&gt;(); // <b class="conum">(2)</b>
-headlineStream.subscribe(new Subscriber&lt;Headline&gt;() {
+headlineStream.subscribe(new Subscriber&lt;&gt;() {
     @Override
     public void onSubscribe(Subscription s) {
         s.request(1); // <b class="conum">(3)</b>
@@ -32422,7 +32407,8 @@ headlineStream.subscribe(new Subscriber&lt;Headline&gt;() {
 <div class="title">Streaming JSON on the Client</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val headlineStream = client.jsonStream(
-    GET&lt;Any&gt;("/streaming/headlines"), Headline::class.java) // <b class="conum">(1)</b>
+    GET&lt;Any&gt;("/streaming/headlines"), Headline::class.java
+) // <b class="conum">(1)</b>
 val future = CompletableFuture&lt;Headline&gt;() // <b class="conum">(2)</b>
 headlineStream.subscribe(object : Subscriber&lt;Headline&gt; {
     override fun onSubscribe(s: Subscription) {
@@ -33233,7 +33219,7 @@ class BooksController {
 <div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
-public void afterAnHttpClientExceptionTheResponseBodyCanBeBoundToAPOJO() {
+void afterAnHttpClientExceptionTheResponseBodyCanBeBoundToAPOJO() {
     try {
         client.toBlocking().exchange(HttpRequest.GET("/books/1680502395"),
                 Argument.of(Book.class), // <b class="conum">(1)</b>
@@ -34747,7 +34733,7 @@ interface HeadlineClient {
 <div class="title">Streaming HeadlineClient</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
-public void testClientAnnotationStreaming() {
+void testClientAnnotationStreaming() {
     try(EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer.class)) {
         HeadlineClient headlineClient = embeddedServer
                                             .getApplicationContext()
@@ -34769,7 +34755,7 @@ public void testClientAnnotationStreaming() {
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">void "test client annotation streaming"() throws Exception {
     when:
     def headlineClient = embeddedServer.applicationContext
-                                       .getBean(HeadlineClient) // <b class="conum">(1)</b>
+            .getBean(HeadlineClient) // <b class="conum">(1)</b>
 
     Mono&lt;Headline&gt; firstHeadline = Mono.from(headlineClient.streamHeadlines()) // <b class="conum">(2)</b>
 
@@ -34786,8 +34772,8 @@ public void testClientAnnotationStreaming() {
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">"test client annotation streaming" {
     val headlineClient = embeddedServer
-            .applicationContext
-            .getBean(HeadlineClient::class.java) // <b class="conum">(1)</b>
+        .applicationContext
+        .getBean(HeadlineClient::class.java) // <b class="conum">(1)</b>
 
     val firstHeadline = headlineClient.streamHeadlines().next() // <b class="conum">(2)</b>
 
@@ -36736,7 +36722,7 @@ public class MdcLegacyFilter implements HttpServerFilter {
 <p>Applications built for the Cloud often need to adapt to running in a Cloud environment, read and share configuration in a distributed manner, and externalize configuration to the environment where necessary.</p>
 </div>
 <div class="paragraph">
-<p>Micronaut&#8217;s <a href="#environments">Environment</a> concept can be configured to be Cloud platform-aware and makes a best effort to detect the underlying active Cloud environment.</p>
+<p>Micronaut&#8217;s <a href="#environments">Environment</a> concept can be configured to be Cloud platform-aware and makes the best effort to detect the underlying active Cloud environment.</p>
 </div>
 <div class="paragraph">
 <p>To enable this feature you can:</p>
@@ -46857,7 +46843,7 @@ Since this documentation covers the internal workings of Micronaut, many APIs re
 <p>Each <a href="../api/io/micronaut/inject/visitor/TypeElementVisitor.html">TypeElementVisitor</a> implementation can override one or more of the <code>visit*</code> methods which receive an instance of <a href="../api/io/micronaut/inject/ast/Element.html">Element</a>.</p>
 </div>
 <div class="paragraph">
-<p>The <a href="../api/io/micronaut/inject/ast/package-info/.html">package-info</a> provides a language-neutral abstraction over the AST and computation of the <a href="../api/io/micronaut/core/annotation/AnnotationMetadata.html">AnnotationMetadata</a> for a given element (class, method, field etc.).</p>
+<p>The <a href="../api/io/micronaut/inject/ast/package-info/.html">package-info</a> provides a language-neutral abstraction over the AST and computation of the <a href="../api/io/micronaut/core/annotation/AnnotationMetadata.html">AnnotationMetadata</a> for a given element (class, method, field etc).</p>
 </div>
 
 <h2 id="annotationArch"><a class="anchor" href="#annotationArch"></a>22.1.2 Annotation Metadata</h2>
