@@ -36588,6 +36588,69 @@ The thread-local values are read-only. To modify them, the <code>PropagatedConte
 </table>
 </div>
 <div class="paragraph">
+<p>To add the context in the middle of the reactive chain, do something like the following:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.async.propagation.ReactorPropagation;
+import io.micronaut.core.propagation.PropagatedContext;
+import io.micronaut.core.propagation.PropagatedContextElement;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.QueryValue;
+import reactor.core.publisher.Mono;
+
+@Controller
+class HelloController {
+
+    @Get("/hello")
+    Mono&lt;String&gt; hello(@QueryValue("name") String name) {
+        PropagatedContext propagatedContext = PropagatedContext.get().plus(new MyContextElement(name)); // <b class="conum">(1)</b>
+        return Mono.just("Hello, " + name)
+            .contextWrite(ctx -&gt; ReactorPropagation.addPropagatedContext(ctx, propagatedContext)); // <b class="conum">(2)</b>
+    }
+}
+
+record MyContextElement(String value) implements PropagatedContextElement { }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.async.propagation.ReactorPropagation
+import io.micronaut.core.propagation.PropagatedContext
+import io.micronaut.core.propagation.PropagatedContextElement
+import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.QueryValue
+import reactor.core.publisher.Mono
+
+@Controller
+class HelloController {
+
+    @Get('/hello')
+    Mono&lt;String&gt; hello(@QueryValue('name') String name) {
+        PropagatedContext propagatedContext = PropagatedContext.get() + new MyContextElement(name) // <b class="conum">(1)</b>
+        return Mono.just("Hello, $name")
+                .contextWrite(ctx -&gt; ReactorPropagation.addPropagatedContext(ctx, propagatedContext)) // <b class="conum">(2)</b>
+    }
+}
+
+record MyContextElement(String value) implements PropagatedContextElement { }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Obtain the current context that has been modified, e.g. with <code>PropagatedContext.get().plus(&#8230;&#8203;)</code>, etc.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Add the context into the reactive chain.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
 <p>If you have Micrometer Context Propagation on the classpath but don&#8217;t want to use it, apply the following configuration:</p>
 </div>
 <div class="openblock">
