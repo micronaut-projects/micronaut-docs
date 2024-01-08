@@ -207,6 +207,8 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-jacksonAndBeanIntrospection"><a href="#jacksonAndBeanIntrospection"><strong>3.15.12</strong><span>Jackson and Bean Introspection</span></a></div>
         
+        <div class="toc-item" style="margin-left:20px" id="toc-item-kotlinAndBeanIntrospection"><a href="#kotlinAndBeanIntrospection"><strong>3.15.13</strong><span>Kotlin and Bean Introspection</span></a></div>
+        
         <div class="toc-item" style="margin-left:10px" id="toc-item-beanMappers"><a href="#beanMappers"><strong>3.16</strong><span>Bean Mappers</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-beanValidation"><a href="#beanValidation"><strong>3.17</strong><span>Bean Validation</span></a></div>
@@ -7872,6 +7874,48 @@ Currently only bean properties (private field with public getter/setter) are sup
 </td>
 <td class="content">
 This feature is currently experimental and may be subject to change in the future.
+</td>
+</tr>
+</table>
+</div>
+
+<h2 id="kotlinAndBeanIntrospection"><a class="anchor" href="#kotlinAndBeanIntrospection"></a>3.15.13 Kotlin and Bean Introspection</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.3.x/src/main/docs/guide/ioc/introspection/kotlinAndBeanIntrospection.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can annotate a <a href="https://kotlinlang.org/docs/data-classes.html">Kotlin Data Class</a> with <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Kotlin Data Class annotated with @Introspected</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Introspected
+data class UserDataClass(val name: String)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and instantiate it with the BeanIntrospection API:</p>
+</div>
+<div class="listingblock">
+<div class="title">Kotlin Data Class instantiated via BeanIntrospection API</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val introspection: BeanIntrospection&lt;UserDataClass&gt; = BeanIntrospection.getIntrospection(UserDataClass::class.java)
+val user: UserDataClass = introspection.instantiate("John")</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<a href="https://kotlinlang.org/docs/inline-classes.html">Kotlin Inline Value Classes</a> are not supported yet by the <a href="../api/io/micronaut/core/beans/BeanIntrospection.html">BeanIntrospection</a> API.
 </td>
 </tr>
 </table>
