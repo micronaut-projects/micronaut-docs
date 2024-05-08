@@ -10047,6 +10047,7 @@ It is recommended to use this feature sparingly to ensure fast startup.
 <div class="title">@Value Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Nullable;
 
 import jakarta.inject.Singleton;
 
@@ -10056,6 +10057,10 @@ public class EngineImpl implements Engine {
     @Value("${my.engine.cylinders:6}") // <b class="conum">(1)</b>
     protected int cylinders;
 
+    @Nullable
+    @Value("${my.engine.description}")
+    protected String description;
+
     @Override
     public int getCylinders() {
         return cylinders;
@@ -10064,6 +10069,11 @@ public class EngineImpl implements Engine {
     @Override
     public String start() {// <b class="conum">(2)</b>
         return "Starting V" + getCylinders() + " Engine";
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
     }
 
 }</code></pre>
