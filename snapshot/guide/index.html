@@ -23408,13 +23408,26 @@ class OutOfStockExceptionHandler(private val errorResponseProcessor: ErrorRespon
 
 
 <div class="paragraph">
-<p>The Micronaut framework produces error response bodies via beans of type <a href="../api/io/micronaut/http/server/exceptions/response/ErrorResponseProcessor.html">ErrorResponseProcessor</a>.</p>
+<p>The Micronaut framework produces error responses via a bean of type <a href="../api/io/micronaut/http/server/exceptions/response/ErrorResponseProcessor.html">ErrorResponseProcessor</a>.</p>
 </div>
 <div class="paragraph">
-<p>The default response body is <a href="https://github.com/blongden/vnd.error">vnd.error</a>, however you can create your own implementation of type <a href="../api/io/micronaut/http/server/exceptions/response/ErrorResponseProcessor.html">ErrorResponseProcessor</a> to control the responses.</p>
+<p>JSON error responses are provided with a bean of type <a href="../api/io/micronaut/http/server/exceptions/response/JsonErrorResponseBodyProvider.html">JsonErrorResponseBodyProvider</a>.
+The default implementation outputs <a href="https://github.com/blongden/vnd.error">vnd.error</a> responses.</p>
 </div>
 <div class="paragraph">
-<p>If customization of the response other than items related to the errors is desired, the exception handler that is handling the exception needs to be overridden.</p>
+<p>HTML error responses are provided via a bean of type <a href="../api/io/micronaut/http/server/exceptions/response/HtmlErrorResponseBodyProvider.html">HtmlErrorResponseBodyProvider</a>.
+The default implementation outputs HTML which <a href="#i18n">can be localized</a> with codes such as:
+<code>&lt;status&gt;.error.bold</code>, <code>&lt;status&gt;.error.title</code>, <code>&lt;status&gt;.error</code>. For example, you could localize the default 404 error page into Spanish:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">404.error.bold=La página que buscabas no existe
+404.error.title=No encontrado
+404.error=Es posible que haya escrito mal la dirección o que la página se haya movido.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If customization of the response other than items related to the errors is desired, the <a href="#exceptionHandler">exception handler</a> that is handling the exception needs to be overridden.</p>
 </div>
 
 <h2 id="apiVersioning"><a class="anchor" href="#apiVersioning"></a>6.19 API Versioning</h2>
