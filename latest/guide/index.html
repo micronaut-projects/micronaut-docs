@@ -753,7 +753,7 @@
         <h1>Micronaut Core</h1>
         <p></p>
         <p>Core components supporting the Micronaut Framework</p>
-        <p><strong>Version:</strong> 4.7.0 </p>
+        <p><strong>Version:</strong> 4.7.1 </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -1972,7 +1972,7 @@ repositories {
 }
 
 micronaut {
-    version = "4.7.0" <i class="conum" data-value="2"></i><b>(2)</b>
+    version = "4.7.1" <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
 </div>
@@ -9441,8 +9441,8 @@ In general <code>@Import</code> should be used in applications rather than libra
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    annotationProcessor "io.micronaut:micronaut-inject-java:4.7.0"
-    compileOnly "io.micronaut:micronaut-inject-java:4.7.0"
+    annotationProcessor "io.micronaut:micronaut-inject-java:4.7.1"
+    compileOnly "io.micronaut:micronaut-inject-java:4.7.1"
     ...
 }</code></pre>
 </div>
@@ -9813,7 +9813,7 @@ Previously, we recommended using <code>Micronaut.defaultEnvironments("dev")</cod
 | |\/| | |/ __| '__/ _ \| '_ \ / _` | | | | __|
 | |  | | | (__| | | (_) | | | | (_| | |_| | |_
 |_|  |_|_|\___|_|  \___/|_| |_|\__,_|\__,_|\__|
-  Micronaut (4.7.0)
+  Micronaut (4.7.1)
 
 17:07:22.997 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 611ms. Server Running: http://localhost:8080</code></pre>
 </div>
@@ -9942,7 +9942,17 @@ environment.getProperty("micronaut.server.host", String::class.java).orElse("loc
 <p>OS environment variables</p>
 </li>
 <li>
-<p>Configuration files loaded in order from the system property 'micronaut.config.files' or the environment variable <code>MICRONAUT_CONFIG_FILES</code>. The value can be a comma-separated list of paths with the last file having precedence. The files can be referenced from the file system as a path, or the classpath with a <code>classpath:</code> prefix.</p>
+<p>Configuration files loaded in order from the system property 'micronaut.config.files' or the environment variable <code>MICRONAUT_CONFIG_FILES</code>. The value can be a comma-separated list of paths with the last file having precedence. The files can be referenced from:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>the file system as an absolute path (without any prefix),</p>
+</li>
+<li>
+<p>the classpath with a <code>classpath:</code> prefix.</p>
+</li>
+</ol>
+</div>
 </li>
 <li>
 <p>Environment-specific properties from <code>application-{environment}.{extension}</code></p>
@@ -9951,6 +9961,18 @@ environment.getProperty("micronaut.server.host", String::class.java).orElse("loc
 <p>Application-specific properties from <code>application.{extension}</code></p>
 </li>
 </ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+'micronaut.config.files' will be ignored in bootstrap.yml or application.yml. Loading additional configuration files from a configuration file is not supported
+</td>
+</tr>
+</table>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -26590,6 +26612,18 @@ method returns a <a href="../api/io/micronaut/http/body/ByteBody.html">ByteBody<
 all request filters have run, typically an argument binder matching the <code>@Body</code> parameter of the controller will
 "claim" the <code>byteBody()</code> and e.g. parse the JSON. Finally, the body is closed at the end of the request lifecycle,
 discarding any data if it has not been claimed by the argument binder.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <a href="../api/io/micronaut/http/filter/FilterBodyParser.html">FilterBodyParser</a> API allows you to get a Map representation of a request&#8217;s body whose content type is either application/x-www-form-urlencoded or application/json.
+</td>
+</tr>
+</table>
 </div>
 
 <h2 id="byteBodyPrimary"><a class="anchor" href="#byteBodyPrimary"></a>6.25.1 Primary operations</h2>
