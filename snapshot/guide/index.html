@@ -353,11 +353,13 @@
         
         <div class="toc-item" style="margin-left:30px" id="toc-item-filtermethodsexample"><a href="#filtermethodsexample"><strong>6.24.2.1</strong><span>Server Filter with Filter Methods</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-errorStates"><a href="#errorStates"><strong>6.24.2.2</strong><span>Error States</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-filtermethodproceed"><a href="#filtermethodproceed"><strong>6.24.2.2</strong><span>Proceeding with Filter Methods</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-continuations"><a href="#continuations"><strong>6.24.2.3</strong><span>Continuations</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-errorStates"><a href="#errorStates"><strong>6.24.2.3</strong><span>Error States</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-order"><a href="#order"><strong>6.24.2.4</strong><span>Filter Order</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-continuations"><a href="#continuations"><strong>6.24.2.4</strong><span>Continuations</span></a></div>
+        
+        <div class="toc-item" style="margin-left:30px" id="toc-item-order"><a href="#order"><strong>6.24.2.5</strong><span>Filter Order</span></a></div>
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-httpServerFilter"><a href="#httpServerFilter"><strong>6.24.3</strong><span>HttpServerFilter</span></a></div>
         
@@ -26111,7 +26113,37 @@ class TraceFilter(private val traceService: TraceService) { // <b class="conum">
 <p>The previous example demonstrates some key concepts such as executing blocking logic in a worker thread before proceeding with the request and modifying the outgoing response.</p>
 </div>
 
-<h2 id="errorStates"><a class="anchor" href="#errorStates"></a>6.24.2.2 Error States</h2>
+<h2 id="filtermethodproceed"><a class="anchor" href="#filtermethodproceed"></a>6.24.2.2 Proceeding with Filter Methods</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.7.x/src/main/docs/guide/httpServer/filters/filtermethods/filtermethodproceed.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you need to write a filter, e.g., security-related, which needs to proceed with requests in some scenarios or stop the request execution
+and return an HTTP Response directly in the filter; you can use, for example,  a <code>CompletableFuture</code> as the filter method&#8217;s response type.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@ServerFilter(ServerFilter.MATCH_ALL_PATTERN)
+class FooBarFilter {
+    @RequestFilter
+    CompletableFuture&lt;@Nullable HttpResponse&lt;?&gt;&gt; filter(@NonNull HttpRequest&lt;?&gt; request) {
+        if (request.getHeaders().contains("X-FOOBAR")) {
+            // proceed
+            return CompletableFuture.completedFuture(null);
+        } else {
+            return CompletableFuture.completedFuture(HttpResponse.unauthorized());
+        }
+    }
+}</code></pre>
+</div>
+</div>
+
+<h2 id="errorStates"><a class="anchor" href="#errorStates"></a>6.24.2.3 Error States</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.7.x/src/main/docs/guide/httpServer/filters/filtermethods/errorStates.adoc"'>
@@ -26158,7 +26190,7 @@ class TraceFilter(private val traceService: TraceService) { // <b class="conum">
 <p>Whether errors appear as exceptions depends on the context of the filter. For the Micronaut HTTP server, any exception is mapped to a non-exceptional <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> with an error status code. This mapping happens before each filter, so a server filter will never actually see an exception. If you still want to access the original cause of the response, it is stored as the attribute <a href="../api/io/micronaut/http/HttpAttributes.html#EXCEPTION">EXCEPTION</a>.</p>
 </div>
 
-<h2 id="continuations"><a class="anchor" href="#continuations"></a>6.24.2.3 Continuations</h2>
+<h2 id="continuations"><a class="anchor" href="#continuations"></a>6.24.2.4 Continuations</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.7.x/src/main/docs/guide/httpServer/filters/filtermethods/continuations.adoc"'>
@@ -26239,7 +26271,7 @@ The call to <code>FilterContinuation.proceed</code> is blocking by default, so i
 </table>
 </div>
 
-<h2 id="order"><a class="anchor" href="#order"></a>6.24.2.4 Filter Order</h2>
+<h2 id="order"><a class="anchor" href="#order"></a>6.24.2.5 Filter Order</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.7.x/src/main/docs/guide/httpServer/filters/filtermethods/order.adoc"'>
