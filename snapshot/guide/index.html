@@ -497,6 +497,8 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-clientSample"><a href="#clientSample"><strong>7.9</strong><span>HTTP Client Sample</span></a></div>
         
+        <div class="toc-item" style="margin-left:10px" id="toc-item-nettyPooling"><a href="#nettyPooling"><strong>7.10</strong><span>Connection pooling in the netty client</span></a></div>
+        
         <div class="toc-item" style="margin-left:0px" id="toc-item-contextPropagation"><a href="#contextPropagation"><strong>8</strong><span>Context propagation</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-reactorContextPropagation"><a href="#reactorContextPropagation"><strong>8.1</strong><span>Reactor context propagation</span></a></div>
@@ -38579,6 +38581,73 @@ Read the HTTP Client Guide (<a href="https://guides.micronaut.io/micronaut-http-
 </td>
 </tr>
 </table>
+</div>
+
+<h2 id="nettyPooling"><a class="anchor" href="#nettyPooling"></a>7.10 Connection pooling in the netty client</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.8.x/src/main/docs/guide/httpClient/nettyPooling.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The netty client uses a <em>connection pool</em> to share HTTP connections between requests for greater efficiency. The pools
+are scoped by service (the service ID you can configure in the <code>@Client</code> annotation), and by authority (host and port),
+so if you configure e.g. the maximum number of connections, what is meant is the number of connections <em>per host</em>.</p>
+</div>
+<div class="paragraph">
+<p>You can configure the pool through the <code>micronaut.http.client.pool.*</code> properties or, for specific services, via
+<code>micronaut.http.services.*.pool.*</code>. I&#8217;ll only mention the simple property name from here on.</p>
+</div>
+<div class="paragraph">
+<p>HTTP/1.1 and HTTP/2.0 connections are handled and configured separately, because the latter can handle many concurrent
+requests on the same connection. For the purposes of pooling, HTTP/3 connections are treated as HTTP/2.0 connections.</p>
+</div>
+<div class="paragraph">
+<p>When a request is initiated, it is added to a <em>pending request queue</em>. The maximum size of this queue is configured
+with <code>max-pending-acquires</code>, the default is no limit. If the limit is exceeded, the request is rejected. You can also
+configure an <code>acquire-timeout</code> (no timeout by default).</p>
+</div>
+<div class="paragraph">
+<p>Once a request is in the pending request queue, it is dispatched to an existing connection. If all connections are
+busy but there are still pending requests, a decision is made on whether to create new connections:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The maximum number of pending connections (i.e. connections that are still being established) may not exceed
+<code>max-pending-connections</code> (default: 4).</p>
+</li>
+<li>
+<p>For HTTP/1.1, the maximum number of connections may not exceed <code>max-concurrent-http1-connections</code> (no limit by
+default).</p>
+</li>
+<li>
+<p>For HTTP/2.0, the maximum number of connections may not exceed <code>max-concurrent-http2-connections</code> (default: 1).</p>
+</li>
+<li>
+<p>There will be at most as many pending connections as there are pending requests.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The HTTP version is determined by any existing connections in the pool. If the pool is empty, both limits apply, so by
+default only one connection is opened at first. For HTTP/2.0, there is also a
+<code>max-concurrent-requests-per-http2-connection</code> setting that controls how many requests may run on the same HTTP/2.0
+connection simultaneously.</p>
+</div>
+<div class="paragraph">
+<p>Note that a pending connection is not actually associated to a request until it is fully established. A pending request
+may time out, but the connection that was created for it will still enter the pool and may be used by another request.</p>
+</div>
+<div class="paragraph">
+<p>Once a connection is in the pool, there are multiple ways it may terminate and exit the pool. During a request, the
+connection may see a read timeout configured by <code>read-timeout</code>. When the connection is idle (no request), a similar
+read timeout can be configured by <code>connection-pool-idle-timeout</code>. A fixed maximum connection lifetime may be configured
+using <code>connect-ttl</code>, after which the connection will wind down (no new request will be sent and the connection will
+terminate after all requests are done). Certain HTTP errors may also lead to a connection shutdown for safety.</p>
 </div>
 
 <h1 id="contextPropagation"><a class="anchor" href="#contextPropagation"></a>8 Context propagation</h1>
