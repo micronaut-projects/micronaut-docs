@@ -25999,6 +25999,77 @@ To use a custom data source to send data through an input stream, construct a <a
 </div>
 </div>
 <div class="sect1">
+<h2 id="_sending_reactive_streams_as_file_downloads">Sending Reactive Streams as File Downloads</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Micronaut also supports returning <strong>reactive streams</strong> (e.g., <code>Flux</code>, <code>Flowable</code>,
+or any <code>Publisher</code>) without buffering the entire response in memory. If you want to
+force the client browser to download the streamed data (for example, CSV lines),
+you can set the <code>Content-Disposition: attachment</code> header.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Sending Reactive Stream</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Get("/csv")
+public HttpResponse&lt;Flux&lt;String&gt;&gt; downloadCsv() {
+    Flux&lt;String&gt; data = Flux.just(
+        "data1,data2",
+        "data3,data4"
+    );
+    return HttpResponse.ok(data)
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"data.csv\"")
+        .contentType(MediaType.TEXT_PLAIN_TYPE);
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Sending Reactive Stream</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Get("/csv")
+ HttpResponse&lt;Flux&lt;String&gt;&gt; downloadCsv() {
+    Flux&lt;String&gt; data = Flux.just(
+            "data1,data2",
+            "data3,data4"
+    )
+    return HttpResponse.ok(data)
+            .header(HttpHeaders.CONTENT_DISPOSITION, 'attachment; filename="data.csv"')
+            .contentType(MediaType.TEXT_PLAIN_TYPE)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Sending Reactive Stream</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Get("/csv")
+fun downloadCsv(): HttpResponse&lt;Flux&lt;String&gt;&gt; {
+    val data = Flux.just(
+        "data1,data2",
+        "data3,data4"
+    )
+    return HttpResponse.ok(data)
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"data.csv\"")
+        .contentType(MediaType.TEXT_PLAIN_TYPE)
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Wrapping your stream in <code>HttpResponse&lt;Flux&lt;String&gt;&gt;</code> does not cause
+the entire CSV to be loaded into memory. Micronaut will still <strong>stream</strong>
+the data as it is produced. Returning <code>HttpResponse&lt;T&gt;</code> simply allows you
+to set any headers or custom status codes.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_cache_configuration">Cache Configuration</h2>
 <div class="sectionbody">
 <div class="paragraph">
