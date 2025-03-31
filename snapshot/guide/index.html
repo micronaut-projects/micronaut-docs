@@ -21716,6 +21716,28 @@ When returning a Reactive type, its type affects the returned response. For exam
 </div>
 </div></p>
 </div>
+<div class="sect2">
+<h3 id="_kotlin_data_classes_jackson_databind_serialization">Kotlin Data Classes Jackson Databind Serialization</h3>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+If you use Kotlin <a href="https://kotlinlang.org/docs/data-classes.html">Data Classes</a> and Jackson Databind. Your data classes will be accessed via reflection for serialization. When you use <a href="https://www.graalvm.org/latest/reference-manual/native-image/">native image</a>, you need to annotate those data classes with <a href="../api/io/micronaut/core/annotation/ReflectiveAccess.html">@ReflectiveAccess</a>. Learn more about <a href="#graal">Micronaut GraalVM</a> integration.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@ReflectiveAccess
+@Introspected
+data class Greeting(val message: String)</code></pre>
+</div>
+</div>
+</div>
 
 <h2 id="jsonMapper"><a class="anchor" href="#jsonMapper"></a>6.14.3 JsonMapper</h2>
 
@@ -29552,6 +29574,11 @@ The event loop configuration under <code>micronaut.server.netty.worker</code> is
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Set the shutdown timeout (must be &gt;= shutdownQuietPeriod)</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.netty.worker.thread-core-ratio</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The number of threads per core to use if {@link #getNumThreads()} is set to 0.</p></td>
+</tr>
 </tbody>
 </table>
 <div class="admonitionblock tip">
@@ -29705,6 +29732,12 @@ The default value for the number of threads is the value of the system property 
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.netty.event-loops.*.num-threads</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The number of threads</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.netty.event-loops.*.thread-core-ratio</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The number of threads per core to use if
+                              {@link #getNumThreads()} is set to 0.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.netty.event-loops.*.io-ratio</code></p></td>
@@ -35413,6 +35446,12 @@ micronaut.netty.event-loops.default.prefer-native-transport=true</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.netty.event-loops.*.num-threads</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The number of threads</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.netty.event-loops.*.thread-core-ratio</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The number of threads per core to use if
+                              {@link #getNumThreads()} is set to 0.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.netty.event-loops.*.io-ratio</code></p></td>
