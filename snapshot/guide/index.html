@@ -235,11 +235,15 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-beanImport"><a href="#beanImport"><strong>3.22</strong><span>Importing Beans from Libraries</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-nullabilityAnnotations"><a href="#nullabilityAnnotations"><strong>3.23</strong><span>Nullability Annotations</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-classImport"><a href="#classImport"><strong>3.23</strong><span>Importing Classes from Libraries</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-springBeans"><a href="#springBeans"><strong>3.24</strong><span>Micronaut Beans And Spring</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-mixin"><a href="#mixin"><strong>3.24</strong><span>Modifying Class Annotations With A Mixin</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-android"><a href="#android"><strong>3.25</strong><span>Android Support</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-nullabilityAnnotations"><a href="#nullabilityAnnotations"><strong>3.25</strong><span>Nullability Annotations</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-springBeans"><a href="#springBeans"><strong>3.26</strong><span>Micronaut Beans And Spring</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-android"><a href="#android"><strong>3.27</strong><span>Android Support</span></a></div>
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-config"><a href="#config"><strong>4</strong><span>Application Configuration</span></a></div>
         
@@ -9837,7 +9841,291 @@ In general <code>@Import</code> should be used in applications rather than libra
 </table>
 </div>
 
-<h2 id="nullabilityAnnotations"><a class="anchor" href="#nullabilityAnnotations"></a>3.23 Nullability Annotations</h2>
+<h2 id="classImport"><a class="anchor" href="#classImport"></a>3.23 Importing Classes from Libraries</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.9.x/src/main/docs/guide/ioc/classImport.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>As an alternative to the <a href="../api/io/micronaut/context/annotation/Import.html">@Import</a> annotation the <a href="../api/io/micronaut/context/annotation/ClassImport.html">@ClassImport</a> annotation allows to process already compiled classes as if they were ordinary non-compiled classes. Internally all the type visitors will be run, allowing to create necessary metadata.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Class import is currently only supported in the Java language as other languages have limitations on classpath scanning during source code processing.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For example, to import the JSR-330 TCK into an application, add a dependency on the TCK:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut:jakarta.inject-tck:2.0.1")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut&lt;/groupId&gt;
+    &lt;artifactId&gt;jakarta.inject-tck&lt;/artifactId&gt;
+    &lt;version&gt;2.0.1&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>Then define the <code>@ClassImport</code> annotation on your <code>Application</code> class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package example;
+
+import io.micronaut.context.annotation.ClassImport;
+import io.micronaut.context.annotation.Bean;
+
+@ClassImport( <i class="conum" data-value="1"></i><b>(1)</b>
+        packages = { <i class="conum" data-value="2"></i><b>(2)</b>
+                "org.atinject.tck.auto",
+                "org.atinject.tck.auto.accessories"},
+        annotate = Bean.class) <i class="conum" data-value="3"></i><b>(3)</b>
+public class Application {
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/context/annotation/ClassImport.html">@ClassImport</a> is defined</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>packages</code> to import are defined. Note that the Micronaut framework will not recurse through sub-packages so sub-packages need to be listed explicitly</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>annotate</code> allows to specify which annotation should be added to all the classes in the packages.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In the same way, it&#8217;s possible to import classes required for Micronaut Serialization or Micronaut Validation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package example;
+
+import io.micronaut.context.annotation.ClassImport;
+import io.micronaut.serde.annotation.Serdeable;
+
+@ClassImport(
+        packages = "my.external.library",
+        annotate = Serdeable.class)
+public class Application {
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+At this moment, Micronaut doesn&#8217;t support reimporting classes already processed by the Micronaut annotation processor.
+</td>
+</tr>
+</table>
+</div>
+
+<h2 id="mixin"><a class="anchor" href="#mixin"></a>3.24 Modifying Class Annotations With A Mixin</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.9.x/src/main/docs/guide/ioc/mixin.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>There are scenarios where a class cannot be accessed to add or remove annotations for the annotation processor</p>
+</div>
+<div class="paragraph">
+<p>The most used scenario is to modify the annotations when the class is imported with <a href="../api/io/micronaut/context/annotation/ClassImport.html">@ClassImport</a> or a scenario when classes are generated and cannot be modified.</p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s possible to define a mixin class by annotating it with <a href="../api/io/micronaut/context/annotation/Mixin.html">@Mixin</a> and specifying which class does it reference.</p>
+</div>
+<div class="paragraph">
+<p>All the annotations of the mixin will be copied to the original class and all the annotations of the constructor with matching parameters, fields of the same name and methods of the same name with matching parameters will be copied.</p>
+</div>
+<div class="paragraph">
+<p>In this example we have a simple bean class included in an external library for which we want to apply Micronaut Serialization:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package my.external.library;
+
+class MyBean {
+    String name;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To add serialization annotations we can create a mixin that is referencing the original class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package example;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.micronaut.context.annotation.Mixin;
+import io.micronaut.core.annotation.Introspected;
+
+@Mixin(my.external.library.MyBean.class) <i class="conum" data-value="1"></i><b>(1)</b>
+@Introspected(accessKind = Introspected.AccessKind.FIELD) <i class="conum" data-value="2"></i><b>(2)</b>
+class MyBeanMixin {
+    @JsonProperty("hello") <i class="conum" data-value="3"></i><b>(3)</b>
+    String name; <i class="conum" data-value="4"></i><b>(4)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/context/annotation/Mixin.html">@Mixin</a> is defined referencing the bean from the external library</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The extra annotation that will be copied to the referenced class</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The extra annotation of the field <code>name</code> that will be copied to the field of the referenced class</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The field name must match the field name of the referenced class</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Mixins currently supported only for the Java language.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Following the example from <a href="#classImport">Importing Classes from Libraries</a> of importing Jakarta Inject TCK, most of the beans from the TCK have the correct Jakarta Inject annotations except one bean which is not annotated at all, to fix that we can create a mixin to fix that:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package example;
+
+import io.micronaut.context.annotation.Bean;
+import io.micronaut.context.annotation.ClassImport;
+import io.micronaut.context.annotation.Mixin;
+import org.atinject.tck.auto.FuelTank;
+
+@Mixin(FuelTank.class)
+@Bean
+class FuelTankMixin {
+}
+
+@ClassImport(packages = {"org.atinject.tck.auto", "org.atinject.tck.auto.accessories"})
+class BeanImportTest {
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The mixin supports copying only specific annotations
+ by defining <code>includeAnnotations</code>, the set of annotations or packages that should be copied. Alternatively there is <code>excludeAnnotation</code> that will copy only annotations not excluded.</p>
+</div>
+<div class="paragraph">
+<p>Each mixin point (constructor, method, field, parameter) can have specific rules of copying using <a href="../api/io/micronaut/context/annotation/Mixin.Filter.html">@Filter</a>.</p>
+</div>
+<div class="paragraph">
+<p>The annotation <a href="../api/io/micronaut/context/annotation/Mixin.Filter.html">@Filter</a> also support removing existing annotations of the original class.</p>
+</div>
+<div class="paragraph">
+<p>In this example all the Jakarta Validation are removed from the original method referenced by the mixin:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package example;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.micronaut.context.annotation.Executable;
+import io.micronaut.context.annotation.Mixin;
+import io.micronaut.core.annotation.Introspected;
+
+@Mixin(MyBean.class) <i class="conum" data-value="1"></i><b>(1)</b>
+@Introspected(accessKind = Introspected.AccessKind.FIELD) <i class="conum" data-value="2"></i><b>(2)</b>
+class MyBeanMixin {
+    String name;
+
+    @Executable
+    @JsonProperty("hello") <i class="conum" data-value="3"></i><b>(3)</b>
+    @Mixin.Filter(removeAnnotations = "jakarta.validation") <i class="conum" data-value="4"></i><b>(4)</b>
+    public String getXyz() {
+        return name;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="../api/io/micronaut/context/annotation/Mixin.html">@Mixin</a> is defined referencing the bean from the external library</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The extra annotation that will be copied to the referenced class</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The extra annotation of the method <code>getXyz</code> that will be copied to the same method of the referenced class</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The definition to remove all the annotations with a full name prefixed by <code>jakarta.validation</code></td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Mixins only modify the Micronaut annotations metadata model. Original classes are not modified in any way.
+</td>
+</tr>
+</table>
+</div>
+
+<h2 id="nullabilityAnnotations"><a class="anchor" href="#nullabilityAnnotations"></a>3.25 Nullability Annotations</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.9.x/src/main/docs/guide/ioc/nullabilityAnnotations.adoc"'>
@@ -9884,7 +10172,7 @@ In general <code>@Import</code> should be used in applications rather than libra
 </ul>
 </div>
 
-<h2 id="springBeans"><a class="anchor" href="#springBeans"></a>3.24 Micronaut Beans And Spring</h2>
+<h2 id="springBeans"><a class="anchor" href="#springBeans"></a>3.26 Micronaut Beans And Spring</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.9.x/src/main/docs/guide/ioc/springBeans.adoc"'>
@@ -9897,7 +10185,7 @@ In general <code>@Import</code> should be used in applications rather than libra
 <p>Micronaut framework has integrations with Spring in several forms. See the <a href="https://micronaut-projects.github.io/micronaut-spring/latest/guide">Micronaut Spring Documentation</a> for more information.</p>
 </div>
 
-<h2 id="android"><a class="anchor" href="#android"></a>3.25 Android Support</h2>
+<h2 id="android"><a class="anchor" href="#android"></a>3.27 Android Support</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.9.x/src/main/docs/guide/ioc/android.adoc"'>
