@@ -34040,6 +34040,63 @@ Regardless whether you choose to use Micronaut&#8217;s HTTP server, you may wish
 </div>
 </div></p>
 </div>
+<div class="sect1">
+<h2 id="_disable_hostname_verification_in_ssl_config">Disable hostname verification in ssl config</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It may be necessary in a testing or development environment to disable hostname verification.</p>
+</div>
+<div class="paragraph">
+<p>To disable hostname verification in your test classpath, you could create a <a href="#replaces">Bean Replacement</a> in <code>src/test/java</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.http.client.netty.ssl;
+
+import io.micronaut.context.annotation.BootstrapContextCompatible;
+import io.micronaut.context.annotation.Replaces;
+import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Secondary;
+import io.micronaut.context.env.Environment;
+import io.micronaut.core.io.ResourceResolver;
+import io.micronaut.http.client.HttpVersionSelection;
+import io.micronaut.http.ssl.SslConfiguration;
+import io.netty.handler.ssl.SslContextBuilder;
+import jakarta.inject.Singleton;
+
+@Requires(env = Environment.TEST)
+@Singleton
+@BootstrapContextCompatible
+@Secondary
+@Replaces(NettyClientSslBuilder.class)
+class NettyClientSslBuilderReplacement extends NettyClientSslBuilder {
+    NettyClientSslBuilderReplacement(ResourceResolver resourceResolver) {
+        super(resourceResolver);
+    }
+
+    @Override
+    protected SslContextBuilder createSslContextBuilder(SslConfiguration ssl, HttpVersionSelection versionSelection) {
+        SslContextBuilder builder = super.createSslContextBuilder(ssl, versionSelection);
+        builder.endpointIdentificationAlgorithm(null);
+        return builder;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Disabling host name verification leaves your application potentially vulnerable to Man-in-the-Middle attacks and should only be done with the utmost care typically only in a development / testing environment. Never disable host name verification in production or in a scenario where you are making remote calls over the internet.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
 
 <h2 id="jdkHttpClient"><a class="anchor" href="#jdkHttpClient"></a>7.1.2 HTTP Client based on the Java HTTP Client</h2>
 
