@@ -241,6 +241,8 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-nullabilityAnnotations"><a href="#nullabilityAnnotations"><strong>3.25</strong><span>Nullability Annotations</span></a></div>
         
+        <div class="toc-item" style="margin-left:20px" id="toc-item-jspecify"><a href="#jspecify"><strong>3.25.1</strong><span>JSpecify Nullability Annotations</span></a></div>
+        
         <div class="toc-item" style="margin-left:10px" id="toc-item-springBeans"><a href="#springBeans"><strong>3.26</strong><span>Micronaut Beans And Spring</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-android"><a href="#android"><strong>3.27</strong><span>Android Support</span></a></div>
@@ -10135,41 +10137,261 @@ Mixins only modify the Micronaut annotations metadata model. Original classes ar
 
 
 <div class="paragraph">
-<p>In Java, you can use annotations showing whether a variable can or cannot be null. Such annotations aren&#8217;t part of the standard library, but you can add them separately.</p>
+<p>In Java, you can use annotations showing whether a variable can or cannot be null. Such annotations aren&#8217;t part of the standard library.</p>
+</div>
+<div class="sect1">
+<h2 id="_micronauts_nullability_annotations">Micronaut’s Nullability Annotations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Micronaut framework provides first-class nullability annotations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../api/io/micronaut/core/annotation/NonNull.html">@NonNull</a> — the annotated element must never be null.</p>
+</li>
+<li>
+<p><a href="../api/io/micronaut/core/annotation/Nullable.html">@Nullable</a> — the annotated element may be null.</p>
+</li>
+<li>
+<p><a href="../api/io/micronaut/core/annotation/NullMarked.html">@NullMarked</a> — sets a default non-null policy within the annotated scope (package, type, or method), unless overridden.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>Micronaut framework comes with its own set of annotations to declare nullability; <a href="../api/io/micronaut/core/annotation/Nullable.html">@Nullable</a> and <a href="../api/io/micronaut/core/annotation/NonNull.html">@NonNull</a>.</p>
+<p>These annotations are designed for use on parameters, return values, fields, and type-use positions (for example, generic type arguments).</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Micronaut will default to the non-null policy in most of the places if not defined explicitly as nullable
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Optional request parameter in a controller</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package example;
+
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.QueryValue;
+
+@Controller("/greet") <i class="conum" data-value="1"></i><b>(1)</b>
+class GreetingController {
+
+    @Get <i class="conum" data-value="2"></i><b>(2)</b>
+    String hello(@QueryValue @Nullable String nickname) { <i class="conum" data-value="3"></i><b>(3)</b>
+        return nickname == null ? "Hello" : "Hello, " + nickname; <i class="conum" data-value="4"></i><b>(4)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Defines a controller mapped to the /greet path.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Exposes an HTTP GET endpoint.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Marks the query parameter as optional with <a href="../api/io/micronaut/core/annotation/Nullable.html">@Nullable</a>; requests may omit it.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Null-safe handling when the parameter is not provided.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Optional dependency in a factory-produced bean</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package example;
+
+import io.micronaut.context.annotation.Factory;
+import io.micronaut.core.annotation.Nullable;
+import jakarta.inject.Singleton;
+
+@Factory <i class="conum" data-value="1"></i><b>(1)</b>
+class ClientFactory {
+
+    @Singleton <i class="conum" data-value="2"></i><b>(2)</b>
+    Client client(@Nullable OptionalDependency optional) { <i class="conum" data-value="3"></i><b>(3)</b>
+        return new Client(optional); <i class="conum" data-value="4"></i><b>(4)</b>
+    }
+}
+
+final class Client {
+    private final OptionalDependency optional;
+
+    Client(@Nullable OptionalDependency optional) { <i class="conum" data-value="5"></i><b>(5)</b>
+        this.optional = optional;
+    }
+
+    String description() {
+        return optional == null ? "No optional dependency" : "Has optional dependency";
+    }
+}
+
+interface OptionalDependency {}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Declares a factory class that produces beans.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Defines a bean-producing method with singleton scope.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The dependency is optional and annotated with <a href="../api/io/micronaut/core/annotation/Nullable.html">@Nullable</a>; if no bean of that type exists, injection does not fail and null is injected.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The produced bean is created regardless of whether the optional dependency is present.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The consumer explicitly declares the constructor parameter as nullable and handles a potential null value.</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p><strong>Why does the Micronaut framework add its own set of nullability annotations instead of using one of the existing nullability annotations libraries?</strong></p>
 </div>
 <div class="paragraph">
-<p>Throughout the history of the framework, we used other nullability annotation libraries. However, licensing issues made us change nullability annotations several times. To avoid having to change nullability annotations in the future,  we added our own set of nullability annotations in Micronaut framework 2.4</p>
+<p>Throughout the history of the framework, we used other nullability annotation libraries. However, licensing issues made us change nullability annotations several times. To avoid having to change nullability annotations in the future, we added our own set of nullability annotations in Micronaut framework 2.4</p>
 </div>
 <div class="paragraph">
 <p><strong>Are Micronaut Nullability annotations recognized by Kotlin?</strong></p>
 </div>
 <div class="paragraph">
-<p>Yes, Micronaut framework&#8217;s nullability annotations are mapped at compilation time to <code>jakarta.annotation.Nullable</code> and <code>jakarta.annotation.Nonnull</code>.</p>
+<p>Kotlin does not recognize Micronaut framework&#8217;s nullability annotations. However, Micronaut supports other nullability annotations via <a href="../api/io/micronaut/inject/annotation/AnnotationMapper.html">AnnotationMapper</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Micronaut framework supports other known nullability annotations from: Android, FindBugs, Javax, Eclipse, JetBrains, <a href="https://jspecify.dev/">JSpecify</a>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p><strong>Why should you use nullability annotations in your code?</strong></p>
+<p>To better support Kotlin, we recommended to use <a href="https://jspecify.dev/">JSpecify</a>
+or any other <a href="https://kotlinlang.org/docs/java-interop.html#nullability-annotations:">Kotlin recognizable nullability annotations</a>.</p>
 </div>
-<div class="paragraph">
-<p>It makes your code easier to consume from Kotlin. <a href="https://kotlinlang.org/docs/java-interop.html#nullability-annotations">Kotlin recognizes nullability annotations when you&#8217;re calling Java code from Kotlin code and will treat types according to their annotations</a>.</p>
 </div>
+</div>
+
+<h2 id="jspecify"><a class="anchor" href="#jspecify"></a>3.25.1 JSpecify Nullability Annotations</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/4.10.x/src/main/docs/guide/ioc/nullabilityAnnotations/jspecify.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
 <div class="paragraph">
-<p>Moreover, you can use <a href="../api/io/micronaut/core/annotation/Nullable.html">@Nullable</a> annotation to mark:</p>
+<p>Micronaut supports <a href="https://jspecify.dev/">JSpecify</a> annotations as an alternative to its own. Internally they are simply remapped to the Micronaut ones.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>A <a href="#routing">Controller</a> method parameter as optional.</p>
+<p><code>org.jspecify.annotations.Nullable</code> — the annotated value may be null.</p>
 </li>
 <li>
-<p>An injection point as optional. For example, when using constructor injection you can annotate one a constructor parameter as optional by adding the <a href="../api/io/micronaut/core/annotation/Nullable.html">@Nullable</a> annotation.</p>
+<p><code>org.jspecify.annotations.NonNull</code> — expresses a not-null contract for the annotated element.</p>
+</li>
+<li>
+<p><code>org.jspecify.annotations.NullMarked</code> — sets a default non-null policy within the annotated scope (package, type, or method), unless overridden.</p>
 </li>
 </ul>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+There is a difference how the annotations should be put on an array field. Micronaut supports <code>@io.micronaut.core.annotation.Nullable String[] myField</code> but for JSpecify the correct syntax is <code>String @org.jspecify.annotations.Nullable [] myField</code>, the opposite will only mark the array component as nullable.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You may mix JSpecify with Micronaut’s nullability annotations; however, prefer a single, consistent approach within a module or package to keep intent clear and reduce ambiguity.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Adopt <code>@NullMarked</code> on a package or type to make non-null the default, then annotate only the exceptional cases with <code>@Nullable</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following class uses JSpecify to declare non-null by default with <code>@NullMarked</code>, and annotates only the few nullable cases:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import jakarta.inject.Singleton;
+
+@Singleton
+@NullMarked
+final class AccountService {
+
+    // Non-null by default due to @NullMarked
+    String greet(String name) {
+        return "Hello, " + name;
+    }
+
+    // Nullable return and parameter explicitly marked
+    @Nullable
+    String findNickname(@Nullable String userId) {
+        if (userId == null) {
+            return null;
+        }
+        // Lookup may return null if not found
+        return null;
+    }
+}</code></pre>
+</div>
 </div>
 
 <h2 id="springBeans"><a class="anchor" href="#springBeans"></a>3.26 Micronaut Beans And Spring</h2>
