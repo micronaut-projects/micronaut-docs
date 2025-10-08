@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -51,12 +52,6 @@ public class AsciiDocPropertyReferenceWriter implements ConfigurationMetadataWri
 
     private static final String AT_PARAM = "@param";
     private static final Pattern PARAM_PATTERN = Pattern.compile(AT_PARAM + "\\s*\\w+\\s*(.+)");
-    private static final ConfigurationMetadata EMPTY = new ConfigurationMetadata() {
-        @Override
-        public String getName() {
-            return "EMPTY";
-        }
-    };
 
     @Override
     public void write(ConfigurationMetadataBuilder metadataBuilder, ClassWriterOutputVisitor classWriterOutputVisitor) throws IOException {
@@ -68,37 +63,22 @@ public class AsciiDocPropertyReferenceWriter implements ConfigurationMetadataWri
         List<ConfigurationMetadata> configs = new ArrayList<>(metadataBuilder.getConfigurations())
                 .stream()
                 .sorted(Comparator.comparing(ConfigurationMetadata::getName))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), list -> {
-                    Collections.reverse(list);
-                    return list;
-                }));
+                .collect(Collectors.toList());
 
-        Map<ConfigurationMetadata, List<PropertyMetadata>> map = props.stream().collect(Collectors.groupingBy(propertyMetadata ->
-                configs.stream()
-                        .filter(cm -> propertyMetadata.getPath().startsWith(cm.getName()))
-                        .findFirst()
-                        .orElse(EMPTY)
-        ));
+        configs.removeIf(config -> props.stream()
+                .noneMatch(pm -> pm.getDeclaringType().equals(config.getType())));
 
-        if (CollectionUtils.isNotEmpty(map)) {
+        if (CollectionUtils.isNotEmpty(configs)) {
 
             Optional<GeneratedFile> file = classWriterOutputVisitor.visitMetaInfFile("config-properties.adoc", Element.EMPTY_ELEMENT_ARRAY);
 
             if (file.isPresent()) {
-
                 try (BufferedWriter w = new BufferedWriter(file.get().openWriter())) {
-
-                    for (Map.Entry<ConfigurationMetadata, List<PropertyMetadata>> entry : map.entrySet()) {
-                        ConfigurationMetadata cm = entry.getKey();
-
-                        if (cm == null || cm == EMPTY) {
-                            continue;
+                    for (ConfigurationMetadata cm : configs) {
+                        List<PropertyMetadata> properties = props.stream().filter(pm -> pm.getDeclaringType().equals(cm.getType())).toList();
+                        if (!properties.isEmpty()) {
+                            write(w, cm, properties);
                         }
-
-                        if (entry.getValue() != null) {
-                            write(w, cm, entry.getValue());
-                        }
-
                     }
                 }
             }
@@ -113,7 +93,7 @@ public class AsciiDocPropertyReferenceWriter implements ConfigurationMetadataWri
         w.newLine();
         w.append("|===");
         w.newLine();
-        w.append("|Property |Type |Description");
+        w.append("|Property |Type |Description |Default value");
         w.newLine();
 
         for (PropertyMetadata pm : value) {
@@ -156,6 +136,11 @@ public class AsciiDocPropertyReferenceWriter implements ConfigurationMetadataWri
             w.append("|").append(type);
             w.newLine();
             w.append("|").append(description);
+            w.newLine();
+            w.append("|");
+            if (pm.getDefaultValue() != null) {
+                w.append(pm.getDefaultValue());
+            }
             w.newLine();
             w.newLine();
         }
