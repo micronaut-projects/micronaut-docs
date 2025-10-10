@@ -68,7 +68,7 @@ public class AsciiDocPropertyReferenceWriter implements ConfigurationMetadataWri
 
         if (CollectionUtils.isNotEmpty(configs)) {
 
-            Optional<GeneratedFile> file = classWriterOutputVisitor.visitMetaInfFile("config-properties.adoc", Element.EMPTY_ELEMENT_ARRAY);
+            Optional<GeneratedFile> file = classWriterOutputVisitor.visitMetaInfFile("config-properties.adoc", metadataBuilder.getOriginatingElements());
 
             if (file.isPresent()) {
                 try (BufferedWriter w = new BufferedWriter(file.get().openWriter())) {
