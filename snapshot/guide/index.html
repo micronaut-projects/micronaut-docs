@@ -2055,7 +2055,7 @@ class Vehicle(private val engine: Engine) { // <b class="conum">(3)</b>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">final ApplicationContext context = ApplicationContext.run();
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">final ApplicationContext context = ApplicationContext.run(Map.of("spec.name", "VehicleIntroSpec"));
 Vehicle vehicle = context.getBean(Vehicle.class);
 System.out.println(vehicle.start());</code></pre>
 </div>
@@ -11337,7 +11337,8 @@ It is recommended to use this feature sparingly to ensure fast startup.
 <div class="listingblock multi-language-sample">
 <div class="title">@Value Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Value;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 
 import jakarta.inject.Singleton;
@@ -11515,6 +11516,7 @@ String url;</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Property;
 
+import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
@@ -12600,6 +12602,7 @@ value will be absent at runtime, the expression will return <code>null</code></p
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.ConfigurationProperties;
 
+import io.micronaut.context.annotation.Requires;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.util.Optional;
@@ -12820,6 +12823,7 @@ class EngineImpl(val config: EngineConfig) : Engine {// <b class="conum">(1)</b>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Map&lt;String, Object&gt; map = new LinkedHashMap&lt;&gt;(1);
 map.put("my.engine.cylinders", "8");
+map.put("spec.name", "VehiclePropertiesSpec");
 ApplicationContext applicationContext = ApplicationContext.run(map, "test");
 
 Vehicle vehicle = applicationContext.getBean(Vehicle.class);
@@ -13395,6 +13399,7 @@ internal class EngineFactory {
 <div class="title">Supply Configuration</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">        Map&lt;String, Object&gt; properties = new HashMap&lt;&gt;();
+        properties.put("spec.name", "VehicleBuilderSpec");
         properties.put("my.engine.cylinders"             ,"4");
         properties.put("my.engine.manufacturer"          , "Subaru");
         properties.put("my.engine.crank-shaft.rod-length", 4);
@@ -13462,6 +13467,7 @@ internal class EngineFactory {
 <div class="title">@MapFormat Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.convert.format.MapFormat;
 
 import jakarta.validation.constraints.Min;
@@ -13621,6 +13627,8 @@ map1.put(0, "thermostat");
 map1.put(1, "fuel pressure");
 
 map.put("my.engine.sensors", map1);
+
+map.put( "spec.name", "VehicleMapFormatSpec");
 
 ApplicationContext applicationContext = ApplicationContext.run(map, "test");
 
@@ -14456,6 +14464,7 @@ val firstConfig = applicationContext.getBean(
 <div class="title">@ConfigurationProperties Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.bind.annotation.Bindable;
 
 import jakarta.validation.constraints.Min;
@@ -14597,7 +14606,8 @@ If you try to specify any other abstract method other than a getter, a compilati
 <div class="listingblock multi-language-sample">
 <div class="title">@ConfigurationProperties Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.bind.annotation.Bindable;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.bind.annotation.Bindable;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.context.annotation.ConfigurationInject;
 import io.micronaut.context.annotation.ConfigurationProperties;
@@ -14880,7 +14890,8 @@ class Engine(val config: EngineConfig)// <b class="conum">(1)</b>
 <div class="listingblock multi-language-sample">
 <div class="title">Supply Configuration</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ApplicationContext applicationContext = ApplicationContext.run(CollectionUtils.mapOf(
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ApplicationContext applicationContext = ApplicationContext.run(Map.of(
+    "spec.name", "VehicleImmutableSpec",
         "my.engine.cylinders", "8",
         "my.engine.crank-shaft.rod-length", "7.0"
 ));
@@ -51381,6 +51392,7 @@ Special handling is required when a Java field or method has <code>private</code
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.ConfigurationProperties;
 
+import io.micronaut.context.annotation.Requires;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.util.Optional;
@@ -52571,6 +52583,24 @@ context.registerBeanDefinition(
         .build()
 );</code></pre>
 </div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_runtime_annotation_processors_changes">Runtime annotation processors changes</h4>
+<div class="paragraph">
+<p>The <code>@Executable</code> methods processor <a href="../api/io/micronaut/context/processor/.html">processor</a> should be used only to process the executable methods that should be processed at startup. The annotation should be annotated with <code>@Executable(processOnStartup = true)</code>. For other use-cases (executable or not) <a href="../api/io/micronaut/context/processor/.html">processor</a> should be used.</p>
+</div>
+<div class="paragraph">
+<p>The incorrect use will result in a warning and an error in the next major version.</p>
+</div>
+<div class="paragraph">
+<p>Both interfaces are revisited to have better generics and no longer have now deleted <code>AnnotationProcessor</code> superclass.</p>
+</div>
+<div class="paragraph">
+<p>Executable methods annotated with <code>@Parallel</code> will not trigger parallel execution of <a href="../api/io/micronaut/context/processor/.html">processor</a>. Users who relied on that functionality should handle parallelism separately.</p>
+</div>
+<div class="paragraph">
+<p><code>@Scheduled</code> is no longer processed in parallel, this reduced the complexity of the method processor and removed unnecessary overhead.</p>
 </div>
 </div>
 </div>

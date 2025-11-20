@@ -95,7 +95,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="../../context/processor/AnnotationProcessor.html" title="interface in io.micronaut.context.processor">AnnotationProcessor</a>&lt;A,<wbr><a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject">ExecutableMethod</a>&lt;?,<wbr>?&gt;&gt;</code>, <code><a href="../../context/processor/ExecutableMethodProcessor.html" title="interface in io.micronaut.context.processor">ExecutableMethodProcessor</a>&lt;A&gt;</code></dd>
+<dd><code><a href="../../context/processor/BeanDefinitionProcessor.html" title="interface in io.micronaut.context.processor">BeanDefinitionProcessor</a>&lt;A&gt;</code></dd>
 </dl>
 <dl class="notes">
 <dt>Direct Known Subclasses:</dt>
@@ -105,7 +105,7 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="annotations"><a href="../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
 </span><span class="modifiers">public abstract class </span><span class="element-name type-name-label">BaseFilterProcessor&lt;A extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>&gt;</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements <a href="../../context/processor/ExecutableMethodProcessor.html" title="interface in io.micronaut.context.processor">ExecutableMethodProcessor</a>&lt;A&gt;</span></div>
+implements <a href="../../context/processor/BeanDefinitionProcessor.html" title="interface in io.micronaut.context.processor">BeanDefinitionProcessor</a>&lt;A&gt;</span></div>
 <div class="block">Base class for processing <a href="../annotation/ServerFilter.html" title="annotation interface in io.micronaut.http.annotation"><code>ServerFilter</code></a> and
  <a href="../annotation/ClientFilter.html" title="annotation interface in io.micronaut.http.annotation"><code>ClientFilter</code></a> beans.</div>
 <dl class="notes">
@@ -175,11 +175,11 @@ implements <a href="../../context/processor/ExecutableMethodProcessor.html" titl
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Prepend server context path if necessary.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#process(io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod)" class="member-name-link">process</a><wbr>(<a href="../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&nbsp;beanDefinition,
- <a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject">ExecutableMethod</a>&lt;?,<wbr>?&gt;&nbsp;method)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#process(io.micronaut.inject.BeanDefinition,io.micronaut.context.BeanContext)" class="member-name-link">process</a><wbr>(<a href="../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&nbsp;beanDefinition,
+ <a href="../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">The process method will be called for every <a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject"><code>ExecutableMethod</code></a> that is annotated with the type parameter A.</div>
+<div class="block">The process method will be called for every bean annotated with the given annotation type.</div>
 </div>
 </div>
 </div>
@@ -215,20 +215,18 @@ implements <a href="../../context/processor/ExecutableMethodProcessor.html" titl
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="process(io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod)">
+<section class="detail" id="process(io.micronaut.inject.BeanDefinition,io.micronaut.context.BeanContext)">
 <h3>process</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">process</span><wbr><span class="parameters">(<a href="../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&nbsp;beanDefinition,
- <a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject">ExecutableMethod</a>&lt;?,<wbr>?&gt;&nbsp;method)</span></div>
-<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../context/processor/ExecutableMethodProcessor.html#process(io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod)">ExecutableMethodProcessor</a></code></span></div>
-<div class="block">The process method will be called for every <a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject"><code>ExecutableMethod</code></a> that is annotated with the type parameter A.</div>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">process</span><wbr><span class="parameters">(<a href="../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&nbsp;beanDefinition,
+ <a href="../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../context/processor/BeanDefinitionProcessor.html#process(io.micronaut.inject.BeanDefinition,io.micronaut.context.BeanContext)">BeanDefinitionProcessor</a></code></span></div>
+<div class="block">The process method will be called for every bean annotated with the given annotation type.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../../context/processor/AnnotationProcessor.html#process(io.micronaut.inject.BeanDefinition,T)">process</a></code>&nbsp;in interface&nbsp;<code><a href="../../context/processor/AnnotationProcessor.html" title="interface in io.micronaut.context.processor">AnnotationProcessor</a>&lt;<a href="BaseFilterProcessor.html" title="type parameter in BaseFilterProcessor">A</a> extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>,<wbr><a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject">ExecutableMethod</a>&lt;?,<wbr>?&gt;&gt;</code></dd>
-<dt>Specified by:</dt>
-<dd><code><a href="../../context/processor/ExecutableMethodProcessor.html#process(io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod)">process</a></code>&nbsp;in interface&nbsp;<code><a href="../../context/processor/ExecutableMethodProcessor.html" title="interface in io.micronaut.context.processor">ExecutableMethodProcessor</a>&lt;<a href="BaseFilterProcessor.html" title="type parameter in BaseFilterProcessor">A</a> extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>&gt;</code></dd>
+<dd><code><a href="../../context/processor/BeanDefinitionProcessor.html#process(io.micronaut.inject.BeanDefinition,io.micronaut.context.BeanContext)">process</a></code>&nbsp;in interface&nbsp;<code><a href="../../context/processor/BeanDefinitionProcessor.html" title="interface in io.micronaut.context.processor">BeanDefinitionProcessor</a>&lt;<a href="BaseFilterProcessor.html" title="type parameter in BaseFilterProcessor">A</a> extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>&gt;</code></dd>
 <dt>Parameters:</dt>
-<dd><code>beanDefinition</code> - The bean definition to process</dd>
-<dd><code>method</code> - The executable method</dd>
+<dd><code>beanDefinition</code> - The bean definition</dd>
+<dd><code>beanContext</code> - The bean context</dd>
 </dl>
 </section>
 </li>
@@ -238,7 +236,7 @@ implements <a href="../../context/processor/ExecutableMethodProcessor.html" titl
 <div class="member-signature"><span class="modifiers">protected abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addFilter</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="GenericHttpFilter.html" title="interface in io.micronaut.http.filter">GenericHttpFilter</a>&gt;&nbsp;factory,
  <a href="../../core/annotation/AnnotationMetadata.html" title="interface in io.micronaut.core.annotation">AnnotationMetadata</a>&nbsp;methodAnnotations,
  <a href="BaseFilterProcessor.FilterMetadata.html" title="class in io.micronaut.http.filter">BaseFilterProcessor.FilterMetadata</a>&nbsp;metadata)</span></div>
-<div class="block">Add a filter. Called during <a href="#process(io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod)"><code>process(BeanDefinition, ExecutableMethod)</code></a>.</div>
+<div class="block">Add a filter.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>factory</code> - Factory that will create the filter instance</dd>
