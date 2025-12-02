@@ -209,6 +209,12 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Write this buffer to the given <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/OutputStream.html" title="class or interface in java.io" class="external-link"><code>OutputStream</code></a>.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;R&gt;&nbsp;@Nullable R</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#useFastHeapBuffer(java.util.function.Function)" class="member-name-link">useFastHeapBuffer</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>,<wbr>@NonNull R&gt;&nbsp;function)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Access the contents of this buffer as a <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link"><code>ByteBuffer</code></a> with
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html#hasArray()" title="class or interface in java.nio" class="external-link"><code>ByteBuffer.hasArray()</code></a>, if doing so is possible without copying the data.</div>
+</div>
 </div>
 </div>
 </div>
@@ -390,6 +396,35 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <dd>A stream reading from this buffer</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - If this buffer is already closed or consumed</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="useFastHeapBuffer(java.util.function.Function)">
+<h3>useFastHeapBuffer</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;R&gt;</span>&nbsp;<span class="return-type">@Nullable R</span>&nbsp;<span class="element-name">useFastHeapBuffer</span><wbr><span class="parameters">(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>,<wbr>@NonNull R&gt;&nbsp;function)</span></div>
+<div class="block">Access the contents of this buffer as a <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link"><code>ByteBuffer</code></a> with
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html#hasArray()" title="class or interface in java.nio" class="external-link"><code>ByteBuffer.hasArray()</code></a>, if doing so is possible without copying the data.
+ The lifetime of the buffer is limited to the function scope, user code must not keep it
+ around. User code must also never modify the backing array of the buffer.
+
+ <p>This is useful for performing operations on the data that can take a (array, offset,
+ length) parameter, such as <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/OutputStream.html#write(byte%5B%5D,int,int)" title="class or interface in java.io" class="external-link"><code>OutputStream.write(byte[], int, int)</code></a> or serialization.
+
+ <p>This is a <a href="#consuming">consuming operation</a> if the function is called.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>R</code> - The return type of the function</dd>
+<dt>Parameters:</dt>
+<dd><code>function</code> - A function to call with a nio buffer view of this <a href="ReadBuffer.html" title="class in io.micronaut.core.io.buffer"><code>ReadBuffer</code></a>, if
+                 possible</dd>
+<dt>Returns:</dt>
+<dd>The return value of the function, or <code>null</code> if this buffer cannot be accessed
+ using a nio buffer</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - If this buffer is already closed or consumed</dd>
+<dt>Since:</dt>
+<dd>5.0.0</dd>
 </dl>
 </section>
 </li>
