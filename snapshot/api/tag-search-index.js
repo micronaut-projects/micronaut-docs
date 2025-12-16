@@ -1,1 +1,1 @@
-tagSearchIndex = [{"l":"Constant Field Values","h":"","u":"constant-values.html"},{"l":"Serialized Form","h":"","u":"serialized-form.html"}];updateSearchResults();
+tagSearchIndex = [{"l":"Constant Field Values","h":"","u":"constant-values.html"},{"l":"Consuming operations","h":"class io.micronaut.core.io.buffer.ReadBuffer","d":"Section","u":"io/micronaut/core/io/buffer/ReadBuffer.html#consuming"},{"l":"Serialized Form","h":"","u":"serialized-form.html"}];updateSearchResults();
