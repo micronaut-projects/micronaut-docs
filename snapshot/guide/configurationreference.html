@@ -12,7 +12,7 @@
     <script src="../js/guide.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <script src="../js/docs.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
 </head>
 <body class="body">
     <div id="main">
@@ -46,7 +46,7 @@
         <div class="docs-content">
             <div class="project">
                 <h1>Configuration Reference</h1>
-                <p><strong>Version:</strong>5.0.0-SNAPSHOT</p>
+                <p><strong>Version:</strong>4.10.16-SNAPSHOT</p>
                 <p></p>
             </div>
 <div class="sect2">
@@ -3555,31 +3555,10 @@
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.netty.field-max-buffered-bytes</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">long</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum number of bytes that are allowed to be buffered per form value. If there are
- multiple fields, this limit is counted separately for each.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.netty.field-max-bytes</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">long</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum number of bytes per form &lt;i&gt;value&lt;/i&gt;. If there are multiple fields, this limit
- is counted separately for each.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.netty.form-max-buffered-bytes</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">long</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum number of bytes the entire form is allowed to buffer internally. If multiple
- fields are buffered, this limit is shared.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.netty.form-max-bytes</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">long</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum number of bytes of all form &lt;i&gt;values&lt;/i&gt;. If there are multiple fields, this
- limit is shared.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum number of bytes the form / multipart decoders are allowed to buffer internally.
+ This sets a limit on form field size.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -4114,6 +4093,12 @@
 </thead>
 <tbody>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.bean-introspection-module</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the <a href="../api/io/micronaut/core/beans/BeanIntrospection.html">BeanIntrospection</a> should be used for reflection free object serialialization/deserialialization.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.module-scan</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets whether to scan for modules or not (defaults to true).</p></td>
@@ -4127,7 +4112,7 @@
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.default-typing</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">tools.jackson.databind.DefaultTyping</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">com.fasterxml.jackson.databind.ObjectMapper$DefaultTyping</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the global defaultTyping using for Polymorphic handling.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
@@ -4157,7 +4142,7 @@
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.property-naming-strategy</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">tools.jackson.databind.PropertyNamingStrategy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">com.fasterxml.jackson.databind.PropertyNamingStrategy</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the property naming strategy.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
@@ -4176,77 +4161,39 @@
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.serialization-features</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.serialization</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Map</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the serialization features to use.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.deserialization-features</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.deserialization</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Map</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the deserialization features to use.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.mapper-features</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.mapper</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Map</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the object mapper features to use.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.stream-write-features</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.parser</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Map</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Format-independent stream write features.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the parser features to use.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.stream-read-features</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.generator</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Map</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Format-independent stream read features.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the generator features to use.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.json-factory-features</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.factory</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Map</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">JSON factory features.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.json-write-features</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Map</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">JSON stream write features.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.json-read-features</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Map</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">JSON stream read features.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.enum-features</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Map</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enum data binding features.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.date-time-features</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Map</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Date/time data binding features.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.json-node-features</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Map</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">JsonNode data binding features.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.jackson2-databind-annotation-support</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enable support for some jackson-databind 2.x annotations (in the
- com.fasterxml.jackson.databind.annotation package). Only works if the annotations are on the
- classpath at runtime.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the factory features to use.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
