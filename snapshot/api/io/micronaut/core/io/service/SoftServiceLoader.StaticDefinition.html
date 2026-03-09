@@ -93,7 +93,16 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public static final class </span><span class="element-name type-name-label">SoftServiceLoader.StaticDefinition&lt;S&gt;</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="ServiceDefinition.html" title="interface in io.micronaut.core.io.service">ServiceDefinition</a>&lt;S&gt;</span></div>
-<div class="block">A <a href="ServiceDefinition.html" title="interface in io.micronaut.core.io.service"><code>ServiceDefinition</code></a> implementation that uses a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/invoke/MethodHandles.Lookup.html" title="class or interface in java.lang.invoke" class="external-link"><code>MethodHandles.Lookup</code></a> object to find a public constructor.</div>
+<div class="block">A <a href="ServiceDefinition.html" title="interface in io.micronaut.core.io.service"><code>ServiceDefinition</code></a> implementation that creates instances using the same instantiation
+strategy as <code>SoftServiceLoader.instantiate(Class)</code>: it first attempts to invoke a no-argument
+constructor via a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/invoke/MethodHandles.Lookup.html" title="class or interface in java.lang.invoke" class="external-link"><code>MethodHandles.Lookup</code></a> method handle, and if that fails due to access
+restrictions or similar conditions, it falls back to reflective instantiation using
+<details class="invalid-tag">
+<summary>invalid reference</summary>
+<pre><code>java.lang.Class#getDeclaredConstructor()</code></pre>
+</details>
+. Depending on module and security configuration,
+this may allow invoking non-public no-argument constructors.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>1.0</dd>
