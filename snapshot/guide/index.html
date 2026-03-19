@@ -22193,7 +22193,10 @@ data class Greeting(@JsonProperty("message") val message: String)</code></pre>
 
 
 <div class="paragraph">
-<p>You may be used to work with <a href="https://fasterxml.github.io/jackson-databind/javadoc/2.7/com/fasterxml/jackson/databind/ObjectMapper.html">Jackson&#8217;s <code>ObjectMapper</code></a>. However, we don&#8217;t recommend using Jackson&#8217;s <code>ObjectMapper</code> directly; instead you should use <a href="../api/io/micronaut/json/JsonMapper.html">JsonMapper</a>, an API almost identical to Jackson&#8217;s <code>ObjectMapper</code>. Moreover, both <a href="#jsonBinding">Micronaut Serialization and Micronaut Jackson Databind</a> implement <a href="../api/io/micronaut/json/JsonMapper.html">JsonMapper</a>.</p>
+<p>You may be familiar with <a href="https://fasterxml.github.io/jackson-databind/javadoc/2.7/com/fasterxml/jackson/databind/ObjectMapper.html">Jackson&#8217;s <code>ObjectMapper</code></a>. For implementation-agnostic application code, we recommend depending on <a href="../api/io/micronaut/json/JsonMapper.html">JsonMapper</a>, which is Micronaut&#8217;s JSON abstraction for common mapping operations. <a href="#jsonBinding">Micronaut Serialization and Micronaut Jackson Databind</a> both provide implementations of <a href="../api/io/micronaut/json/JsonMapper.html">JsonMapper</a>, and Micronaut Serialization also defines its own <code>ObjectMapper</code> interface that extends <a href="../api/io/micronaut/json/JsonMapper.html">JsonMapper</a>.</p>
+</div>
+<div class="paragraph">
+<p>If you are intentionally writing implementation-specific code, you can still use the corresponding implementation API such as Jackson&#8217;s <code>ObjectMapper</code> or Micronaut Serialization&#8217;s <code>ObjectMapper</code>.</p>
 </div>
 <div class="paragraph">
 <p>You can inject a bean of type <code>JsonMapper</code> or manually instantiate one via <code>JsonMapper.createDefault()</code>.</p>
@@ -22461,7 +22464,7 @@ You can customize the output in various ways, such as using <a href="https://git
 
 
 <div class="paragraph">
-<p>If you use <a href="#jsonBinding"><code>micronaut-jackson-databind</code></a>, the Jackson&#8217;s <code>ObjectMapper</code> can be configured through configuration with the <a href="../api/io/micronaut/jackson/JacksonConfiguration.html">JacksonConfiguration</a> class.</p>
+<p>If you use <a href="#jsonBinding"><code>micronaut-jackson-databind</code></a>, the Jackson <code>ObjectMapper</code> can be configured through configuration with the <a href="../api/io/micronaut/jackson/JacksonConfiguration.html">JacksonConfiguration</a> class. This section is specific to the Jackson implementation; for application code that should remain portable across Micronaut JSON implementations, prefer depending on <a href="../api/io/micronaut/json/JsonMapper.html">JsonMapper</a>.</p>
 </div>
 <div class="paragraph">
 <p>All Jackson configuration keys start with <code>jackson</code>.</p>
@@ -38757,6 +38760,9 @@ interface PetClient extends PetOperations {
 
 <div class="paragraph">
 <p>As mentioned previously, Jackson is used for message encoding to JSON. A default Jackson <code>ObjectMapper</code> is configured and used by Micronaut HTTP clients.</p>
+</div>
+<div class="paragraph">
+<p>This section covers Jackson-specific configuration. If your code should remain portable across Micronaut JSON implementations, prefer depending on <a href="../api/io/micronaut/json/JsonMapper.html">JsonMapper</a> instead of Jackson&#8217;s <code>ObjectMapper</code>.</p>
 </div>
 <div class="paragraph">
 <p>You can override the settings used to construct the <code>ObjectMapper</code> with properties defined by the <a href="../api/io/micronaut/jackson/JacksonConfiguration.html">JacksonConfiguration</a> class in your configuration file (e.g <code>application.yml</code>).</p>
