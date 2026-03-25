@@ -40545,16 +40545,24 @@ micronaut.certificate.self-signed.cert-client.subject=CN=foo</code></pre>
 
 
 <div class="paragraph">
-<p>The new Propagation Context API aims to simplify reactor instrumentation, avoid thread-local usage, and integrate idiomatically with Kotlin Coroutines.</p>
+<p>Micronaut’s Propagated Context API provides a single, consistent way to pass request scoped data across threads, reactors, and coroutines without relying directly on <code>ThreadLocal</code>.</p>
 </div>
+<div class="sect2">
+<h3 id="_propagatedcontext_building_blocks">PropagatedContext building blocks</h3>
 <div class="paragraph">
-<p>The <a href="../api/io/micronaut/core/propagation/PropagatedContext.html">PropagatedContext</a> object represents the context propagation. We designed the context propagation API for immutability. It consists of multiple elements of type <a href="../api/io/micronaut/core/propagation/PropagatedContextElement.html">PropagatedContextElement</a>.</p>
-</div>
-<div class="paragraph">
-<p>Each element represents a particular state that needs to be propagated. There is a special element that can be used to update and restore the thread-local value <a href="../api/io/micronaut/core/propagation/ThreadPropagatedContextElement.html">ThreadPropagatedContextElement</a>:</p>
+<p>The central type is <a href="../api/io/micronaut/core/propagation/PropagatedContext.html">PropagatedContext</a>. It is an immutable container that holds any number of <a href="../api/io/micronaut/core/propagation/PropagatedContextElement.html">PropagatedContextElement</a> instances. Elements are lightweight descriptors of the data you want to make available downstream—for example a trace identifier, security information, or a copy of the logging MDC. Because the context is immutable you build a new instance whenever you add or remove an element:</p>
 </div>
 <div class="listingblock">
-<div class="title">Example of MDC propagated element implementing <code>ThreadPropagatedContextElement</code></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">PropagatedContext base = PropagatedContext.getOrEmpty();
+PropagatedContext enriched = base.plus(new TraceIdContextElement(traceId));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If an element needs to interact with thread-local state (for example to update the MDC) it can also implement <a href="../api/io/micronaut/core/propagation/ThreadPropagatedContextElement.html">ThreadPropagatedContextElement</a>, which allows Micronaut to capture the previous thread-local state and restore it later. When you want to surface a JDK <code>ScopedValue</code>, implement <a href="../api/io/micronaut/core/propagation/ScopedValuePropagatedContextElement.html">ScopedValuePropagatedContextElement</a> and Micronaut will automatically bind the provided <code>ScopedValue</code> and value while the context is propagated.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example MDC element implementing <code>ThreadPropagatedContextElement</code></div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public record MdcPropagationContext(Map&lt;String, String&gt; state) implements ThreadPropagatedContextElement&lt;Map&lt;String, String&gt;&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
 
@@ -40588,24 +40596,21 @@ micronaut.certificate.self-signed.cert-client.subject=CN=foo</code></pre>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The class has the MDC state passed in the contractor</td>
+<td>Accept the MDC state that should be propagated.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The context update sets the MDC state as the current one</td>
+<td>In <code>updateThreadContext</code> push the MDC state into the current thread.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The previous state is captured to be restored</td>
+<td>Capture the previous MDC so it can be restored.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>The previous state is restored</td>
+<td>Restore the previous MDC state when the scope exits.</td>
 </tr>
 </table>
-</div>
-<div class="paragraph">
-<p>In this example, the propagated context element implements the setting of the MDC context, and it restores it after.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -40614,10 +40619,129 @@ micronaut.certificate.self-signed.cert-client.subject=CN=foo</code></pre>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The <a href="../api/io/micronaut/core/propagation/ThreadPropagatedContextElement.html">ThreadPropagatedContextElement</a> is inspired by Kotlin Coroutines propagation API element <code>kotlinx.coroutines.ThreadContextElement</code>
+<a href="../api/io/micronaut/core/propagation/ThreadPropagatedContextElement.html">ThreadPropagatedContextElement</a> mirrors the behaviour of Kotlin’s <code>kotlinx.coroutines.ThreadContextElement</code>, which makes it easy to integrate with coroutines.
 </td>
 </tr>
 </table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<a href="../api/io/micronaut/core/propagation/ScopedValuePropagatedContextElement.html">ScopedValuePropagatedContextElement</a> lets you expose existing <code>ScopedValue</code> keys so Micronaut can apply <code>ScopedValue.where(key, value)</code> for every element before executing your code.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Example of chaining multiple scoped value bindings:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">class UserContextElement implements ScopedValuePropagatedContextElement&lt;String&gt; {
+
+    static final ScopedValue&lt;String&gt; USER_ID = ScopedValue.newInstance();
+
+    private final String userId;
+
+    UserContextElement(String userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public ScopedValue&lt;String&gt; scopedValue() {
+        return USER_ID;
+    }
+
+    @Override
+    public String scopedValueValue() {
+        return userId;
+    }
+
+    String currentUserId() {
+        return USER_ID.isBound() ? USER_ID.get() : null;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To bind and read the value purely with the JDK <code>ScopedValue</code> API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">PropagatedContext context = PropagatedContext.getOrEmpty()
+    .plus(new UserContextElement("42"));
+
+String userId = context.propagate(() -&gt; {
+    if (UserContextElement.USER_ID.isBound()) {
+        return UserContextElement.USER_ID.get();
+    }
+    return null;
+});</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_hybrid_example_scoped_value_first_thread_local_as_a_fallback">Hybrid example: scoped value first, thread local as a fallback</h4>
+<div class="paragraph">
+<p>Sometimes you need a single element that works in both propagation modes. Implementing both interfaces lets you bind a <code>ScopedValue</code> by default and only fall back to a <code>ThreadLocal</code> when scoped values are unavailable:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">class RequestContextElement implements ScopedValuePropagatedContextElement&lt;String&gt;,
+        ThreadPropagatedContextElement&lt;String&gt; {
+
+    private static final ScopedValue&lt;String&gt; REQUEST_ID = ScopedValue.newInstance();
+    private static final ThreadLocal&lt;String&gt; THREAD_REQUEST_ID = new ThreadLocal&lt;&gt;();
+
+    private final String requestId;
+
+    RequestContextElement(String requestId) {
+        this.requestId = requestId;
+    }
+
+    String currentRequestId() {
+        return REQUEST_ID.isBound() ? REQUEST_ID.get() : THREAD_REQUEST_ID.get();
+    }
+
+    @Override
+    public ScopedValue&lt;String&gt; scopedValue() {
+        return REQUEST_ID;
+    }
+
+    @Override
+    public String scopedValueValue() {
+        return requestId;
+    }
+
+    @Override
+    public @Nullable String updateThreadContext() {
+        if (REQUEST_ID.isBound()) {
+            return null; // scoped value already in place
+        }
+        String previous = THREAD_REQUEST_ID.get();
+        THREAD_REQUEST_ID.set(requestId);
+        return previous;
+    }
+
+    @Override
+    public void restoreThreadContext(@Nullable String previous) {
+        if (previous == null &amp;&amp; REQUEST_ID.isBound()) {
+            return; // we skipped thread local updates
+        }
+        if (previous == null) {
+            THREAD_REQUEST_ID.remove();
+        } else {
+            THREAD_REQUEST_ID.set(previous);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When Micronaut runs in scoped-value mode the <code>ScopedValue</code> binding happens first, so <code>updateThreadContext()</code> returns <code>null</code> and the <code>ThreadLocal</code> branch is skipped entirely. In thread-local mode the same element transparently updates the <code>ThreadLocal</code>, meaning <code>currentRequestId()</code> continues to work without additional code.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">MDC propagation example</div>
@@ -40642,10 +40766,129 @@ The <a href="../api/io/micronaut/core/propagation/ThreadPropagatedContextElement
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-In the previous versions of Micronaut Framework, we would capture the context to propagate, this is not the case since Micronaut Framework 4. We always require for the context to be modified manually and repropagated.
+Since Micronaut Framework 4 the runtime no longer “captures whatever happens to be in scope.” You are responsible for obtaining the current context with <code>PropagatedContext.getOrEmpty()</code>, adding elements, and propagating the resulting instance explicitly.
 </td>
 </tr>
 </table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_using_the_propagate_helpers">Using the <code>propagate(…)</code> helpers</h3>
+<div class="paragraph">
+<p>Once you have a context you can execute work with that context in scope by using one of the helper methods. Each helper returns the result of the lambda you pass in, and inside that lambda <code>PropagatedContext.get()</code> (or <code>getOrEmpty()</code>) gives you the propagated elements:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">PropagatedContext context = PropagatedContext.getOrEmpty()
+    .plus(new TraceIdContextElement(traceId));
+
+String response = context.propagate(() -&gt; {
+    // Inside the lambda the context is bound
+    TraceIdContextElement element = PropagatedContext.get().get(TraceIdContextElement.class);
+    return downstream.callWith(element.traceId());
+}); // Supplier&lt;T&gt;
+
+context.propagate(() -&gt; {
+    TraceIdContextElement element = PropagatedContext.get().get(TraceIdContextElement.class);
+    logger.debug("executed with propagated state {}", element.traceId());
+}); // Runnable
+
+Integer status = context.propagateCall(() -&gt; client.status()); // Callable&lt;T&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For cases where you need to hand off work—for example to an executor—you can also pre-wrap a <code>Runnable</code>, <code>Callable</code>, or <code>Supplier</code> via <code>PropagatedContext.wrap(…)</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_default_scoped_values_propagation_on_java_25">Default Scoped Values propagation on Java 25</h3>
+<div class="paragraph">
+<p>Micronaut Framework 5 targets Java 25 by default. Since Java 21 the JDK ships <strong>Scoped Values</strong> (<code>java.lang.ScopedValue</code>) as a structured alternative to classic thread locals. Because Scoped Values are available on Java 25, Micronaut enables them by default and stores propagated data in the <code>scoped-value</code> mode.</p>
+</div>
+<div class="paragraph">
+<p>Scoped Values participate in virtual threads, enforce well-defined lifetimes, and prevent the accidental leaks that long-running thread pools often suffer when <code>ThreadLocal</code> is used directly. Unless you override the propagation mode, every piece of state you add to a <code>PropagatedContext</code> will therefore flow through Scoped Values.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_avoid_try_with_resources_unless_thread_local_propagation_is_mandatory">Avoid try-with-resources unless thread-local propagation is mandatory</h3>
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/core/propagation/PropagatedContext.html">PropagatedContext</a> interface exposes a <code>propagate()</code> method that returns an auto-closeable scope so that you can use Java’s try-with-resources syntax. The lambda helpers remain the preferred approach:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">PropagatedContext context = PropagatedContext.getOrEmpty().plus(new CustomElement());
+context.propagate(() -&gt; {
+    // work that needs the propagated state
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The try-with-resources pattern exists primarily for legacy integrations that require <code>ThreadLocal</code> propagation. Whenever you can, call one of the lambda-based <code>propagate(…)</code> helpers shown earlier instead—they work in both propagation modes. Only fall back to the scope API when the surrounding code expects a <code>ThreadLocal</code> to be present. Because the scope relies on thread-local state, invoking <code>propagate()</code> while the mode is still <code>scoped-value</code> throws an <code>IllegalStateException</code> instructing you to enable thread-local support.</p>
+</div>
+<div class="paragraph">
+<p>Configure the mode globally (default: <code>scoped-value</code>) by setting <code>micronaut.propagation</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  propagation: thread-local</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or change it programmatically during application bootstrap:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Context;
+import io.micronaut.context.event.ContextStartedEvent;
+import io.micronaut.context.event.ApplicationEventListener;
+import io.micronaut.core.propagation.PropagatedContextConfiguration;
+
+@Context
+class ThreadLocalPropagationListener implements ApplicationEventListener&lt;ContextStartedEvent&gt; {
+
+    @Override
+    public void onApplicationEvent(ContextStartedEvent event) {
+        PropagatedContextConfiguration.set(PropagatedContextConfiguration.Mode.THREAD_LOCAL);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restoring Scoped Values later is as simple as calling <code>PropagatedContextConfiguration.set(PropagatedContextConfiguration.Mode.SCOPED_VALUE);</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Prefer the default <code>scoped-value</code> mode whenever possible. Scoped Values integrate seamlessly with virtual threads, express the intent that the state only lives within a structured scope, and eliminate the risk of leaking <code>ThreadLocal</code> data between unrelated requests.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_when_scoped_values_are_not_sufficient">When scoped values are not sufficient</h3>
+<div class="paragraph">
+<p>Some integrations still require <code>ThreadLocal</code> semantics because their APIs expose explicit “update” callbacks instead of accepting a lambda to execute with the context in scope. In those scenarios switch Micronaut’s propagation mode to <code>thread-local</code> before invoking the libraries involved. Common examples include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Kotlin coroutines</strong> – when wiring custom coroutine dispatchers or using <code>withContext</code>, the runtime expects Micronaut to call <code>MicronautPropagatedContext.updateThreadContext</code>. That API assumes a <code>ThreadLocal</code>, so you must run in thread-local mode whenever coroutine propagation is active. If you see <code>Scope propagation requires thread-local support</code> while running coroutine-based code, enable the thread-local mode.</p>
+</li>
+<li>
+<p><strong>Reactor instrumentation</strong> – certain Micrometer/<code>ContextView</code> bridges expose callbacks that pull data from a <code>ThreadLocal</code> instead of accepting a lambda. If your reactive pipelines depend on that behaviour, configure thread-local propagation so the state is visible.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>After the critical section completes you can switch the propagation mode back to <code>scoped-value</code> to regain the benefits of structured lifetimes.</p>
+</div>
 </div>
 
 <h2 id="reactorContextPropagation"><a class="anchor" href="#reactorContextPropagation"></a>9.1 Reactor context propagation</h2>
