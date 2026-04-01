@@ -17030,6 +17030,237 @@ List&lt;Book&gt; findBooks() {
 </div>
 </div>
 <div class="sect1">
+<h2 id="_programmatic_retry">Programmatic Retry</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For cases where annotations are not desirable, Micronaut Retry also provides programmatic retry creation through typed policies and injected factory beans.</p>
+</div>
+<div class="paragraph">
+<p>Create a policy once and derive reusable operations from the injected factory:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Creating a Programmatic Retry Policy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">RetryPolicy retryPolicy = RetryPolicy.builder()
+    .maxAttempts(5)
+    .delay(Duration.ofMillis(5))
+    .build();
+CircuitBreakerPolicy circuitBreakerPolicy = CircuitBreakerPolicy.builder()
+    .maxAttempts(3)
+    .delay(Duration.ofMillis(5))
+    .resetTimeout(Duration.ofMillis(100))
+    .build();</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Creating a Programmatic Retry Policy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val retryPolicy = RetryPolicy.builder()
+    .maxAttempts(5)
+    .delay(Duration.ofMillis(5))
+    .build()
+val circuitBreakerPolicy = CircuitBreakerPolicy.builder()
+    .maxAttempts(3)
+    .delay(Duration.ofMillis(5))
+    .resetTimeout(Duration.ofMillis(100))
+    .build()</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Creating a Programmatic Retry Policy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">RetryPolicy retryPolicy = RetryPolicy.builder()
+    .maxAttempts(5)
+    .delay(Duration.ofMillis(5))
+    .build()
+CircuitBreakerPolicy circuitBreakerPolicy = CircuitBreakerPolicy.builder()
+    .maxAttempts(3)
+    .delay(Duration.ofMillis(5))
+    .resetTimeout(Duration.ofMillis(100))
+    .build()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The programmatic API uses typed values such as <code>Duration</code> and <code>int</code> instead of annotation strings.</p>
+</div>
+<div class="paragraph">
+<p>For synchronous work, execute the supplier directly through <code>RetryOperations</code>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Programmatic Retry for Synchronous Code</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public List&lt;Book&gt; listBooks() {
+    return retryOperations.execute(() -&gt; {
+        if (syncCounter.incrementAndGet() &lt; 3) {
+            throw new IllegalStateException("Temporary failure");
+        }
+        return Collections.singletonList(new Book("The Stand"));
+    });
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Programmatic Retry for Synchronous Code</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">open fun listBooks(): List&lt;Book&gt; = retryOperations.execute {
+    if (syncCounter.incrementAndGet() &lt; 3) {
+        throw IllegalStateException("Temporary failure")
+    }
+    listOf(Book("The Stand"))
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Programmatic Retry for Synchronous Code</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">List&lt;Book&gt; listBooks() {
+    retryOperations.execute {
+        if (syncCounter.incrementAndGet() &lt; 3) {
+            throw new IllegalStateException('Temporary failure')
+        }
+        [new Book('The Stand')]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Reactive retry is also supported. Pass a supplier so each retry attempt creates a fresh <code>Publisher</code>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Programmatic Retry for Reactive Code</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public Publisher&lt;Book&gt; streamBooks() {
+    return retryOperations.executePublisher(() -&gt; Flux.defer(() -&gt; {
+        if (reactiveCounter.incrementAndGet() &lt; 3) {
+            return Flux.error(new IllegalStateException("Temporary failure"));
+        }
+        return Flux.just(new Book("The Stand"));
+    }));
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Programmatic Retry for Reactive Code</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">open fun streamBooks(): Publisher&lt;Book&gt; = retryOperations.executePublisher {
+    Flux.defer {
+        if (reactiveCounter.incrementAndGet() &lt; 3) {
+            Flux.error(IllegalStateException("Temporary failure"))
+        } else {
+            Flux.just(Book("The Stand"))
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Programmatic Retry for Reactive Code</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">Publisher&lt;Book&gt; streamBooks() {
+    retryOperations.executePublisher {
+        Flux.defer {
+            if (reactiveCounter.incrementAndGet() &lt; 3) {
+                Flux.error(new IllegalStateException('Temporary failure'))
+            } else {
+                Flux.just(new Book('The Stand'))
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For asynchronous work, pass a supplier that creates a new <code>CompletionStage</code> for each attempt:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Programmatic Retry for Asynchronous Code</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public CompletionStage&lt;Book&gt; findBook(String title) {
+    return retryOperations.executeCompletionStage(() -&gt; CompletableFuture.supplyAsync(() -&gt; {
+        if (asyncCounter.incrementAndGet() &lt; 3) {
+            throw new IllegalStateException("Temporary failure");
+        }
+        return new Book(title);
+    }));
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Programmatic Retry for Asynchronous Code</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">open fun findBook(title: String): CompletionStage&lt;Book&gt; = retryOperations.executeCompletionStage {
+    CompletableFuture.supplyAsync {
+        if (asyncCounter.incrementAndGet() &lt; 3) {
+            throw IllegalStateException("Temporary failure")
+        }
+        Book(title)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Programmatic Retry for Asynchronous Code</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">CompletionStage&lt;Book&gt; findBook(String title) {
+    retryOperations.executeCompletionStage {
+        CompletableFuture.supplyAsync {
+            if (asyncCounter.incrementAndGet() &lt; 3) {
+                throw new IllegalStateException('Temporary failure')
+            }
+            new Book(title)
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_programmatic_circuit_breaker">Programmatic Circuit Breaker</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Programmatic circuit breakers are created in the same way, using a typed <code>CircuitBreakerPolicy</code> and an injected <code>CircuitBreakerOperationsFactory</code>. The resulting <code>CircuitBreakerOperations</code> instance owns the shared breaker state.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Programmatic Circuit Breaker</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public Book findBookWithCircuitBreaker(String title) {
+    return circuitBreakerOperations.execute(() -&gt; {
+        if (circuitCounter.incrementAndGet() &lt; 4) {
+            throw new IllegalStateException("Circuit failure");
+        }
+        return new Book(title);
+    });
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Programmatic Circuit Breaker</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">open fun findBookWithCircuitBreaker(title: String): Book = circuitBreakerOperations.execute {
+    if (circuitCounter.incrementAndGet() &lt; 4) {
+        throw IllegalStateException("Circuit failure")
+    }
+    Book(title)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Programmatic Circuit Breaker</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">Book findBookWithCircuitBreaker(String title) {
+    circuitBreakerOperations.execute {
+        if (circuitCounter.incrementAndGet() &lt; 4) {
+            throw new IllegalStateException('Circuit failure')
+        }
+        new Book(title)
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_factory_bean_retry">Factory Bean Retry</h2>
 <div class="sectionbody">
 <div class="paragraph">
