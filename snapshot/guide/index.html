@@ -10197,6 +10197,10 @@ public class BaseApplication extends Application { <i class="conum" data-value="
 <div class="paragraph">
 <p>Each source of configuration is modeled with the <a href="../api/io/micronaut/context/env/PropertySource.html">PropertySource</a> interface and the mechanism is extensible, allowing the implementation of additional <a href="../api/io/micronaut/context/env/PropertySourceLoader.html">PropertySourceLoader</a> implementations.</p>
 </div>
+<div class="paragraph">
+<p>Micronaut also supports in-file configuration imports via <code>micronaut.config.import</code>, which allows one configuration source to load additional sources recursively.
+See <a href="#propertySource">Property Sources</a> for protocol-specific syntax (<code>file</code>, <code>classpath</code>, <code>env</code>, <code>configtree</code>) and optional import behavior.</p>
+</div>
 
 <h2 id="environments"><a class="anchor" href="#environments"></a>4.1 The Environment</h2>
 
@@ -10593,10 +10597,387 @@ then:
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-'micronaut.config.files' will be ignored in bootstrap.yml or application.yml. Loading additional configuration files from a configuration file is not supported
+'micronaut.config.files' will be ignored in bootstrap.yml or application.yml.
 </td>
 </tr>
 </table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_importing_additional_configuration">Importing Additional Configuration</h3>
+<div class="paragraph">
+<p>You can import additional configuration directly from a configuration file using <code>micronaut.config.import</code>.
+The value can be a single string, a list, or indexed entries (<code>micronaut.config.import[0]</code>, <code>micronaut.config.import[1]</code>, &#8230;&#8203;).</p>
+</div>
+<div class="openblock">
+<div class="title">Importing additional configuration</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.config.import[0]=file:///etc/myapp/shared
+micronaut.config.import[1]=classpath://overrides.yml
+micronaut.config.import[2]=optional:env://MY_APP_INLINE_CONFIG</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  config:
+    import:
+      - "file:///etc/myapp/shared"
+      - "classpath://overrides.yml"
+      - "optional:env://MY_APP_INLINE_CONFIG"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.config]
+    import=[
+      "file:///etc/myapp/shared",
+      "classpath://overrides.yml",
+      "optional:env://MY_APP_INLINE_CONFIG"
+    ]</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  config {
+    'import' = ["file:///etc/myapp/shared", "classpath://overrides.yml", "optional:env://MY_APP_INLINE_CONFIG"]
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    config {
+      import = ["file:///etc/myapp/shared", "classpath://overrides.yml", "optional:env://MY_APP_INLINE_CONFIG"]
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "config": {
+      "import": ["file:///etc/myapp/shared", "classpath://overrides.yml", "optional:env://MY_APP_INLINE_CONFIG"]
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Imports are resolved recursively and support the following protocols:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>file://</code> – load from the file system</p>
+</li>
+<li>
+<p><code>classpath://</code> – load exactly one matching classpath resource (fails if duplicates are found)</p>
+</li>
+<li>
+<p><code>classpath*://</code> – load and merge all matching classpath resources in classpath discovery order</p>
+</li>
+<li>
+<p><code>env://</code> – load key/value properties from an environment variable value, using the variable-name suffix (for example <code>.yml</code>) or <code>?extension=yml</code> / <code>?extension=json</code> to select non-properties formats</p>
+</li>
+<li>
+<p><code>configtree://</code> – load a directory tree where file paths map to property keys</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Prefix any import with <code>optional:</code> to skip it when the target is missing.
+Without <code>optional:</code>, an <a href="../api/io/micronaut/context/exceptions/ConfigurationException.html">ConfigurationException</a> is thrown if the import cannot be loaded.</p>
+</div>
+<div class="paragraph">
+<p>For <code>file://</code>, <code>classpath://</code>, and <code>classpath*://</code> imports, if no extension is provided, Micronaut probes known configuration extensions (<code>.properties</code>, <code>.json</code>, <code>.yml</code>, and any additional enabled loaders).</p>
+</div>
+<div class="paragraph">
+<p>For <code>env://</code> imports, Micronaut defaults to <code>.properties</code> parsing. To import YAML or JSON from an environment variable, either include the format in the variable reference such as <code>env://MY_APP_INLINE_CONFIG.yml</code>, or specify it explicitly with <code>env://MY_APP_INLINE_CONFIG?extension=yml</code>.</p>
+</div>
+<div class="paragraph">
+<p>When multiple resources with the same classpath name are present:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>classpath://</code> throws a <a href="../api/io/micronaut/context/exceptions/ConfigurationException.html">ConfigurationException</a> and reports all matching locations.</p>
+</li>
+<li>
+<p><code>classpath*://</code> loads all matches in classpath order and merges them in that same order.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<code><a href="file:///tmp/bar.properties" class="bare">file:///tmp/bar.properties</a></code> (with three slashes) resolves to the absolute path <code>/tmp/bar.properties</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_implementing_a_custom_propertysourceimporter">Implementing a Custom PropertySourceImporter</h3>
+<div class="paragraph">
+<p>You can add support for a custom import protocol by implementing <a href="../api/io/micronaut/context/env/PropertySourceImporter.html">PropertySourceImporter</a> and registering it with Java ServiceLoader. Each importer declares its provider with <code>getProvider()</code>, converts the parsed <a href="../api/io/micronaut/core/util/ConnectionString.html">ConnectionString</a> into a typed declaration via <code>newImportDeclaration(..)</code>, and then reads configuration from <code>importPropertySource(..)</code>.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Custom importer implementation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public final class DemoPropertySourceImporter implements PropertySourceImporter&lt;DemoPropertySourceImporter.DemoImport&gt; {
+
+    @Override
+    public String getProvider() {
+        return "demo";
+    }
+
+    @Override
+    public DemoImport newImportDeclaration(ConnectionString connectionString) {
+        return new DemoImport(connectionString.getPath());
+    }
+
+    @Override
+    public DemoImport newImportDeclaration(ConvertibleValues&lt;Object&gt; values) {
+        return new DemoImport(values.get("path", String.class).orElse("defaults"));
+    }
+
+    @Override
+    public Optional&lt;PropertySource&gt; importPropertySource(ImportContext&lt;DemoImport&gt; context) {
+        if (!"defaults".equals(context.importDeclaration().path())) {
+            return Optional.empty();
+        }
+        return Optional.of(PropertySource.of(
+            "demo:defaults",
+            Map.of("demo.message", "hello-from-demo-importer")
+        ));
+    }
+
+    public record DemoImport(String path) {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Custom importer implementation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">class DemoPropertySourceImporter : PropertySourceImporter&lt;DemoPropertySourceImporter.DemoImport&gt; {
+    override fun getProvider(): String = "demo"
+
+    override fun newImportDeclaration(connectionString: ConnectionString): DemoImport = DemoImport(connectionString.path)
+
+    override fun newImportDeclaration(values: ConvertibleValues&lt;Any&gt;): DemoImport = DemoImport(values.get("path", String::class.java).orElse("defaults"))
+
+    override fun importPropertySource(context: PropertySourceImporter.ImportContext&lt;DemoImport&gt;): java.util.Optional&lt;PropertySource&gt; {
+        if (context.importDeclaration().path != "defaults") {
+            return java.util.Optional.empty()
+        }
+        return java.util.Optional.of(
+            PropertySource.of(
+                "demo:defaults",
+                mapOf("demo.message" to "hello-from-demo-importer")
+            )
+        )
+    }
+
+    data class DemoImport(val path: String)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Custom importer implementation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">class DemoPropertySourceImporter implements PropertySourceImporter&lt;DemoPropertySourceImporter.DemoImport&gt; {
+
+    @Override
+    String getProvider() {
+        return "demo"
+    }
+
+    @Override
+    DemoImport newImportDeclaration(ConnectionString connectionString) {
+        new DemoImport(connectionString.path)
+    }
+
+    @Override
+    DemoImport newImportDeclaration(ConvertibleValues&lt;Object&gt; values) {
+        new DemoImport(values.get("path", String).orElse("defaults"))
+    }
+
+    @Override
+    Optional&lt;PropertySource&gt; importPropertySource(PropertySourceImporter.ImportContext&lt;DemoImport&gt; context) {
+        if (context.importDeclaration().path() != "defaults") {
+            return Optional.empty()
+        }
+        return Optional.of(PropertySource.of("demo:defaults", ["demo.message": "hello-from-demo-importer"]))
+    }
+
+    static record DemoImport(String path) {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Custom importer test</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
+void importsDemoDefaults() {
+    try (ApplicationContext context = ApplicationContext.run()) {
+        DemoPropertySourceImporter importer = new DemoPropertySourceImporter();
+        DemoPropertySourceImporter.DemoImport declaration = importer.newImportDeclaration(ConnectionString.parse("demo://defaults"));
+        PropertySourceImporter.ImportContext&lt;DemoPropertySourceImporter.DemoImport&gt; importContext = new PropertySourceImporter.ImportContext&lt;&gt;() {
+            @Override
+            public Environment environment() {
+                return context.getEnvironment();
+            }
+
+            @Override
+            public ConnectionString connectionString() {
+                return ConnectionString.parse("demo://defaults");
+            }
+
+            @Override
+            public DemoPropertySourceImporter.DemoImport importDeclaration() {
+                return declaration;
+            }
+
+            @Override
+            public PropertySource.Origin parentOrigin() {
+                return PropertySource.Origin.of("classpath:application.yml");
+            }
+
+            @Override
+            public Optional&lt;PropertySource&gt; importPropertySource(ResourceLoader resourceLoader,
+                                                                 String resourcePath,
+                                                                 String sourceName,
+                                                                 PropertySource.Origin origin) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional&lt;PropertySource&gt; importPropertySource(String content,
+                                                                 String sourceName,
+                                                                 String extension,
+                                                                 PropertySource.Origin origin) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional&lt;PropertySource&gt; importClasspathPropertySource(String resourcePath,
+                                                                          String sourceName,
+                                                                          PropertySource.Origin origin,
+                                                                          boolean allowMultiple) {
+                return Optional.empty();
+            }
+        };
+
+        Optional&lt;PropertySource&gt; propertySource = importer.importPropertySource(importContext);
+
+        assertTrue(propertySource.isPresent());
+        assertEquals("hello-from-demo-importer", propertySource.get().get("demo.message"));
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Custom importer test</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Test
+fun importsDemoDefaults() {
+    ApplicationContext.run().use { context -&gt;
+        val importer = DemoPropertySourceImporter()
+        val declaration = importer.newImportDeclaration(ConnectionString.parse("demo://defaults"))
+        val importContext = object : PropertySourceImporter.ImportContext&lt;DemoPropertySourceImporter.DemoImport&gt; {
+            override fun environment(): Environment = context.environment
+
+            override fun connectionString(): ConnectionString = ConnectionString.parse("demo://defaults")
+
+            override fun importDeclaration(): DemoPropertySourceImporter.DemoImport = declaration
+
+            override fun parentOrigin(): PropertySource.Origin = PropertySource.Origin.of("classpath:application.yml")
+
+            override fun importPropertySource(
+                resourceLoader: ResourceLoader,
+                resourcePath: String,
+                sourceName: String,
+                origin: PropertySource.Origin
+            ): java.util.Optional&lt;PropertySource&gt; = java.util.Optional.empty()
+
+            override fun importPropertySource(
+                content: String,
+                sourceName: String,
+                extension: String,
+                origin: PropertySource.Origin
+            ): java.util.Optional&lt;PropertySource&gt; = java.util.Optional.empty()
+
+            override fun importClasspathPropertySource(
+                resourcePath: String,
+                sourceName: String,
+                origin: PropertySource.Origin,
+                allowMultiple: Boolean
+            ): java.util.Optional&lt;PropertySource&gt; = java.util.Optional.empty()
+        }
+
+        val propertySource = importer.importPropertySource(importContext)
+
+        assertTrue(propertySource.isPresent)
+        assertEquals("hello-from-demo-importer", propertySource.get().get("demo.message"))
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Register your implementation in <code>META-INF/services/io.micronaut.context.env.PropertySourceImporter</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">io.micronaut.docs.config.importer.DemoPropertySourceImporter</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After registration, the importer is selected when <code>micronaut.config.import</code> uses your protocol, for example <code>demo://defaults</code>.</p>
+</div>
+<div class="paragraph">
+<p>If your importer loads remote configuration, <a href="../api/io/micronaut/discovery/config/RetryablePropertySourceImporter.html">RetryablePropertySourceImporter</a> in <code>micronaut-discovery-core</code> provides a reusable base class that standardizes retry behavior across both connection-string and map-based imports. It parses the same retry properties from either form and applies them with Micronaut&#8217;s programmatic retry support.</p>
+</div>
+<div class="paragraph">
+<p>Standard retry properties supported by <a href="../api/io/micronaut/discovery/config/RetryablePropertySourceImporter.html">RetryablePropertySourceImporter</a> are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>retry-attempts</code> – maximum number of attempts</p>
+</li>
+<li>
+<p><code>retry-count</code> – alias for <code>retry-attempts</code></p>
+</li>
+<li>
+<p><code>retry-delay</code> – delay between attempts</p>
+</li>
+<li>
+<p><code>retry-max-delay</code> – maximum overall retry delay</p>
+</li>
+<li>
+<p><code>retry-multiplier</code> – delay multiplier</p>
+</li>
+<li>
+<p><code>retry-jitter</code> – retry jitter factor from <code>0.0</code> to <code>1.0</code></p>
+</li>
+</ul>
 </div>
 <div class="admonitionblock tip">
 <table>
