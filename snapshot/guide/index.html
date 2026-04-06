@@ -2898,13 +2898,13 @@ class RateLimitsFactory {
 </div>
 </div>
 <div class="paragraph">
-<p>When a collection of <code>RateLimit</code> beans are requested from the context, they are returned in ascending order based on the value in the annotation.</p>
+<p>When a collection of <code>RateLimit</code> beans are requested from the context, they are returned in ascending order based on the value in the annotation. Micronaut maps <a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/annotation/Priority.html">jakarta.annotation.Priority</a> to <a href="../api/io/micronaut/core/annotation/Order.html">@Order</a> at build time, so <a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/annotation/Priority.html">@Priority</a> values are treated the same as <a href="../api/io/micronaut/core/annotation/Order.html">@Order</a> and follow the same ascending numeric precedence (lower numbers mean higher precedence).</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_injecting_a_bean_by_order">Injecting a Bean by Order</h3>
 <div class="paragraph">
-<p>When injecting a single instance of a bean the <a href="../api/io/micronaut/core/annotation/Order.html">@Order</a> annotation can also be used to define which bean has the highest precedence and hence should be injected.</p>
+<p>When injecting a single instance of a bean the <a href="../api/io/micronaut/core/annotation/Order.html">@Order</a> annotation can also be used to define which bean has the highest precedence and hence should be injected. Micronaut also maps <a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/annotation/Priority.html">jakarta.annotation.Priority</a> to <a href="../api/io/micronaut/core/annotation/Order.html">@Order</a> at build time, so the same mapped <a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/annotation/Priority.html">@Priority</a> numeric semantics determine which bean has the highest precedence for single-bean injection.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -27837,23 +27837,26 @@ The call to <code>FilterContinuation.proceed</code> is blocking by default, so i
 
 
 <div class="paragraph">
-<p>Filters can be ordered in one of three ways:</p>
+<p>Filters can be ordered by annotating the filter method or filter class with <a href="../api/io/micronaut/order/Order.html">Order</a> or <a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/annotation/Priority.html">jakarta.annotation.Priority</a>, or by implementing <a href="../api/io/micronaut/order/Ordered.html">Ordered</a> in the filter class.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>An <a href="../api/io/micronaut/order/Order.html">Order</a> annotation on the filter method</p>
+<p>An <a href="../api/io/micronaut/order/Order.html">Order</a> or <a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/annotation/Priority.html">@Priority</a> annotation on the filter method</p>
+</li>
+<li>
+<p>An <a href="../api/io/micronaut/order/Order.html">Order</a> or <a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/annotation/Priority.html">@Priority</a> annotation on the filter class</p>
 </li>
 <li>
 <p>Implementing <a href="../api/io/micronaut/order/Ordered.html">Ordered</a> in the filter class</p>
-</li>
-<li>
-<p>An <a href="../api/io/micronaut/order/Order.html">Order</a> annotation on the filter class</p>
 </li>
 </ol>
 </div>
 <div class="paragraph">
 <p>Request filters are executed in order from the highest precedence (the smallest integer value, as defined by <code>Ordered.HIGHEST_PRECEDENCE</code>) to the lowest precedence (the biggest integer value, as defined by <code>Ordered.LOWEST_PRECEDENCE</code>). Response filters are executed in reverse order.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut applies the same numeric precedence rule to <a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/annotation/Priority.html">jakarta.annotation.Priority</a> because <a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/annotation/Priority.html">@Priority</a> is mapped to <a href="../api/io/micronaut/core/annotation/Order.html">@Order</a> during annotation processing.</p>
 </div>
 <div class="imageblock">
 <div class="content">
