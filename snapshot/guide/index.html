@@ -30160,6 +30160,12 @@ micronaut.server.netty.childOptions.autoRead=true</code></pre>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.redispatch-non-blocking-only</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.default-charset</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.nio.charset.Charset</p></td>
 <td class="tableblock halign-left valign-top"></td>
@@ -53992,6 +53998,31 @@ context.registerBeanDefinition(
 </div>
 <div class="paragraph">
 <p><code>@Scheduled</code> is no longer processed in parallel, this reduced the complexity of the method processor and removed unnecessary overhead.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_http_server_thread_selection_now_applies_across_more_request_stages">HTTP server thread selection now applies across more request stages</h4>
+<div class="paragraph">
+<p>Micronaut 5 extends server <code>thread-selection</code> handling so that it applies not only to route execution, but also to server filters and request event listeners.</p>
+</div>
+<div class="paragraph">
+<p>As a result, applications that previously observed different threads for filters, event listeners, and controllers may now see those stages executed more consistently on the executor selected by the server configuration.</p>
+</div>
+<div class="paragraph">
+<p>The <code>micronaut.server.netty.redispatch-non-blocking-only</code> setting now controls whether Micronaut redispatches again after request processing has already moved from the initial non-blocking event-loop thread to a blocking-capable thread:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>true</code> skips repeated redispatch once execution is already on a blocking-capable thread. This reduces executor hops and avoids creating additional virtual threads for every filter, event listener, and controller stage.</p>
+</li>
+<li>
+<p><code>false</code> applies the configured executor at each stage even if the current thread is already blocking-capable. This more closely matches the previous behavior, but may introduce more thread hops and, when using virtual threads, more virtual thread creation during one request.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If your application depends on specific thread transitions between filters, event listeners, and route handlers, review this setting and test request-processing behavior after upgrading.</p>
 </div>
 </div>
 <div class="sect3">

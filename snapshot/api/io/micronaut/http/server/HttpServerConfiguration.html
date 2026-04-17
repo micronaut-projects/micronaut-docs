@@ -88,7 +88,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#getHttpVersion()" tabindex="0">getHttpVersion()</a></li>
 <li><a href="#setHttpVersion(io.micronaut.http.HttpVersion)" tabindex="0">setHttpVersion(HttpVersion)</a></li>
 <li><a href="#getThreadSelection()" tabindex="0">getThreadSelection()</a></li>
+<li><a href="#isRedispatchNonBlockingOnly()" tabindex="0">isRedispatchNonBlockingOnly()</a></li>
 <li><a href="#setThreadSelection(io.micronaut.scheduling.executor.ThreadSelection)" tabindex="0">setThreadSelection(ThreadSelection)</a></li>
+<li><a href="#setRedispatchNonBlockingOnly(boolean)" tabindex="0">setRedispatchNonBlockingOnly(boolean)</a></li>
 <li><a href="#getApplicationConfiguration()" tabindex="0">getApplicationConfiguration()</a></li>
 <li><a href="#getDefaultCharset()" tabindex="0">getDefaultCharset()</a></li>
 <li><a href="#getPort()" tabindex="0">getPort()</a></li>
@@ -157,7 +159,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="../context/ServerContextPathProvider.html" title="interface in io.micronaut.http.context">ServerContextPathProvider</a></code></dd>
+<dd><code><a href="../context/ServerContextPathProvider.html" title="interface in io.micronaut.http.context">ServerContextPathProvider</a>, <a href="../../scheduling/executor/ThreadSelectionConfiguration.html" title="interface in io.micronaut.scheduling.executor">ThreadSelectionConfiguration</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>Direct Known Subclasses:</dt>
@@ -169,7 +171,7 @@ loadScripts(document, 'script');</script>
                          <a href="../../context/annotation/ConfigurationProperties.html#cliPrefix()">cliPrefix</a>="")
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">HttpServerConfiguration</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements <a href="../context/ServerContextPathProvider.html" title="interface in io.micronaut.http.context">ServerContextPathProvider</a></span></div>
+implements <a href="../context/ServerContextPathProvider.html" title="interface in io.micronaut.http.context">ServerContextPathProvider</a>, <a href="../../scheduling/executor/ThreadSelectionConfiguration.html" title="interface in io.micronaut.scheduling.executor">ThreadSelectionConfiguration</a></span></div>
 <div class="block"><p>A base <a href="../../context/annotation/ConfigurationProperties.html" title="annotation interface in io.micronaut.context.annotation"><code>ConfigurationProperties</code></a> for servers.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
@@ -396,7 +398,9 @@ implements <a href="../context/ServerContextPathProvider.html" title="interface 
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../scheduling/executor/ThreadSelection.html" title="enum class in io.micronaut.scheduling.executor">ThreadSelection</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getThreadSelection()" class="member-name-link">getThreadSelection</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The target executor.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getWriteIdleTimeout()" class="member-name-link">getWriteIdleTimeout</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -427,119 +431,129 @@ part of the request path.</div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isNotFoundOnMissingBody()" class="member-name-link">isNotFoundOnMissingBody</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSemicolonIsNormalChar()" class="member-name-link">isSemicolonIsNormalChar</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isRedispatchNonBlockingOnly()" class="member-name-link">isRedispatchNonBlockingOnly</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether executor redispatch should only happen on non-blocking threads.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSemicolonIsNormalChar()" class="member-name-link">isSemicolonIsNormalChar</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns whether the semicolon is considered a normal character in the query.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#isValidateUrl()" class="member-name-link">isValidateUrl</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#isValidateUrl()" class="member-name-link">isValidateUrl</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
 <div class="deprecation-comment">URLs are always validated again as of 4.9.</div>
 </div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setClientAddressHeader(java.lang.String)" class="member-name-link">setClientAddressHeader</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;clientAddressHeader)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setContextPath(java.lang.String)" class="member-name-link">setContextPath</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;contextPath)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setClientAddressHeader(java.lang.String)" class="member-name-link">setClientAddressHeader</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;clientAddressHeader)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setContextPath(java.lang.String)" class="member-name-link">setContextPath</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;contextPath)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the context path for the web server.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCors(io.micronaut.http.server.HttpServerConfiguration.CorsConfiguration)" class="member-name-link">setCors</a><wbr>(<a href="HttpServerConfiguration.CorsConfiguration.html" title="class in io.micronaut.http.server">HttpServerConfiguration.CorsConfiguration</a>&nbsp;cors)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCors(io.micronaut.http.server.HttpServerConfiguration.CorsConfiguration)" class="member-name-link">setCors</a><wbr>(<a href="HttpServerConfiguration.CorsConfiguration.html" title="class in io.micronaut.http.server">HttpServerConfiguration.CorsConfiguration</a>&nbsp;cors)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the cors configuration.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDateHeader(boolean)" class="member-name-link">setDateHeader</a><wbr>(boolean&nbsp;dateHeader)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDateHeader(boolean)" class="member-name-link">setDateHeader</a><wbr>(boolean&nbsp;dateHeader)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets whether a date header should be sent back.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDefaultCharset(java.nio.charset.Charset)" class="member-name-link">setDefaultCharset</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/charset/Charset.html" title="class or interface in java.nio.charset" class="external-link">Charset</a>&nbsp;defaultCharset)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDispatchOptionsRequests(boolean)" class="member-name-link">setDispatchOptionsRequests</a><wbr>(boolean&nbsp;dispatchOptionsRequests)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDefaultCharset(java.nio.charset.Charset)" class="member-name-link">setDefaultCharset</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/charset/Charset.html" title="class or interface in java.nio.charset" class="external-link">Charset</a>&nbsp;defaultCharset)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDispatchOptionsRequests(boolean)" class="member-name-link">setDispatchOptionsRequests</a><wbr>(boolean&nbsp;dispatchOptionsRequests)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Set to true to dispatch OPTIONS requests.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDualProtocol(boolean)" class="member-name-link">setDualProtocol</a><wbr>(boolean&nbsp;dualProtocol)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setEscapeHtmlUrl(boolean)" class="member-name-link">setEscapeHtmlUrl</a><wbr>(boolean&nbsp;escapeHtmlUrl)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDualProtocol(boolean)" class="member-name-link">setDualProtocol</a><wbr>(boolean&nbsp;dualProtocol)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setEscapeHtmlUrl(boolean)" class="member-name-link">setEscapeHtmlUrl</a><wbr>(boolean&nbsp;escapeHtmlUrl)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Browsers can send characters (such as <code>|</code>) which are not permitted under RFC 3986 as
 part of the request path.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHost(java.lang.String)" class="member-name-link">setHost</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;host)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHost(java.lang.String)" class="member-name-link">setHost</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;host)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the host to bind to.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHostResolution(io.micronaut.http.server.HttpServerConfiguration.HostResolutionConfiguration)" class="member-name-link">setHostResolution</a><wbr>(<a href="HttpServerConfiguration.HostResolutionConfiguration.html" title="class in io.micronaut.http.server">HttpServerConfiguration.HostResolutionConfiguration</a>&nbsp;hostResolution)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHttpToHttpsRedirect(boolean)" class="member-name-link">setHttpToHttpsRedirect</a><wbr>(boolean&nbsp;httpToHttpsRedirect)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHostResolution(io.micronaut.http.server.HttpServerConfiguration.HostResolutionConfiguration)" class="member-name-link">setHostResolution</a><wbr>(<a href="HttpServerConfiguration.HostResolutionConfiguration.html" title="class in io.micronaut.http.server">HttpServerConfiguration.HostResolutionConfiguration</a>&nbsp;hostResolution)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHttpVersion(io.micronaut.http.HttpVersion)" class="member-name-link">setHttpVersion</a><wbr>(@Nullable <a href="../HttpVersion.html" title="enum class in io.micronaut.http">HttpVersion</a>&nbsp;httpVersion)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Sets the HTTP version to use.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setIdleTimeout(java.time.Duration)" class="member-name-link">setIdleTimeout</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;idleTimeout)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Sets the idle time of connections for the server.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLocaleResolution(io.micronaut.http.server.HttpServerConfiguration.HttpLocaleResolutionConfigurationProperties)" class="member-name-link">setLocaleResolution</a><wbr>(<a href="HttpServerConfiguration.HttpLocaleResolutionConfigurationProperties.html" title="class in io.micronaut.http.server">HttpServerConfiguration.HttpLocaleResolutionConfigurationProperties</a>&nbsp;localeResolution)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHttpToHttpsRedirect(boolean)" class="member-name-link">setHttpToHttpsRedirect</a><wbr>(boolean&nbsp;httpToHttpsRedirect)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLogHandledExceptions(boolean)" class="member-name-link">setLogHandledExceptions</a><wbr>(boolean&nbsp;logHandledExceptions)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHttpVersion(io.micronaut.http.HttpVersion)" class="member-name-link">setHttpVersion</a><wbr>(@Nullable <a href="../HttpVersion.html" title="enum class in io.micronaut.http">HttpVersion</a>&nbsp;httpVersion)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the HTTP version to use.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setIdleTimeout(java.time.Duration)" class="member-name-link">setIdleTimeout</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;idleTimeout)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the idle time of connections for the server.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLocaleResolution(io.micronaut.http.server.HttpServerConfiguration.HttpLocaleResolutionConfigurationProperties)" class="member-name-link">setLocaleResolution</a><wbr>(<a href="HttpServerConfiguration.HttpLocaleResolutionConfigurationProperties.html" title="class in io.micronaut.http.server">HttpServerConfiguration.HttpLocaleResolutionConfigurationProperties</a>&nbsp;localeResolution)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLogHandledExceptions(boolean)" class="member-name-link">setLogHandledExceptions</a><wbr>(boolean&nbsp;logHandledExceptions)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets whether exceptions handled by either an error route or exception handler
 should still be logged.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMaxParams(int)" class="member-name-link">setMaxParams</a><wbr>(int&nbsp;maxParams)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMaxRequestBufferSize(long)" class="member-name-link">setMaxRequestBufferSize</a><wbr>(long&nbsp;maxRequestBufferSize)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMaxParams(int)" class="member-name-link">setMaxParams</a><wbr>(int&nbsp;maxParams)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMaxRequestBufferSize(long)" class="member-name-link">setMaxRequestBufferSize</a><wbr>(long&nbsp;maxRequestBufferSize)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the maximum number of request bytes that will be buffered.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMaxRequestSize(long)" class="member-name-link">setMaxRequestSize</a><wbr>(long&nbsp;maxRequestSize)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMaxRequestSize(long)" class="member-name-link">setMaxRequestSize</a><wbr>(long&nbsp;maxRequestSize)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the maximum request size.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMultipart(io.micronaut.http.server.HttpServerConfiguration.MultipartConfiguration)" class="member-name-link">setMultipart</a><wbr>(<a href="HttpServerConfiguration.MultipartConfiguration.html" title="class in io.micronaut.http.server">HttpServerConfiguration.MultipartConfiguration</a>&nbsp;multipart)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMultipart(io.micronaut.http.server.HttpServerConfiguration.MultipartConfiguration)" class="member-name-link">setMultipart</a><wbr>(<a href="HttpServerConfiguration.MultipartConfiguration.html" title="class in io.micronaut.http.server">HttpServerConfiguration.MultipartConfiguration</a>&nbsp;multipart)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the multipart configuration.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setNotFoundOnMissingBody(boolean)" class="member-name-link">setNotFoundOnMissingBody</a><wbr>(boolean&nbsp;notFoundOnMissingBody)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPort(int)" class="member-name-link">setPort</a><wbr>(int&nbsp;port)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setNotFoundOnMissingBody(boolean)" class="member-name-link">setNotFoundOnMissingBody</a><wbr>(boolean&nbsp;notFoundOnMissingBody)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPort(int)" class="member-name-link">setPort</a><wbr>(int&nbsp;port)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the port to bind to.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setReadIdleTimeout(java.time.Duration)" class="member-name-link">setReadIdleTimeout</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;readIdleTimeout)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setReadIdleTimeout(java.time.Duration)" class="member-name-link">setReadIdleTimeout</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;readIdleTimeout)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the amount of time a connection can remain idle without any reads occurring.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#setReadTimeout(java.lang.Integer)" class="member-name-link">setReadTimeout</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;readTimeout)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#setReadTimeout(java.lang.Integer)" class="member-name-link">setReadTimeout</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;readTimeout)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span>
 <div class="deprecation-comment">This setting does nothing</div>
 </div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRedispatchNonBlockingOnly(boolean)" class="member-name-link">setRedispatchNonBlockingOnly</a><wbr>(boolean&nbsp;redispatchNonBlockingOnly)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets whether configured executors are used only for calls from non-blocking threads.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSemicolonIsNormalChar(boolean)" class="member-name-link">setSemicolonIsNormalChar</a><wbr>(boolean&nbsp;semicolonIsNormalChar)</code></div>
@@ -907,9 +921,32 @@ should still be logged.</div>
 <h3>getThreadSelection</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../scheduling/executor/ThreadSelection.html" title="enum class in io.micronaut.scheduling.executor">ThreadSelection</a></span>&nbsp;<span class="element-name">getThreadSelection</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../scheduling/executor/ThreadSelectionConfiguration.html#getThreadSelection()">ThreadSelectionConfiguration</a></code></span></div>
+<div class="block">The target executor.</div>
 <dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../scheduling/executor/ThreadSelectionConfiguration.html#getThreadSelection()">getThreadSelection</a></code>&nbsp;in interface&nbsp;<code><a href="../../scheduling/executor/ThreadSelectionConfiguration.html" title="interface in io.micronaut.scheduling.executor">ThreadSelectionConfiguration</a></code></dd>
 <dt>Returns:</dt>
 <dd>The <a href="../../scheduling/executor/ThreadSelection.html" title="enum class in io.micronaut.scheduling.executor"><code>ThreadSelection</code></a> model to use for the server.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isRedispatchNonBlockingOnly()">
+<h3>isRedispatchNonBlockingOnly</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isRedispatchNonBlockingOnly</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../scheduling/executor/ThreadSelectionConfiguration.html#isRedispatchNonBlockingOnly()">ThreadSelectionConfiguration</a></code></span></div>
+<div class="block">Whether executor redispatch should only happen on non-blocking threads.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../scheduling/executor/ThreadSelectionConfiguration.html#isRedispatchNonBlockingOnly()">isRedispatchNonBlockingOnly</a></code>&nbsp;in interface&nbsp;<code><a href="../../scheduling/executor/ThreadSelectionConfiguration.html" title="interface in io.micronaut.scheduling.executor">ThreadSelectionConfiguration</a></code></dd>
+<dt>Returns:</dt>
+<dd>Whether executor redispatch should only happen on non-blocking threads.
+Requests begin on a non-blocking event-loop thread and are redispatched when the configured
+executor requires moving to a blocking-capable thread. When enabled, Micronaut skips further
+redispatch once execution is already on a blocking-capable thread.</dd>
 </dl>
 </div>
 </section>
@@ -923,6 +960,32 @@ should still be logged.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>threadSelection</code> - The thread selection model</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setRedispatchNonBlockingOnly(boolean)">
+<h3>setRedispatchNonBlockingOnly</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setRedispatchNonBlockingOnly</span><wbr><span class="parameters">(boolean&nbsp;redispatchNonBlockingOnly)</span></div>
+<div class="block">Sets whether configured executors are used only for calls from non-blocking threads.
+
+Requests begin on a non-blocking event-loop thread and are redispatched when the configured
+executor needs blocking-capable execution.
+
+If this is <code>true</code>, Micronaut skips repeated redispatch once request processing is
+already running on a blocking-capable thread such as a blocking pool or virtual thread.
+Filters, event listeners, and route code can then continue on that current blocking thread
+instead of hopping again for each stage.
+
+If this is <code>false</code>, Micronaut applies the configured executor at each stage even when
+execution is already on a blocking-capable thread. This more closely matches the older
+behavior, but can introduce additional executor hops and, with virtual threads, more virtual
+thread creation during a single request.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>redispatchNonBlockingOnly</code> - <code>true</code> to redispatch only from non-blocking threads</dd>
 </dl>
 </div>
 </section>
