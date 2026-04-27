@@ -58,12 +58,6 @@ loadScripts(document, 'script');</script>
 <li><a href="#field-summary" tabindex="0">Field Summary</a></li>
 <li><a href="#constructor-summary" tabindex="0">Constructor Summary</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
-<li><a href="#field-detail" tabindex="0">Field Details</a>
-<ol class="toc-list">
-<li><a href="#mediaTypeCodecRegistry" tabindex="0">mediaTypeCodecRegistry</a></li>
-<li><a href="#byteBufferFactory" tabindex="0">byteBufferFactory</a></li>
-</ol>
-</li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
 <li><a href="#%3Cinit%3E(io.micronaut.http.client.LoadBalancer,io.micronaut.http.client.HttpClientConfiguration,java.lang.String,java.util.concurrent.ThreadFactory,io.micronaut.http.client.netty.ssl.ClientSslBuilder,io.micronaut.http.codec.MediaTypeCodecRegistry,io.micronaut.http.body.MessageBodyHandlerRegistry,io.micronaut.core.annotation.AnnotationMetadataResolver,io.micronaut.core.convert.ConversionService,io.micronaut.http.filter.HttpClientFilter...)" tabindex="0">DefaultHttpClient(LoadBalancer, HttpClientConfiguration, String, ThreadFactory, ClientSslBuilder, MediaTypeCodecRegistry, MessageBodyHandlerRegistry, AnnotationMetadataResolver, ConversionService, HttpClientFilter...)</a></li>
@@ -77,10 +71,11 @@ loadScripts(document, 'script');</script>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
-<li><a href="#builder()" tabindex="0">builder()</a></li>
 <li><a href="#getConfiguration()" tabindex="0">getConfiguration()</a></li>
 <li><a href="#getLog()" tabindex="0">getLog()</a></li>
 <li><a href="#connectionManager()" tabindex="0">connectionManager()</a></li>
+<li><a href="#getConnectionManager()" tabindex="0">getConnectionManager()</a></li>
+<li><a href="#setConnectionManager(io.micronaut.http.client.netty.ConnectionManager)" tabindex="0">setConnectionManager(ConnectionManager)</a></li>
 <li><a href="#start()" tabindex="0">start()</a></li>
 <li><a href="#isRunning()" tabindex="0">isRunning()</a></li>
 <li><a href="#stop()" tabindex="0">stop()</a></li>
@@ -106,13 +101,15 @@ loadScripts(document, 'script');</script>
 <li><a href="#connect(java.lang.Class,io.micronaut.http.MutableHttpRequest)" tabindex="0">connect(Class, MutableHttpRequest)</a></li>
 <li><a href="#connect(java.lang.Class,java.util.Map)" tabindex="0">connect(Class, Map)</a></li>
 <li><a href="#close()" tabindex="0">close()</a></li>
+<li><a href="#toAsync()" tabindex="0">toAsync()</a></li>
 <li><a href="#proxy(io.micronaut.http.HttpRequest)" tabindex="0">proxy(HttpRequest)</a></li>
 <li><a href="#proxy(io.micronaut.http.HttpRequest,io.micronaut.http.client.ProxyRequestOptions)" tabindex="0">proxy(HttpRequest, ProxyRequestOptions)</a></li>
+<li><a href="#exchange(io.micronaut.http.HttpRequest,io.micronaut.http.body.CloseableByteBody,java.lang.Thread)" tabindex="0">exchange(HttpRequest, CloseableByteBody, Thread)</a></li>
 <li><a href="#resolveRequestURI(io.micronaut.http.HttpRequest)" tabindex="0">resolveRequestURI(HttpRequest)</a></li>
 <li><a href="#resolveRequestURI(io.micronaut.http.HttpRequest,boolean)" tabindex="0">resolveRequestURI(HttpRequest, boolean)</a></li>
 <li><a href="#resolveRedirectURI(io.micronaut.http.HttpRequest,io.micronaut.http.HttpRequest)" tabindex="0">resolveRedirectURI(HttpRequest, HttpRequest)</a></li>
 <li><a href="#getLoadBalancerDiscriminator(io.micronaut.http.HttpRequest)" tabindex="0">getLoadBalancerDiscriminator(HttpRequest)</a></li>
-<li><a href="#exchange(io.micronaut.http.HttpRequest,io.micronaut.http.body.CloseableByteBody,java.lang.Thread)" tabindex="0">exchange(HttpRequest, CloseableByteBody, Thread)</a></li>
+<li><a href="#builder()" tabindex="0">builder()</a></li>
 </ol>
 </li>
 </ol>
@@ -159,7 +156,7 @@ implements <a href="../../../websocket/WebSocketClient.html" title="interface in
 <div class="col-first even-row-color"><code>static final class&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="DefaultHttpClient.RequestKey.html" class="type-name-link" title="class in io.micronaut.http.client.netty">DefaultHttpClient.RequestKey</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">Key used for connection pooling and determining host/port.</div>
+<div class="block">Compatibility wrapper around <code>NettyHttpClient.RequestKey</code>.</div>
 </div>
 </div>
 </section>
@@ -168,18 +165,6 @@ implements <a href="../../../websocket/WebSocketClient.html" title="interface in
 <li>
 <section class="field-summary" id="field-summary">
 <h2>Field Summary</h2>
-<div class="caption"><span>Fields</span></div>
-<div class="summary-table three-column-summary">
-<div class="table-header col-first">Modifier and Type</div>
-<div class="table-header col-second">Field</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>protected final <a href="../../../core/io/buffer/ByteBufferFactory.html" title="interface in io.micronaut.core.io.buffer">ByteBufferFactory</a><wbr>&lt;io.netty.buffer.ByteBufAllocator, io.netty.buffer.ByteBuf&gt;</code></div>
-<div class="col-second even-row-color"><code><a href="#byteBufferFactory" class="member-name-link">byteBufferFactory</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="../../codec/MediaTypeCodecRegistry.html" title="interface in io.micronaut.http.codec">MediaTypeCodecRegistry</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#mediaTypeCodecRegistry" class="member-name-link">mediaTypeCodecRegistry</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-</div>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-io.micronaut.http.client.HttpClient">Fields inherited from interface&nbsp;<a href="../HttpClient.html#field-summary" title="interface in io.micronaut.http.client">HttpClient</a></h3>
 <code><a href="../HttpClient.html#DEFAULT_ERROR_TYPE">DEFAULT_ERROR_TYPE</a></code></div>
@@ -294,14 +279,14 @@ implements <a href="../../../websocket/WebSocketClient.html" title="interface in
 <div class="block">Delegates to <a href="../../../context/LifeCycle.html#stop()"><code>LifeCycle.stop()</code></a>.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>&gt;<br><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#connect(java.lang.Class,io.micronaut.http.MutableHttpRequest)" class="member-name-link">connect</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clientEndpointType,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#connect(java.lang.Class,io.micronaut.http.MutableHttpRequest)" class="member-name-link">connect</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;type,
  <a href="../../MutableHttpRequest.html" title="interface in io.micronaut.http">MutableHttpRequest</a>&lt;?&gt;&nbsp;request)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Connect the given client endpoint type to the URI over WebSocket.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>&gt;<br><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#connect(java.lang.Class,java.util.Map)" class="member-name-link">connect</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clientEndpointType,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;parameters)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#connect(java.lang.Class,java.util.Map)" class="member-name-link">connect</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;type,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;serviceIdentifier)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Connect the given client endpoint type.</div>
 </div>
@@ -340,15 +325,15 @@ implements <a href="../../../websocket/WebSocketClient.html" title="interface in
 <div class="block">Perform an HTTP request and receive data as a stream of SSE <a href="../../sse/Event.html" title="interface in io.micronaut.http.sse"><code>Event</code></a> objects as they become available without blocking.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;? extends <a href="../../HttpResponse.html" title="interface in io.micronaut.http">HttpResponse</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exchange(io.micronaut.http.HttpRequest,io.micronaut.http.body.CloseableByteBody,java.lang.Thread)" class="member-name-link">exchange</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
- @Nullable <a href="../../body/CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a>&nbsp;requestBody,
- @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Thread.html" title="class or interface in java.lang" class="external-link">Thread</a>&nbsp;blockedThread)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exchange(io.micronaut.http.HttpRequest,io.micronaut.http.body.CloseableByteBody,java.lang.Thread)" class="member-name-link">exchange</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;parentRequest,
+ @Nullable <a href="../../body/CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a>&nbsp;body,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Thread.html" title="class or interface in java.lang" class="external-link">Thread</a>&nbsp;originatingThread)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Send a raw request.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;I,<wbr>O,<wbr>E&gt;&nbsp;<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;<a href="../../HttpResponse.html" title="interface in io.micronaut.http">HttpResponse</a>&lt;O&gt;&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exchange(io.micronaut.http.HttpRequest,io.micronaut.core.type.Argument,io.micronaut.core.type.Argument)" class="member-name-link">exchange</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
- <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;O&gt;&nbsp;bodyType,
+ @Nullable <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;O&gt;&nbsp;bodyType,
  <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;E&gt;&nbsp;errorType)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Perform an HTTP request for the given request object emitting the full HTTP response from returned
@@ -370,85 +355,109 @@ implements <a href="../../../websocket/WebSocketClient.html" title="interface in
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../HttpClientConfiguration.html" title="class in io.micronaut.http.client">HttpClientConfiguration</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConfiguration()" class="member-name-link">getConfiguration</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../../body/MessageBodyHandlerRegistry.html" title="interface in io.micronaut.http.body">MessageBodyHandlerRegistry</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHandlerRegistry()" class="member-name-link">getHandlerRegistry</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ConnectionManager.html" title="class in io.micronaut.http.client.netty">ConnectionManager</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConnectionManager()" class="member-name-link">getConnectionManager</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../../body/MessageBodyHandlerRegistry.html" title="interface in io.micronaut.http.body">MessageBodyHandlerRegistry</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHandlerRegistry()" class="member-name-link">getHandlerRegistry</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the handler registry for this client.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLoadBalancerDiscriminator(io.micronaut.http.HttpRequest)" class="member-name-link">getLoadBalancerDiscriminator</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>protected final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#getLoadBalancerDiscriminator(io.micronaut.http.HttpRequest)" class="member-name-link">getLoadBalancerDiscriminator</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">Avoid inheriting and accessing this method</div>
+</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.slf4j.Logger</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLog()" class="member-name-link">getLog</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.slf4j.Logger</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLog()" class="member-name-link">getLog</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="../../codec/MediaTypeCodecRegistry.html" title="interface in io.micronaut.http.codec">MediaTypeCodecRegistry</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#getMediaTypeCodecRegistry()" class="member-name-link">getMediaTypeCodecRegistry</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="../../codec/MediaTypeCodecRegistry.html" title="interface in io.micronaut.http.codec">MediaTypeCodecRegistry</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#getMediaTypeCodecRegistry()" class="member-name-link">getMediaTypeCodecRegistry</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span>
 <div class="deprecation-comment">Use body handlers instead</div>
 </div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isRunning()" class="member-name-link">isRunning</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;I&gt;&nbsp;<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#jsonStream(io.micronaut.http.HttpRequest)" class="member-name-link">jsonStream</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Perform an HTTP request and receive data as a stream of JSON objects as they become available without blocking.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;I,<wbr>O&gt;&nbsp;<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;O&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#jsonStream(io.micronaut.http.HttpRequest,io.micronaut.core.type.Argument)" class="member-name-link">jsonStream</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
- <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;O&gt;&nbsp;type)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isRunning()" class="member-name-link">isRunning</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;I&gt;&nbsp;<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#jsonStream(io.micronaut.http.HttpRequest)" class="member-name-link">jsonStream</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Perform an HTTP request and receive data as a stream of JSON objects as they become available without blocking.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;I,<wbr>O&gt;&nbsp;<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;O&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#jsonStream(io.micronaut.http.HttpRequest,io.micronaut.core.type.Argument,io.micronaut.core.type.Argument)" class="member-name-link">jsonStream</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
- <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;O&gt;&nbsp;type,
- <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&nbsp;errorType)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#jsonStream(io.micronaut.http.HttpRequest,io.micronaut.core.type.Argument)" class="member-name-link">jsonStream</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
+ <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;O&gt;&nbsp;type)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Perform an HTTP request and receive data as a stream of JSON objects as they become available without blocking.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;I,<wbr>O&gt;&nbsp;<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;O&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#jsonStream(io.micronaut.http.HttpRequest,java.lang.Class)" class="member-name-link">jsonStream</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;O&gt;&nbsp;type)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#jsonStream(io.micronaut.http.HttpRequest,io.micronaut.core.type.Argument,io.micronaut.core.type.Argument)" class="member-name-link">jsonStream</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
+ <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;O&gt;&nbsp;type,
+ <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&nbsp;errorType)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Perform an HTTP request and receive data as a stream of JSON objects as they become available without blocking.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;<a href="../../MutableHttpResponse.html" title="interface in io.micronaut.http">MutableHttpResponse</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#proxy(io.micronaut.http.HttpRequest)" class="member-name-link">proxy</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;I,<wbr>O&gt;&nbsp;<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;O&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#jsonStream(io.micronaut.http.HttpRequest,java.lang.Class)" class="member-name-link">jsonStream</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;O&gt;&nbsp;type)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Proxy the given request and emit the response.</div>
+<div class="block">Perform an HTTP request and receive data as a stream of JSON objects as they become available without blocking.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;<a href="../../MutableHttpResponse.html" title="interface in io.micronaut.http">MutableHttpResponse</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#proxy(io.micronaut.http.HttpRequest,io.micronaut.http.client.ProxyRequestOptions)" class="member-name-link">proxy</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
- <a href="../ProxyRequestOptions.html" title="class in io.micronaut.http.client">ProxyRequestOptions</a>&nbsp;options)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#proxy(io.micronaut.http.HttpRequest)" class="member-name-link">proxy</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Proxy the given request and emit the response.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../HttpClient.html" title="interface in io.micronaut.http.client">HttpClient</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#refresh()" class="member-name-link">refresh</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;<a href="../../MutableHttpResponse.html" title="interface in io.micronaut.http">MutableHttpResponse</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#proxy(io.micronaut.http.HttpRequest,io.micronaut.http.client.ProxyRequestOptions)" class="member-name-link">proxy</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
+ <a href="../ProxyRequestOptions.html" title="class in io.micronaut.http.client">ProxyRequestOptions</a>&nbsp;options)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Proxy the given request and emit the response.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../HttpClient.html" title="interface in io.micronaut.http.client">HttpClient</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#refresh()" class="member-name-link">refresh</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Refreshes the current life cycle object.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected &lt;I&gt;&nbsp;<a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveRedirectURI(io.micronaut.http.HttpRequest,io.micronaut.http.HttpRequest)" class="member-name-link">resolveRedirectURI</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;parentRequest,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>protected final &lt;I&gt;&nbsp;<a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#resolveRedirectURI(io.micronaut.http.HttpRequest,io.micronaut.http.HttpRequest)" class="member-name-link">resolveRedirectURI</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;parentRequest,
  <a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected &lt;I&gt;&nbsp;<a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveRequestURI(io.micronaut.http.HttpRequest)" class="member-name-link">resolveRequestURI</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected &lt;I&gt;&nbsp;<a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveRequestURI(io.micronaut.http.HttpRequest,boolean)" class="member-name-link">resolveRequestURI</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">Avoid inheriting and accessing this method</div>
+</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>protected final &lt;I&gt;&nbsp;<a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#resolveRequestURI(io.micronaut.http.HttpRequest)" class="member-name-link">resolveRequestURI</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">Avoid inheriting and accessing this method</div>
+</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>protected final &lt;I&gt;&nbsp;<a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#resolveRequestURI(io.micronaut.http.HttpRequest,boolean)" class="member-name-link">resolveRequestURI</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
  boolean&nbsp;includeContextPath)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;I,<wbr>O,<wbr>E&gt;&nbsp;<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;O&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retrieve(io.micronaut.http.HttpRequest,io.micronaut.core.type.Argument,io.micronaut.core.type.Argument)" class="member-name-link">retrieve</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">Avoid inheriting and accessing this method</div>
+</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;I,<wbr>O,<wbr>E&gt;&nbsp;<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;O&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retrieve(io.micronaut.http.HttpRequest,io.micronaut.core.type.Argument,io.micronaut.core.type.Argument)" class="member-name-link">retrieve</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
  <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;O&gt;&nbsp;bodyType,
  <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;E&gt;&nbsp;errorType)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Perform an HTTP request for the given request object emitting the full HTTP response from returned
 <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link"><code>Publisher</code></a> and converting the response body to the specified type.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setConnectionManager(io.micronaut.http.client.netty.ConnectionManager)" class="member-name-link">setConnectionManager</a><wbr>(<a href="ConnectionManager.html" title="class in io.micronaut.http.client.netty">ConnectionManager</a>&nbsp;connectionManager)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Replace the underlying <a href="ConnectionManager.html" title="class in io.micronaut.http.client.netty"><code>ConnectionManager</code></a>.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>final void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#setHandlerRegistry(io.micronaut.http.body.MessageBodyHandlerRegistry)" class="member-name-link">setHandlerRegistry</a><wbr>(<a href="../../body/MessageBodyHandlerRegistry.html" title="interface in io.micronaut.http.body">MessageBodyHandlerRegistry</a>&nbsp;handlerRegistry)</code></div>
@@ -474,9 +483,12 @@ implements <a href="../../../websocket/WebSocketClient.html" title="interface in
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Stops the life cycle component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../BlockingHttpClient.html" title="interface in io.micronaut.http.client">BlockingHttpClient</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toBlocking()" class="member-name-link">toBlocking</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../AsyncHttpClient.html" title="interface in io.micronaut.http.client">AsyncHttpClient</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toAsync()" class="member-name-link">toAsync</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../BlockingHttpClient.html" title="interface in io.micronaut.http.client">BlockingHttpClient</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toBlocking()" class="member-name-link">toBlocking</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -498,30 +510,6 @@ implements <a href="../../../websocket/WebSocketClient.html" title="interface in
 </section>
 <section class="details">
 <ul class="details-list">
-<!-- ============ FIELD DETAIL =========== -->
-<li>
-<section class="field-details" id="field-detail">
-<h2>Field Details</h2>
-<ul class="member-list">
-<li>
-<section class="detail" id="mediaTypeCodecRegistry">
-<h3>mediaTypeCodecRegistry</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../../codec/MediaTypeCodecRegistry.html" title="interface in io.micronaut.http.codec">MediaTypeCodecRegistry</a></span>&nbsp;<span class="element-name">mediaTypeCodecRegistry</span></div>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="byteBufferFactory">
-<h3>byteBufferFactory</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="../../../core/io/buffer/ByteBufferFactory.html" title="interface in io.micronaut.core.io.buffer">ByteBufferFactory</a>&lt;io.netty.buffer.ByteBufAllocator, io.netty.buffer.ByteBuf&gt;</span>&nbsp;<span class="element-name">byteBufferFactory</span></div>
-</div>
-</section>
-</li>
-</ul>
-</section>
-</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
@@ -545,7 +533,6 @@ implements <a href="../../../websocket/WebSocketClient.html" title="interface in
 <div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>
 <div class="deprecation-comment">Please go through the <a href="#builder()"><code>builder()</code></a> instead. If you need access to properties that are not public in the builder, make them public in core and document their usage.</div>
 </div>
-<div class="block">Construct a client for the given arguments.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>loadBalancer</code> - The <a href="../LoadBalancer.html" title="interface in io.micronaut.http.client"><code>LoadBalancer</code></a> to use for selecting servers</dd>
@@ -709,21 +696,6 @@ implements <a href="../../../websocket/WebSocketClient.html" title="interface in
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="builder()">
-<h3>builder</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="DefaultHttpClientBuilder.html" title="class in io.micronaut.http.client.netty">DefaultHttpClientBuilder</a></span>&nbsp;<span class="element-name">builder</span>()</div>
-<div class="block">Create a new builder for a <a href="DefaultHttpClient.html" title="class in io.micronaut.http.client.netty"><code>DefaultHttpClient</code></a>.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>The builder</dd>
-<dt>Since:</dt>
-<dd>4.7.0</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
 <section class="detail" id="getConfiguration()">
 <h3>getConfiguration</h3>
 <div class="horizontal-scroll">
@@ -756,6 +728,34 @@ implements <a href="../../../websocket/WebSocketClient.html" title="interface in
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The connection manager of this client</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getConnectionManager()">
+<h3>getConnectionManager</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ConnectionManager.html" title="class in io.micronaut.http.client.netty">ConnectionManager</a></span>&nbsp;<span class="element-name">getConnectionManager</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The current connection manager.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setConnectionManager(io.micronaut.http.client.netty.ConnectionManager)">
+<h3>setConnectionManager</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setConnectionManager</span><wbr><span class="parameters">(<a href="ConnectionManager.html" title="class in io.micronaut.http.client.netty">ConnectionManager</a>&nbsp;connectionManager)</span></div>
+<div class="block">Replace the underlying <a href="ConnectionManager.html" title="class in io.micronaut.http.client.netty"><code>ConnectionManager</code></a>. Intended for testing.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>connectionManager</code> - The new connection manager</dd>
+<dt>Since:</dt>
+<dd>5.0</dd>
 </dl>
 </div>
 </section>
@@ -1167,7 +1167,7 @@ is buffered.</p></div>
 <h3>exchange</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;I,<wbr>O,<wbr>E&gt;</span>&nbsp;<span class="return-type"><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;<a href="../../HttpResponse.html" title="interface in io.micronaut.http">HttpResponse</a>&lt;O&gt;&gt;</span>&nbsp;<span class="element-name">exchange</span><wbr><span class="parameters">(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
- <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;O&gt;&nbsp;bodyType,
+ @Nullable <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;O&gt;&nbsp;bodyType,
  <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;E&gt;&nbsp;errorType)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../HttpClient.html#exchange(io.micronaut.http.HttpRequest,io.micronaut.core.type.Argument,io.micronaut.core.type.Argument)">HttpClient</a></code></span></div>
 <div class="block"><p>Perform an HTTP request for the given request object emitting the full HTTP response from returned
@@ -1226,7 +1226,7 @@ designed for simple non-streaming exchanges of data</p>
 <section class="detail" id="connect(java.lang.Class,io.micronaut.http.MutableHttpRequest)">
 <h3>connect</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>&gt;</span>&nbsp;<span class="return-type"><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;T&gt;</span>&nbsp;<span class="element-name">connect</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clientEndpointType,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>&gt;</span>&nbsp;<span class="return-type"><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;T&gt;</span>&nbsp;<span class="element-name">connect</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;type,
  <a href="../../MutableHttpRequest.html" title="interface in io.micronaut.http">MutableHttpRequest</a>&lt;?&gt;&nbsp;request)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../../websocket/WebSocketClient.html#connect(java.lang.Class,io.micronaut.http.MutableHttpRequest)">WebSocketClient</a></code></span></div>
 <div class="block">Connect the given client endpoint type to the URI over WebSocket.</div>
@@ -1236,7 +1236,7 @@ designed for simple non-streaming exchanges of data</p>
 <dt>Type Parameters:</dt>
 <dd><span id="connect(java.lang.Class,io.micronaut.http.MutableHttpRequest)-type-param-T"><code>T</code> - The generic type</span></dd>
 <dt>Parameters:</dt>
-<dd><code>clientEndpointType</code> - The endpoint type. Should be a class annotated with <a href="../../../websocket/annotation/ClientWebSocket.html" title="annotation interface in io.micronaut.websocket.annotation"><code>ClientWebSocket</code></a></dd>
+<dd><code>type</code> - The endpoint type. Should be a class annotated with <a href="../../../websocket/annotation/ClientWebSocket.html" title="annotation interface in io.micronaut.websocket.annotation"><code>ClientWebSocket</code></a></dd>
 <dd><code>request</code> - The original request to establish the connection</dd>
 <dt>Returns:</dt>
 <dd>A <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link"><code>Publisher</code></a> that emits the <a href="../../../websocket/annotation/ClientWebSocket.html" title="annotation interface in io.micronaut.websocket.annotation"><code>ClientWebSocket</code></a> instance</dd>
@@ -1248,8 +1248,8 @@ designed for simple non-streaming exchanges of data</p>
 <section class="detail" id="connect(java.lang.Class,java.util.Map)">
 <h3>connect</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>&gt;</span>&nbsp;<span class="return-type"><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;T&gt;</span>&nbsp;<span class="element-name">connect</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clientEndpointType,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;parameters)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>&gt;</span>&nbsp;<span class="return-type"><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;T&gt;</span>&nbsp;<span class="element-name">connect</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;type,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;serviceIdentifier)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../../websocket/WebSocketClient.html#connect(java.lang.Class,java.util.Map)">WebSocketClient</a></code></span></div>
 <div class="block">Connect the given client endpoint type. Unlike <a href="../../../websocket/WebSocketClient.html#connect(java.lang.Class,java.net.URI)"><code>WebSocketClient.connect(Class, URI)</code></a> this method will the value declared within the <a href="../../../websocket/annotation/ClientWebSocket.html" title="annotation interface in io.micronaut.websocket.annotation"><code>ClientWebSocket</code></a> as the URI
 and expand the URI with the given parameters.</div>
@@ -1259,8 +1259,8 @@ and expand the URI with the given parameters.</div>
 <dt>Type Parameters:</dt>
 <dd><span id="connect(java.lang.Class,java.util.Map)-type-param-T"><code>T</code> - The generic type</span></dd>
 <dt>Parameters:</dt>
-<dd><code>clientEndpointType</code> - The endpoint type. Should be a class annotated with <a href="../../../websocket/annotation/ClientWebSocket.html" title="annotation interface in io.micronaut.websocket.annotation"><code>ClientWebSocket</code></a></dd>
-<dd><code>parameters</code> - The URI parameters for the endpoint</dd>
+<dd><code>type</code> - The endpoint type. Should be a class annotated with <a href="../../../websocket/annotation/ClientWebSocket.html" title="annotation interface in io.micronaut.websocket.annotation"><code>ClientWebSocket</code></a></dd>
+<dd><code>serviceIdentifier</code> - The URI parameters for the endpoint</dd>
 <dt>Returns:</dt>
 <dd>A <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link"><code>Publisher</code></a> that emits the <a href="../../../websocket/annotation/ClientWebSocket.html" title="annotation interface in io.micronaut.websocket.annotation"><code>ClientWebSocket</code></a> instance</dd>
 </dl>
@@ -1283,6 +1283,20 @@ and expand the URI with the given parameters.</div>
 <dd><code><a href="../../../context/LifeCycle.html#close()">close</a></code>&nbsp;in interface&nbsp;<code><a href="../../../context/LifeCycle.html" title="interface in io.micronaut.context">LifeCycle</a>&lt;<a href="../HttpClient.html" title="interface in io.micronaut.http.client">HttpClient</a>&gt;</code></dd>
 <dt>Specified by:</dt>
 <dd><code><a href="../../../websocket/WebSocketClient.html#close()">close</a></code>&nbsp;in interface&nbsp;<code><a href="../../../websocket/WebSocketClient.html" title="interface in io.micronaut.websocket">WebSocketClient</a></code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="toAsync()">
+<h3>toAsync</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../AsyncHttpClient.html" title="interface in io.micronaut.http.client">AsyncHttpClient</a></span>&nbsp;<span class="element-name">toAsync</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../HttpClient.html#toAsync()">toAsync</a></code>&nbsp;in interface&nbsp;<code><a href="../HttpClient.html" title="interface in io.micronaut.http.client">HttpClient</a></code></dd>
+<dt>Returns:</dt>
+<dd>An <a href="../AsyncHttpClient.html" title="interface in io.micronaut.http.client"><code>AsyncHttpClient</code></a> backed by this reactive client.</dd>
 </dl>
 </div>
 </section>
@@ -1328,10 +1342,43 @@ If a relative URL is specified then the method will try to resolve the URI for t
 </section>
 </li>
 <li>
+<section class="detail" id="exchange(io.micronaut.http.HttpRequest,io.micronaut.http.body.CloseableByteBody,java.lang.Thread)">
+<h3>exchange</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;? extends <a href="../../HttpResponse.html" title="interface in io.micronaut.http">HttpResponse</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">exchange</span><wbr><span class="parameters">(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;parentRequest,
+ @Nullable <a href="../../body/CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a>&nbsp;body,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Thread.html" title="class or interface in java.lang" class="external-link">Thread</a>&nbsp;originatingThread)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../RawHttpClient.html#exchange(io.micronaut.http.HttpRequest,io.micronaut.http.body.CloseableByteBody,java.lang.Thread)">RawHttpClient</a></code></span></div>
+<div class="block">Send a raw request.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../RawHttpClient.html#exchange(io.micronaut.http.HttpRequest,io.micronaut.http.body.CloseableByteBody,java.lang.Thread)">exchange</a></code>&nbsp;in interface&nbsp;<code><a href="../RawHttpClient.html" title="interface in io.micronaut.http.client">RawHttpClient</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>parentRequest</code> - The request metadata (method, URI, headers). The
+                     <a href="../../HttpMessage.html#getBody()"><code>body</code></a> of this object is ignored</dd>
+<dd><code>body</code> - The request body bytes. <code>null</code> is equivalent to an empty body.
+                     The ownership of the body immediately transfers to the client, i.e. the
+                     client will always call <a href="../../body/CloseableByteBody.html#close()"><code>CloseableByteBody.close()</code></a> on the body
+                     even if there is an error before the request is sent.</dd>
+<dd><code>originatingThread</code> - The thread that is blocked waiting for this request. This is used for
+                     deadlock detection. Optional parameter.</dd>
+<dt>Returns:</dt>
+<dd>A mono that will contain the response to this request. This response will
+<i>usually</i> be a <a href="../../ByteBodyHttpResponse.html" title="interface in io.micronaut.http"><code>ByteBodyHttpResponse</code></a>, unless a filter replaced it.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="resolveRequestURI(io.micronaut.http.HttpRequest)">
 <h3>resolveRequestURI</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="type-parameters">&lt;I&gt;</span>&nbsp;<span class="return-type"><a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</span>&nbsp;<span class="element-name">resolveRequestURI</span><wbr><span class="parameters">(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request)</span></div>
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html#since()" title="class or interface in java.lang" class="external-link">since</a>="5.0",
+            <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html#forRemoval()" title="class or interface in java.lang" class="external-link">forRemoval</a>=true)
+</span><span class="modifiers">protected final</span>&nbsp;<span class="type-parameters">&lt;I&gt;</span>&nbsp;<span class="return-type"><a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</span>&nbsp;<span class="element-name">resolveRequestURI</span><wbr><span class="parameters">(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request)</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">Avoid inheriting and accessing this method</div>
+</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><span id="resolveRequestURI(io.micronaut.http.HttpRequest)-type-param-I"><code>I</code> - The input type</span></dd>
@@ -1347,8 +1394,13 @@ If a relative URL is specified then the method will try to resolve the URI for t
 <section class="detail" id="resolveRequestURI(io.micronaut.http.HttpRequest,boolean)">
 <h3>resolveRequestURI</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="type-parameters">&lt;I&gt;</span>&nbsp;<span class="return-type"><a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</span>&nbsp;<span class="element-name">resolveRequestURI</span><wbr><span class="parameters">(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html#since()" title="class or interface in java.lang" class="external-link">since</a>="5.0",
+            <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html#forRemoval()" title="class or interface in java.lang" class="external-link">forRemoval</a>=true)
+</span><span class="modifiers">protected final</span>&nbsp;<span class="type-parameters">&lt;I&gt;</span>&nbsp;<span class="return-type"><a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</span>&nbsp;<span class="element-name">resolveRequestURI</span><wbr><span class="parameters">(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request,
  boolean&nbsp;includeContextPath)</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">Avoid inheriting and accessing this method</div>
+</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><span id="resolveRequestURI(io.micronaut.http.HttpRequest,boolean)-type-param-I"><code>I</code> - The input type</span></dd>
@@ -1365,8 +1417,13 @@ If a relative URL is specified then the method will try to resolve the URI for t
 <section class="detail" id="resolveRedirectURI(io.micronaut.http.HttpRequest,io.micronaut.http.HttpRequest)">
 <h3>resolveRedirectURI</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="type-parameters">&lt;I&gt;</span>&nbsp;<span class="return-type"><a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</span>&nbsp;<span class="element-name">resolveRedirectURI</span><wbr><span class="parameters">(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;parentRequest,
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html#since()" title="class or interface in java.lang" class="external-link">since</a>="5.0",
+            <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html#forRemoval()" title="class or interface in java.lang" class="external-link">forRemoval</a>=true)
+</span><span class="modifiers">protected final</span>&nbsp;<span class="type-parameters">&lt;I&gt;</span>&nbsp;<span class="return-type"><a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</span>&nbsp;<span class="element-name">resolveRedirectURI</span><wbr><span class="parameters">(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;parentRequest,
  <a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request)</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">Avoid inheriting and accessing this method</div>
+</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><span id="resolveRedirectURI(io.micronaut.http.HttpRequest,io.micronaut.http.HttpRequest)-type-param-I"><code>I</code> - The input type</span></dd>
@@ -1383,7 +1440,12 @@ If a relative URL is specified then the method will try to resolve the URI for t
 <section class="detail" id="getLoadBalancerDiscriminator(io.micronaut.http.HttpRequest)">
 <h3>getLoadBalancerDiscriminator</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">getLoadBalancerDiscriminator</span><wbr><span class="parameters">(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request)</span></div>
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html#since()" title="class or interface in java.lang" class="external-link">since</a>="5.0",
+            <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html#forRemoval()" title="class or interface in java.lang" class="external-link">forRemoval</a>=true)
+</span><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">getLoadBalancerDiscriminator</span><wbr><span class="parameters">(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request)</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">Avoid inheriting and accessing this method</div>
+</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>request</code> - The request object</dd>
@@ -1394,29 +1456,16 @@ If a relative URL is specified then the method will try to resolve the URI for t
 </section>
 </li>
 <li>
-<section class="detail" id="exchange(io.micronaut.http.HttpRequest,io.micronaut.http.body.CloseableByteBody,java.lang.Thread)">
-<h3>exchange</h3>
+<section class="detail" id="builder()">
+<h3>builder</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;? extends <a href="../../HttpResponse.html" title="interface in io.micronaut.http">HttpResponse</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">exchange</span><wbr><span class="parameters">(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
- @Nullable <a href="../../body/CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a>&nbsp;requestBody,
- @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Thread.html" title="class or interface in java.lang" class="external-link">Thread</a>&nbsp;blockedThread)</span></div>
-<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../RawHttpClient.html#exchange(io.micronaut.http.HttpRequest,io.micronaut.http.body.CloseableByteBody,java.lang.Thread)">RawHttpClient</a></code></span></div>
-<div class="block">Send a raw request.</div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="DefaultHttpClientBuilder.html" title="class in io.micronaut.http.client.netty">DefaultHttpClientBuilder</a></span>&nbsp;<span class="element-name">builder</span>()</div>
+<div class="block">Create a new builder for a <a href="DefaultHttpClient.html" title="class in io.micronaut.http.client.netty"><code>DefaultHttpClient</code></a>.</div>
 <dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../RawHttpClient.html#exchange(io.micronaut.http.HttpRequest,io.micronaut.http.body.CloseableByteBody,java.lang.Thread)">exchange</a></code>&nbsp;in interface&nbsp;<code><a href="../RawHttpClient.html" title="interface in io.micronaut.http.client">RawHttpClient</a></code></dd>
-<dt>Parameters:</dt>
-<dd><code>request</code> - The request metadata (method, URI, headers). The
-                     <a href="../../HttpMessage.html#getBody()"><code>body</code></a> of this object is ignored</dd>
-<dd><code>requestBody</code> - The request body bytes. <code>null</code> is equivalent to an empty body.
-                     The ownership of the body immediately transfers to the client, i.e. the
-                     client will always call <a href="../../body/CloseableByteBody.html#close()"><code>CloseableByteBody.close()</code></a> on the body
-                     even if there is an error before the request is sent.</dd>
-<dd><code>blockedThread</code> - The thread that is blocked waiting for this request. This is used for
-                     deadlock detection. Optional parameter.</dd>
 <dt>Returns:</dt>
-<dd>A mono that will contain the response to this request. This response will
-<i>usually</i> be a <a href="../../ByteBodyHttpResponse.html" title="interface in io.micronaut.http"><code>ByteBodyHttpResponse</code></a>, unless a filter replaced it.</dd>
+<dd>The builder</dd>
+<dt>Since:</dt>
+<dd>4.7.0</dd>
 </dl>
 </div>
 </section>
