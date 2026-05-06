@@ -203,9 +203,8 @@ implements <a href="BufferConsumer.html" title="interface in io.micronaut.http.b
 <div class="block">Add a subscriber.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final <a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="../../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#subscribeFull0(io.micronaut.core.execution.DelayedExecutionFlow,io.micronaut.http.body.stream.BufferConsumer.Upstream,boolean)" class="member-name-link">subscribeFull0</a><wbr>(<a href="../../../core/execution/DelayedExecutionFlow.html" title="interface in io.micronaut.core.execution">DelayedExecutionFlow</a>&lt;<a href="../../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;&nbsp;targetFlow,
- <a href="BufferConsumer.Upstream.html" title="interface in io.micronaut.http.body.stream">BufferConsumer.Upstream</a>&nbsp;specificUpstream,
- boolean&nbsp;canReturnImmediate)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#subscribeFull0(io.micronaut.core.execution.DelayedExecutionFlow,io.micronaut.http.body.stream.BufferConsumer.Upstream)" class="member-name-link">subscribeFull0</a><wbr>(<a href="../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a> <a href="../../../core/execution/DelayedExecutionFlow.html" title="interface in io.micronaut.core.execution">DelayedExecutionFlow</a>&lt;<a href="../../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;&nbsp;targetFlow,
+ <a href="BufferConsumer.Upstream.html" title="interface in io.micronaut.http.body.stream">BufferConsumer.Upstream</a>&nbsp;specificUpstream)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Optimized version of <a href="#subscribe0(io.micronaut.http.body.stream.BufferConsumer,io.micronaut.http.body.stream.BufferConsumer.Upstream)"><code>subscribe0(io.micronaut.http.body.stream.BufferConsumer, io.micronaut.http.body.stream.BufferConsumer.Upstream)</code></a> for subscribers that want to buffer the full
  body.</div>
@@ -323,23 +322,18 @@ implements <a href="BufferConsumer.html" title="interface in io.micronaut.http.b
 </section>
 </li>
 <li>
-<section class="detail" id="subscribeFull0(io.micronaut.core.execution.DelayedExecutionFlow,io.micronaut.http.body.stream.BufferConsumer.Upstream,boolean)">
+<section class="detail" id="subscribeFull0(io.micronaut.core.execution.DelayedExecutionFlow,io.micronaut.http.body.stream.BufferConsumer.Upstream)">
 <h3>subscribeFull0</h3>
-<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="../../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;</span>&nbsp;<span class="element-name">subscribeFull0</span><wbr><span class="parameters">(<a href="../../../core/execution/DelayedExecutionFlow.html" title="interface in io.micronaut.core.execution">DelayedExecutionFlow</a>&lt;<a href="../../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;&nbsp;targetFlow,
- <a href="BufferConsumer.Upstream.html" title="interface in io.micronaut.http.body.stream">BufferConsumer.Upstream</a>&nbsp;specificUpstream,
- boolean&nbsp;canReturnImmediate)</span></div>
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="../../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;</span>&nbsp;<span class="element-name">subscribeFull0</span><wbr><span class="parameters">(<a href="../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a>
+ <a href="../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a> <a href="../../../core/execution/DelayedExecutionFlow.html" title="interface in io.micronaut.core.execution">DelayedExecutionFlow</a>&lt;<a href="../../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;&nbsp;targetFlow,
+ <a href="BufferConsumer.Upstream.html" title="interface in io.micronaut.http.body.stream">BufferConsumer.Upstream</a>&nbsp;specificUpstream)</span></div>
 <div class="block">Optimized version of <a href="#subscribe0(io.micronaut.http.body.stream.BufferConsumer,io.micronaut.http.body.stream.BufferConsumer.Upstream)"><code>subscribe0(io.micronaut.http.body.stream.BufferConsumer, io.micronaut.http.body.stream.BufferConsumer.Upstream)</code></a> for subscribers that want to buffer the full
- body. The returned flow will complete when the
- input is buffered. The returned flow will always be identical to the <code>targetFlow</code>
- parameter IF <code>canReturnImmediate</code> is false. If <code>canReturnImmediate</code> is true,
- this method will SOMETIMES return an immediate ExecutionFlow instead as an optimization.</div>
+ body. The returned flow will complete when the input is buffered.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>targetFlow</code> - The delayed flow to use if <code>canReturnImmediate</code> is false and/or
-                   we have to wait for the result</dd>
+<dd><code>targetFlow</code> - The delayed flow to use, or <code>null</code> if an already-complete
+                   result may be returned immediately</dd>
 <dd><code>specificUpstream</code> - The upstream for the subscriber. This is used to call allowDiscard if there was an error</dd>
-<dd><code>canReturnImmediate</code> - Whether we can return an immediate ExecutionFlow instead of
-                  <code>targetFlow</code>, when appropriate</dd>
 <dt>Returns:</dt>
 <dd>A flow that will complete when all data has arrived, with a buffer containing that data</dd>
 </dl>
