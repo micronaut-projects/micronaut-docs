@@ -209,21 +209,23 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-accessKind"><a href="#accessKind"><strong>3.18.4</strong><span>Bean Fields</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-atCreator"><a href="#atCreator"><strong>3.18.5</strong><span>Constructor Methods</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedProperty"><a href="#introspectedProperty"><strong>3.18.5</strong><span>Explicit Bean Properties</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-staticAtCreator"><a href="#staticAtCreator"><strong>3.18.6</strong><span>Static Creator Methods</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-atCreator"><a href="#atCreator"><strong>3.18.6</strong><span>Constructor Methods</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionBuilders"><a href="#introspectionBuilders"><strong>3.18.7</strong><span>Builders</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-staticAtCreator"><a href="#staticAtCreator"><strong>3.18.7</strong><span>Static Creator Methods</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionEnums"><a href="#introspectionEnums"><strong>3.18.8</strong><span>Introspect Enums</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionBuilders"><a href="#introspectionBuilders"><strong>3.18.8</strong><span>Builders</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedAnnotationOnAConfigurationClass"><a href="#introspectedAnnotationOnAConfigurationClass"><strong>3.18.9</strong><span>Use the @Introspected Annotation on a Configuration Class</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionEnums"><a href="#introspectionEnums"><strong>3.18.9</strong><span>Introspect Enums</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectExistingAnnotations"><a href="#introspectExistingAnnotations"><strong>3.18.10</strong><span>Write an AnnotationMapper to Introspect Existing Annotations</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedAnnotationOnAConfigurationClass"><a href="#introspectedAnnotationOnAConfigurationClass"><strong>3.18.10</strong><span>Use the @Introspected Annotation on a Configuration Class</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-beanWrapperApi"><a href="#beanWrapperApi"><strong>3.18.11</strong><span>The BeanWrapper API</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectExistingAnnotations"><a href="#introspectExistingAnnotations"><strong>3.18.11</strong><span>Write an AnnotationMapper to Introspect Existing Annotations</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-kotlinAndBeanIntrospection"><a href="#kotlinAndBeanIntrospection"><strong>3.18.12</strong><span>Kotlin and Bean Introspection</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-beanWrapperApi"><a href="#beanWrapperApi"><strong>3.18.12</strong><span>The BeanWrapper API</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-kotlinAndBeanIntrospection"><a href="#kotlinAndBeanIntrospection"><strong>3.18.13</strong><span>Kotlin and Bean Introspection</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-beanMappers"><a href="#beanMappers"><strong>3.19</strong><span>Bean Mappers</span></a></div>
         
@@ -7834,7 +7836,289 @@ Introspections on fields are not possible in Kotlin because it is not possible t
 </table>
 </div>
 
-<h2 id="atCreator"><a class="anchor" href="#atCreator"></a>3.18.5 Constructor Methods</h2>
+<h2 id="introspectedProperty"><a class="anchor" href="#introspectedProperty"></a>3.18.5 Explicit Bean Properties</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.1.x/src/main/docs/guide/ioc/introspection/introspectedProperty.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/core/annotation/Introspected.Property.html">@Property</a> annotation can be used on an introspected field or method to make that member an explicit bean property.
+This is useful when the member does not follow normal JavaBean getter or setter naming rules, or when the property should expose extra metadata such as an external serialized name.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.annotation.Introspected;
+
+@Introspected
+class Book {
+    private String title;
+    private String author = "Ursula Le Guin";
+
+    @Introspected.Property("book_title")
+    public String title() {
+        return title;
+    }
+
+    @Introspected.Property("book_title")
+    public void title(String title) {
+        this.title = title;
+    }
+
+    @Introspected.Property(
+        value = "author_name",
+        accessKind = Introspected.Property.Access.READ
+    )
+    public String author() {
+        return author;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.core.annotation.Introspected
+
+@Introspected
+class Book {
+    private var title: String? = null
+    private val author = "Ursula Le Guin"
+
+    @Introspected.Property("book_title")
+    fun title(): String? {
+        return title
+    }
+
+    @Introspected.Property("book_title")
+    fun title(title: String?) {
+        this.title = title
+    }
+
+    @Introspected.Property(
+        value = "author_name",
+        accessKind = [Introspected.Property.Access.READ]
+    )
+    fun author(): String {
+        return author
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.annotation.Introspected
+
+@Introspected
+class Book {
+    private String title
+    private String author = 'Ursula Le Guin'
+
+    @Introspected.Property('book_title')
+    String title() {
+        return title
+    }
+
+    @Introspected.Property('book_title')
+    void title(String title) {
+        this.title = title
+    }
+
+    @Introspected.Property(
+        value = 'author_name',
+        accessKind = [Introspected.Property.Access.READ]
+    )
+    String author() {
+        return author
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the example above, <code>title()</code> and <code>title(String)</code> are included as read/write bean property accessors even though they are not JavaBean <code>getTitle</code> and <code>setTitle</code> methods.
+The <code>author()</code> method is included as a read-only property because its <code>accessKind</code> only contains <code>Introspected.Property.Access.READ</code>.</p>
+</div>
+<div class="paragraph">
+<p>The <code>value</code> member is a shorthand for <code>name</code>.
+The <code>name</code> member represents an external property name and is available through the property annotation metadata.
+It does not change the Micronaut bean property name used with <a href="../api/io/micronaut/core/beans/BeanIntrospection.html">BeanIntrospection</a> lookup methods.
+If both <code>value</code> and <code>name</code> are declared, they must contain the same value.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">BeanIntrospection&lt;Book&gt; introspection = BeanIntrospection.getIntrospection(Book.class);
+BeanProperty&lt;Book, String&gt; property = introspection.getRequiredProperty("title", String.class);
+Optional&lt;String&gt; externalName = property.stringValue(Introspected.Property.class, "name");</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val introspection = BeanIntrospection.getIntrospection(Book::class.java)
+val property = introspection.getRequiredProperty("title", String::class.java)
+val externalName = property.stringValue(Introspected.Property::class.java, "name")</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">BeanIntrospection&lt;Book&gt; introspection = BeanIntrospection.getIntrospection(Book)
+BeanProperty&lt;Book, String&gt; property = introspection.getRequiredProperty('title', String)
+Optional&lt;String&gt; externalName = property.stringValue(Introspected.Property, 'name')</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>accessKind</code> member controls whether the bean property can be read, written, or both:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Introspected.Property.Access.READ</code> allows the property to be read.</p>
+</li>
+<li>
+<p><code>Introspected.Property.Access.WRITE</code> allows the property to be written.</p>
+</li>
+<li>
+<p>The default is both <code>READ</code> and <code>WRITE</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If both a getter and setter exist, Micronaut can still expose a read/write property. Use <code>accessKind</code> when a field or method must restrict one side of access, for example read-only or write-only properties.
+The access declaration applies to the whole bean property. Multiple <a href="../api/io/micronaut/core/annotation/Introspected.Property.html">@Property</a> declarations for the same bean property must declare the same <code>accessKind</code>; conflicting declarations are rejected during compilation.
+When <a href="../api/io/micronaut/core/annotation/Introspected.Property.html">@Property</a> is declared on a field that belongs to the same bean property as getter or setter methods, Micronaut uses the normal bean accessor precedence: getter methods are used for reads and setter methods are used for writes when they are present.
+The annotated field still contributes the mapped property metadata and can provide field access when a corresponding getter or setter is absent.</p>
+</div>
+<div class="paragraph">
+<p>Set <code>ignoreOtherAccessors</code> to <code>true</code> when the annotated member must be used for its access direction even if another field, getter, or setter exists for the same bean property.
+For example, an annotated field with the default read/write <code>accessKind</code> will be used for both reads and writes instead of same-name getter and setter methods.</p>
+</div>
+<div class="sect1">
+<h2 id="_jackson_annotations">Jackson Annotations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When Jackson annotations are present on an introspected type, Micronaut maps the following annotations to <a href="../api/io/micronaut/core/annotation/Introspected.Property.html">@Property</a> at compile time:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>com.fasterxml.jackson.annotation.JsonProperty</code></p>
+</li>
+<li>
+<p><code>com.fasterxml.jackson.annotation.JsonGetter</code></p>
+</li>
+<li>
+<p><code>com.fasterxml.jackson.annotation.JsonSetter</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This means Jackson-style property names are visible through Micronaut bean property annotation metadata, and Jackson-annotated methods that do not follow JavaBean naming rules can still be recognized as bean properties.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import io.micronaut.core.annotation.Introspected;
+
+@Introspected
+class User {
+    private String displayName;
+
+    @JsonGetter("display_name")
+    public String displayName() {
+        return displayName;
+    }
+
+    @JsonSetter("display_name")
+    public void displayName(String displayName) {
+        this.displayName = displayName;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import com.fasterxml.jackson.annotation.JsonGetter
+import com.fasterxml.jackson.annotation.JsonSetter
+import io.micronaut.core.annotation.Introspected
+
+@Introspected
+class User {
+    private var displayName: String? = null
+
+    @JsonGetter("display_name")
+    fun displayName(): String? {
+        return displayName
+    }
+
+    @JsonSetter("display_name")
+    fun displayName(displayName: String?) {
+        this.displayName = displayName
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import com.fasterxml.jackson.annotation.JsonGetter
+import com.fasterxml.jackson.annotation.JsonSetter
+import io.micronaut.core.annotation.Introspected
+
+@Introspected
+class User {
+    private String displayName
+
+    @JsonGetter('display_name')
+    String displayName() {
+        return displayName
+    }
+
+    @JsonSetter('display_name')
+    void displayName(String displayName) {
+        this.displayName = displayName
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>displayName</code> methods are treated as a bean property, and the external name <code>display_name</code> is available from the mapped <a href="../api/io/micronaut/core/annotation/Introspected.Property.html">@Property</a> metadata.
+For <code>JsonGetter</code> and <code>JsonSetter</code>, read and write availability is determined by the available bean property reader and writer.
+Jackson annotations do not set <code>ignoreOtherAccessors</code>, so Micronaut keeps the same accessor precedence as Jackson Databind: getters are preferred for reads and setters are preferred for writes when they exist.</p>
+</div>
+<div class="paragraph">
+<p>For <code>JsonProperty</code>, Micronaut also maps Jackson&#8217;s <code>access</code> member:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>JsonProperty.Access.READ_ONLY</code> maps to <code>Introspected.Property.Access.READ</code>.</p>
+</li>
+<li>
+<p><code>JsonProperty.Access.WRITE_ONLY</code> maps to <code>Introspected.Property.Access.WRITE</code>.</p>
+</li>
+<li>
+<p><code>JsonProperty.Access.AUTO</code> and <code>JsonProperty.Access.READ_WRITE</code> map to both read and write access.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Because <code>accessKind</code> is property-level, multiple Jackson annotations that map to the same bean property must agree on the mapped access.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jakarta_persistence">Jakarta Persistence</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Micronaut also maps <code>jakarta.persistence.Access</code> on a field or method to <a href="../api/io/micronaut/core/annotation/Introspected.Property.html">@Property</a> with <code>ignoreOtherAccessors</code> enabled.
+This allows explicit Jakarta Persistence field-access and property-access attributes to be treated as introspected bean properties.
+When <code>@Access(AccessType.FIELD)</code> is declared on a field that also has getter or setter methods, Micronaut uses the field directly for bean property reads and writes.</p>
+</div>
+</div>
+</div>
+
+<h2 id="atCreator"><a class="anchor" href="#atCreator"></a>3.18.6 Constructor Methods</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.1.x/src/main/docs/guide/ioc/introspection/atCreator.adoc"'>
@@ -7950,7 +8234,7 @@ This class has no default constructor, so calls to instantiate without arguments
 </table>
 </div>
 
-<h2 id="staticAtCreator"><a class="anchor" href="#staticAtCreator"></a>3.18.6 Static Creator Methods</h2>
+<h2 id="staticAtCreator"><a class="anchor" href="#staticAtCreator"></a>3.18.7 Static Creator Methods</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.1.x/src/main/docs/guide/ioc/introspection/staticAtCreator.adoc"'>
@@ -8056,7 +8340,7 @@ There can be multiple "creator" methods annotated. If there is one without argum
 </table>
 </div>
 
-<h2 id="introspectionBuilders"><a class="anchor" href="#introspectionBuilders"></a>3.18.7 Builders</h2>
+<h2 id="introspectionBuilders"><a class="anchor" href="#introspectionBuilders"></a>3.18.8 Builders</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.1.x/src/main/docs/guide/ioc/introspection/introspectionBuilders.adoc"'>
@@ -8231,7 +8515,7 @@ Introspection Builder does not work with <a href="https://groovy-lang.org/metapr
 </table>
 </div>
 
-<h2 id="introspectionEnums"><a class="anchor" href="#introspectionEnums"></a>3.18.8 Introspect Enums</h2>
+<h2 id="introspectionEnums"><a class="anchor" href="#introspectionEnums"></a>3.18.9 Introspect Enums</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.1.x/src/main/docs/guide/ioc/introspection/introspectionEnums.adoc"'>
@@ -8244,7 +8528,7 @@ Introspection Builder does not work with <a href="https://groovy-lang.org/metapr
 <p>It is possible to introspect enums as well. Add the annotation to the enum, and it can be constructed through the standard <code>valueOf</code> method.</p>
 </div>
 
-<h2 id="introspectedAnnotationOnAConfigurationClass"><a class="anchor" href="#introspectedAnnotationOnAConfigurationClass"></a>3.18.9 Use the @Introspected Annotation on a Configuration Class</h2>
+<h2 id="introspectedAnnotationOnAConfigurationClass"><a class="anchor" href="#introspectedAnnotationOnAConfigurationClass"></a>3.18.10 Use the @Introspected Annotation on a Configuration Class</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.1.x/src/main/docs/guide/ioc/introspection/introspectedAnnotationOnAConfigurationClass.adoc"'>
@@ -8298,7 +8582,7 @@ You can also use the <code>packages</code> member of the <a href="../api/io/micr
 </table>
 </div>
 
-<h2 id="introspectExistingAnnotations"><a class="anchor" href="#introspectExistingAnnotations"></a>3.18.10 Write an AnnotationMapper to Introspect Existing Annotations</h2>
+<h2 id="introspectExistingAnnotations"><a class="anchor" href="#introspectExistingAnnotations"></a>3.18.11 Write an AnnotationMapper to Introspect Existing Annotations</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.1.x/src/main/docs/guide/ioc/introspection/introspectExistingAnnotations.adoc"'>
@@ -8326,7 +8610,7 @@ The <code>AnnotationMapper</code> must be on the annotation processor classpath.
 </table>
 </div>
 
-<h2 id="beanWrapperApi"><a class="anchor" href="#beanWrapperApi"></a>3.18.11 The BeanWrapper API</h2>
+<h2 id="beanWrapperApi"><a class="anchor" href="#beanWrapperApi"></a>3.18.12 The BeanWrapper API</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.1.x/src/main/docs/guide/ioc/introspection/beanWrapperApi.adoc"'>
@@ -8391,7 +8675,7 @@ println("Person's age now $newAge")</code></pre>
 </table>
 </div>
 
-<h2 id="kotlinAndBeanIntrospection"><a class="anchor" href="#kotlinAndBeanIntrospection"></a>3.18.12 Kotlin and Bean Introspection</h2>
+<h2 id="kotlinAndBeanIntrospection"><a class="anchor" href="#kotlinAndBeanIntrospection"></a>3.18.13 Kotlin and Bean Introspection</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.1.x/src/main/docs/guide/ioc/introspection/kotlinAndBeanIntrospection.adoc"'>
