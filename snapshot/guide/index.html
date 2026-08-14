@@ -681,15 +681,19 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-keywords"><a href="#keywords"><strong>16.3.3</strong><span>Python Keywords in Java APIs</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-graalTools"><a href="#graalTools"><strong>16.3.4</strong><span>GraalPy Tools</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-moduleScripts"><a href="#moduleScripts"><strong>16.3.4</strong><span>Module Scripts</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-asyncAwait"><a href="#asyncAwait"><strong>16.3.5</strong><span>Async/Await</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-testing"><a href="#testing"><strong>16.3.4.1</strong><span>JUnit 5 Module Tests</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioRuntime"><a href="#asyncioRuntime"><strong>16.3.5.1</strong><span>Netty-Backed Asyncio Runtime</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-graalTools"><a href="#graalTools"><strong>16.3.5</strong><span>GraalPy Tools</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioNetworking"><a href="#asyncioNetworking"><strong>16.3.5.2</strong><span>Asyncio Networking and TLS</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-asyncAwait"><a href="#asyncAwait"><strong>16.3.6</strong><span>Async/Await</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioUnsupported"><a href="#asyncioUnsupported"><strong>16.3.5.3</strong><span>Unsupported Asyncio APIs</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioRuntime"><a href="#asyncioRuntime"><strong>16.3.6.1</strong><span>Netty-Backed Asyncio Runtime</span></a></div>
+        
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioNetworking"><a href="#asyncioNetworking"><strong>16.3.6.2</strong><span>Asyncio Networking and TLS</span></a></div>
+        
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioUnsupported"><a href="#asyncioUnsupported"><strong>16.3.6.3</strong><span>Unsupported Asyncio APIs</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-kotlin"><a href="#kotlin"><strong>16.4</strong><span>Micronaut for Kotlin</span></a></div>
         
@@ -51327,7 +51331,82 @@ publisher = Flux.from_(source)</code></pre>
 <p>The <code>from_</code> call is rewritten during processing to call the Java <code>from</code> method.</p>
 </div>
 
-<h2 id="graalTools"><a class="anchor" href="#graalTools"></a>16.3.4 GraalPy Tools</h2>
+<h2 id="moduleScripts"><a class="anchor" href="#moduleScripts"></a>16.3.4 Module Scripts</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/moduleScripts.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Python modules can declare Micronaut annotations directly at module level. The annotation becomes metadata on the generated script class, while module-level functions become methods on that class.</p>
+</div>
+<div class="paragraph">
+<p>For example, a classless controller can declare its route prefix without defining a Python class:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Module-level controller annotation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from micronaut.http.annotation import Controller, Get
+
+Controller("/module")
+
+@Get("/")
+def module_root() -&gt; dict:
+    return {"Hello": "World"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Top-level calls are treated as annotations only when the target resolves to a Micronaut or Python-defined annotation. Ordinary module calls remain ordinary Python code.</p>
+</div>
+<div class="paragraph">
+<p>An explicit controller annotation takes precedence over the implicit controller added for modules containing HTTP routes. Explicit scope annotations also take precedence over the automatic <code>ContextPooled</code> scope used by otherwise unscoped route modules.</p>
+</div>
+
+<h2 id="testing"><a class="anchor" href="#testing"></a>16.3.4.1 JUnit 5 Module Tests</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/moduleScripts/testing.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>JUnit 5 tests can be written as Python modules by declaring <code>MicronautTest()</code> at module level. Injected module attributes are available through the generated test object, and helper functions can use a <code>self</code> receiver.</p>
+</div>
+<div class="paragraph">
+<p>Functions whose names start with <code>test</code> are automatically exposed as JUnit 5 test methods. An explicit <code>@Test</code> decorator remains supported when a different test naming style is needed.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">JUnit 5 module test</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from typing import Annotated
+
+from jakarta.inject import Inject
+from micronaut.http.client import HttpClient
+from micronaut.http.client.annotation import Client
+from micronaut.test.extensions.junit5.annotation import MicronautTest
+
+MicronautTest()
+
+client: Annotated[HttpClient, Inject, Client("/")]
+
+def client_for(self):
+    return self.client
+
+def test_root(self):
+    response = self.client_for().toBlocking().retrieve("/module/")
+    assert "World" in response</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The generated Java test class carries the runtime <code>MicronautTest</code> and <code>Test</code> annotations required by the JUnit 5 and Micronaut test extensions. The synthetic <code>self</code> parameter is omitted from the Java method signature and is supplied automatically when the Python function is invoked.</p>
+</div>
+
+<h2 id="graalTools"><a class="anchor" href="#graalTools"></a>16.3.5 GraalPy Tools</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/graalTools.adoc"'>
@@ -51433,7 +51512,7 @@ dap = true</code></pre>
 </div>
 </div>
 
-<h2 id="asyncAwait"><a class="anchor" href="#asyncAwait"></a>16.3.5 Async/Await</h2>
+<h2 id="asyncAwait"><a class="anchor" href="#asyncAwait"></a>16.3.6 Async/Await</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/asyncAwait.adoc"'>
@@ -51638,7 +51717,7 @@ async def task_group(self) -&gt; str:
 </div>
 </div>
 
-<h2 id="asyncioRuntime"><a class="anchor" href="#asyncioRuntime"></a>16.3.5.1 Netty-Backed Asyncio Runtime</h2>
+<h2 id="asyncioRuntime"><a class="anchor" href="#asyncioRuntime"></a>16.3.6.1 Netty-Backed Asyncio Runtime</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioRuntime.adoc"'>
@@ -51700,7 +51779,7 @@ async def task_group(self) -&gt; str:
 </ul>
 </div>
 
-<h2 id="asyncioNetworking"><a class="anchor" href="#asyncioNetworking"></a>16.3.5.2 Asyncio Networking and TLS</h2>
+<h2 id="asyncioNetworking"><a class="anchor" href="#asyncioNetworking"></a>16.3.6.2 Asyncio Networking and TLS</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioNetworking.adoc"'>
@@ -51773,7 +51852,7 @@ async def task_group(self) -&gt; str:
 <p>Transport extras expose socket-like information instead of raw Netty channels. Use <code>transport.get_extra_info("sockname")</code>, <code>transport.get_extra_info("peername")</code>, or <code>server.sockets[0].getsockname()</code> for addresses. The raw Netty <code>Channel</code> is intentionally not a Python application API.</p>
 </div>
 
-<h2 id="asyncioUnsupported"><a class="anchor" href="#asyncioUnsupported"></a>16.3.5.3 Unsupported Asyncio APIs</h2>
+<h2 id="asyncioUnsupported"><a class="anchor" href="#asyncioUnsupported"></a>16.3.6.3 Unsupported Asyncio APIs</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioUnsupported.adoc"'>
