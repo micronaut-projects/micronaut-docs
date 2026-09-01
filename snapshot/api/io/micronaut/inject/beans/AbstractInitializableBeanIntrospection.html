@@ -61,6 +61,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
 <li><a href="#%3Cinit%3E(java.lang.Class,io.micronaut.core.annotation.AnnotationMetadata,io.micronaut.core.annotation.AnnotationMetadata,io.micronaut.core.type.Argument%5B%5D,io.micronaut.inject.beans.AbstractInitializableBeanIntrospection.BeanPropertyRef%5B%5D,io.micronaut.inject.beans.AbstractInitializableBeanIntrospection.BeanMethodRef%5B%5D)" tabindex="0">AbstractInitializableBeanIntrospection(Class, AnnotationMetadata, AnnotationMetadata, Argument[], AbstractInitializableBeanIntrospection.BeanPropertyRef[], AbstractInitializableBeanIntrospection.BeanMethodRef[])</a></li>
+<li><a href="#%3Cinit%3E(java.lang.Class,io.micronaut.core.annotation.AnnotationMetadata,io.micronaut.core.annotation.AnnotationMetadata,io.micronaut.core.type.Argument%5B%5D,io.micronaut.inject.beans.AbstractInitializableBeanIntrospection.BeanPropertyRef%5B%5D,io.micronaut.inject.beans.AbstractInitializableBeanIntrospection.BeanMethodRef%5B%5D,io.micronaut.inject.beans.AbstractInitializableBeanIntrospection.BeanConstructorRef%5B%5D)" tabindex="0">AbstractInitializableBeanIntrospection(Class, AnnotationMetadata, AnnotationMetadata, Argument[], AbstractInitializableBeanIntrospection.BeanPropertyRef[], AbstractInitializableBeanIntrospection.BeanMethodRef[], AbstractInitializableBeanIntrospection.BeanConstructorRef[])</a></li>
 </ol>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
@@ -107,6 +108,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#instantiate(boolean,java.lang.Object...)" tabindex="0">instantiate(boolean, Object...)</a></li>
 <li><a href="#instantiateUnsafe(java.lang.Object...)" tabindex="0">instantiateUnsafe(Object...)</a></li>
 <li><a href="#getConstructor()" tabindex="0">getConstructor()</a></li>
+<li><a href="#getConstructors()" tabindex="0">getConstructors()</a></li>
+<li><a href="#instantiateConstructorInternal(int,java.lang.Object%5B%5D)" tabindex="0">instantiateConstructorInternal(int, Object[])</a></li>
 <li><a href="#getConstructorArguments()" tabindex="0">getConstructorArguments()</a></li>
 <li><a href="#getIndexedProperty(java.lang.Class,java.lang.String)" tabindex="0">getIndexedProperty(Class, String)</a></li>
 <li><a href="#getProperty(java.lang.String)" tabindex="0">getProperty(String)</a></li>
@@ -175,13 +178,18 @@ implementations that need to avoid primitive boxing in hot paths.</div>
 <div class="table-header col-second">Class</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final class&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="AbstractInitializableBeanIntrospection.BeanMethodRef.html" class="type-name-link" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanMethodRef</a>&lt;<a href="AbstractInitializableBeanIntrospection.BeanMethodRef.html#type-param-P" title="type parameter in AbstractInitializableBeanIntrospection.BeanMethodRef">P</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="AbstractInitializableBeanIntrospection.BeanConstructorRef.html" class="type-name-link" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanConstructorRef</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">Bean method compile-time data container.</div>
+<div class="block">Bean constructor compile-time data container.</div>
 </div>
 <div class="col-first odd-row-color"><code>static final class&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="AbstractInitializableBeanIntrospection.BeanPropertyRef.html" class="type-name-link" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanPropertyRef</a>&lt;<a href="AbstractInitializableBeanIntrospection.BeanPropertyRef.html#type-param-P" title="type parameter in AbstractInitializableBeanIntrospection.BeanPropertyRef">P</a>&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="AbstractInitializableBeanIntrospection.BeanMethodRef.html" class="type-name-link" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanMethodRef</a>&lt;<a href="AbstractInitializableBeanIntrospection.BeanMethodRef.html#type-param-P" title="type parameter in AbstractInitializableBeanIntrospection.BeanMethodRef">P</a>&gt;</code></div>
 <div class="col-last odd-row-color">
+<div class="block">Bean method compile-time data container.</div>
+</div>
+<div class="col-first even-row-color"><code>static final class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="AbstractInitializableBeanIntrospection.BeanPropertyRef.html" class="type-name-link" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanPropertyRef</a>&lt;<a href="AbstractInitializableBeanIntrospection.BeanPropertyRef.html#type-param-P" title="type parameter in AbstractInitializableBeanIntrospection.BeanPropertyRef">P</a>&gt;</code></div>
+<div class="col-last even-row-color">
 <div class="block">Bean property compile-time data container.</div>
 </div>
 </div>
@@ -222,6 +230,17 @@ implementations that need to avoid primitive boxing in hot paths.</div>
  @Nullable <a href="AbstractInitializableBeanIntrospection.BeanPropertyRef.html" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanPropertyRef</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;[]&nbsp;propertiesRefs,
  @Nullable <a href="AbstractInitializableBeanIntrospection.BeanMethodRef.html" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanMethodRef</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;[]&nbsp;methodsRefs)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected </code></div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.Class,io.micronaut.core.annotation.AnnotationMetadata,io.micronaut.core.annotation.AnnotationMetadata,io.micronaut.core.type.Argument%5B%5D,io.micronaut.inject.beans.AbstractInitializableBeanIntrospection.BeanPropertyRef%5B%5D,io.micronaut.inject.beans.AbstractInitializableBeanIntrospection.BeanMethodRef%5B%5D,io.micronaut.inject.beans.AbstractInitializableBeanIntrospection.BeanConstructorRef%5B%5D)" class="member-name-link">AbstractInitializableBeanIntrospection</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>&gt;&nbsp;beanType,
+ @Nullable <a href="../../core/annotation/AnnotationMetadata.html" title="interface in io.micronaut.core.annotation">AnnotationMetadata</a>&nbsp;annotationMetadata,
+ @Nullable <a href="../../core/annotation/AnnotationMetadata.html" title="interface in io.micronaut.core.annotation">AnnotationMetadata</a>&nbsp;constructorAnnotationMetadata,
+ @Nullable <a href="../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;[]&nbsp;constructorArguments,
+ @Nullable <a href="AbstractInitializableBeanIntrospection.BeanPropertyRef.html" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanPropertyRef</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;[]&nbsp;propertiesRefs,
+ @Nullable <a href="AbstractInitializableBeanIntrospection.BeanMethodRef.html" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanMethodRef</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;[]&nbsp;methodsRefs,
+ <a href="AbstractInitializableBeanIntrospection.BeanConstructorRef.html" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanConstructorRef</a> @Nullable []&nbsp;constructorsRefs)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Constructor variant used by generated introspections that describe all of their declared constructors.</div>
+</div>
 </div>
 </section>
 </li>
@@ -471,50 +490,62 @@ implementations that need to avoid primitive boxing in hot paths.</div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The constructor arguments needed to instantiate the bean.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a><wbr>&lt;<a href="../../core/beans/BeanProperty.html" title="interface in io.micronaut.core.beans">BeanProperty</a>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIndexedProperties(java.lang.Class)" class="member-name-link">getIndexedProperties</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>&gt;&nbsp;annotationType)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../core/beans/BeanConstructor.html" title="interface in io.micronaut.core.beans">BeanConstructor</a>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConstructors()" class="member-name-link">getConstructors</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the constructors this introspection describes.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a><wbr>&lt;<a href="../../core/beans/BeanProperty.html" title="interface in io.micronaut.core.beans">BeanProperty</a>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIndexedProperties(java.lang.Class)" class="member-name-link">getIndexedProperties</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>&gt;&nbsp;annotationType)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get all the bean properties annotated for the given annotation type.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../../core/beans/BeanProperty.html" title="interface in io.micronaut.core.beans">BeanProperty</a>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIndexedProperty(java.lang.Class,java.lang.String)" class="member-name-link">getIndexedProperty</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>&gt;&nbsp;annotationType,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../../core/beans/BeanProperty.html" title="interface in io.micronaut.core.beans">BeanProperty</a>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIndexedProperty(java.lang.Class,java.lang.String)" class="member-name-link">getIndexedProperty</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>&gt;&nbsp;annotationType,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;annotationValue)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get all the bean properties annotated for the given type.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../../core/beans/BeanProperty.html" title="interface in io.micronaut.core.beans">BeanProperty</a>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getProperty(java.lang.String)" class="member-name-link">getProperty</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../../core/beans/BeanProperty.html" title="interface in io.micronaut.core.beans">BeanProperty</a>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getProperty(java.lang.String)" class="member-name-link">getProperty</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Obtain a property by name.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../../core/beans/BeanProperty.html" title="interface in io.micronaut.core.beans">BeanProperty</a><wbr>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPropertyByIndex(int)" class="member-name-link">getPropertyByIndex</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../../core/beans/BeanProperty.html" title="interface in io.micronaut.core.beans">BeanProperty</a><wbr>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPropertyByIndex(int)" class="member-name-link">getPropertyByIndex</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Obtain a property by its index.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link">Method</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTargetMethodByIndex(int)" class="member-name-link">getTargetMethodByIndex</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link">Method</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTargetMethodByIndex(int)" class="member-name-link">getTargetMethodByIndex</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Find <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link"><code>Method</code></a> representation at the method by index.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasConstructor()" class="member-name-link">hasConstructor</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasConstructor()" class="member-name-link">hasConstructor</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Whether an accessible constructor exists.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#instantiate()" class="member-name-link">instantiate</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Instantiates an instance of the bean, throwing an exception is instantiation is not possible.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#instantiate()" class="member-name-link">instantiate</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#instantiate(boolean,java.lang.Object...)" class="member-name-link">instantiate</a><wbr>(boolean&nbsp;strictNullable,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>...&nbsp;arguments)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Instantiates an instance of the bean, throwing an exception is instantiation is not possible.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#instantiate(boolean,java.lang.Object...)" class="member-name-link">instantiate</a><wbr>(boolean&nbsp;strictNullable,
- @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>...&nbsp;arguments)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#instantiateConstructorInternal(int,java.lang.Object%5B%5D)" class="member-name-link">instantiateConstructorInternal</a><wbr>(int&nbsp;index,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a> @Nullable []&nbsp;arguments)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Instantiates an instance of the bean, throwing an exception is instantiation is not possible.</div>
+<div class="block">Reflection free instantiation implementation for a declared constructor described by
+<a href="#getConstructors()"><code>getConstructors()</code></a>.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#instantiateInternal(java.lang.Object%5B%5D)" class="member-name-link">instantiateInternal</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a> @Nullable []&nbsp;arguments)</code></div>
@@ -578,6 +609,33 @@ implementations that need to avoid primitive boxing in hot paths.</div>
  @Nullable <a href="../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;[]&nbsp;constructorArguments,
  @Nullable <a href="AbstractInitializableBeanIntrospection.BeanPropertyRef.html" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanPropertyRef</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;[]&nbsp;propertiesRefs,
  @Nullable <a href="AbstractInitializableBeanIntrospection.BeanMethodRef.html" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanMethodRef</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;[]&nbsp;methodsRefs)</span></div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(java.lang.Class,io.micronaut.core.annotation.AnnotationMetadata,io.micronaut.core.annotation.AnnotationMetadata,io.micronaut.core.type.Argument[],io.micronaut.inject.beans.AbstractInitializableBeanIntrospection.BeanPropertyRef[],io.micronaut.inject.beans.AbstractInitializableBeanIntrospection.BeanMethodRef[],io.micronaut.inject.beans.AbstractInitializableBeanIntrospection.BeanConstructorRef[])">
+<h3>AbstractInitializableBeanIntrospection</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="element-name">AbstractInitializableBeanIntrospection</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>&gt;&nbsp;beanType,
+ @Nullable <a href="../../core/annotation/AnnotationMetadata.html" title="interface in io.micronaut.core.annotation">AnnotationMetadata</a>&nbsp;annotationMetadata,
+ @Nullable <a href="../../core/annotation/AnnotationMetadata.html" title="interface in io.micronaut.core.annotation">AnnotationMetadata</a>&nbsp;constructorAnnotationMetadata,
+ @Nullable <a href="../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;[]&nbsp;constructorArguments,
+ @Nullable <a href="AbstractInitializableBeanIntrospection.BeanPropertyRef.html" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanPropertyRef</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;[]&nbsp;propertiesRefs,
+ @Nullable <a href="AbstractInitializableBeanIntrospection.BeanMethodRef.html" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanMethodRef</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;[]&nbsp;methodsRefs,
+ <a href="AbstractInitializableBeanIntrospection.BeanConstructorRef.html" title="class in io.micronaut.inject.beans">AbstractInitializableBeanIntrospection.BeanConstructorRef</a> @Nullable []&nbsp;constructorsRefs)</span></div>
+<div class="block">Constructor variant used by generated introspections that describe all of their declared constructors.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>beanType</code> - The bean type</dd>
+<dd><code>annotationMetadata</code> - The annotation metadata</dd>
+<dd><code>constructorAnnotationMetadata</code> - The constructor annotation metadata</dd>
+<dd><code>constructorArguments</code> - The constructor arguments</dd>
+<dd><code>propertiesRefs</code> - The property references</dd>
+<dd><code>methodsRefs</code> - The method references</dd>
+<dd><code>constructorsRefs</code> - The declared constructor references, the bean instantiating constructor first</dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
+</dl>
 </div>
 </section>
 </li>
@@ -1514,6 +1572,51 @@ then it will be included in the resulting list.</div>
 <dd><code><a href="../../core/beans/BeanIntrospection.html#getConstructor()">getConstructor</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/beans/BeanIntrospection.html" title="interface in io.micronaut.core.beans">BeanIntrospection</a>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>&gt;</code></dd>
 <dt>Returns:</dt>
 <dd>The bean constructor.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getConstructors()">
+<h3>getConstructors</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../core/beans/BeanConstructor.html" title="interface in io.micronaut.core.beans">BeanConstructor</a>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>&gt;&gt;</span>&nbsp;<span class="element-name">getConstructors</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../core/beans/BeanIntrospection.html#getConstructors()">BeanIntrospection</a></code></span></div>
+<div class="block">Returns the constructors this introspection describes.
+
+<p>By default an introspection only describes the constructor used to instantiate beans, in
+which case this method returns a singleton list containing <a href="../../core/beans/BeanIntrospection.html#getConstructor()"><code>BeanIntrospection.getConstructor()</code></a>. When the
+introspected type opts in via <a href="../../core/annotation/Introspected.html#constructors()"><code>Introspected.constructors()</code></a>,
+or by annotating individual constructors with <code>io.micronaut.context.annotation.Executable</code>,
+every described constructor is returned, including its own annotation metadata and the
+annotation metadata of its parameters.</p></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../core/beans/BeanIntrospection.html#getConstructors()">getConstructors</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/beans/BeanIntrospection.html" title="interface in io.micronaut.core.beans">BeanIntrospection</a>&lt;<a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a>&gt;</code></dd>
+<dt>Returns:</dt>
+<dd>Every described constructor of the type, <a href="../../core/beans/BeanIntrospection.html#getConstructor()"><code>BeanIntrospection.getConstructor()</code></a> first</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="instantiateConstructorInternal(int,java.lang.Object[])">
+<h3>instantiateConstructorInternal</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
+</span><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="#type-param-B" title="type parameter in AbstractInitializableBeanIntrospection">B</a></span>&nbsp;<span class="element-name">instantiateConstructorInternal</span><wbr><span class="parameters">(int&nbsp;index,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a> @Nullable []&nbsp;arguments)</span></div>
+<div class="block">Reflection free instantiation implementation for a declared constructor described by
+<a href="#getConstructors()"><code>getConstructors()</code></a>. Generated introspections override this method with a switch
+over the described constructors.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>index</code> - The constructor index</dd>
+<dd><code>arguments</code> - The arguments</dd>
+<dt>Returns:</dt>
+<dd>The bean</dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
 </dl>
 </div>
 </section>

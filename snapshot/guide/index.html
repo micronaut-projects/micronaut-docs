@@ -215,17 +215,19 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-staticAtCreator"><a href="#staticAtCreator"><strong>3.18.7</strong><span>Static Creator Methods</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionBuilders"><a href="#introspectionBuilders"><strong>3.18.8</strong><span>Builders</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionConstructors"><a href="#introspectionConstructors"><strong>3.18.8</strong><span>Describing Constructors</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionEnums"><a href="#introspectionEnums"><strong>3.18.9</strong><span>Introspect Enums</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionBuilders"><a href="#introspectionBuilders"><strong>3.18.9</strong><span>Builders</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedAnnotationOnAConfigurationClass"><a href="#introspectedAnnotationOnAConfigurationClass"><strong>3.18.10</strong><span>Use the @Introspected Annotation on a Configuration Class</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionEnums"><a href="#introspectionEnums"><strong>3.18.10</strong><span>Introspect Enums</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectExistingAnnotations"><a href="#introspectExistingAnnotations"><strong>3.18.11</strong><span>Write an AnnotationMapper to Introspect Existing Annotations</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedAnnotationOnAConfigurationClass"><a href="#introspectedAnnotationOnAConfigurationClass"><strong>3.18.11</strong><span>Use the @Introspected Annotation on a Configuration Class</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-beanWrapperApi"><a href="#beanWrapperApi"><strong>3.18.12</strong><span>The BeanWrapper API</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectExistingAnnotations"><a href="#introspectExistingAnnotations"><strong>3.18.12</strong><span>Write an AnnotationMapper to Introspect Existing Annotations</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-kotlinAndBeanIntrospection"><a href="#kotlinAndBeanIntrospection"><strong>3.18.13</strong><span>Kotlin and Bean Introspection</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-beanWrapperApi"><a href="#beanWrapperApi"><strong>3.18.13</strong><span>The BeanWrapper API</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-kotlinAndBeanIntrospection"><a href="#kotlinAndBeanIntrospection"><strong>3.18.14</strong><span>Kotlin and Bean Introspection</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-beanMappers"><a href="#beanMappers"><strong>3.19</strong><span>Bean Mappers</span></a></div>
         
@@ -9596,7 +9598,249 @@ There can be multiple "creator" methods annotated. If there is one without argum
 </table>
 </div>
 
-<h2 id="introspectionBuilders"><a class="anchor" href="#introspectionBuilders"></a>3.18.8 Builders</h2>
+<h2 id="introspectionConstructors"><a class="anchor" href="#introspectionConstructors"></a>3.18.8 Describing Constructors</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/introspectionConstructors.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A <a href="../api/io/micronaut/core/beans/BeanIntrospection.html">BeanIntrospection</a> describes the constructor it instantiates beans with, which is the one returned by <code>getConstructor</code> and used by <code>instantiate</code>. By default that is the only constructor described, so <code>getConstructors</code> returns a single-element list.</p>
+</div>
+<div class="paragraph">
+<p>To describe every declared constructor instead, set the <code>constructors</code> member of the <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a> annotation to <code>true</code>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.annotation.Creator;
+import io.micronaut.core.annotation.Introspected;
+
+@Introspected(constructors = true) // <b class="conum">(1)</b>
+public class Shipment {
+
+    private final String item;
+    private final int quantity;
+
+    public Shipment(String item) {
+        this(item, 1);
+    }
+
+    @Creator // <b class="conum">(2)</b>
+    public Shipment(String item, int quantity) {
+        this.item = item;
+        this.quantity = quantity;
+    }
+
+    public String getItem() {
+        return item;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.core.annotation.Creator
+import io.micronaut.core.annotation.Introspected
+
+@Introspected(constructors = true) // <b class="conum">(1)</b>
+class Shipment @Creator constructor(val item: String, val quantity: Int) { // <b class="conum">(2)</b>
+
+    constructor(item: String) : this(item, 1)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.annotation.Creator
+import io.micronaut.core.annotation.Introspected
+
+@Introspected(constructors = true) // <b class="conum">(1)</b>
+class Shipment {
+
+    final String item
+    final int quantity
+
+    Shipment(String item) {
+        this(item, 1)
+    }
+
+    @Creator // <b class="conum">(2)</b>
+    Shipment(String item, int quantity) {
+        this.item = item
+        this.quantity = quantity
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Every declared constructor of the class is described</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <a href="../api/io/micronaut/core/annotation/Creator.html">@Creator</a> annotation still selects the constructor used to instantiate beans</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Each described constructor is a <a href="../api/io/micronaut/core/beans/BeanConstructor.html">BeanConstructor</a> carrying its own annotation metadata and the annotation metadata of its parameters, and each one can instantiate the type:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">final BeanIntrospection&lt;Shipment&gt; introspection = BeanIntrospection.getIntrospection(Shipment.class);
+
+List&lt;BeanConstructor&lt;Shipment&gt;&gt; constructors = introspection.getConstructors(); // <b class="conum">(1)</b>
+
+BeanConstructor&lt;Shipment&gt; byItem = constructors.stream()
+        .filter(constructor -&gt; constructor.getArguments().length == 1)
+        .findFirst()
+        .orElseThrow(); // <b class="conum">(2)</b>
+
+Shipment shipment = byItem.instantiate("book"); // <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python"></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val introspection = BeanIntrospection.getIntrospection(Shipment::class.java)
+
+val constructors = introspection.constructors // <b class="conum">(1)</b>
+
+val byItem = constructors.first { it.arguments.size == 1 } // <b class="conum">(2)</b>
+
+val shipment = byItem.instantiate("book") // <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">BeanIntrospection&lt;Shipment&gt; introspection = BeanIntrospection.getIntrospection(Shipment)
+
+List&lt;BeanConstructor&lt;Shipment&gt;&gt; constructors = introspection.getConstructors() // <b class="conum">(1)</b>
+
+BeanConstructor&lt;Shipment&gt; byItem = constructors.find { it.arguments.length == 1 } // <b class="conum">(2)</b>
+
+Shipment shipment = byItem.instantiate("book") // <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>getConstructors</code> returns every described constructor, the one returned by <code>getConstructor</code> first</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Constructors are told apart by their arguments</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Any described constructor can instantiate the type</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To describe one particular constructor rather than all of them, annotate that constructor with <a href="../api/io/micronaut/context/annotation/Executable.html">@Executable</a>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Executable;
+import io.micronaut.core.annotation.Introspected;
+
+@Introspected
+public class Delivery {
+
+    private String address = "unknown";
+
+    public Delivery() {
+    }
+
+    @Executable // <b class="conum">(1)</b>
+    public Delivery(String address) {
+        this.address = address;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.Executable
+import io.micronaut.core.annotation.Introspected
+
+@Introspected
+class Delivery() {
+
+    var address: String = "unknown"
+
+    @Executable // <b class="conum">(1)</b>
+    constructor(address: String) : this() {
+        this.address = address
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Executable
+import io.micronaut.core.annotation.Introspected
+
+@Introspected
+class Delivery {
+
+    String address = "unknown"
+
+    Delivery() {
+    }
+
+    @Executable // <b class="conum">(1)</b>
+    Delivery(String address) {
+        this.address = address
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This constructor is described in addition to the one beans are instantiated with</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Describing constructors does not change how beans of the type are built. The constructor returned by <code>getConstructor</code> is the same either way, and a constructor annotated with <a href="../api/io/micronaut/context/annotation/Executable.html">@Executable</a> does not become an executable method of the bean.
+</td>
+</tr>
+</table>
+</div>
+
+<h2 id="introspectionBuilders"><a class="anchor" href="#introspectionBuilders"></a>3.18.9 Builders</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/introspectionBuilders.adoc"'>
@@ -9771,7 +10015,7 @@ Introspection Builder does not work with <a href="https://groovy-lang.org/metapr
 </table>
 </div>
 
-<h2 id="introspectionEnums"><a class="anchor" href="#introspectionEnums"></a>3.18.9 Introspect Enums</h2>
+<h2 id="introspectionEnums"><a class="anchor" href="#introspectionEnums"></a>3.18.10 Introspect Enums</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/introspectionEnums.adoc"'>
@@ -9784,7 +10028,7 @@ Introspection Builder does not work with <a href="https://groovy-lang.org/metapr
 <p>It is possible to introspect enums as well. Add the annotation to the enum, and it can be constructed through the standard <code>valueOf</code> method.</p>
 </div>
 
-<h2 id="introspectedAnnotationOnAConfigurationClass"><a class="anchor" href="#introspectedAnnotationOnAConfigurationClass"></a>3.18.10 Use the @Introspected Annotation on a Configuration Class</h2>
+<h2 id="introspectedAnnotationOnAConfigurationClass"><a class="anchor" href="#introspectedAnnotationOnAConfigurationClass"></a>3.18.11 Use the @Introspected Annotation on a Configuration Class</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/introspectedAnnotationOnAConfigurationClass.adoc"'>
@@ -9838,7 +10082,7 @@ You can also use the <code>packages</code> member of the <a href="../api/io/micr
 </table>
 </div>
 
-<h2 id="introspectExistingAnnotations"><a class="anchor" href="#introspectExistingAnnotations"></a>3.18.11 Write an AnnotationMapper to Introspect Existing Annotations</h2>
+<h2 id="introspectExistingAnnotations"><a class="anchor" href="#introspectExistingAnnotations"></a>3.18.12 Write an AnnotationMapper to Introspect Existing Annotations</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/introspectExistingAnnotations.adoc"'>
@@ -9866,7 +10110,7 @@ The <code>AnnotationMapper</code> must be on the annotation processor classpath.
 </table>
 </div>
 
-<h2 id="beanWrapperApi"><a class="anchor" href="#beanWrapperApi"></a>3.18.12 The BeanWrapper API</h2>
+<h2 id="beanWrapperApi"><a class="anchor" href="#beanWrapperApi"></a>3.18.13 The BeanWrapper API</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/beanWrapperApi.adoc"'>
@@ -9944,7 +10188,7 @@ println("Person's age now $newAge")</code></pre>
 </table>
 </div>
 
-<h2 id="kotlinAndBeanIntrospection"><a class="anchor" href="#kotlinAndBeanIntrospection"></a>3.18.13 Kotlin and Bean Introspection</h2>
+<h2 id="kotlinAndBeanIntrospection"><a class="anchor" href="#kotlinAndBeanIntrospection"></a>3.18.14 Kotlin and Bean Introspection</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/kotlinAndBeanIntrospection.adoc"'>
