@@ -11126,6 +11126,104 @@ A child class must at least have one bean definition annotation such as a scope 
 <div class="paragraph">
 <p>With these aliases in place, whether you define <code>@Client("foo")</code> or <code>@Client(id="foo")</code>, both the <code>value</code> and <code>id</code> members will be set, making it easier to parse and work with the annotation.</p>
 </div>
+<div class="sect3">
+<h4 id="_aliasing_members_of_other_annotations">Aliasing Members of Other Annotations</h4>
+<div class="paragraph">
+<p>An alias can also target a member of a different annotation by setting the <code>annotation()</code> (or <code>annotationName()</code>) member of <a href="../api/io/micronaut/context/annotation/AliasFor.html">@AliasFor</a>. When the annotated member is set, the aliased annotation receives the value as a stereotype of the annotation being processed. If the targeted annotation is already declared as a stereotype, the aliased value <strong>overrides</strong> the declared member value instead of contributing a second annotation.</p>
+</div>
+<div class="paragraph">
+<p>Two additional members refine this behaviour:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>applyDefault()</code> - by default an alias only applies when the member is explicitly set at the use site. With <code>applyDefault = true</code> the alias also applies the member&#8217;s <strong>default</strong> value. This allows modelling semantics such as <code>jakarta.validation.OverridesAttribute</code>, where the overriding member&#8217;s default replaces the value declared on the composed constraint.</p>
+</li>
+<li>
+<p><code>index()</code> - when the aliased annotation is repeatable and declared multiple times as a stereotype, <code>index</code> selects which occurrence (in declaration order, starting at zero) the alias overrides. The default of <code>-1</code> applies the alias to every declared occurrence, and an index outside the declared occurrences is ignored.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Overriding a Member of a Declared Stereotype</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.AliasFor;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Size(min = 5, max = 5) // <b class="conum">(1)</b>
+public @interface ComposedZip {
+
+    @AliasFor(annotation = Size.class, member = "max", applyDefault = true) // <b class="conum">(2)</b>
+    int max() default 10;
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Overriding a Member of a Declared Stereotype</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.AliasFor
+
+@Retention(AnnotationRetention.RUNTIME)
+@Size(min = 5, max = 5) // <b class="conum">(1)</b>
+annotation class ComposedZip(
+    @get:AliasFor(annotation = Size::class, member = "max", applyDefault = true) // <b class="conum">(2)</b>
+    val max: Int = 10
+)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Overriding a Member of a Declared Stereotype</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.AliasFor
+
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
+@Retention(RetentionPolicy.RUNTIME)
+@Size(min = 5, max = 5) // <b class="conum">(1)</b>
+@interface ComposedZip {
+
+    @AliasFor(annotation = Size, member = "max", applyDefault = true) // <b class="conum">(2)</b>
+    int max() default 10
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>@Size</code> is declared as a stereotype with <code>max</code> set to <code>5</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>max()</code> member aliases <code>Size.max</code>, overriding the declared value</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Any use of <code>@ComposedZip</code> therefore produces <code>@Size(min = 5, max = 10)</code> in the metadata — <code>max</code> comes from the <code>max()</code> default because <code>applyDefault</code> is <code>true</code> — while <code>@ComposedZip(max = 20)</code> produces <code>@Size(min = 5, max = 20)</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>index()</code> is only computed for annotations processed from Java and Groovy sources. The Kotlin (KSP) annotation metadata builder does not extract repeatable stereotype containers, so a repeatable annotation declared multiple times on a Kotlin annotation class cannot be targeted by index.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Annotations that cannot depend on Micronaut can participate in alias resolution through an <a href="../api/io/micronaut/inject/annotation/AnnotationTransformer.html">AnnotationTransformer</a>: when an annotation member carries no literal <code>@AliasFor</code>, the registered transformers are applied to the member&#8217;s annotations, and any produced <code>@AliasFor</code> values are processed as if declared directly (a produced alias without a <code>member</code> value defaults to the annotated member&#8217;s own name). This is how, for example, <code>jakarta.validation.OverridesAttribute</code> can be remapped to <code>@AliasFor</code> by a validation annotation processor.</p>
+</div>
 <div class="paragraph">
 <p>If you do not have control over the annotation, another approach is to use an <a href="../api/io/micronaut/inject/annotation/AnnotationMapper.html">AnnotationMapper</a>. To create an <code>AnnotationMapper</code>, do the following:</p>
 </div>
@@ -11200,6 +11298,7 @@ The example above implements the <a href="../api/io/micronaut/inject/annotation/
 </td>
 </tr>
 </table>
+</div>
 </div>
 </div>
 
