@@ -59,6 +59,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#resolveInstantiationValues(io.micronaut.context.BeanResolutionContext,io.micronaut.context.BeanContext)" tabindex="0">resolveInstantiationValues(BeanResolutionContext, BeanContext)</a></li>
+<li><a href="#resolveInterceptors(io.micronaut.context.BeanResolutionContext,io.micronaut.core.annotation.AnnotationMetadataProvider)" tabindex="0">resolveInterceptors(BeanResolutionContext, AnnotationMetadataProvider)</a></li>
 <li><a href="#instantiate(io.micronaut.context.BeanResolutionContext,io.micronaut.context.BeanContext)" tabindex="0">instantiate(BeanResolutionContext, BeanContext)</a></li>
 <li><a href="#doInstantiate(io.micronaut.context.BeanResolutionContext,io.micronaut.context.BeanContext,java.lang.Object%5B%5D)" tabindex="0">doInstantiate(BeanResolutionContext, BeanContext, Object[])</a></li>
 </ol>
@@ -144,6 +145,13 @@ extends <a href="../../inject/InstantiatableBeanDefinition.html" title="interfac
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Resolve the construction values.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../context/BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;<a href="../Interceptor.html" title="interface in io.micronaut.aop">Interceptor</a>&lt;<a href="#type-param-T" title="type parameter in InterceptedBeanDefinition">T</a>,<wbr><a href="#type-param-T" title="type parameter in InterceptedBeanDefinition">T</a>&gt;&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#resolveInterceptors(io.micronaut.context.BeanResolutionContext,io.micronaut.core.annotation.AnnotationMetadataProvider)" class="member-name-link">resolveInterceptors</a><wbr>(<a href="../../context/BeanResolutionContext.html" title="interface in io.micronaut.context">BeanResolutionContext</a>&nbsp;resolutionContext,
+ <a href="../../core/annotation/AnnotationMetadataProvider.html" title="interface in io.micronaut.core.annotation">AnnotationMetadataProvider</a>&nbsp;constructor)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Resolves the interceptors that construction, post-construct and pre-destroy interception of this bean all
+select from.</div>
+</div>
 </div>
 </div>
 </div>
@@ -198,6 +206,34 @@ extends <a href="../../inject/InstantiatableBeanDefinition.html" title="interfac
 <dd><code>context</code> - The bean context</dd>
 <dt>Returns:</dt>
 <dd>the construction values</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="resolveInterceptors(io.micronaut.context.BeanResolutionContext,io.micronaut.core.annotation.AnnotationMetadataProvider)">
+<h3>resolveInterceptors</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../context/BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;<a href="../Interceptor.html" title="interface in io.micronaut.aop">Interceptor</a>&lt;<a href="#type-param-T" title="type parameter in InterceptedBeanDefinition">T</a>,<wbr><a href="#type-param-T" title="type parameter in InterceptedBeanDefinition">T</a>&gt;&gt;&gt;</span>&nbsp;<span class="element-name">resolveInterceptors</span><wbr><span class="parameters">(<a href="../../context/BeanResolutionContext.html" title="interface in io.micronaut.context">BeanResolutionContext</a>&nbsp;resolutionContext,
+ <a href="../../core/annotation/AnnotationMetadataProvider.html" title="interface in io.micronaut.core.annotation">AnnotationMetadataProvider</a>&nbsp;constructor)</span></div>
+<div class="block">Resolves the interceptors that construction, post-construct and pre-destroy interception of this bean all
+select from.
+
+<p>The qualifier is built from the bean's own annotation metadata, so it covers every <code>@InterceptorBinding</code>
+the bean declares whatever kind each was declared for. That makes the result a superset of what any one phase
+needs; each interception point filters it again by its own binding and kind. Resolving once is what lets a
+non-singleton interceptor be shared by every phase of one bean.</p>
+
+<p>Override to supply the set another way. Returning <code>null</code> leaves each interception point to resolve its
+own, which is the behaviour of a bean that declares no interceptor binding at all.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>resolutionContext</code> - The resolution context</dd>
+<dd><code>constructor</code> - The constructor, whose metadata is this bean's combined with the constructor's</dd>
+<dt>Returns:</dt>
+<dd>The interceptors, or <code>null</code> when the bean binds none</dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
 </dl>
 </div>
 </section>

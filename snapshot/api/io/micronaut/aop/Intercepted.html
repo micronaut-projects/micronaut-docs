@@ -55,6 +55,11 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list" tabindex="-1">
 <li><a href="#" tabindex="0">Description</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
+<li><a href="#method-detail" tabindex="0">Method Details</a>
+<ol class="toc-list">
+<li><a href="#$interceptorRegistrations()" tabindex="0">$interceptorRegistrations()</a></li>
+</ol>
+</li>
 </ol>
 <button class="hide-sidebar"><span>Hide sidebar&nbsp;</span><img src="../../../resource-files/left.svg" alt="Hide sidebar"></button><button class="show-sidebar"><img src="../../../resource-files/right.svg" alt="Show sidebar"><span>&nbsp;Show sidebar</span></button></nav>
 <main role="main">
@@ -90,9 +95,73 @@ extends <a href="../inject/proxy/InterceptedBean.html" title="interface in io.mi
 <li>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
+<div id="method-summary-table">
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
+<div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../context/BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;<a href="Interceptor.html" title="interface in io.micronaut.aop">Interceptor</a>&lt;?,<wbr>?&gt;&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#$interceptorRegistrations()" class="member-name-link">$interceptorRegistrations</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">The interceptor registrations that were resolved for this proxy.</div>
+</div>
+</div>
+</div>
+</div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.micronaut.inject.proxy.InterceptedBean">Methods inherited from interface&nbsp;<a href="../inject/proxy/InterceptedBean.html#method-summary" title="interface in io.micronaut.inject.proxy">InterceptedBean</a></h3>
 <code><a href="../inject/proxy/InterceptedBean.html#interceptedMethods()" title="interceptedMethods()">interceptedMethods</a></code></div>
+</section>
+</li>
+</ul>
+</section>
+<section class="details">
+<ul class="details-list">
+<!-- ============ METHOD DETAIL ========== -->
+<li>
+<section class="method-details" id="method-detail">
+<h2>Method Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="$interceptorRegistrations()">
+<h3>$interceptorRegistrations</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
+</span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../context/BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;<a href="Interceptor.html" title="interface in io.micronaut.aop">Interceptor</a>&lt;?,<wbr>?&gt;&gt;&gt;</span>&nbsp;<span class="element-name">$interceptorRegistrations</span>()</div>
+<div class="block">The interceptor registrations that were resolved for this proxy.
+
+<p>The scenario this exists for is an advised bean that also declares lifecycle advice:</p>
+
+<pre><code>@Retention(RUNTIME)
+@Around
+@InterceptorBinding(kind = InterceptorKind.POST_CONSTRUCT)
+@InterceptorBinding(kind = InterceptorKind.PRE_DESTROY)
+@interface Tracked {}
+
+@Singleton @Tracked
+class MyBean { @PostConstruct void init() {} @PreDestroy void close() {} }
+</code></pre>
+
+<p>The proxy constructor is given the registrations that match the target's bindings and keeps them, so
+post-construct and pre-destroy interception select from the same set the proxy already uses for its methods,
+and a <code>@Prototype</code> interceptor is one instance for the whole life of one target. Destruction in
+particular has no other route to them: it runs with a fresh resolution context, and the proxy instance is the
+only thing that survives from creation to destruction.</p>
+
+<p>Proxies whose target declares no lifecycle binding, and proxies generated before this existed, keep the
+empty default; the runtime then resolves interceptors by binding as it always did.</p></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The retained interceptor registrations, never <code>null</code></dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
+</dl>
+</div>
+</section>
+</li>
+</ul>
 </section>
 </li>
 </ul>
