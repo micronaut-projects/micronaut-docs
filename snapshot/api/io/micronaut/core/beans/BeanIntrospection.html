@@ -853,7 +853,16 @@ which case this method returns a singleton list containing <a href="#getConstruc
 introspected type opts in via <a href="../annotation/Introspected.html#constructors()"><code>Introspected.constructors()</code></a>,
 or by annotating individual constructors with <code>io.micronaut.context.annotation.Executable</code>,
 every described constructor is returned, including its own annotation metadata and the
-annotation metadata of its parameters.</p></div>
+annotation metadata of its parameters.</p>
+
+<p>A described constructor reports the parameters of its JVM signature, which for a non-static
+inner class means that <a href="BeanConstructor.html#getArguments()"><code>BeanConstructor.getArguments()</code></a> starts with the implicit enclosing
+instance, named <code>this$0</code>, exactly as <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Constructor.html#getParameterTypes()" title="class or interface in java.lang.reflect" class="external-link"><code>Constructor.getParameterTypes()</code></a>
+reports it. The enclosing instance must therefore be passed first to
+<a href="BeanConstructor.html#instantiate(java.lang.Object...)"><code>BeanConstructor.instantiate(Object...)</code></a>. <a href="#getConstructor()"><code>getConstructor()</code></a> and
+<a href="#getConstructorArguments()"><code>getConstructorArguments()</code></a> keep the source level view and never describe it, so for a
+non-static inner class the first element of this list does not report the same arguments as
+<a href="#getConstructor()"><code>getConstructor()</code></a>.</p></div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Every described constructor of the type, <a href="#getConstructor()"><code>getConstructor()</code></a> first</dd>
