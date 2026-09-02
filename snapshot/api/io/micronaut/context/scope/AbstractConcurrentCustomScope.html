@@ -59,6 +59,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
 <li><a href="#%3Cinit%3E(java.lang.Class)" tabindex="0">AbstractConcurrentCustomScope(Class)</a></li>
+<li><a href="#%3Cinit%3E(java.lang.Class,boolean)" tabindex="0">AbstractConcurrentCustomScope(Class, boolean)</a></li>
 </ol>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
@@ -101,7 +102,11 @@ loadScripts(document, 'script');</script>
 implements <a href="CustomScope.html" title="interface in io.micronaut.context.scope">CustomScope</a>&lt;A&gt;, <a href="../LifeCycle.html" title="interface in io.micronaut.context">LifeCycle</a>&lt;<a href="AbstractConcurrentCustomScope.html" title="class in io.micronaut.context.scope">AbstractConcurrentCustomScope</a>&lt;A&gt;&gt;, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></span></div>
 <div class="block">Abstract implementation of the custom scope interface that simplifies defining new scopes using the Map interface.
 
-<p>Note this implementation uses a single<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/locks/ReentrantReadWriteLock.html" title="class or interface in java.util.concurrent.locks" class="external-link"><code>ReentrantReadWriteLock</code></a> to lock the entire scope hence it is designed for scopes that will hold a small amount of beans. For implementations that hold many beans it is recommended to use a lock per <a href="../../inject/BeanIdentifier.html" title="interface in io.micronaut.inject"><code>BeanIdentifier</code></a>.</p></div>
+<p>By default this implementation uses a single <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/locks/ReentrantReadWriteLock.html" title="class or interface in java.util.concurrent.locks" class="external-link"><code>ReentrantReadWriteLock</code></a> to lock the entire scope, and holds
+its write lock while a bean is created, hence it is designed for scopes that will hold a small amount of beans whose
+creation never waits on another thread. A scope that holds many beans, or whose beans may wait during creation for
+another thread that creates a bean of the same scope, should opt into a lock per <a href="../../inject/BeanIdentifier.html" title="interface in io.micronaut.inject"><code>BeanIdentifier</code></a> through
+<a href="#%3Cinit%3E(java.lang.Class,boolean)"><code>AbstractConcurrentCustomScope(Class, boolean)</code></a>.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>3.0.0</dd>
@@ -125,6 +130,12 @@ implements <a href="CustomScope.html" title="interface in io.micronaut.context.s
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.Class)" class="member-name-link">AbstractConcurrentCustomScope</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="#type-param-A" title="type parameter in AbstractConcurrentCustomScope">A</a>&gt;&nbsp;annotationType)</code></div>
 <div class="col-last even-row-color">
 <div class="block">A custom scope annotation.</div>
+</div>
+<div class="col-first odd-row-color"><code>protected </code></div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.Class,boolean)" class="member-name-link">AbstractConcurrentCustomScope</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="#type-param-A" title="type parameter in AbstractConcurrentCustomScope">A</a>&gt;&nbsp;annotationType,
+ boolean&nbsp;lockPerBean)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">A custom scope annotation, choosing how creation is locked.</div>
 </div>
 </div>
 </section>
@@ -218,6 +229,33 @@ implements <a href="CustomScope.html" title="interface in io.micronaut.context.s
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>annotationType</code> - The annotation type</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(java.lang.Class,boolean)">
+<h3>AbstractConcurrentCustomScope</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="element-name">AbstractConcurrentCustomScope</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="#type-param-A" title="type parameter in AbstractConcurrentCustomScope">A</a>&gt;&nbsp;annotationType,
+ boolean&nbsp;lockPerBean)</span></div>
+<div class="block">A custom scope annotation, choosing how creation is locked.
+
+<p>With <code>lockPerBean</code> the scope-wide lock is not used at all. A bean is created under a lock that belongs
+to its <a href="../../inject/BeanIdentifier.html" title="interface in io.micronaut.inject"><code>BeanIdentifier</code></a> alone, so that beans of different identifiers are created in parallel, a creation
+may wait for another thread that creates a bean of the same scope, and the fast path of a bean already held
+is a plain lookup. <a href="#remove(io.micronaut.inject.BeanIdentifier)"><code>remove(BeanIdentifier)</code></a> takes the same lock, so it still waits for a creation of that
+identifier in flight and then destroys what was created. <a href="#destroyScope(java.util.Map)"><code>destroyScope(Map)</code></a> and
+<a href="#findBeanRegistration(T)"><code>findBeanRegistration(Object)</code></a> work on the scope map without any lock, which is why the map returned by
+<a href="#getScopeMap(boolean)"><code>getScopeMap(boolean)</code></a> must then be a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ConcurrentMap.html" title="class or interface in java.util.concurrent" class="external-link"><code>ConcurrentMap</code></a>: <a href="#getOrCreate(io.micronaut.context.scope.BeanCreationContext)"><code>getOrCreate(BeanCreationContext)</code></a>
+rejects any other map with an <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a>. The lock objects live as long as the scope, one
+per identifier ever created or removed through it.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>annotationType</code> - The annotation type</dd>
+<dd><code>lockPerBean</code> - Whether to lock creation per <a href="../../inject/BeanIdentifier.html" title="interface in io.micronaut.inject"><code>BeanIdentifier</code></a> rather than for the whole scope</dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
 </dl>
 </div>
 </section>
