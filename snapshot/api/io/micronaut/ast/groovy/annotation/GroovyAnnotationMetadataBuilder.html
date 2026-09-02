@@ -308,11 +308,11 @@ loadScripts(document, 'script');</script>
 <div class="block">Return whether the given member requires validation.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../inject/annotation/AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookupOrBuildForParameter(org.codehaus.groovy.ast.AnnotatedNode,org.codehaus.groovy.ast.AnnotatedNode,org.codehaus.groovy.ast.AnnotatedNode)" class="member-name-link">lookupOrBuildForParameter</a><wbr>(org.codehaus.groovy.ast.AnnotatedNode&nbsp;owningType,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookupOrBuildForParameter(org.codehaus.groovy.ast.AnnotatedNode,org.codehaus.groovy.ast.AnnotatedNode,org.codehaus.groovy.ast.AnnotatedNode)" class="member-name-link">lookupOrBuildForParameter</a><wbr>(org.codehaus.groovy.ast.AnnotatedNode&nbsp;declaringType,
  org.codehaus.groovy.ast.AnnotatedNode&nbsp;methodElement,
  org.codehaus.groovy.ast.AnnotatedNode&nbsp;parameterElement)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Build the metadata for the given element.</div>
+<div class="block">Build the metadata for the given parameter element.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;? extends org.codehaus.groovy.ast.AnnotatedNode, ?&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#readAnnotationDefaultValues(java.lang.String,org.codehaus.groovy.ast.AnnotatedNode)" class="member-name-link">readAnnotationDefaultValues</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;annotationName,
@@ -428,16 +428,20 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="lookupOrBuildForParameter(org.codehaus.groovy.ast.AnnotatedNode,org.codehaus.groovy.ast.AnnotatedNode,org.codehaus.groovy.ast.AnnotatedNode)">
 <h3>lookupOrBuildForParameter</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../inject/annotation/AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></span>&nbsp;<span class="element-name">lookupOrBuildForParameter</span><wbr><span class="parameters">(org.codehaus.groovy.ast.AnnotatedNode&nbsp;owningType,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../inject/annotation/AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></span>&nbsp;<span class="element-name">lookupOrBuildForParameter</span><wbr><span class="parameters">(org.codehaus.groovy.ast.AnnotatedNode&nbsp;declaringType,
  org.codehaus.groovy.ast.AnnotatedNode&nbsp;methodElement,
  org.codehaus.groovy.ast.AnnotatedNode&nbsp;parameterElement)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../../../inject/annotation/AbstractAnnotationMetadataBuilder.html#lookupOrBuildForParameter(T,T,T)">AbstractAnnotationMetadataBuilder</a></code></span></div>
-<div class="block">Build the metadata for the given element. If the element is a method the class metadata will be included.</div>
+<div class="block">Build the metadata for the given parameter element. The metadata is keyed by the type that <em>declares</em>
+the method, not by the type the method is reached through: a parameter of an inherited method is the same
+parameter whether it is read through the declaring class or through a subclass, so a mutation made through
+one must be visible through the other. Unlike a method, a parameter's metadata never includes the owning
+type's annotations, so nothing distinguishes it per owner.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../../../inject/annotation/AbstractAnnotationMetadataBuilder.html#lookupOrBuildForParameter(T,T,T)">lookupOrBuildForParameter</a></code>&nbsp;in class&nbsp;<code><a href="../../../inject/annotation/AbstractAnnotationMetadataBuilder.html" title="class in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder</a>&lt;org.codehaus.groovy.ast.AnnotatedNode, org.codehaus.groovy.ast.AnnotationNode&gt;</code></dd>
 <dt>Parameters:</dt>
-<dd><code>owningType</code> - The owning type</dd>
+<dd><code>declaringType</code> - The type declaring the method</dd>
 <dd><code>methodElement</code> - The method element</dd>
 <dd><code>parameterElement</code> - The parameter element</dd>
 <dt>Returns:</dt>
