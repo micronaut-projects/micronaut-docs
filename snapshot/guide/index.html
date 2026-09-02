@@ -20480,7 +20480,7 @@ explains the one case that behaves differently:</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">construct, post-construct, pre-destroy</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A <a href="../api/io/micronaut/context/annotation/Prototype.html">@Prototype</a> created with <code>createBean</code> and destroyed with <code>destroyBean(Object)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A <a href="../api/io/micronaut/context/annotation/Prototype.html">@Prototype</a> with <a href="../api/io/micronaut/aop/AroundConstruct.html">@AroundConstruct</a> advice and no proxy, created with <code>createBean</code> and destroyed with <code>destroyBean(Object)</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Nothing; the context tracks no registration for it</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">construct and post-construct only</p></td>
 </tr>
@@ -20494,8 +20494,9 @@ explains the one case that behaves differently:</p>
 </td>
 <td class="content">
 In the last row the context has no registration for the instance, so nothing links its destruction back to what
-it was created with, and <code>PRE_DESTROY</code> resolves a new interceptor. Prototypes injected into other beans, and prototypes
-destroyed through their <code>BeanRegistration</code>, are unaffected.
+it was created with, and <code>PRE_DESTROY</code> resolves a new interceptor. A proxied bean created and destroyed the same way
+is unaffected: the proxy retained its registrations and <code>destroyBean(Object)</code> destroys the non-singleton ones with the
+target. Prototypes injected into other beans, and prototypes destroyed through their <code>BeanRegistration</code>, are unaffected.
 </td>
 </tr>
 </table>
