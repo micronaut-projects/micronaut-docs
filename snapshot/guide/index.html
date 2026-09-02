@@ -7550,6 +7550,157 @@ Simply implementing the <code>Closeable</code> or <code>AutoCloseable</code> int
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_destruction_order">Destruction Order</h3>
+<div class="paragraph">
+<p>When the context is closed, singletons are destroyed in dependency order: a bean is always destroyed before the beans injected into it, whether they were injected through the constructor, a method or a field. This lets a bean use its dependencies from its <code>@PreDestroy</code> method.</p>
+</div>
+<div class="paragraph">
+<p>Beans that are not injected into each other but still have to be created and destroyed in a particular order can declare the dependency with <a href="../api/io/micronaut/context/annotation/DependsOn.html">@DependsOn</a>. The annotated bean is created after, and destroyed before, every bean of the listed types:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.DependsOn;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Singleton;
+
+@Singleton
+@DependsOn(MessagePublisher.class) // <b class="conum">(1)</b>
+public class MessageConsumer {
+
+    public MessageConsumer() {
+        ShutdownLog.add("consumer created");
+    }
+
+    @PreDestroy
+    void stop() { // <b class="conum">(2)</b>
+        ShutdownLog.add("consumer stopped");
+    }
+}
+
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Singleton;
+
+@Singleton
+public class MessagePublisher {
+
+    public MessagePublisher() {
+        ShutdownLog.add("publisher created");
+    }
+
+    @PreDestroy
+    void close() { // <b class="conum">(3)</b>
+        ShutdownLog.add("publisher closed");
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.DependsOn
+import jakarta.annotation.PreDestroy
+import jakarta.inject.Singleton
+
+@Singleton
+@DependsOn(MessagePublisher::class) // <b class="conum">(1)</b>
+class MessageConsumer {
+
+    init {
+        ShutdownLog.add("consumer created")
+    }
+
+    @PreDestroy
+    fun stop() { // <b class="conum">(2)</b>
+        ShutdownLog.add("consumer stopped")
+    }
+}
+
+import jakarta.annotation.PreDestroy
+import jakarta.inject.Singleton
+
+@Singleton
+class MessagePublisher {
+
+    init {
+        ShutdownLog.add("publisher created")
+    }
+
+    @PreDestroy
+    fun close() { // <b class="conum">(3)</b>
+        ShutdownLog.add("publisher closed")
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.DependsOn
+import jakarta.annotation.PreDestroy
+import jakarta.inject.Singleton
+
+@Singleton
+@DependsOn(MessagePublisher) // <b class="conum">(1)</b>
+class MessageConsumer {
+
+    MessageConsumer() {
+        ShutdownLog.add("consumer created")
+    }
+
+    @PreDestroy
+    void stop() { // <b class="conum">(2)</b>
+        ShutdownLog.add("consumer stopped")
+    }
+}
+
+import jakarta.annotation.PreDestroy
+import jakarta.inject.Singleton
+
+@Singleton
+class MessagePublisher {
+
+    MessagePublisher() {
+        ShutdownLog.add("publisher created")
+    }
+
+    @PreDestroy
+    void close() { // <b class="conum">(3)</b>
+        ShutdownLog.add("publisher closed")
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The consumer depends on the publisher without injecting it</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The consumer stops while the publisher is still open, so it can publish the messages it has in flight</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The publisher is closed once the consumer has stopped</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The annotation also works on factory methods and accepts interfaces, in which case every bean implementing the interface is created before and destroyed after the annotated bean. Beans not connected by any dependency are destroyed in bean name order, so the destruction sequence is the same from run to run.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Shutdown logic that spans several beans can also be placed in <a href="../api/io/micronaut/runtime/event/annotation/EventListener.html">@EventListener</a> methods for <a href="../api/io/micronaut/context/event/ShutdownEvent.html">ShutdownEvent</a>, which is published before any bean is destroyed. Such methods can be ordered with <a href="../api/io/micronaut/core/annotation/Order.html">@Order</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
