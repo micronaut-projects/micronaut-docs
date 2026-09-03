@@ -683,25 +683,27 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-python"><a href="#python"><strong>16.3</strong><span>Micronaut for Python</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-typeOrdering"><a href="#typeOrdering"><strong>16.3.1</strong><span>Type Ordering and Forward References</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-pythonThreading"><a href="#pythonThreading"><strong>16.3.1</strong><span>Python Threading</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-standardTypes"><a href="#standardTypes"><strong>16.3.2</strong><span>Standard Library Type Conversions</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-typeOrdering"><a href="#typeOrdering"><strong>16.3.2</strong><span>Type Ordering and Forward References</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-keywords"><a href="#keywords"><strong>16.3.3</strong><span>Python Keywords in Java APIs</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-standardTypes"><a href="#standardTypes"><strong>16.3.3</strong><span>Standard Library Type Conversions</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-moduleScripts"><a href="#moduleScripts"><strong>16.3.4</strong><span>Module Scripts</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-keywords"><a href="#keywords"><strong>16.3.4</strong><span>Python Keywords in Java APIs</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-testing"><a href="#testing"><strong>16.3.4.1</strong><span>JUnit 5 Module Tests</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-moduleScripts"><a href="#moduleScripts"><strong>16.3.5</strong><span>Module Scripts</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-graalTools"><a href="#graalTools"><strong>16.3.5</strong><span>GraalPy Tools</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-testing"><a href="#testing"><strong>16.3.5.1</strong><span>JUnit 5 Module Tests</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-asyncAwait"><a href="#asyncAwait"><strong>16.3.6</strong><span>Async/Await</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-graalTools"><a href="#graalTools"><strong>16.3.6</strong><span>GraalPy Tools</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioRuntime"><a href="#asyncioRuntime"><strong>16.3.6.1</strong><span>Netty-Backed Asyncio Runtime</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-asyncAwait"><a href="#asyncAwait"><strong>16.3.7</strong><span>Async/Await</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioNetworking"><a href="#asyncioNetworking"><strong>16.3.6.2</strong><span>Asyncio Networking and TLS</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioRuntime"><a href="#asyncioRuntime"><strong>16.3.7.1</strong><span>Netty-Backed Asyncio Runtime</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioUnsupported"><a href="#asyncioUnsupported"><strong>16.3.6.3</strong><span>Unsupported Asyncio APIs</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioNetworking"><a href="#asyncioNetworking"><strong>16.3.7.2</strong><span>Asyncio Networking and TLS</span></a></div>
+        
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioUnsupported"><a href="#asyncioUnsupported"><strong>16.3.7.3</strong><span>Unsupported Asyncio APIs</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-kotlin"><a href="#kotlin"><strong>16.4</strong><span>Micronaut for Kotlin</span></a></div>
         
@@ -52148,7 +52150,317 @@ static class MyRoutes extends GroovyRouteBuilder {
 <p>The Python support integrates Python classes, annotations, and type metadata with Micronaut&#8217;s compile-time bean definition model.</p>
 </div>
 
-<h2 id="typeOrdering"><a class="anchor" href="#typeOrdering"></a>16.3.1 Type Ordering and Forward References</h2>
+<h2 id="pythonThreading"><a class="anchor" href="#pythonThreading"></a>16.3.1 Python Threading</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/pythonThreading.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect1">
+<h2 id="_python_threading">Python Threading</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_the_python_gil">The Python GIL</h3>
+<div class="paragraph">
+<p>GraalPy currently uses a Global Interpreter Lock (GIL). The GIL allows only one thread to execute Python code at a time in a given GraalPy context. GraalPy can release the GIL while calling native code or performing I/O, but you should not assume that Python code in the same context executes in parallel. See the <a href="https://github.com/oracle/graalpython/blob/master/docs/user/Interoperability.md">GraalPy multithreading documentation</a> for more information.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut can run Python code in multiple GraalPy contexts. Each context has its own GIL, so a pool of contexts can reduce GIL contention when several requests execute Python concurrently. Context pooling is experimental and should be enabled and tuned only after measuring the workload.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_do_not_use_virtual_threads_for_python_execution">Do not use virtual threads for Python execution</h3>
+<div class="paragraph">
+<p>The current GraalPy runtime does not support executing Python code on Java virtual threads. Micronaut&#8217;s <code>blocking</code> executor uses virtual threads when they are available, so configure the executors used by Python as caching, platform-thread executors instead:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.executors.io.type=cached
+micronaut.executors.io.virtual=false
+micronaut.executors.blocking.type=cached
+micronaut.executors.blocking.virtual=false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  executors:
+    io:
+      type: cached
+      virtual: false
+    blocking:
+      type: cached
+      virtual: false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {executors = {io = {type = "cached", virtual = false}, blocking = {type = "cached", virtual = false}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  executors {
+    io {
+      type = "cached"
+      virtual = false
+    }
+    blocking {
+      type = "cached"
+      virtual = false
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    executors {
+      io {
+        type = "cached"
+        virtual = false
+      }
+      blocking {
+        type = "cached"
+        virtual = false
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "executors": {
+      "io": {
+        "type": "cached",
+        "virtual": false
+      },
+      "blocking": {
+        "type": "cached",
+        "virtual": false
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Micronaut routes synchronous generated Python methods and <code>asyncio.run_in_executor(None, &#8230;&#8203;)</code> to the <code>io</code> executor. The <code>blocking</code> executor is used when an operation is explicitly annotated with <code>@ExecuteOn(TaskExecutors.BLOCKING)</code>. Configure both when Python code can use either path. The <code>io</code> executor is a caching, platform-thread executor by default; specifying it explicitly makes the configuration safe if executor defaults change.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configuring_the_python_context_pool">Configuring the Python context pool</h3>
+<div class="paragraph">
+<p>The Python context pool is configured under <code>micronaut.python.pool</code>:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.python.pool.enabled=true
+micronaut.python.pool.size=8
+micronaut.python.pool.warn-wait=2s</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  python:
+    pool:
+      enabled: true
+      size: 8
+      warn-wait: 2s</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {python = {pool = {enabled = true, size = 8, warn-wait = "2s"}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  python {
+    pool {
+      enabled = true
+      size = 8
+      warnWait = "2s"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    python {
+      pool {
+        enabled = true
+        size = 8
+        warn-wait = "2s"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "python": {
+      "pool": {
+        "enabled": true,
+        "size": 8,
+        "warn-wait": "2s"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><code>enabled</code> defaults to <code>true</code>. <code>size</code> is the target number of additional GraalPy contexts; a value of <code>0</code> selects the default of twice the number of available processors. Contexts are created lazily and each one consumes memory and requires initialization work. Compiled Python code is shared across contexts where possible. For CPU-bound Python code, start with a pool size near the number of available processors and increase it only when measurements show useful parallelism. For I/O-heavy Python code, a larger pool may improve throughput, but it should remain bounded by the concurrency the application can sustain. Set <code>warn-wait</code> to a useful threshold, such as <code>2s</code>, to log when requests wait for an available context and use that signal when tuning <code>size</code>.</p>
+</div>
+<div class="paragraph">
+<p>Disabling the pool is useful for applications that use one context deliberately or do not need concurrent Python execution:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.python.pool.enabled=false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  python:
+    pool:
+      enabled: false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {python = {pool = {enabled = false}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  python {
+    pool {
+      enabled = false
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    python {
+      pool {
+        enabled = false
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "python": {
+      "pool": {
+        "enabled": false
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>For the complete list of pool properties, see the generated configuration reference:</p>
+</div>
+<a id="io.micronaut.context.python.PythonPoolConfiguration" href="#io.micronaut.context.python.PythonPoolConfiguration">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Configuration Properties for <a href="../api/io/micronaut/context/python/PythonPoolConfiguration.html">PythonPoolConfiguration</a></caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.pool.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether pooling is enabled.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.pool.size</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The size of the pool. Defaults to the number of processors * 2.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.pool.warn-wait</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The amount of time to wait for a pooled context before a warning is printed.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2s</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Python context pooling, including the <code>@ContextPooled</code> scope, is experimental. Test pooled applications carefully, especially when Python code relies on mutable module or global state, because each pooled context has its own Python state.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The current GIL and virtual-thread limitations are temporary. A future GraalPy release will provide GIL-free Python execution and virtual-thread support; revisit the executor and pool recommendations when using that runtime.</p>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="typeOrdering"><a class="anchor" href="#typeOrdering"></a>16.3.2 Type Ordering and Forward References</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/typeOrdering.adoc"'>
@@ -52180,7 +52492,7 @@ class Room:
 <p>Use this quoted form instead of relying on declaration order or <code>from <em>future</em> import annotations</code>. It keeps the Python code idiomatic while still allowing Micronaut to resolve the referenced type, nullability, and generic collection element metadata during annotation processing.</p>
 </div>
 
-<h2 id="standardTypes"><a class="anchor" href="#standardTypes"></a>16.3.2 Standard Library Type Conversions</h2>
+<h2 id="standardTypes"><a class="anchor" href="#standardTypes"></a>16.3.3 Standard Library Type Conversions</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/standardTypes.adoc"'>
@@ -52255,7 +52567,7 @@ class EventService:
 <p><code>time</code> and <code>datetime</code> use naive Java representations. Values with <code>tzinfo</code> are rejected rather than having their time-zone information discarded. <code>timezone</code> conversion supports fixed offsets representable by <code>ZoneOffset</code>; custom <code>tzinfo</code> implementations are not supported.</p>
 </div>
 
-<h2 id="keywords"><a class="anchor" href="#keywords"></a>16.3.3 Python Keywords in Java APIs</h2>
+<h2 id="keywords"><a class="anchor" href="#keywords"></a>16.3.4 Python Keywords in Java APIs</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/keywords.adoc"'>
@@ -52300,7 +52612,7 @@ publisher = Flux.from_(source)</code></pre>
 <p>The <code>from_</code> call is rewritten during processing to call the Java <code>from</code> method.</p>
 </div>
 
-<h2 id="moduleScripts"><a class="anchor" href="#moduleScripts"></a>16.3.4 Module Scripts</h2>
+<h2 id="moduleScripts"><a class="anchor" href="#moduleScripts"></a>16.3.5 Module Scripts</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/moduleScripts.adoc"'>
@@ -52334,7 +52646,7 @@ def module_root() -&gt; dict:
 <p>An explicit controller annotation takes precedence over the implicit controller added for modules containing HTTP routes. Explicit scope annotations also take precedence over the automatic <code>ContextPooled</code> scope used by otherwise unscoped route modules.</p>
 </div>
 
-<h2 id="testing"><a class="anchor" href="#testing"></a>16.3.4.1 JUnit 5 Module Tests</h2>
+<h2 id="testing"><a class="anchor" href="#testing"></a>16.3.5.1 JUnit 5 Module Tests</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/moduleScripts/testing.adoc"'>
@@ -52380,7 +52692,7 @@ def test_root():
 <p>The generated Java test class carries the runtime <code>MicronautTest</code> and <code>Test</code> annotations required by the JUnit 5 and Micronaut test extensions. The synthetic <code>self</code> parameter is omitted from the Java method signature and is supplied automatically when the Python function is invoked.</p>
 </div>
 
-<h2 id="graalTools"><a class="anchor" href="#graalTools"></a>16.3.5 GraalPy Tools</h2>
+<h2 id="graalTools"><a class="anchor" href="#graalTools"></a>16.3.6 GraalPy Tools</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/graalTools.adoc"'>
@@ -52486,7 +52798,7 @@ dap = true</code></pre>
 </div>
 </div>
 
-<h2 id="asyncAwait"><a class="anchor" href="#asyncAwait"></a>16.3.6 Async/Await</h2>
+<h2 id="asyncAwait"><a class="anchor" href="#asyncAwait"></a>16.3.7 Async/Await</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/asyncAwait.adoc"'>
@@ -52691,7 +53003,7 @@ async def task_group(self) -&gt; str:
 </div>
 </div>
 
-<h2 id="asyncioRuntime"><a class="anchor" href="#asyncioRuntime"></a>16.3.6.1 Netty-Backed Asyncio Runtime</h2>
+<h2 id="asyncioRuntime"><a class="anchor" href="#asyncioRuntime"></a>16.3.7.1 Netty-Backed Asyncio Runtime</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioRuntime.adoc"'>
@@ -52753,7 +53065,7 @@ async def task_group(self) -&gt; str:
 </ul>
 </div>
 
-<h2 id="asyncioNetworking"><a class="anchor" href="#asyncioNetworking"></a>16.3.6.2 Asyncio Networking and TLS</h2>
+<h2 id="asyncioNetworking"><a class="anchor" href="#asyncioNetworking"></a>16.3.7.2 Asyncio Networking and TLS</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioNetworking.adoc"'>
@@ -52826,7 +53138,7 @@ async def task_group(self) -&gt; str:
 <p>Transport extras expose socket-like information instead of raw Netty channels. Use <code>transport.get_extra_info("sockname")</code>, <code>transport.get_extra_info("peername")</code>, or <code>server.sockets[0].getsockname()</code> for addresses. The raw Netty <code>Channel</code> is intentionally not a Python application API.</p>
 </div>
 
-<h2 id="asyncioUnsupported"><a class="anchor" href="#asyncioUnsupported"></a>16.3.6.3 Unsupported Asyncio APIs</h2>
+<h2 id="asyncioUnsupported"><a class="anchor" href="#asyncioUnsupported"></a>16.3.7.3 Unsupported Asyncio APIs</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioUnsupported.adoc"'>
