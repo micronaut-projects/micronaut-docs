@@ -65,6 +65,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#doesQualify(java.lang.Class,io.micronaut.inject.BeanType)" tabindex="0">doesQualify(Class, BeanType)</a></li>
+<li><a href="#resolveBoundOccurrences(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.annotation.AnnotationMetadata)" tabindex="0">resolveBoundOccurrences(AnnotationValue, AnnotationMetadata)</a></li>
+<li><a href="#resolveBoundOccurrences(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.annotation.AnnotationMetadata,boolean)" tabindex="0">resolveBoundOccurrences(AnnotationValue, AnnotationMetadata, boolean)</a></li>
+<li><a href="#anyMatch(java.util.Collection,java.util.Collection)" tabindex="0">anyMatch(Collection, Collection)</a></li>
 <li><a href="#bindingValuesMatch(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.annotation.AnnotationValue)" tabindex="0">bindingValuesMatch(AnnotationValue, AnnotationValue)</a></li>
 <li><a href="#equals(java.lang.Object)" tabindex="0">equals(Object)</a></li>
 <li><a href="#hashCode()" tabindex="0">hashCode()</a></li>
@@ -97,10 +100,14 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="annotations"><a href="../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
 </span><span class="modifiers">public final class </span><span class="element-name type-name-label">InterceptorBindingQualifier&lt;T&gt;</span>
 <span class="extends-implements">extends <a href="FilteringQualifier.html" title="class in io.micronaut.inject.qualifiers">FilteringQualifier</a>&lt;T&gt;</span></div>
-<div class="block">Qualifier used to resolve the interceptor binding when injection method interceptors for AOP.</div>
+<div class="block">Qualifies interceptor beans by the <code>io.micronaut.aop.InterceptorBinding</code> annotations of an interception point.
+
+<p>A binding names the binding annotation and, when it binds members, the members are compared on the occurrences
+of the binding annotation found on each side, see <a href="#resolveBoundOccurrences(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.annotation.AnnotationMetadata)"><code>resolveBoundOccurrences(AnnotationValue, AnnotationMetadata)</code></a>.
+An interceptor bound by name only applies wherever its binding annotation does.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
-<dd>2.4.0</dd>
+<dd>3.0.0</dd>
 <dt>Author:</dt>
 <dd>graemerocher</dd>
 </dl>
@@ -119,7 +126,10 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color"><code><a href="#META_BINDING_VALUES" class="member-name-link">META_BINDING_VALUES</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The member of a binding written by earlier versions of the framework, carrying a copy of the occurrence of the
+binding annotation the binding was declared through.</div>
+</div>
 <div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#META_MEMBER_INTERCEPTOR_TYPE" class="member-name-link">META_MEMBER_INTERCEPTOR_TYPE</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
@@ -141,26 +151,46 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#bindingValuesMatch(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.annotation.AnnotationValue)" class="member-name-link">bindingValuesMatch</a><wbr>(@Nullable <a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&nbsp;interceptorValues,
- @Nullable <a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&nbsp;interceptPointValues)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#anyMatch(java.util.Collection,java.util.Collection)" class="member-name-link">anyMatch</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&gt;&nbsp;occurrences,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&gt;&nbsp;otherOccurrences)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Whether the members an interceptor binds by are the members the intercept point binds by.</div>
+<div class="block">Whether any occurrence of one side is the same annotation as any occurrence of the other, every member
+compared with the defaults filled in.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#doesQualify(java.lang.Class,io.micronaut.inject.BeanType)" class="member-name-link">doesQualify</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="#type-param-T" title="type parameter in InterceptorBindingQualifier">T</a>&gt;&nbsp;beanType,
- <a href="../BeanType.html" title="interface in io.micronaut.inject">BeanType</a>&lt;<a href="#type-param-T" title="type parameter in InterceptorBindingQualifier">T</a>&gt;&nbsp;candidate)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Check if the candidate qualifies.</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#bindingValuesMatch(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.annotation.AnnotationValue)" class="member-name-link">bindingValuesMatch</a><wbr>(@Nullable <a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&nbsp;interceptorValues,
+ @Nullable <a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&nbsp;interceptPointValues)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Whether two binding occurrences are the same annotation.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#doesQualify(java.lang.Class,io.micronaut.inject.BeanType)" class="member-name-link">doesQualify</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="#type-param-T" title="type parameter in InterceptorBindingQualifier">T</a>&gt;&nbsp;beanType,
+ <a href="../BeanType.html" title="interface in io.micronaut.inject">BeanType</a>&lt;<a href="#type-param-T" title="type parameter in InterceptorBindingQualifier">T</a>&gt;&nbsp;candidate)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Check if the candidate qualifies.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#resolveBoundOccurrences(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.annotation.AnnotationMetadata)" class="member-name-link">resolveBoundOccurrences</a><wbr>(<a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&nbsp;binding,
+ @Nullable <a href="../../core/annotation/AnnotationMetadata.html" title="interface in io.micronaut.core.annotation">AnnotationMetadata</a>&nbsp;annotationMetadata)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">The occurrences of the binding annotation a binding compares members with, in the given metadata.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#resolveBoundOccurrences(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.annotation.AnnotationMetadata,boolean)" class="member-name-link">resolveBoundOccurrences</a><wbr>(<a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&nbsp;binding,
+ @Nullable <a href="../../core/annotation/AnnotationMetadata.html" title="interface in io.micronaut.core.annotation">AnnotationMetadata</a>&nbsp;annotationMetadata,
+ boolean&nbsp;declaredOverrides)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">The occurrences of the binding annotation a binding compares members with, in the given metadata.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -189,6 +219,9 @@ loadScripts(document, 'script');</script>
 <h3>META_BINDING_VALUES</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">META_BINDING_VALUES</span></div>
+<div class="block">The member of a binding written by earlier versions of the framework, carrying a copy of the occurrence of the
+binding annotation the binding was declared through. Members are now compared on the occurrences themselves,
+which a binding annotation retains, and the copy is only read where it is still present.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -243,23 +276,96 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="resolveBoundOccurrences(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.annotation.AnnotationMetadata)">
+<h3>resolveBoundOccurrences</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">resolveBoundOccurrences</span><wbr><span class="parameters">(<a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&nbsp;binding,
+ @Nullable <a href="../../core/annotation/AnnotationMetadata.html" title="interface in io.micronaut.core.annotation">AnnotationMetadata</a>&nbsp;annotationMetadata)</span></div>
+<div class="block">The occurrences of the binding annotation a binding compares members with, in the given metadata.
+
+<p><code>null</code> when the binding does not bind members, or when the metadata holds no occurrence of the
+binding annotation: such a binding matches by name. Otherwise the occurrences of the binding annotation,
+declared on the element or composed by another annotation and retained on it, with the members marked
+<code>io.micronaut.context.annotation.NonBinding</code> left out. A binding written by an earlier version of the
+framework carries a copy of its occurrence, which is used as is.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>binding</code> - The interceptor binding</dd>
+<dd><code>annotationMetadata</code> - The metadata of the element the binding was declared on</dd>
+<dt>Returns:</dt>
+<dd>The occurrences to compare, or <code>null</code> to compare by name</dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="resolveBoundOccurrences(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.annotation.AnnotationMetadata,boolean)">
+<h3>resolveBoundOccurrences</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">resolveBoundOccurrences</span><wbr><span class="parameters">(<a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&nbsp;binding,
+ @Nullable <a href="../../core/annotation/AnnotationMetadata.html" title="interface in io.micronaut.core.annotation">AnnotationMetadata</a>&nbsp;annotationMetadata,
+ boolean&nbsp;declaredOverrides)</span></div>
+<div class="block">The occurrences of the binding annotation a binding compares members with, in the given metadata.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>binding</code> - The interceptor binding</dd>
+<dd><code>annotationMetadata</code> - The metadata of the element the binding was declared on</dd>
+<dd><code>declaredOverrides</code> - Whether, for a hierarchy such as a method under its class, an occurrence declared
+                          on the most specific element replaces the ones above it, the way the bindings
+                          themselves are resolved for an interception point</dd>
+<dt>Returns:</dt>
+<dd>The occurrences to compare, or <code>null</code> to compare by name</dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#resolveBoundOccurrences(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.annotation.AnnotationMetadata)"><code>resolveBoundOccurrences(AnnotationValue, AnnotationMetadata)</code></a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="anyMatch(java.util.Collection,java.util.Collection)">
+<h3>anyMatch</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">anyMatch</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&gt;&nbsp;occurrences,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&gt;&nbsp;otherOccurrences)</span></div>
+<div class="block">Whether any occurrence of one side is the same annotation as any occurrence of the other, every member
+compared with the defaults filled in.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>occurrences</code> - The occurrences of one side</dd>
+<dd><code>otherOccurrences</code> - The occurrences of the other side</dd>
+<dt>Returns:</dt>
+<dd>Whether one pair matches</dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="bindingValuesMatch(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.annotation.AnnotationValue)">
 <h3>bindingValuesMatch</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
 </span><span class="modifiers">public static</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">bindingValuesMatch</span><wbr><span class="parameters">(@Nullable <a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&nbsp;interceptorValues,
  @Nullable <a href="../../core/annotation/AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&nbsp;interceptPointValues)</span></div>
-<div class="block">Whether the members an interceptor binds by are the members the intercept point binds by.
-
-<p>The values recorded for an element are the members it declared, so an element leaving a defaulted member
-out records something other than one writing the default down. The two are the same annotation, and
-<a href="../../core/annotation/AnnotationValue.html#matches(io.micronaut.core.annotation.AnnotationValue)"><code>AnnotationValue.matches(AnnotationValue)</code></a> compares them as such.</p></div>
+<div class="block">Whether two binding occurrences are the same annotation.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>interceptorValues</code> - The members the interceptor binds by, or <code>null</code> when it binds by none</dd>
-<dd><code>interceptPointValues</code> - The members the intercept point binds by, or <code>null</code> when it has none</dd>
+<dd><code>interceptorValues</code> - The occurrence bound on the interceptor</dd>
+<dd><code>interceptPointValues</code> - The occurrence at the interception point</dd>
 <dt>Returns:</dt>
-<dd>Whether the two are the same binding</dd>
+<dd>Whether the two are the same annotation, or there is nothing bound on the interceptor</dd>
 </dl>
 </div>
 </section>
