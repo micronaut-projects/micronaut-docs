@@ -254,8 +254,11 @@ another thread that creates a bean of the same scope, should opt into a lock per
 to its <a href="../../inject/BeanIdentifier.html" title="interface in io.micronaut.inject"><code>BeanIdentifier</code></a> alone, so that beans of different identifiers are created in parallel, a creation
 may wait for another thread that creates a bean of the same scope, and the fast path of a bean already held
 is a plain lookup. <a href="#remove(io.micronaut.inject.BeanIdentifier)"><code>remove(BeanIdentifier)</code></a> takes the same lock, so it still waits for a creation of that
-identifier in flight and then destroys what was created. <a href="#destroyScope(java.util.Map)"><code>destroyScope(Map)</code></a> and
-<a href="#findBeanRegistration(T)"><code>findBeanRegistration(Object)</code></a> work on the scope map without any lock, which is why the map returned by
+identifier in flight and then destroys what was created, and so do <a href="#remove(io.micronaut.inject.BeanDefinition)"><code>remove(BeanDefinition)</code></a> and
+<a href="#destroyScope(java.util.Map)"><code>destroyScope(Map)</code></a>, which wait for the creations in flight of the map they work on. Nothing else holds
+creation off: a creation that has not begun when a destruction of the scope map ends publishes its bean into
+that map afterwards, exactly as one that arrives after the scope-wide write lock is released does.
+<a href="#findBeanRegistration(T)"><code>findBeanRegistration(Object)</code></a> works on the scope map without any lock, which is why the map returned by
 <a href="#getScopeMap(boolean)"><code>getScopeMap(boolean)</code></a> must then be a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ConcurrentMap.html" title="class or interface in java.util.concurrent" class="external-link"><code>ConcurrentMap</code></a>: <a href="#getOrCreate(io.micronaut.context.scope.BeanCreationContext)"><code>getOrCreate(BeanCreationContext)</code></a>
 rejects any other map with an <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a>. The lock objects live as long as the scope, one
 per identifier ever created or removed through it.</p></div>
@@ -418,9 +421,11 @@ per identifier ever created or removed through it.</p></div>
 <div class="block">Remove and destroy the bean held for the given definition. The definition may be the
 <a href="../../inject/ProxyBeanDefinition.html" title="interface in io.micronaut.inject"><code>ProxyBeanDefinition</code></a> of a scoped proxy, in which case the target it stands for is removed.
 
-<p>The bean is taken out of the scope under the write lock and closed after the lock is released, so a
-<code>@PreDestroy</code> hook may reach into the scope from another thread without deadlocking on it. Unlike
-<a href="#remove(io.micronaut.inject.BeanIdentifier)"><code>remove(BeanIdentifier)</code></a> a destruction failure is not routed through
+<p>The bean is taken out of the scope under the write lock, or, where creation is locked per bean, under the
+lock of the identifier it is held under, having first waited for the creations into the scope map that are in
+flight so that a bean of the definition one of them is about to publish is not missed. It is closed after the
+lock is released, so a <code>@PreDestroy</code> hook may reach into the scope from another thread without
+deadlocking on it. Unlike <a href="#remove(io.micronaut.inject.BeanIdentifier)"><code>remove(BeanIdentifier)</code></a> a destruction failure is not routed through
 <a href="#handleDestructionException(io.micronaut.context.exceptions.BeanDestructionException)"><code>handleDestructionException(BeanDestructionException)</code></a> but propagated to the caller.</p></div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
