@@ -89,16 +89,28 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>Record Components:</dt>
-<dd><code><span id="param-site">site</span></code> - The relationship between the request initiator and requested resource</dd>
-<dd><code><span id="param-mode">mode</span></code> - The request mode</dd>
-<dd><code><span id="param-dest">dest</span></code> - The request destination</dd>
-<dd><code><span id="param-user">user</span></code> - Whether the request was initiated by user activation</dd>
+<dd><code><span id="param-site">site</span></code> - The relationship between the request initiator and requested resource, or
+<code>null</code> if <code>Sec-Fetch-Site</code> was absent or carried an unrecognised value</dd>
+<dd><code><span id="param-mode">mode</span></code> - The request mode, or <code>null</code> if <code>Sec-Fetch-Mode</code> was absent or carried an
+unrecognised value</dd>
+<dd><code><span id="param-dest">dest</span></code> - The request destination, or <code>null</code> if <code>Sec-Fetch-Dest</code> was absent or
+carried a value not listed by <a href="Destination.html" title="enum class in io.micronaut.http"><code>Destination</code></a>. The Fetch specification keeps adding
+destinations, so a newer client can legitimately send one this version does not know</dd>
+<dd><code><span id="param-user">user</span></code> - Whether the request was initiated by user activation. Only <code>Sec-Fetch-User:
+?1</code> yields <code>true</code>; an absent header, the structured field boolean <code>?0</code>, and any
+unrecognised value all yield <code>false</code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">SecFetch</span>(<a href="Site.html" title="enum class in io.micronaut.http">Site</a>&nbsp;site, <a href="Mode.html" title="enum class in io.micronaut.http">Mode</a>&nbsp;mode, <a href="Destination.html" title="enum class in io.micronaut.http">Destination</a>&nbsp;dest, boolean&nbsp;user)
+<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">SecFetch</span>(@Nullable <a href="Site.html" title="enum class in io.micronaut.http">Site</a>&nbsp;site, @Nullable <a href="Mode.html" title="enum class in io.micronaut.http">Mode</a>&nbsp;mode, @Nullable <a href="Destination.html" title="enum class in io.micronaut.http">Destination</a>&nbsp;dest, boolean&nbsp;user)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
-<div class="block">The Fetch Metadata request headers.</div>
+<div class="block">The Fetch Metadata request headers.
+
+<p>Each component is populated independently: a header that is absent, or that carries a value
+this version does not recognise, yields a <code>null</code> component while the headers that did
+parse remain readable. An unrecognised <code>Sec-Fetch-Dest</code> therefore does not hide the site
+and mode, which is what a resource isolation policy needs in order to fail closed on the part it
+could not classify rather than on the whole request.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.1.12</dd>
@@ -124,9 +136,9 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.http.Site,io.micronaut.http.Mode,io.micronaut.http.Destination,boolean)" class="member-name-link">SecFetch</a><wbr>(<a href="Site.html" title="enum class in io.micronaut.http">Site</a>&nbsp;site,
- <a href="Mode.html" title="enum class in io.micronaut.http">Mode</a>&nbsp;mode,
- <a href="Destination.html" title="enum class in io.micronaut.http">Destination</a>&nbsp;dest,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.http.Site,io.micronaut.http.Mode,io.micronaut.http.Destination,boolean)" class="member-name-link">SecFetch</a><wbr>(@Nullable <a href="Site.html" title="enum class in io.micronaut.http">Site</a>&nbsp;site,
+ @Nullable <a href="Mode.html" title="enum class in io.micronaut.http">Mode</a>&nbsp;mode,
+ @Nullable <a href="Destination.html" title="enum class in io.micronaut.http">Destination</a>&nbsp;dest,
  boolean&nbsp;user)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Creates an instance of a <code>SecFetch</code> record class.</div>
@@ -145,7 +157,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Destination.html" title="enum class in io.micronaut.http">Destination</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="Destination.html" title="enum class in io.micronaut.http">Destination</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dest()" class="member-name-link">dest</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-dest"><code>dest</code></a> record component.</div>
@@ -160,7 +172,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a hash code value for this object.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Mode.html" title="enum class in io.micronaut.http">Mode</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="Mode.html" title="enum class in io.micronaut.http">Mode</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mode()" class="member-name-link">mode</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-mode"><code>mode</code></a> record component.</div>
@@ -175,7 +187,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates Fetch Metadata from the request headers.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Site.html" title="enum class in io.micronaut.http">Site</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="Site.html" title="enum class in io.micronaut.http">Site</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#site()" class="member-name-link">site</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-site"><code>site</code></a> record component.</div>
@@ -211,9 +223,9 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(io.micronaut.http.Site,io.micronaut.http.Mode,io.micronaut.http.Destination,boolean)">
 <h3>SecFetch</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SecFetch</span><wbr><span class="parameters">(<a href="Site.html" title="enum class in io.micronaut.http">Site</a>&nbsp;site,
- <a href="Mode.html" title="enum class in io.micronaut.http">Mode</a>&nbsp;mode,
- <a href="Destination.html" title="enum class in io.micronaut.http">Destination</a>&nbsp;dest,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SecFetch</span><wbr><span class="parameters">(@Nullable <a href="Site.html" title="enum class in io.micronaut.http">Site</a>&nbsp;site,
+ @Nullable <a href="Mode.html" title="enum class in io.micronaut.http">Mode</a>&nbsp;mode,
+ @Nullable <a href="Destination.html" title="enum class in io.micronaut.http">Destination</a>&nbsp;dest,
  boolean&nbsp;user)</span></div>
 <div class="block">Creates an instance of a <code>SecFetch</code> record class.</div>
 <dl class="notes">
@@ -244,8 +256,9 @@ loadScripts(document, 'script');</script>
 <dt>Parameters:</dt>
 <dd><code>request</code> - The HTTP request</dd>
 <dt>Returns:</dt>
-<dd>The Fetch Metadata, or <code>null</code> if the request does not contain
-all recognized Fetch Metadata headers</dd>
+<dd>The Fetch Metadata, or <code>null</code> if the request carries none of the Fetch
+Metadata headers. See <a href="#of(io.micronaut.http.HttpHeaders)"><code>of(HttpHeaders)</code></a> for what a <code>null</code> return does and does
+not tell a caller</dd>
 <dt>Since:</dt>
 <dd>5.1.12</dd>
 </dl>
@@ -257,13 +270,23 @@ all recognized Fetch Metadata headers</dd>
 <h3>of</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">@Nullable <a href="SecFetch.html" title="class in io.micronaut.http">SecFetch</a></span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="HttpHeaders.html" title="interface in io.micronaut.http">HttpHeaders</a>&nbsp;headers)</span></div>
-<div class="block">Creates Fetch Metadata from the given headers.</div>
+<div class="block">Creates Fetch Metadata from the given headers.
+
+<p>The result is best effort. Headers that parse are reported; those that are absent or
+carry an unrecognised value become <code>null</code> components. Headers that could not be
+classified never suppress the ones that could, so a request whose <code>Sec-Fetch-Dest</code> is
+unknown still reports its site and mode.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>headers</code> - The HTTP headers</dd>
 <dt>Returns:</dt>
-<dd>The Fetch Metadata, or <code>null</code> if the headers do not contain
-all recognized Fetch Metadata headers</dd>
+<dd>The Fetch Metadata, or <code>null</code> if none of <code>Sec-Fetch-Site</code>,
+<code>Sec-Fetch-Mode</code>, <code>Sec-Fetch-Dest</code> and <code>Sec-Fetch-User</code> is present.
+<p><strong>A <code>null</code> return means only that the client sent no Fetch Metadata at all</strong>
+— an older browser, or a non-browser client — and carries no assurance that the request is
+safe. Likewise a <code>null</code> component means "not classified", not "harmless". Resource
+isolation policies should decide deliberately what to do with unclassified requests rather
+than treating <code>null</code> as an implicit allow</dd>
 <dt>Since:</dt>
 <dd>5.1.12</dd>
 </dl>
@@ -321,7 +344,7 @@ all recognized Fetch Metadata headers</dd>
 <section class="detail" id="site()">
 <h3>site</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Site.html" title="enum class in io.micronaut.http">Site</a></span>&nbsp;<span class="element-name">site</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="Site.html" title="enum class in io.micronaut.http">Site</a></span>&nbsp;<span class="element-name">site</span>()</div>
 <div class="block">Returns the value of the <a href="#param-site"><code>site</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -334,7 +357,7 @@ all recognized Fetch Metadata headers</dd>
 <section class="detail" id="mode()">
 <h3>mode</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Mode.html" title="enum class in io.micronaut.http">Mode</a></span>&nbsp;<span class="element-name">mode</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="Mode.html" title="enum class in io.micronaut.http">Mode</a></span>&nbsp;<span class="element-name">mode</span>()</div>
 <div class="block">Returns the value of the <a href="#param-mode"><code>mode</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -347,7 +370,7 @@ all recognized Fetch Metadata headers</dd>
 <section class="detail" id="dest()">
 <h3>dest</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Destination.html" title="enum class in io.micronaut.http">Destination</a></span>&nbsp;<span class="element-name">dest</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="Destination.html" title="enum class in io.micronaut.http">Destination</a></span>&nbsp;<span class="element-name">dest</span>()</div>
 <div class="block">Returns the value of the <a href="#param-dest"><code>dest</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
