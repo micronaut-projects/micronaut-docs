@@ -11707,6 +11707,308 @@ The example above implements the <a href="../api/io/micronaut/inject/annotation/
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_retaining_composed_annotations">Retaining Composed Annotations</h3>
+<div class="paragraph">
+<p><a href="../api/io/micronaut/core/annotation/AnnotationMetadata.html">AnnotationMetadata</a> indexes annotations by name, so when an annotation is composed as a stereotype of another annotation the association between an individual occurrence and the annotation that introduced it is lost. Consider two annotations that each compose the same annotation with different members:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">An Annotation Composing @Limit</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.AliasFor;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Limit(min = 5) // <b class="conum">(1)</b>
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MinLength {
+
+    @AliasFor(annotation = Limit.class, member = "min", applyDefault = true) // <b class="conum">(2)</b>
+    int value() default 5;
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">An Annotation Composing @Limit</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from typing import Annotated
+
+from micronaut.context.annotation import AliasFor
+from .Limit import Limit
+
+@Limit(min=5)  # <b class="conum">(1)</b>
+def MinLength(value: Annotated[int, AliasFor(annotation=Limit, member="min", applyDefault=True)] = 5):  # <b class="conum">(2)</b>
+    def decorator(func):
+        return func
+
+    return decorator</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">An Annotation Composing @Limit</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.AliasFor
+
+@Limit(min = 5) // <b class="conum">(1)</b>
+@Retention(AnnotationRetention.RUNTIME)
+annotation class MinLength(
+    @get:AliasFor(annotation = Limit::class, member = "min", applyDefault = true) // <b class="conum">(2)</b>
+    val value: Int = 5
+)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">An Annotation Composing @Limit</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.AliasFor
+
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
+@Limit(min = 5) // <b class="conum">(1)</b>
+@Retention(RetentionPolicy.RUNTIME)
+@interface MinLength {
+
+    @AliasFor(annotation = Limit, member = "min", applyDefault = true) // <b class="conum">(2)</b>
+    int value() default 5
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>@Limit</code> is declared as a stereotype with <code>min</code> set to <code>5</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>value()</code> member aliases <code>Limit.min</code>, overriding the declared value</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A second annotation, <code>@MaxLength</code>, composes <code>@Limit(max = 50)</code> in the same way and aliases <code>Limit.max</code>. Both are then applied to one bean:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Applying Both Composing Annotations</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import jakarta.inject.Singleton;
+
+@MinLength(3)
+@MaxLength(9)
+@Singleton
+public class CodeValidator {
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Applying Both Composing Annotations</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from jakarta.inject import Singleton
+from .MaxLength import MaxLength
+from .MinLength import MinLength
+
+@MinLength(3)
+@MaxLength(9)
+@Singleton
+class CodeValidator:
+    pass</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Applying Both Composing Annotations</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import jakarta.inject.Singleton
+
+@MinLength(3)
+@MaxLength(9)
+@Singleton
+class CodeValidator</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Applying Both Composing Annotations</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import jakarta.inject.Singleton
+
+@MinLength(3)
+@MaxLength(9)
+@Singleton
+class CodeValidator {
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For this bean <code>getAnnotationValuesByName(Limit.class)</code> reports two occurrences and <code>getAnnotationNamesByStereotype(Limit.class)</code> reports that both <code>@MinLength</code> and <code>@MaxLength</code> introduced a <code>@Limit</code>, but nothing says which occurrence came from which composing annotation — and the correspondence cannot be recovered from the order, since equal occurrences contributed by different annotations collapse into one.</p>
+</div>
+<div class="paragraph">
+<p>Meta-annotating the composed annotation with <a href="../api/io/micronaut/core/annotation/Retainable.html">@Retainable</a> solves this. Every annotation that composes a retainable annotation keeps the composed occurrence on its own <a href="../api/io/micronaut/core/annotation/AnnotationValue.html">AnnotationValue</a>, in addition to flattening it into the element&#8217;s stereotypes:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Declaring a Retainable Annotation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.annotation.Retainable;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retainable // <b class="conum">(1)</b>
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Limit {
+    int min() default 0;
+    int max() default 100;
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Declaring a Retainable Annotation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from micronaut.core.annotation import Retainable
+
+@Retainable  # <b class="conum">(1)</b>
+def Limit(min: int = 0, max: int = 100):
+    def decorator(func):
+        return func
+
+    return decorator</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Declaring a Retainable Annotation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.core.annotation.Retainable
+
+@Retainable // <b class="conum">(1)</b>
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Limit(val min: Int = 0, val max: Int = 100)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Declaring a Retainable Annotation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.annotation.Retainable
+
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
+@Retainable // <b class="conum">(1)</b>
+@Retention(RetentionPolicy.RUNTIME)
+@interface Limit {
+    int min() default 0
+    int max() default 100
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The marker sits on the <strong>composed</strong> annotation, not on the annotations composing it</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>An annotation whose retention does not reach runtime is filtered out of the metadata the writer emits, so a composed annotation has to be retained at runtime to be read back there.</p>
+</div>
+<div class="paragraph">
+<p>The retained occurrences are read back with the <code>getStereotypes()</code> method of <a href="../api/io/micronaut/core/annotation/AnnotationValue.html">AnnotationValue</a>, with member overrides declared through <a href="../api/io/micronaut/context/annotation/AliasFor.html">@AliasFor</a> already applied:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Reading Retained Stereotypes</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">AnnotationValue&lt;?&gt; min = definition.getAnnotation(MinLength.class).getStereotypes().get(0);
+AnnotationValue&lt;?&gt; max = definition.getAnnotation(MaxLength.class).getStereotypes().get(0);
+
+assertEquals(Limit.class.getName(), min.getAnnotationName());
+assertEquals(Map.of("min", 3), min.getValues()); // @Limit(min = 3)
+assertEquals(Map.of("max", 9), max.getValues()); // @Limit(max = 9)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Reading Retained Stereotypes</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">min_length = definition.getAnnotation(
+    "micronaut.docs.inject.retainable.MinLength"
+).getStereotypes()[0]
+max_length = definition.getAnnotation(
+    "micronaut.docs.inject.retainable.MaxLength"
+).getStereotypes()[0]
+
+assert min_length.getAnnotationName() == "micronaut.docs.inject.retainable.Limit"
+assert min_length.getValues()["min"] == 3  # @Limit(min = 3)
+assert max_length.getValues()["max"] == 9  # @Limit(max = 9)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Reading Retained Stereotypes</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val min = definition.getAnnotation(MinLength::class.java)!!.stereotypes!!.first()
+val max = definition.getAnnotation(MaxLength::class.java)!!.stereotypes!!.first()
+
+assertEquals(Limit::class.java.name, min.annotationName)
+assertEquals(mapOf("min" to 3), min.values) // @Limit(min = 3)
+assertEquals(mapOf("max" to 9), max.values) // @Limit(max = 9)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Reading Retained Stereotypes</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">def min = definition.getAnnotation(MinLength).getStereotypes().first()
+def max = definition.getAnnotation(MaxLength).getStereotypes().first()
+
+min.getAnnotationName() == Limit.name
+min.getValues() == [min: 3] // @Limit(min = 3)
+max.getValues() == [max: 9] // @Limit(max = 9)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here <code>min</code> is <code>@Limit(min = 3)</code> and <code>max</code> is <code>@Limit(max = 9)</code>: each composing annotation reports exactly the occurrence it introduced.</p>
+</div>
+<div class="paragraph">
+<p>An annotation is retainable when <a href="../api/io/micronaut/core/annotation/Retainable.html">@Retainable</a> is present anywhere in its own stereotypes, so a framework annotation that is itself meta-annotated with <code>@Retainable</code> opts in a whole family of annotations at once. A retained occurrence in turn keeps its own retainable stereotypes, so <code>getStereotypes()</code> can be walked as a tree, and a transitive <code>@AliasFor</code> override cascades to every level of it.</p>
+</div>
+<div class="paragraph">
+<p>Retention costs generated code proportional to the number of retainable occurrences at every use site, so it is opt-in and has no cost at all for annotations that compose nothing retainable. The marker itself is never retained.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The retained occurrences are stored in the reserved annotation member <code>AnnotationUtil.STEREOTYPES_MEMBER</code> (<code>$stereotypes</code>), following the same convention as <code>$nonBinding</code>. It is not an attribute of the annotation: it is hidden from <code>getValues()</code>, <code>getMemberNames()</code>, the convertible values view and <code>toString()</code>, and it takes no part in equality. Read it through <code>getStereotypes()</code> rather than through the member.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_when_to_retain_a_composed_annotation">When to Retain a Composed Annotation</h4>
+<div class="paragraph">
+<p>Retention is worth adding when the <strong>identity of the occurrence</strong> matters, not just its presence or its merged values:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Composed constraints</strong> - a validation-style annotation composes several constraints, and a violation has to be reported against the constraint that produced it. This is also what makes an individual occurrence addressable: <code>applyDefault</code> and <code>index</code> on <a href="../api/io/micronaut/context/annotation/AliasFor.html">@AliasFor</a> (and the <code>jakarta.validation.OverridesAttribute</code> semantics they model) target one occurrence of a repeated composed constraint, which the name-keyed index cannot distinguish.</p>
+</li>
+<li>
+<p><strong>Interceptor binding</strong> - <a href="../api/io/micronaut/aop/InterceptorBinding.html">@InterceptorBinding</a> is meta-annotated with <code>@Retainable</code>, so every annotation used to bind an interceptor retains its binding occurrence. Bindings are compared on the retained occurrence rather than on a copy of its members, and two annotations composing the same binding annotation with different members on one element — which the name-keyed index collapses into one — resolve to both bindings.</p>
+</li>
+<li>
+<p><strong>Behaviour driven by a meta-annotation contract</strong> - when a <a href="../api/io/micronaut/inject/visitor/TypeElementVisitor.html">TypeElementVisitor</a>, interceptor or bean introspection acts on a meta-annotation you define, retaining it lets that code recover which user-written annotation asked for the behaviour, and with what members, instead of seeing one merged occurrence. Marking your meta-annotation <code>@Retainable</code> opts in every annotation built on it.</p>
+</li>
+<li>
+<p><strong>Diagnostics</strong> - error messages and tooling can name the annotation the user actually wrote rather than the internal stereotype it expands to.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Retention is not needed to test for the presence of a stereotype, to read its merged values, or to find the annotations that introduced it by name. The <code>hasAnnotation</code>, <code>hasStereotype</code>, <code>getAnnotationValuesByName</code> and <code>getAnnotationNamesByStereotype</code> methods of <a href="../api/io/micronaut/core/annotation/AnnotationMetadata.html">AnnotationMetadata</a> already answer those questions, and they cost nothing extra in the generated metadata.</p>
+</div>
+</div>
+</div>
 
 <h2 id="beanImport"><a class="anchor" href="#beanImport"></a>3.22 Importing Beans from Libraries</h2>
 
@@ -59262,6 +59564,9 @@ Since this documentation covers the internal workings of Micronaut, many APIs re
 </li>
 <li>
 <p>It is often necessary to fuse annotation metadata together from different sources. For example, for JavaBean properties you want to combine the metadata from the private field, public getter and public setters into a single view otherwise you have to run logic to runtime to somehow combine this metadata from 3 distinct sources.</p>
+</li>
+<li>
+<p>Annotations meta-annotated with <a href="../api/io/micronaut/core/annotation/Retainable.html">Retainable</a> are, in addition to being flattened into the element&#8217;s stereotypes, retained as a tree under the annotation that composed them, so an individual occurrence can be attributed to the annotation that introduced it. See <a href="#annotationMetadata">Bean Annotation Metadata</a>.</p>
 </li>
 <li>
 <p>Repeatable annotations are combined and normalized. If inherited the annotations are combined from parent interfaces or classes providing a single API to evaluate repeatable annotations instead of requiring runtime logic to perform normalization.</p>
