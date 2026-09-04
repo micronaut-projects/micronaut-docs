@@ -211,23 +211,25 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedProperty"><a href="#introspectedProperty"><strong>3.18.5</strong><span>Explicit Bean Properties</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-atCreator"><a href="#atCreator"><strong>3.18.6</strong><span>Constructor Methods</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-propertyMembers"><a href="#propertyMembers"><strong>3.18.6</strong><span>Bean Property Members</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-staticAtCreator"><a href="#staticAtCreator"><strong>3.18.7</strong><span>Static Creator Methods</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-atCreator"><a href="#atCreator"><strong>3.18.7</strong><span>Constructor Methods</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionConstructors"><a href="#introspectionConstructors"><strong>3.18.8</strong><span>Describing Constructors</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-staticAtCreator"><a href="#staticAtCreator"><strong>3.18.8</strong><span>Static Creator Methods</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionBuilders"><a href="#introspectionBuilders"><strong>3.18.9</strong><span>Builders</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionConstructors"><a href="#introspectionConstructors"><strong>3.18.9</strong><span>Describing Constructors</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionEnums"><a href="#introspectionEnums"><strong>3.18.10</strong><span>Introspect Enums</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionBuilders"><a href="#introspectionBuilders"><strong>3.18.10</strong><span>Builders</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedAnnotationOnAConfigurationClass"><a href="#introspectedAnnotationOnAConfigurationClass"><strong>3.18.11</strong><span>Use the @Introspected Annotation on a Configuration Class</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionEnums"><a href="#introspectionEnums"><strong>3.18.11</strong><span>Introspect Enums</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectExistingAnnotations"><a href="#introspectExistingAnnotations"><strong>3.18.12</strong><span>Write an AnnotationMapper to Introspect Existing Annotations</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedAnnotationOnAConfigurationClass"><a href="#introspectedAnnotationOnAConfigurationClass"><strong>3.18.12</strong><span>Use the @Introspected Annotation on a Configuration Class</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-beanWrapperApi"><a href="#beanWrapperApi"><strong>3.18.13</strong><span>The BeanWrapper API</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectExistingAnnotations"><a href="#introspectExistingAnnotations"><strong>3.18.13</strong><span>Write an AnnotationMapper to Introspect Existing Annotations</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-kotlinAndBeanIntrospection"><a href="#kotlinAndBeanIntrospection"><strong>3.18.14</strong><span>Kotlin and Bean Introspection</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-beanWrapperApi"><a href="#beanWrapperApi"><strong>3.18.14</strong><span>The BeanWrapper API</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-kotlinAndBeanIntrospection"><a href="#kotlinAndBeanIntrospection"><strong>3.18.15</strong><span>Kotlin and Bean Introspection</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-beanMappers"><a href="#beanMappers"><strong>3.19</strong><span>Bean Mappers</span></a></div>
         
@@ -9518,7 +9520,100 @@ Jackson annotations do not set <code>ignoreOtherAccessors</code>, so Micronaut k
 </div>
 </div>
 
-<h2 id="atCreator"><a class="anchor" href="#atCreator"></a>3.18.6 Constructor Methods</h2>
+<h2 id="propertyMembers"><a class="anchor" href="#propertyMembers"></a>3.18.6 Bean Property Members</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/propertyMembers.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A bean property merges the field, the read method and the write method it is composed of into a single <a href="../api/io/micronaut/core/beans/BeanProperty.html">BeanProperty</a> with a single merged <a href="../api/io/micronaut/core/annotation/AnnotationMetadata.html">AnnotationMetadata</a>, read through the getter when one exists.</p>
+</div>
+<div class="paragraph">
+<p>Some specifications need to see those members separately. Jakarta Bean Validation, for example, treats a field and a getter as two distinct constrained elements: a constraint declared on the field is validated against the value the field holds, while a constraint declared on the getter is validated against the value the getter returns, and the two can differ.</p>
+</div>
+<div class="paragraph">
+<p>Setting the <code>members</code> member of the <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a> annotation to <code>true</code> makes each member available through the <code>getMembers()</code> method of <a href="../api/io/micronaut/core/beans/BeanProperty.html">BeanProperty</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Introspected(accessKind = { Introspected.AccessKind.FIELD, Introspected.AccessKind.METHOD }, members = true)
+public class Person {
+    @NotNull
+    private String name = "Billy";
+
+    public String getName() {
+        return "Bob";
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">BeanProperty&lt;Person, String&gt; property = introspection.getRequiredProperty("name", String.class);
+
+property.get(new Person());              // "Bob", read through the getter
+
+List&lt;BeanPropertyMember&lt;Person, ?&gt;&gt; members = property.getMembers();
+members.get(0).getElementType();         // ElementType.FIELD
+members.get(0).getAnnotationMetadata();  // carries @NotNull
+members.get(0).read(new Person());       // "Billy", read from the field</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each <a href="../api/io/micronaut/core/beans/BeanPropertyMember.html">BeanPropertyMember</a> exposes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>getElementType()</code> - either <code>ElementType.FIELD</code> or <code>ElementType.METHOD</code></p>
+</li>
+<li>
+<p><code>getDeclaringType()</code> - the type the member is declared on, which can be a supertype of the introspected bean</p>
+</li>
+<li>
+<p><code>getAnnotationMetadata()</code> - the annotations of that member alone, including the type annotations of its type</p>
+</li>
+<li>
+<p><code>asArgument()</code> - the type of the member with its own generic type information and type annotations</p>
+</li>
+<li>
+<p><code>read(bean)</code> - reads the member directly, for a field bypassing the getter</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The members are listed in field, read method, write method order. A write method is not readable, so <code>isReadable()</code> returns <code>false</code> for it and <code>read</code> throws an <code>UnsupportedOperationException</code>. Members generated by the compiler, such as the accessors Groovy generates for a property, are not listed.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The accessor is generated, so reading a member does not use reflection - except for a field that is not accessible from the generated introspection, such as a private field, which still falls back to reflection.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<code>members</code> defaults to <code>false</code> because the additional metadata increases the size of the generated introspection. It also has no effect when <code>annotationMetadata</code> is set to <code>false</code>.
+</td>
+</tr>
+</table>
+</div>
+
+<h2 id="atCreator"><a class="anchor" href="#atCreator"></a>3.18.7 Constructor Methods</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/atCreator.adoc"'>
@@ -9634,7 +9729,7 @@ This class has no default constructor, so calls to instantiate without arguments
 </table>
 </div>
 
-<h2 id="staticAtCreator"><a class="anchor" href="#staticAtCreator"></a>3.18.7 Static Creator Methods</h2>
+<h2 id="staticAtCreator"><a class="anchor" href="#staticAtCreator"></a>3.18.8 Static Creator Methods</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/staticAtCreator.adoc"'>
@@ -9758,7 +9853,7 @@ There can be multiple "creator" methods annotated. If there is one without argum
 </table>
 </div>
 
-<h2 id="introspectionConstructors"><a class="anchor" href="#introspectionConstructors"></a>3.18.8 Describing Constructors</h2>
+<h2 id="introspectionConstructors"><a class="anchor" href="#introspectionConstructors"></a>3.18.9 Describing Constructors</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/introspectionConstructors.adoc"'>
@@ -10000,7 +10095,7 @@ Describing constructors does not change how beans of the type are built. The con
 </table>
 </div>
 
-<h2 id="introspectionBuilders"><a class="anchor" href="#introspectionBuilders"></a>3.18.9 Builders</h2>
+<h2 id="introspectionBuilders"><a class="anchor" href="#introspectionBuilders"></a>3.18.10 Builders</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/introspectionBuilders.adoc"'>
@@ -10175,7 +10270,7 @@ Introspection Builder does not work with <a href="https://groovy-lang.org/metapr
 </table>
 </div>
 
-<h2 id="introspectionEnums"><a class="anchor" href="#introspectionEnums"></a>3.18.10 Introspect Enums</h2>
+<h2 id="introspectionEnums"><a class="anchor" href="#introspectionEnums"></a>3.18.11 Introspect Enums</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/introspectionEnums.adoc"'>
@@ -10188,7 +10283,7 @@ Introspection Builder does not work with <a href="https://groovy-lang.org/metapr
 <p>It is possible to introspect enums as well. Add the annotation to the enum, and it can be constructed through the standard <code>valueOf</code> method.</p>
 </div>
 
-<h2 id="introspectedAnnotationOnAConfigurationClass"><a class="anchor" href="#introspectedAnnotationOnAConfigurationClass"></a>3.18.11 Use the @Introspected Annotation on a Configuration Class</h2>
+<h2 id="introspectedAnnotationOnAConfigurationClass"><a class="anchor" href="#introspectedAnnotationOnAConfigurationClass"></a>3.18.12 Use the @Introspected Annotation on a Configuration Class</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/introspectedAnnotationOnAConfigurationClass.adoc"'>
@@ -10242,7 +10337,7 @@ You can also use the <code>packages</code> member of the <a href="../api/io/micr
 </table>
 </div>
 
-<h2 id="introspectExistingAnnotations"><a class="anchor" href="#introspectExistingAnnotations"></a>3.18.12 Write an AnnotationMapper to Introspect Existing Annotations</h2>
+<h2 id="introspectExistingAnnotations"><a class="anchor" href="#introspectExistingAnnotations"></a>3.18.13 Write an AnnotationMapper to Introspect Existing Annotations</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/introspectExistingAnnotations.adoc"'>
@@ -10270,7 +10365,7 @@ The <code>AnnotationMapper</code> must be on the annotation processor classpath.
 </table>
 </div>
 
-<h2 id="beanWrapperApi"><a class="anchor" href="#beanWrapperApi"></a>3.18.13 The BeanWrapper API</h2>
+<h2 id="beanWrapperApi"><a class="anchor" href="#beanWrapperApi"></a>3.18.14 The BeanWrapper API</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/beanWrapperApi.adoc"'>
@@ -10348,7 +10443,7 @@ println("Person's age now $newAge")</code></pre>
 </table>
 </div>
 
-<h2 id="kotlinAndBeanIntrospection"><a class="anchor" href="#kotlinAndBeanIntrospection"></a>3.18.14 Kotlin and Bean Introspection</h2>
+<h2 id="kotlinAndBeanIntrospection"><a class="anchor" href="#kotlinAndBeanIntrospection"></a>3.18.15 Kotlin and Bean Introspection</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/kotlinAndBeanIntrospection.adoc"'>

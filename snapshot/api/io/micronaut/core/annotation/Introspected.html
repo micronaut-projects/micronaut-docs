@@ -75,6 +75,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#excludedAnnotations()" tabindex="0">excludedAnnotations</a></li>
 <li><a href="#includedAnnotations()" tabindex="0">includedAnnotations</a></li>
 <li><a href="#annotationMetadata()" tabindex="0">annotationMetadata</a></li>
+<li><a href="#members()" tabindex="0">members</a></li>
 <li><a href="#indexed()" tabindex="0">indexed</a></li>
 <li><a href="#withPrefix()" tabindex="0">withPrefix</a></li>
 <li><a href="#targetPackage()" tabindex="0">targetPackage</a></li>
@@ -264,22 +265,28 @@ each constructor's annotation metadata and the annotation metadata of its parame
 <div class="col-last odd-row-color">
 <div class="block">The annotation types that should be indexed for lookup via <a href="../beans/BeanIntrospection.html#getIndexedProperties(java.lang.Class)"><code>BeanIntrospection.getIndexedProperties(Class)</code></a> or <a href="../beans/BeanIntrospection.html#getIndexedProperty(java.lang.Class,java.lang.String)"><code>BeanIntrospection.getIndexedProperty(Class, String)</code></a> if <a href="Introspected.IndexedAnnotation.html#member()"><code>Introspected.IndexedAnnotation.member()</code></a> is specified.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]</code></div>
-<div class="col-second even-row-color"><code><a href="#packages()" class="member-name-link">packages</a></code></div>
+<div class="col-first even-row-color"><code>boolean</code></div>
+<div class="col-second even-row-color"><code><a href="#members()" class="member-name-link">members</a></code></div>
 <div class="col-last even-row-color">
+<div class="block">Whether the individual members (the field, the read method and the write method) that each property is composed
+of should be included in the introspection.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#packages()" class="member-name-link">packages</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">By default <a href="Introspected.html" title="annotation interface in io.micronaut.core.annotation"><code>Introspected</code></a> applies to the class it is applied on.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#targetPackage()" class="member-name-link">targetPackage</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="Introspected.Visibility.html" title="enum class in io.micronaut.core.annotation">Introspected.Visibility</a>[]</code></div>
-<div class="col-second even-row-color"><code><a href="#visibility()" class="member-name-link">visibility</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#targetPackage()" class="member-name-link">targetPackage</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="Introspected.Visibility.html" title="enum class in io.micronaut.core.annotation">Introspected.Visibility</a>[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#visibility()" class="member-name-link">visibility</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">Allows specifying the visibility policy to use to control which fields and methods are included.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#withPrefix()" class="member-name-link">withPrefix</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#withPrefix()" class="member-name-link">withPrefix</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -497,6 +504,37 @@ to the classs instead.</p>
 <dl class="notes">
 <dt>Default:</dt>
 <dd><code>true</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="members()">
+<h3>members</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">members</span></div>
+<div class="block">Whether the individual members (the field, the read method and the write method) that each property is composed
+of should be included in the introspection.
+
+<p>A <a href="../beans/BeanProperty.html" title="interface in io.micronaut.core.beans"><code>BeanProperty</code></a> normally merges its members into a single element with a
+single merged <a href="AnnotationMetadata.html" title="interface in io.micronaut.core.annotation"><code>AnnotationMetadata</code></a>. When this is set to <code>true</code>
+<a href="../beans/BeanProperty.html#getMembers()"><code>BeanProperty.getMembers()</code></a> additionally exposes each member separately, with its
+own annotation metadata, its own <a href="../type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a> and its own accessor. This is required
+by specifications such as Jakarta Bean Validation that treat a field and a getter as two distinct constrained
+elements.</p>
+
+<p>Defaults to <code>false</code> since the additional metadata increases the size of the generated
+introspection. Has no effect when <a href="#annotationMetadata()"><code>annotationMetadata()</code></a> is <code>false</code>, since the members carry
+nothing but their own annotation metadata.</p></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>True if the property members should be included.</dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
+</dl>
+<dl class="notes">
+<dt>Default:</dt>
+<dd><code>false</code></dd>
 </dl>
 </div>
 </section>
