@@ -61333,6 +61333,18 @@ This applies to both normal redirects and preserve-body redirects (<code>307</co
 <p>If needed, this behavior can be customized through <code>HttpClientConfiguration</code>.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_header_values_may_no_longer_contain_characters_above_u00ff">Header values may no longer contain characters above U+00FF</h3>
+<div class="paragraph">
+<p><code>SimpleHttpHeaders</code> (and the <code>CaseInsensitiveMutableHttpHeaders</code> behind it, used when Netty is not on the classpath) now rejects a header value containing a character above <code>U+00FF</code> with an <code>IllegalArgumentException</code>.</p>
+</div>
+<div class="paragraph">
+<p>RFC 7230 defines a header value over octets — <code>field-vchar = VCHAR / obs-text</code>, where <code>obs-text</code> is <code>%x80-FF</code> — so a character that is not representable as a single octet is not a valid header value. Previously such a value was accepted and then handled inconsistently by whichever transport sent it: Netty substitutes <code>?</code> for each offending character, while the JDK HTTP client throws from its own request builder. The value is now rejected where it is set, naming the header and the offending index.</p>
+</div>
+<div class="paragraph">
+<p>Characters in <code>%x80-FF</code> are unaffected and remain valid, so a <code>Content-Disposition</code> filename using Latin-1 accented characters continues to work. Only characters above <code>U+00FF</code> — for example CJK text or emoji — are rejected, and those were already being replaced with <code>?</code> on the wire.</p>
+</div>
+</div>
 <div class="sect1">
 <h2 id="_5_0">5.0</h2>
 <div class="sectionbody">
