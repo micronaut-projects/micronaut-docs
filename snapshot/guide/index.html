@@ -243,17 +243,19 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-beanImport"><a href="#beanImport"><strong>3.22</strong><span>Importing Beans from Libraries</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-classImport"><a href="#classImport"><strong>3.23</strong><span>Importing Classes from Libraries</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-reflection"><a href="#reflection"><strong>3.23</strong><span>Reflection Based Metadata</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-mixin"><a href="#mixin"><strong>3.24</strong><span>Modifying Class Annotations With A Mixin</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-classImport"><a href="#classImport"><strong>3.24</strong><span>Importing Classes from Libraries</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-nullabilityAnnotations"><a href="#nullabilityAnnotations"><strong>3.25</strong><span>Nullability Annotations</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-mixin"><a href="#mixin"><strong>3.25</strong><span>Modifying Class Annotations With A Mixin</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-jspecify"><a href="#jspecify"><strong>3.25.1</strong><span>JSpecify Nullability Annotations</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-nullabilityAnnotations"><a href="#nullabilityAnnotations"><strong>3.26</strong><span>Nullability Annotations</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-springBeans"><a href="#springBeans"><strong>3.26</strong><span>Micronaut Beans And Spring</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-jspecify"><a href="#jspecify"><strong>3.26.1</strong><span>JSpecify Nullability Annotations</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-android"><a href="#android"><strong>3.27</strong><span>Android Support</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-springBeans"><a href="#springBeans"><strong>3.27</strong><span>Micronaut Beans And Spring</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-android"><a href="#android"><strong>3.28</strong><span>Android Support</span></a></div>
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-config"><a href="#config"><strong>4</strong><span>Application Configuration</span></a></div>
         
@@ -12197,7 +12199,426 @@ In general <code>@Import</code> should be used in applications rather than libra
 </table>
 </div>
 
-<h2 id="classImport"><a class="anchor" href="#classImport"></a>3.23 Importing Classes from Libraries</h2>
+<h2 id="reflection"><a class="anchor" href="#reflection"></a>3.23 Reflection Based Metadata</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/reflection.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The framework describes a type through metadata the annotation processors generate when the type is compiled: <a href="../api/io/micronaut/core/annotation/AnnotationMetadata.html">AnnotationMetadata</a>, <a href="../api/io/micronaut/core/type/Argument.html">Argument</a>, <a href="../api/io/micronaut/inject/ExecutableMethod.html">ExecutableMethod</a>, <a href="../api/io/micronaut/core/beans/BeanIntrospection.html">BeanIntrospection</a> and <a href="../api/io/micronaut/inject/BeanDefinition.html">BeanDefinition</a>. A type that was not compiled with the processors has none, and a specification that has to handle any class - Jakarta Validation, Jakarta REST, CDI - has to describe it through <code>java.lang.reflect</code> instead.</p>
+</div>
+<div class="paragraph">
+<p>The <code>micronaut-reflection</code> module builds the same metadata from reflection, in the shape the processors give it, so that code written against generated metadata works unchanged for a type that has none. Reading a class back is what the framework is built to avoid, so an application says it wants it by adding the dependency:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut:micronaut-reflection")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-reflection&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Every type of the module is experimental, and reflective metadata is slower to build and larger to hold than generated metadata. Use it for the types you cannot compile with the processors, not instead of them.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Reflection reports the name of a parameter only for a class compiled with <code>-parameters</code>, and answers <code>arg0</code>, <code>arg1</code> and so on otherwise. Whatever reads an argument by name - a named injection point, <code>@Property</code>, binding a constructor argument to a property of the same name - therefore needs the classes it describes to carry their parameter names. The canonical constructor of a record always carries them, as the compiler records the names of the components.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_annotation_metadata_and_arguments">Annotation Metadata and Arguments</h3>
+<div class="paragraph">
+<p><a href="../api/io/micronaut/reflection/ReflectionAnnotations.html">ReflectionAnnotations</a> builds the metadata of an <code>AnnotatedElement</code> with the stereotypes, the repeatable containers, the defaults and the non-binding members the processors record, and converts an annotation instance to an <a href="../api/io/micronaut/core/annotation/AnnotationValue.html">AnnotationValue</a> and back. <a href="../api/io/micronaut/reflection/ReflectionArguments.html">ReflectionArguments</a> builds the arguments of parameters, fields and return types with the type-use annotations of every level of their type, resolves the type arguments a type gives to a super type, and renders an argument as a <code>java.lang.reflect.Type</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">AnnotationMetadata metadata = ReflectionAnnotations.metadataOf(Order.class);
+Argument&lt;?&gt;[] arguments = ReflectionArguments.argumentsOf(Order.class.getDeclaredConstructors()[0]);
+Argument&lt;?&gt; argument = ReflectionArguments.of(Order.class.getDeclaredField("lines"));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An annotation composing others carries them as its retained stereotypes, the way the processors record them: the annotations it is meta-annotated with, and the ones an <code>@AliasFor</code> on one of its members reaches without composing them - <code>@A</code> setting a member of <code>@C</code> through <code>@B</code> carries <code>@C</code> itself, before the composed <code>@B</code> - each with the override applied down to the leaves.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+One thing is described differently: a member of a <strong>type-use</strong> annotation written with the very value that is its default. An annotation instance answers every member, so a member equal to its default is dropped, as the processors record only what the source writes; which members the source wrote is read back from the class file for an annotation written on a class, a field, a method or a parameter, and the ones written on a type are held in an attribute that is not read. The member is then dropped where the processor keeps it.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><code>ReflectionAnnotations.synthesize</code> goes the other way, building an annotation instance from an <a href="../api/io/micronaut/core/annotation/AnnotationValue.html">AnnotationValue</a>. It uses the proxy the framework generates where there is one, and a JDK proxy otherwise, so an annotation type that is not public - a specification often nests one in a class of its own - is synthesized too.</p>
+</div>
+<div class="paragraph">
+<p><code>ReflectionArguments.toType</code> renders an argument back as a <code>java.lang.reflect.Type</code>. An unresolved type variable becomes a <code>TypeVariable</code>, which is what an API describing a declaration needs; pass <code>false</code> to render it as the type it is bounded by, which is what an API comparing types by assignability needs.</p>
+</div>
+<div class="paragraph">
+<p>The mappers, transformers and remappers of the processors are not available at runtime. A library that relies on one registers a <a href="../api/io/micronaut/reflection/ReflectionAnnotationCustomizer.html">ReflectionAnnotationCustomizer</a> service instead, which receives the values of every annotation the module converts.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_executable_methods">Executable Methods</h3>
+<div class="paragraph">
+<p><a href="../api/io/micronaut/reflection/ReflectionExecutableMethod.html">ReflectionExecutableMethod</a> is an <a href="../api/io/micronaut/inject/ExecutableMethod.html">ExecutableMethod</a> over a <code>java.lang.reflect.Method</code>, and <a href="../api/io/micronaut/reflection/ReflectionBeanConstructor.html">ReflectionBeanConstructor</a> a <a href="../api/io/micronaut/core/beans/BeanConstructor.html">BeanConstructor</a> over a <code>Constructor</code>. <a href="../api/io/micronaut/reflection/ReflectionExecutables.html">ReflectionExecutables</a> resolves a <code>Method</code> named by a specification API to the best metadata available: the executable method of the bean definition when the declaring type is a bean, else the method of its bean introspection, generated or reflective, else the reflective executable method.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ExecutableMethod&lt;Order, Object&gt; method = ReflectionExecutables.executableMethod(beanContext, Order.class.getMethod("total"));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="../api/io/micronaut/reflection/MethodHierarchy.html">MethodHierarchy</a> resolves what each level of a method hierarchy declares, apart and merged, for the specifications with rules about which level may declare what.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bean_introspections">Bean Introspections</h3>
+<div class="paragraph">
+<p><a href="../api/io/micronaut/reflection/ReflectionBeanIntrospection.html">ReflectionBeanIntrospection</a> is a <a href="../api/io/micronaut/core/beans/BeanIntrospection.html">BeanIntrospection</a> over a class, with the properties, the constructor and the methods a generated introspection would have. It also implements <a href="../api/io/micronaut/reflection/ReflectiveIntrospection.html">ReflectiveIntrospection</a>, which describes what a generated introspection merges: every constructor of the type and the methods the type itself declares.</p>
+</div>
+<div class="paragraph">
+<p>The members a property is made of - the field, the getter and the setter, each with its own metadata, its own argument and its own accessor - are reported through <code>BeanProperty.getMembers()</code>, as <a href="#propertyMembers">a generated introspection reports them</a>. A generated introspection carries them only where <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a> sets <code>members</code> to <code>true</code>, because they grow the class the processor writes; a reflective description writes nothing and describes a member only when one is asked for, so it always reports them - which is what a type the processors never saw needs, since it carries no annotation to ask with. Each member is a <a href="../api/io/micronaut/reflection/ReflectiveIntrospection.ReflectivePropertyMember.html">ReflectivePropertyMember</a>, which also reports the <code>java.lang.reflect</code> field or method it was read from. Where a declaration is shadowed - a field hidden by one of a sub class, a getter overridden - reflection reports every declaration, the one that hides the others first, as the constraints of all of them apply.</p>
+</div>
+<div class="paragraph">
+<p><a href="../api/io/micronaut/reflection/ReflectionBeanIntrospector.html">ReflectionBeanIntrospector</a> is a <a href="../api/io/micronaut/core/beans/BeanIntrospector.html">BeanIntrospector</a> serving the generated introspections of another introspector first, and reflecting only for the types that have none. It can also complete a generated introspection with the executables the processor left out, as a <a href="../api/io/micronaut/reflection/SupplementedBeanIntrospection.html">SupplementedBeanIntrospection</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">BeanIntrospector introspector = new ReflectionBeanIntrospector(BeanIntrospector.SHARED);
+BeanIntrospection&lt;Order&gt; introspection = introspector.getIntrospection(Order.class);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>ReflectionBeanIntrospection.of</code> also takes the annotations the caller means the type to carry, for a specification that was told to handle a class the class itself says nothing about.</p>
+</div>
+<div class="sect3">
+<h4 id="_allowing_reflection_in_the_shared_introspector">Allowing Reflection in the Shared Introspector</h4>
+<div class="paragraph">
+<p>The shared <a href="../api/io/micronaut/core/beans/BeanIntrospector.html">BeanIntrospector</a> the framework uses - and with it <code>BeanIntrospection.getIntrospection(Class)</code>, serialization and the other features built on introspections - never reflects on a type by default. With the module on the classpath, it asks <a href="../api/io/micronaut/reflection/ReflectionBeanIntrospectionFallback.html">ReflectionBeanIntrospectionFallback</a> for the types it has no generated introspection for, and the fallback describes only the types the application allowed. Allow them with the <code>micronaut.introspection.allow-reflection</code> property, as a system property or in the application configuration:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.introspection.allow-reflection[0]=com.example.model.*
+micronaut.introspection.allow-reflection[1]=com.example.legacy.Order</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  introspection:
+    allow-reflection:
+      - com.example.model.*
+      - com.example.legacy.Order</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {introspection = {allow-reflection = ["com.example.model.*", "com.example.legacy.Order"]}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  introspection {
+    allowReflection = ["com.example.model.*", "com.example.legacy.Order"]
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    introspection {
+      allow-reflection = ["com.example.model.*", "com.example.legacy.Order"]
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "introspection": {
+      "allow-reflection": ["com.example.model.*", "com.example.legacy.Order"]
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>A pattern is a class name where <code><strong></code> stands for any sequence of characters; <code></strong></code> alone allows every class. The same patterns can be allowed programmatically through <a href="../api/io/micronaut/reflection/ReflectionIntrospectionPolicy.html">ReflectionIntrospectionPolicy</a>. The policy guards only the shared introspector: code that reflects on a type explicitly, through the types above, made its own choice.</p>
+</div>
+<div class="paragraph">
+<p>The property allows types and says nothing else about them. A type the processors compiled says how it is to be described by what it declares in <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a> - what makes a property, how visible it has to be, which properties to leave out - and a type of a library, or one compiled without the processors, has no way to declare any of it. Configure those members for the types matching a pattern instead:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.introspection.reflective[0].types=com.example.model.*
+micronaut.introspection.reflective[0].access-kind=FIELD
+micronaut.introspection.reflective[0].visibility=ANY
+micronaut.introspection.reflective[0].excludes=password
+micronaut.introspection.reflective[1].types=com.example.api.*
+micronaut.introspection.reflective[1].excluded-annotations=com.example.Internal
+micronaut.introspection.reflective[1].indexed[0].annotation=com.fasterxml.jackson.annotation.JsonProperty
+micronaut.introspection.reflective[1].indexed[0].member=value</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  introspection:
+    reflective:
+      - types: com.example.model.*
+        access-kind: FIELD
+        visibility: ANY
+        excludes: password
+      - types: com.example.api.*
+        excluded-annotations: com.example.Internal
+        indexed:
+          - annotation: com.fasterxml.jackson.annotation.JsonProperty
+            member: value</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {introspection = {reflective = [{types = "com.example.model.*", access-kind = "FIELD", visibility = "ANY", excludes = "password"}, {types = "com.example.api.*", excluded-annotations = "com.example.Internal", indexed = [{annotation = "com.fasterxml.jackson.annotation.JsonProperty", member = "value"}]}]}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  introspection {
+    reflective = [{
+        types = "com.example.model.*"
+        accessKind = "FIELD"
+        visibility = "ANY"
+        excludes = "password"
+      }, {
+        types = "com.example.api.*"
+        excludedAnnotations = "com.example.Internal"
+        indexed = [{
+            annotation = "com.fasterxml.jackson.annotation.JsonProperty"
+            member = "value"
+          }]
+      }]
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    introspection {
+      reflective = [{
+          types = "com.example.model.*"
+          access-kind = "FIELD"
+          visibility = "ANY"
+          excludes = "password"
+        }, {
+          types = "com.example.api.*"
+          excluded-annotations = "com.example.Internal"
+          indexed = [{
+              annotation = "com.fasterxml.jackson.annotation.JsonProperty"
+              member = "value"
+            }]
+        }]
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "introspection": {
+      "reflective": [{
+          "types": "com.example.model.*",
+          "access-kind": "FIELD",
+          "visibility": "ANY",
+          "excludes": "password"
+        }, {
+          "types": "com.example.api.*",
+          "excluded-annotations": "com.example.Internal",
+          "indexed": [{
+              "annotation": "com.fasterxml.jackson.annotation.JsonProperty",
+              "member": "value"
+            }]
+        }]
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>An entry allows the types its <code>types</code> patterns match, as <code>allow-reflection</code> does, and describes them with the members it sets: <code>access-kind</code>, <code>visibility</code>, <code>includes</code>, <code>excludes</code>, <code>excluded-annotations</code>, <code>annotation-metadata</code> and <code>indexed</code>, each the member of <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a> of that name. A member left unset keeps its default.</p>
+</div>
+<div class="paragraph">
+<p>A pattern names types in bulk, so it does not displace what one of them says of itself: where a type carries <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a> of its own, the members it declares win and the configuration supplies the rest. Where two entries match one type, the first sets what it sets and the second supplies the members it does not.</p>
+</div>
+<div class="paragraph">
+<p>The same is available programmatically through <code>ReflectionIntrospectionPolicy.configure(patterns, description)</code>, the description being the metadata <code>ReflectionAnnotations.declaring(Introspected.class, values)</code> builds.</p>
+</div>
+<div class="paragraph">
+<p>The policy is one per JVM, as the shared introspector is, and what each context configures is a contribution of its own: several contexts running together allow the union of their patterns, and a context that stops withdraws exactly what it contributed. <code>ReflectionIntrospectionPolicy.configure</code> returns that contribution, for code applying a configuration of its own to withdraw later, and <code>reset</code> forgets every one of them.</p>
+</div>
+<div class="paragraph">
+<p>Everything built on introspections then sees the type. Serialization, for one, asks the shared introspector for the introspection and asks for its own opt-in as well, so a class it should read without being annotated needs both:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.introspection.allow-reflection[0]=com.example.model.*
+micronaut.serde.included-introspection-packages[0]=com.example.model</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  introspection:
+    allow-reflection:
+      - com.example.model.*
+  serde:
+    included-introspection-packages:
+      - com.example.model</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {introspection = {allow-reflection = ["com.example.model.*"]}, serde = {included-introspection-packages = ["com.example.model"]}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  introspection {
+    allowReflection = ["com.example.model.*"]
+  }
+  serde {
+    includedIntrospectionPackages = ["com.example.model"]
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    introspection {
+      allow-reflection = ["com.example.model.*"]
+    }
+    serde {
+      included-introspection-packages = ["com.example.model"]
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "introspection": {
+      "allow-reflection": ["com.example.model.*"]
+    },
+    "serde": {
+      "included-introspection-packages": ["com.example.model"]
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bean_definitions">Bean Definitions</h3>
+<div class="paragraph">
+<p><a href="../api/io/micronaut/reflection/ReflectionBeanDefinition.html">ReflectionBeanDefinition</a> is a <a href="../api/io/micronaut/inject/BeanDefinition.html">BeanDefinition</a> over a class, registered with a bean context at runtime, with the injection points, the executable methods and the life cycle a generated definition would have: the constructor the processors would select, the <code>@Inject</code>, <code>@Value</code> and <code>@Property</code> fields and methods, the <code>@PostConstruct</code> and <code>@PreDestroy</code> methods, the <code>@Executable</code> methods, and the scope, qualifier, order and conditions of the class.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">beanContext.registerBeanDefinition(ReflectionBeanDefinition.of(OrderService.class));
+
+beanContext.registerBeanDefinition(
+    ReflectionBeanDefinition.builder(OrderService.class)
+        .named("legacy")
+        .singleton(true)
+        .build()
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each injected argument is resolved as a generated definition resolves it, including collections, arrays, streams, optionals and maps of beans, <a href="../api/io/micronaut/context/BeanRegistration.html">BeanRegistration</a> and configuration values, and a member a super type declares of a variable the bean gives a value to is injected as that value. The bean is built the way the processors build it: a static <code>@Creator</code> factory when the class declares one, else the only accessible constructor, else the one annotated <code>@Inject</code> or <code>@Creator</code>, else the canonical constructor of a record, else the first public one. The features that need the processors - <code>@ConfigurationProperties</code> binding, <code>@EachProperty</code> and <code>@EachBean</code>, <code>@Parameter</code> arguments and AOP advice - are not available to a reflective definition.</p>
+</div>
+<div class="paragraph">
+<p>Code adapting another container has two more needs the builder covers. <code>additionalAnnotationMetadata</code> adds the annotations that container means the bean to carry without losing the ones its class declares, both counting as declared, which is how the framework reads a scope, a qualifier or a primary marker. And <code>postConstruct</code> and <code>preDestroy</code> take method names, for a container that names its life cycle methods instead of annotating them:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">beanContext.registerBeanDefinition(
+    ReflectionBeanDefinition.builder(OrderService.class)
+        .additionalAnnotationMetadata(ReflectionAnnotations.declaring(Primary.class))
+        .postConstruct("start")
+        .preDestroy("stop")
+        .build()
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>ReflectionAnnotations.declaring</code> builds the metadata of an annotation type with its defaults and its stereotypes, which declaring it by name alone would lose, and <code>ReflectionAnnotations.merge</code> puts two metadata together.</p>
+</div>
+</div>
+
+<h2 id="classImport"><a class="anchor" href="#classImport"></a>3.24 Importing Classes from Libraries</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/classImport.adoc"'>
@@ -12307,7 +12728,7 @@ At this moment, Micronaut doesn&#8217;t support reimporting classes already proc
 </table>
 </div>
 
-<h2 id="mixin"><a class="anchor" href="#mixin"></a>3.24 Modifying Class Annotations With A Mixin</h2>
+<h2 id="mixin"><a class="anchor" href="#mixin"></a>3.25 Modifying Class Annotations With A Mixin</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/mixin.adoc"'>
@@ -12482,7 +12903,7 @@ Mixins only modify the Micronaut annotations metadata model. Original classes ar
 </table>
 </div>
 
-<h2 id="nullabilityAnnotations"><a class="anchor" href="#nullabilityAnnotations"></a>3.25 Nullability Annotations</h2>
+<h2 id="nullabilityAnnotations"><a class="anchor" href="#nullabilityAnnotations"></a>3.26 Nullability Annotations</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/nullabilityAnnotations.adoc"'>
@@ -12668,7 +13089,7 @@ or any other <a href="https://kotlinlang.org/docs/java-interop.html#nullability-
 </div>
 </div>
 
-<h2 id="jspecify"><a class="anchor" href="#jspecify"></a>3.25.1 JSpecify Nullability Annotations</h2>
+<h2 id="jspecify"><a class="anchor" href="#jspecify"></a>3.26.1 JSpecify Nullability Annotations</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/nullabilityAnnotations/jspecify.adoc"'>
@@ -12761,7 +13182,7 @@ final class AccountService {
 </div>
 </div>
 
-<h2 id="springBeans"><a class="anchor" href="#springBeans"></a>3.26 Micronaut Beans And Spring</h2>
+<h2 id="springBeans"><a class="anchor" href="#springBeans"></a>3.27 Micronaut Beans And Spring</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/springBeans.adoc"'>
@@ -12774,7 +13195,7 @@ final class AccountService {
 <p>Micronaut framework has integrations with Spring in several forms. See the <a href="https://micronaut-projects.github.io/micronaut-spring/latest/guide">Micronaut Spring Documentation</a> for more information.</p>
 </div>
 
-<h2 id="android"><a class="anchor" href="#android"></a>3.27 Android Support</h2>
+<h2 id="android"><a class="anchor" href="#android"></a>3.28 Android Support</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/android.adoc"'>
