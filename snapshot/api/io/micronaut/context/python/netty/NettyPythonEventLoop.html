@@ -67,16 +67,21 @@ loadScripts(document, 'script');</script>
 <li><a href="#inEventLoop()" tabindex="0">inEventLoop()</a></li>
 <li><a href="#execute(java.lang.Runnable)" tabindex="0">execute(Runnable)</a></li>
 <li><a href="#schedule(java.lang.Runnable,long,java.util.concurrent.TimeUnit)" tabindex="0">schedule(Runnable, long, TimeUnit)</a></li>
+<li><a href="#executeCallback(org.graalvm.polyglot.Value)" tabindex="0">executeCallback(Value)</a></li>
+<li><a href="#scheduleCallback(org.graalvm.polyglot.Value,long,java.util.concurrent.TimeUnit)" tabindex="0">scheduleCallback(Value, long, TimeUnit)</a></li>
 <li><a href="#time()" tabindex="0">time()</a></li>
 <li><a href="#equals(java.lang.Object)" tabindex="0">equals(Object)</a></li>
 <li><a href="#hashCode()" tabindex="0">hashCode()</a></li>
 <li><a href="#eventLoop()" tabindex="0">eventLoop()</a></li>
 <li><a href="#createConnection(org.graalvm.polyglot.Value,java.lang.String,int,java.lang.String,int,java.lang.Object,java.lang.String,java.lang.Double,java.lang.Double)" tabindex="0">createConnection(Value, String, int, String, int, Object, String, Double, Double)</a></li>
+<li><a href="#createConnection(org.graalvm.polyglot.Value,java.lang.String,int,java.lang.String,int,java.lang.Object,java.lang.String,java.lang.Double,java.lang.Double,java.lang.String)" tabindex="0">createConnection(Value, String, int, String, int, Object, String, Double, Double, String)</a></li>
 <li><a href="#createServer(org.graalvm.polyglot.Value,java.lang.String,int,int,boolean,boolean,boolean,java.lang.Object,java.lang.Double,java.lang.Double)" tabindex="0">createServer(Value, String, int, int, boolean, boolean, boolean, Object, Double, Double)</a></li>
+<li><a href="#createServer(org.graalvm.polyglot.Value,java.lang.String,int,int,boolean,boolean,boolean,java.lang.Object,java.lang.Double,java.lang.Double,java.lang.String)" tabindex="0">createServer(Value, String, int, int, boolean, boolean, boolean, Object, Double, Double, String)</a></li>
 <li><a href="#connectAcceptedSocket(org.graalvm.polyglot.Value,java.lang.Object,java.lang.Object,java.lang.Double,java.lang.Double)" tabindex="0">connectAcceptedSocket(Value, Object, Object, Double, Double)</a></li>
 <li><a href="#createUnixConnection(org.graalvm.polyglot.Value,java.lang.String,java.lang.Object,java.lang.String,java.lang.Double,java.lang.Double)" tabindex="0">createUnixConnection(Value, String, Object, String, Double, Double)</a></li>
 <li><a href="#createUnixServer(org.graalvm.polyglot.Value,java.lang.String,int,boolean,java.lang.Object,java.lang.Double,java.lang.Double)" tabindex="0">createUnixServer(Value, String, int, boolean, Object, Double, Double)</a></li>
 <li><a href="#createDatagramEndpoint(org.graalvm.polyglot.Value,java.lang.String,int,java.lang.String,int,boolean,boolean)" tabindex="0">createDatagramEndpoint(Value, String, int, String, int, boolean, boolean)</a></li>
+<li><a href="#createDatagramEndpoint(org.graalvm.polyglot.Value,java.lang.String,int,java.lang.String,int,boolean,boolean,java.lang.String)" tabindex="0">createDatagramEndpoint(Value, String, int, String, int, boolean, boolean, String)</a></li>
 </ol>
 </li>
 </ol>
@@ -156,6 +161,12 @@ Netty before touching channel state or invoking Python callbacks.</p></div>
 <div class="col-last odd-row-color">
 <div class="block">SSL facade for Python transport extras.</div>
 </div>
+<div class="col-first even-row-color"><code>static class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="NettyPythonEventLoop.NettyTransport.html" class="type-name-link" title="class in io.micronaut.context.python.netty">NettyPythonEventLoop.NettyTransport</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">What the Netty-backed stream and datagram transports share: the channel, the protocol, the
+provider that owns the channel, and the asyncio members that only depend on them.</div>
+</div>
 </div>
 </section>
 </li>
@@ -206,15 +217,41 @@ Netty before touching channel state or invoking Python callbacks.</p></div>
 <div class="block">Create a Netty-backed asyncio TCP connection.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>[]&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createDatagramEndpoint(org.graalvm.polyglot.Value,java.lang.String,int,java.lang.String,int,boolean,boolean)" class="member-name-link">createDatagramEndpoint</a><wbr>(org.graalvm.polyglot.Value&nbsp;protocolFactory,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createConnection(org.graalvm.polyglot.Value,java.lang.String,int,java.lang.String,int,java.lang.Object,java.lang.String,java.lang.Double,java.lang.Double,java.lang.String)" class="member-name-link">createConnection</a><wbr>(org.graalvm.polyglot.Value&nbsp;protocolFactory,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;host,
+ int&nbsp;port,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;localHost,
+ int&nbsp;localPort,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;ssl,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;serverHostname,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;sslHandshakeTimeout,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;sslShutdownTimeout,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;family)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Connect a TCP client, resolving the host to an address of the requested family.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>[]&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createDatagramEndpoint(org.graalvm.polyglot.Value,java.lang.String,int,java.lang.String,int,boolean,boolean)" class="member-name-link">createDatagramEndpoint</a><wbr>(org.graalvm.polyglot.Value&nbsp;protocolFactory,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;localHost,
  int&nbsp;localPort,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;remoteHost,
  int&nbsp;remotePort,
  boolean&nbsp;allowBroadcast,
  boolean&nbsp;reusePort)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Create a Netty-backed asyncio datagram endpoint.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>[]&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createDatagramEndpoint(org.graalvm.polyglot.Value,java.lang.String,int,java.lang.String,int,boolean,boolean,java.lang.String)" class="member-name-link">createDatagramEndpoint</a><wbr>(org.graalvm.polyglot.Value&nbsp;protocolFactory,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;localHost,
+ int&nbsp;localPort,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;remoteHost,
+ int&nbsp;remotePort,
+ boolean&nbsp;allowBroadcast,
+ boolean&nbsp;reusePort,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;family)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Open a datagram endpoint on an address of the requested family.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="NettyPythonEventLoop.NettyServer.html" title="class in io.micronaut.context.python.netty">NettyPythonEventLoop.NettyServer</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createServer(org.graalvm.polyglot.Value,java.lang.String,int,int,boolean,boolean,boolean,java.lang.Object,java.lang.Double,java.lang.Double)" class="member-name-link">createServer</a><wbr>(org.graalvm.polyglot.Value&nbsp;protocolFactory,
@@ -230,39 +267,59 @@ Netty before touching channel state or invoking Python callbacks.</p></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Create a Netty-backed asyncio TCP server.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>[]&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createUnixConnection(org.graalvm.polyglot.Value,java.lang.String,java.lang.Object,java.lang.String,java.lang.Double,java.lang.Double)" class="member-name-link">createUnixConnection</a><wbr>(org.graalvm.polyglot.Value&nbsp;protocolFactory,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="NettyPythonEventLoop.NettyServer.html" title="class in io.micronaut.context.python.netty">NettyPythonEventLoop.NettyServer</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createServer(org.graalvm.polyglot.Value,java.lang.String,int,int,boolean,boolean,boolean,java.lang.Object,java.lang.Double,java.lang.Double,java.lang.String)" class="member-name-link">createServer</a><wbr>(org.graalvm.polyglot.Value&nbsp;protocolFactory,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;host,
+ int&nbsp;port,
+ int&nbsp;backlog,
+ boolean&nbsp;reuseAddress,
+ boolean&nbsp;reusePort,
+ boolean&nbsp;startServing,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;ssl,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;sslHandshakeTimeout,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;sslShutdownTimeout,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;family)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Bind a TCP server on an address of the requested family.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>[]&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createUnixConnection(org.graalvm.polyglot.Value,java.lang.String,java.lang.Object,java.lang.String,java.lang.Double,java.lang.Double)" class="member-name-link">createUnixConnection</a><wbr>(org.graalvm.polyglot.Value&nbsp;protocolFactory,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;ssl,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;serverHostname,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;sslHandshakeTimeout,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;sslShutdownTimeout)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Create a Netty-backed asyncio Unix-domain socket connection.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="NettyPythonEventLoop.NettyServer.html" title="class in io.micronaut.context.python.netty">NettyPythonEventLoop.NettyServer</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createUnixServer(org.graalvm.polyglot.Value,java.lang.String,int,boolean,java.lang.Object,java.lang.Double,java.lang.Double)" class="member-name-link">createUnixServer</a><wbr>(org.graalvm.polyglot.Value&nbsp;protocolFactory,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="NettyPythonEventLoop.NettyServer.html" title="class in io.micronaut.context.python.netty">NettyPythonEventLoop.NettyServer</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createUnixServer(org.graalvm.polyglot.Value,java.lang.String,int,boolean,java.lang.Object,java.lang.Double,java.lang.Double)" class="member-name-link">createUnixServer</a><wbr>(org.graalvm.polyglot.Value&nbsp;protocolFactory,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path,
  int&nbsp;backlog,
  boolean&nbsp;startServing,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;ssl,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;sslHandshakeTimeout,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;sslShutdownTimeout)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Create a Netty-backed asyncio Unix-domain socket server.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;object)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.netty.channel.EventLoop</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#eventLoop()" class="member-name-link">eventLoop</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;object)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.netty.channel.EventLoop</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#eventLoop()" class="member-name-link">eventLoop</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the underlying Netty event loop.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#execute(java.lang.Runnable)" class="member-name-link">execute</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;runnable)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#execute(java.lang.Runnable)" class="member-name-link">execute</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;runnable)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Queue a callback for serialized execution on the loop.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#executeCallback(org.graalvm.polyglot.Value)" class="member-name-link">executeCallback</a><wbr>(org.graalvm.polyglot.Value&nbsp;callback)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Queue a Python callback for execution on the loop.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
@@ -279,9 +336,16 @@ Netty before touching channel state or invoking Python callbacks.</p></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Queue a callback after the requested delay using loop time.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#time()" class="member-name-link">time</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ScheduledFuture.html" title="class or interface in java.util.concurrent" class="external-link">ScheduledFuture</a><wbr>&lt;?&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#scheduleCallback(org.graalvm.polyglot.Value,long,java.util.concurrent.TimeUnit)" class="member-name-link">scheduleCallback</a><wbr>(org.graalvm.polyglot.Value&nbsp;callback,
+ long&nbsp;delay,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="class or interface in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Queue a Python callback after the requested delay using loop time.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#time()" class="member-name-link">time</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the monotonic time base exposed to Python's asyncio APIs.</div>
 </div>
 </div>
@@ -376,6 +440,47 @@ Netty before touching channel state or invoking Python callbacks.</p></div>
 </section>
 </li>
 <li>
+<section class="detail" id="executeCallback(org.graalvm.polyglot.Value)">
+<h3>executeCallback</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">executeCallback</span><wbr><span class="parameters">(org.graalvm.polyglot.Value&nbsp;callback)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../PythonEventLoop.html#executeCallback(org.graalvm.polyglot.Value)">PythonEventLoop</a></code></span></div>
+<div class="block">Queue a Python callback for execution on the loop.
+<p>
+A loop that owns a GraalPy context runs the callback inside an execution frame of the
+callback's context, so shutdown waits for callbacks scheduled with <code>call_soon</code>.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../PythonEventLoop.html#executeCallback(org.graalvm.polyglot.Value)">executeCallback</a></code>&nbsp;in interface&nbsp;<code><a href="../PythonEventLoop.html" title="interface in io.micronaut.context.python">PythonEventLoop</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>callback</code> - The Python callable.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="scheduleCallback(org.graalvm.polyglot.Value,long,java.util.concurrent.TimeUnit)">
+<h3>scheduleCallback</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ScheduledFuture.html" title="class or interface in java.util.concurrent" class="external-link">ScheduledFuture</a>&lt;?&gt;</span>&nbsp;<span class="element-name">scheduleCallback</span><wbr><span class="parameters">(org.graalvm.polyglot.Value&nbsp;callback,
+ long&nbsp;delay,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/TimeUnit.html" title="class or interface in java.util.concurrent" class="external-link">TimeUnit</a>&nbsp;unit)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../PythonEventLoop.html#scheduleCallback(org.graalvm.polyglot.Value,long,java.util.concurrent.TimeUnit)">PythonEventLoop</a></code></span></div>
+<div class="block">Queue a Python callback after the requested delay using loop time.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../PythonEventLoop.html#scheduleCallback(org.graalvm.polyglot.Value,long,java.util.concurrent.TimeUnit)">scheduleCallback</a></code>&nbsp;in interface&nbsp;<code><a href="../PythonEventLoop.html" title="interface in io.micronaut.context.python">PythonEventLoop</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>callback</code> - The Python callable.</dd>
+<dd><code>delay</code> - The delay.</dd>
+<dd><code>unit</code> - The delay unit.</dd>
+<dt>Returns:</dt>
+<dd>The scheduled future.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="time()">
 <h3>time</h3>
 <div class="horizontal-scroll">
@@ -460,6 +565,39 @@ Netty before touching channel state or invoking Python callbacks.</p></div>
 </section>
 </li>
 <li>
+<section class="detail" id="createConnection(org.graalvm.polyglot.Value,java.lang.String,int,java.lang.String,int,java.lang.Object,java.lang.String,java.lang.Double,java.lang.Double,java.lang.String)">
+<h3>createConnection</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>[]&gt;</span>&nbsp;<span class="element-name">createConnection</span><wbr><span class="parameters">(org.graalvm.polyglot.Value&nbsp;protocolFactory,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;host,
+ int&nbsp;port,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;localHost,
+ int&nbsp;localPort,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;ssl,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;serverHostname,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;sslHandshakeTimeout,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;sslShutdownTimeout,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;family)</span></div>
+<div class="block">Connect a TCP client, resolving the host to an address of the requested family.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>protocolFactory</code> - The asyncio protocol factory.</dd>
+<dd><code>host</code> - The remote host.</dd>
+<dd><code>port</code> - The remote port.</dd>
+<dd><code>localHost</code> - The local host to bind, or null.</dd>
+<dd><code>localPort</code> - The local port to bind, or -1.</dd>
+<dd><code>ssl</code> - TLS options, or null.</dd>
+<dd><code>serverHostname</code> - The TLS server name, or null.</dd>
+<dd><code>sslHandshakeTimeout</code> - The TLS handshake timeout in seconds.</dd>
+<dd><code>sslShutdownTimeout</code> - The TLS shutdown timeout in seconds.</dd>
+<dd><code>family</code> - <code>inet</code>, <code>inet6</code> or empty for any address family</dd>
+<dt>Returns:</dt>
+<dd>A stage completing with transport and protocol.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="createServer(org.graalvm.polyglot.Value,java.lang.String,int,int,boolean,boolean,boolean,java.lang.Object,java.lang.Double,java.lang.Double)">
 <h3>createServer</h3>
 <div class="horizontal-scroll">
@@ -486,6 +624,41 @@ Netty before touching channel state or invoking Python callbacks.</p></div>
 <dd><code>ssl</code> - TLS options.</dd>
 <dd><code>sslHandshakeTimeout</code> - The TLS handshake timeout in seconds.</dd>
 <dd><code>sslShutdownTimeout</code> - The TLS shutdown timeout in seconds.</dd>
+<dt>Returns:</dt>
+<dd>A stage completing with the server.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createServer(org.graalvm.polyglot.Value,java.lang.String,int,int,boolean,boolean,boolean,java.lang.Object,java.lang.Double,java.lang.Double,java.lang.String)">
+<h3>createServer</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="NettyPythonEventLoop.NettyServer.html" title="class in io.micronaut.context.python.netty">NettyPythonEventLoop.NettyServer</a>&gt;</span>&nbsp;<span class="element-name">createServer</span><wbr><span class="parameters">(org.graalvm.polyglot.Value&nbsp;protocolFactory,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;host,
+ int&nbsp;port,
+ int&nbsp;backlog,
+ boolean&nbsp;reuseAddress,
+ boolean&nbsp;reusePort,
+ boolean&nbsp;startServing,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;ssl,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;sslHandshakeTimeout,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;sslShutdownTimeout,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;family)</span></div>
+<div class="block">Bind a TCP server on an address of the requested family.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>protocolFactory</code> - The asyncio protocol factory.</dd>
+<dd><code>host</code> - The host to bind, or null for every address.</dd>
+<dd><code>port</code> - The port to bind.</dd>
+<dd><code>backlog</code> - The accept backlog.</dd>
+<dd><code>reuseAddress</code> - Whether to set <code>SO_REUSEADDR</code>.</dd>
+<dd><code>reusePort</code> - Whether to set <code>SO_REUSEPORT</code>.</dd>
+<dd><code>startServing</code> - Whether to accept connections right away.</dd>
+<dd><code>ssl</code> - TLS options, or null.</dd>
+<dd><code>sslHandshakeTimeout</code> - The TLS handshake timeout in seconds.</dd>
+<dd><code>sslShutdownTimeout</code> - The TLS shutdown timeout in seconds.</dd>
+<dd><code>family</code> - <code>inet</code>, <code>inet6</code> or empty for any address family</dd>
 <dt>Returns:</dt>
 <dd>A stage completing with the server.</dd>
 </dl>
@@ -588,6 +761,35 @@ Netty before touching channel state or invoking Python callbacks.</p></div>
 <dd><code>remotePort</code> - The remote port, or <code>-1</code>.</dd>
 <dd><code>allowBroadcast</code> - Whether broadcast is enabled.</dd>
 <dd><code>reusePort</code> - Whether port reuse is requested.</dd>
+<dt>Returns:</dt>
+<dd>A stage completing with transport and protocol.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createDatagramEndpoint(org.graalvm.polyglot.Value,java.lang.String,int,java.lang.String,int,boolean,boolean,java.lang.String)">
+<h3>createDatagramEndpoint</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>[]&gt;</span>&nbsp;<span class="element-name">createDatagramEndpoint</span><wbr><span class="parameters">(org.graalvm.polyglot.Value&nbsp;protocolFactory,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;localHost,
+ int&nbsp;localPort,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;remoteHost,
+ int&nbsp;remotePort,
+ boolean&nbsp;allowBroadcast,
+ boolean&nbsp;reusePort,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;family)</span></div>
+<div class="block">Open a datagram endpoint on an address of the requested family.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>protocolFactory</code> - The asyncio datagram protocol factory.</dd>
+<dd><code>localHost</code> - The local host, or null.</dd>
+<dd><code>localPort</code> - The local port, or -1.</dd>
+<dd><code>remoteHost</code> - The remote host to connect to, or null.</dd>
+<dd><code>remotePort</code> - The remote port, or -1.</dd>
+<dd><code>allowBroadcast</code> - Whether to set <code>SO_BROADCAST</code>.</dd>
+<dd><code>reusePort</code> - Whether to set <code>SO_REUSEPORT</code>.</dd>
+<dd><code>family</code> - <code>inet</code>, <code>inet6</code> or empty for any address family</dd>
 <dt>Returns:</dt>
 <dd>A stage completing with transport and protocol.</dd>
 </dl>

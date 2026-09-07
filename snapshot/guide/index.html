@@ -687,27 +687,29 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-python"><a href="#python"><strong>16.3</strong><span>Micronaut for Python</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-pythonThreading"><a href="#pythonThreading"><strong>16.3.1</strong><span>Python Threading</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-pythonRuntime"><a href="#pythonRuntime"><strong>16.3.1</strong><span>Runtime Requirements</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-typeOrdering"><a href="#typeOrdering"><strong>16.3.2</strong><span>Type Ordering and Forward References</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-pythonThreading"><a href="#pythonThreading"><strong>16.3.2</strong><span>Python Threading</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-standardTypes"><a href="#standardTypes"><strong>16.3.3</strong><span>Standard Library Type Conversions</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-typeOrdering"><a href="#typeOrdering"><strong>16.3.3</strong><span>Type Ordering and Forward References</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-keywords"><a href="#keywords"><strong>16.3.4</strong><span>Python Keywords in Java APIs</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-standardTypes"><a href="#standardTypes"><strong>16.3.4</strong><span>Standard Library Type Conversions</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-moduleScripts"><a href="#moduleScripts"><strong>16.3.5</strong><span>Module Scripts</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-keywords"><a href="#keywords"><strong>16.3.5</strong><span>Python Keywords in Java APIs</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-testing"><a href="#testing"><strong>16.3.5.1</strong><span>JUnit 5 Module Tests</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-moduleScripts"><a href="#moduleScripts"><strong>16.3.6</strong><span>Module Scripts</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-graalTools"><a href="#graalTools"><strong>16.3.6</strong><span>GraalPy Tools</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-testing"><a href="#testing"><strong>16.3.6.1</strong><span>JUnit 5 Module Tests</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-asyncAwait"><a href="#asyncAwait"><strong>16.3.7</strong><span>Async/Await</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-graalTools"><a href="#graalTools"><strong>16.3.7</strong><span>GraalPy Tools</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioRuntime"><a href="#asyncioRuntime"><strong>16.3.7.1</strong><span>Netty-Backed Asyncio Runtime</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-asyncAwait"><a href="#asyncAwait"><strong>16.3.8</strong><span>Async/Await</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioNetworking"><a href="#asyncioNetworking"><strong>16.3.7.2</strong><span>Asyncio Networking and TLS</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioRuntime"><a href="#asyncioRuntime"><strong>16.3.8.1</strong><span>Netty-Backed Asyncio Runtime</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioUnsupported"><a href="#asyncioUnsupported"><strong>16.3.7.3</strong><span>Unsupported Asyncio APIs</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioNetworking"><a href="#asyncioNetworking"><strong>16.3.8.2</strong><span>Asyncio Networking and TLS</span></a></div>
+        
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioUnsupported"><a href="#asyncioUnsupported"><strong>16.3.8.3</strong><span>Unsupported Asyncio APIs</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-kotlin"><a href="#kotlin"><strong>16.4</strong><span>Micronaut for Kotlin</span></a></div>
         
@@ -53012,7 +53014,196 @@ static class MyRoutes extends GroovyRouteBuilder {
 <p>The Python support integrates Python classes, annotations, and type metadata with Micronaut&#8217;s compile-time bean definition model.</p>
 </div>
 
-<h2 id="pythonThreading"><a class="anchor" href="#pythonThreading"></a>16.3.1 Python Threading</h2>
+<h2 id="pythonRuntime"><a class="anchor" href="#pythonRuntime"></a>16.3.1 Runtime Requirements</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/pythonRuntime.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Python code runs on GraalPy, which is a Truffle language. Truffle compiles Python code to native code at run time only when the JVM provides a Graal compiler whose version matches the GraalPy artifacts on the classpath. On any other JVM GraalPy still works, but every Python function is interpreted.</p>
+</div>
+<div class="paragraph">
+<p>The difference is large: a bridge call from a generated Java stub into Python costs about 0.4 µs compiled and about 1 µs interpreted, and Python code itself runs 30 to 60 times slower in the interpreter.</p>
+</div>
+<div class="sect1">
+<h2 id="_choosing_a_jdk">Choosing a JDK</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The GraalPy version is <code>25.2.4</code>. Use a GraalVM JDK from the matching GraalVM release line, for example GraalVM 25.2.x for GraalPy 25.2.x. The JDK&#8217;s build string then contains the same Truffle line, such as <code>25.0.4+7-jvmci-25.2-b20</code>.</p>
+</div>
+<div class="paragraph">
+<p>The following JVMs run Python interpreted, even though some of them are GraalVM builds:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A stock OpenJDK or Oracle JDK.</p>
+</li>
+<li>
+<p>A GraalVM JDK from a different release line, for example GraalVM for JDK 25.0.x with GraalPy 25.2.x. The bundled compiler rejects the mismatched Truffle runtime and Truffle falls back to the interpreter.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_detecting_the_fallback_runtime">Detecting the fallback runtime</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>At startup the framework logs the active runtime:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">INFO  i.m.c.python.GraalPyEngineFactory - GraalPy engine created in 1843ms using the GraalVM CE runtime</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>Interpreted</code> in that line means the fallback runtime. Truffle additionally logs <code>The polyglot engine uses a fallback runtime that does not support runtime compilation to native code</code> at <code>WARN</code> level through the <code>engine</code> logger.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_compiler_threads">Compiler threads</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default the framework limits the Truffle compiler to one thread with <code>engine.CompilerThreads=1</code>. Applications that warm up many Python contexts concurrently can raise the limit; an explicitly configured value always wins over the default:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">graalpy.engine.options.engine.CompilerThreads=4</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">graalpy:
+  engine:
+    options:
+      engine.CompilerThreads: 4</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">graalpy = {engine = {options = {"engine.CompilerThreads" = 4}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">graalpy {
+  engine {
+    options {
+      engine.CompilerThreads = 4
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  graalpy {
+    engine {
+      options {
+        "engine.CompilerThreads" = 4
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "graalpy": {
+    "engine": {
+      "options": {
+        "engine.CompilerThreads": 4
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_host_class_lookup">Host class lookup</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Python code can look up any class the application class loader can load, through <code>java.type("&#8230;&#8203;")</code> and <code>from &#8230;&#8203; import &#8230;&#8203;</code>. That is the default and needs no configuration: the application&#8217;s own packages, the JDK, Micronaut and every library on the classpath are visible.</p>
+</div>
+<div class="paragraph">
+<p>Applications that run Python code they trust less than their Java code can narrow that surface with <code>graalpy.context.host-class-lookup</code>. The setting is opt-in; when it is set, only the listed packages (and their subpackages) are visible, plus the JDK, Jakarta and <code>io.micronaut</code> packages the generated Python code depends on. List the application&#8217;s own packages, since the generated Python code looks up the application&#8217;s Java classes by name, and every library package the Python code uses:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">graalpy.context.host-class-lookup[0]=com.example
+graalpy.context.host-class-lookup[1]=org.reactivestreams</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">graalpy:
+  context:
+    host-class-lookup:
+      - com.example
+      - org.reactivestreams</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">graalpy = {context = {host-class-lookup = ["com.example", "org.reactivestreams"]}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">graalpy {
+  context {
+    hostClassLookup = ["com.example", "org.reactivestreams"]
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  graalpy {
+    context {
+      host-class-lookup = ["com.example", "org.reactivestreams"]
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "graalpy": {
+    "context": {
+      "host-class-lookup": ["com.example", "org.reactivestreams"]
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>A lookup outside the configured packages raises a Python <code>KeyError</code> for <code>java.type</code> or an <code>ImportError</code> for an import. Leave the setting unset to keep the default, unrestricted lookup.</p>
+</div>
+</div>
+</div>
+
+<h2 id="pythonThreading"><a class="anchor" href="#pythonThreading"></a>16.3.2 Python Threading</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/pythonThreading.adoc"'>
@@ -53201,6 +53392,12 @@ micronaut.python.pool.warn-wait=2s</code></pre>
 <p><code>enabled</code> defaults to <code>true</code>. <code>size</code> is the target number of additional GraalPy contexts; a value of <code>0</code> selects the default of twice the number of available processors. Contexts are created lazily and each one consumes memory and requires initialization work. Compiled Python code is shared across contexts where possible. For CPU-bound Python code, start with a pool size near the number of available processors and increase it only when measurements show useful parallelism. For I/O-heavy Python code, a larger pool may improve throughput, but it should remain bounded by the concurrency the application can sustain. Set <code>warn-wait</code> to a useful threshold, such as <code>2s</code>, to log when requests wait for an available context and use that signal when tuning <code>size</code>.</p>
 </div>
 <div class="paragraph">
+<p>When the asyncio bridge is enabled, each Netty event loop that executes Python coroutines additionally owns a dedicated context. Those contexts are created lazily, one per event loop, and are not counted against <code>size</code>. The number of contexts an application can create is therefore the pool <code>size</code> plus the number of Netty event loops that run Python, plus the primary context. Reduce <code>micronaut.netty.event-loops.default.num-threads</code> or disable <code>micronaut.python.asyncio.enabled</code> when that footprint is too large. Alternatively cap the dedicated contexts with <code>micronaut.python.pool.max-event-loop-contexts</code>: the first event loops to run Python get a context each, and the others run Python through the shared pool, which keeps memory bounded at the cost of blocking those event loops while a coroutine runs; the pooled context a coroutine runs on stays leased to it until the coroutine completes, so it is never shared with another caller. Such a coroutine, like one started from a thread with no event loop at all, is driven to completion on the calling thread by a private loop that needs no sockets: its timers, <code>call_soon_threadsafe</code> and executors work, while networking must go through a Netty event loop. A warning names each event loop that is refused a context.</p>
+</div>
+<div class="paragraph">
+<p>During graceful shutdown the pool keeps serving requests that are still in flight and reports completion once every context is idle. The contexts are closed when the application context is destroyed, after any Python execution still running in them has finished.</p>
+</div>
+<div class="paragraph">
 <p>Disabling the pool is useful for applications that use one context deliberately or do not need concurrent Python execution:</p>
 </div>
 <div class="openblock">
@@ -53301,6 +53498,12 @@ micronaut.python.pool.warn-wait=2s</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The amount of time to wait for a pooled context before a warning is printed.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">2s</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.pool.max-event-loop-contexts</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The most Netty event loops that get a dedicated asyncio context; {@code 0}, the default, gives every event loop one. Event loops beyond the cap run Python through the shared pool and block while a coroutine runs.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+</tr>
 </tbody>
 </table>
 <div class="admonitionblock warning">
@@ -53321,8 +53524,24 @@ Python context pooling, including the <code>@ContextPooled</code> scope, is expe
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_pool_statistics">Pool statistics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>PythonContextExecutor</code> bean reports a snapshot of the pool through <code>statistics()</code>: the target size, the number of pooled, idle and event-loop contexts, how many borrows there were, how many of them had to wait, and the total and longest wait. With <code>micronaut-management</code> on the classpath the same snapshot is served by the <code>pythonpool</code> endpoint, which is sensitive by default:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"enabled":true,"targetSize":8,"pooledContexts":3,"idleContexts":2,"eventLoopContexts":1,"borrows":1204,"waits":3,"totalWaitMillis":41,"maxWaitMillis":22,"closed":false}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A growing <code>waits</code> count with <code>maxWaitMillis</code> near <code>warn-wait</code> means the pool is too small for the load; <code>idleContexts</code> staying close to <code>pooledContexts</code> means it is larger than needed. Applications that use Micrometer can bind the snapshot to gauges with a <code>MeterBinder</code>.</p>
+</div>
+</div>
+</div>
 
-<h2 id="typeOrdering"><a class="anchor" href="#typeOrdering"></a>16.3.2 Type Ordering and Forward References</h2>
+<h2 id="typeOrdering"><a class="anchor" href="#typeOrdering"></a>16.3.3 Type Ordering and Forward References</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/typeOrdering.adoc"'>
@@ -53354,7 +53573,7 @@ class Room:
 <p>Use this quoted form instead of relying on declaration order or <code>from <em>future</em> import annotations</code>. It keeps the Python code idiomatic while still allowing Micronaut to resolve the referenced type, nullability, and generic collection element metadata during annotation processing.</p>
 </div>
 
-<h2 id="standardTypes"><a class="anchor" href="#standardTypes"></a>16.3.3 Standard Library Type Conversions</h2>
+<h2 id="standardTypes"><a class="anchor" href="#standardTypes"></a>16.3.4 Standard Library Type Conversions</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/standardTypes.adoc"'>
@@ -53429,7 +53648,7 @@ class EventService:
 <p><code>time</code> and <code>datetime</code> use naive Java representations. Values with <code>tzinfo</code> are rejected rather than having their time-zone information discarded. <code>timezone</code> conversion supports fixed offsets representable by <code>ZoneOffset</code>; custom <code>tzinfo</code> implementations are not supported.</p>
 </div>
 
-<h2 id="keywords"><a class="anchor" href="#keywords"></a>16.3.4 Python Keywords in Java APIs</h2>
+<h2 id="keywords"><a class="anchor" href="#keywords"></a>16.3.5 Python Keywords in Java APIs</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/keywords.adoc"'>
@@ -53474,7 +53693,7 @@ publisher = Flux.from_(source)</code></pre>
 <p>The <code>from_</code> call is rewritten during processing to call the Java <code>from</code> method.</p>
 </div>
 
-<h2 id="moduleScripts"><a class="anchor" href="#moduleScripts"></a>16.3.5 Module Scripts</h2>
+<h2 id="moduleScripts"><a class="anchor" href="#moduleScripts"></a>16.3.6 Module Scripts</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/moduleScripts.adoc"'>
@@ -53508,7 +53727,7 @@ def module_root() -&gt; dict:
 <p>An explicit controller annotation takes precedence over the implicit controller added for modules containing HTTP routes. Explicit scope annotations also take precedence over the automatic <code>ContextPooled</code> scope used by otherwise unscoped route modules.</p>
 </div>
 
-<h2 id="testing"><a class="anchor" href="#testing"></a>16.3.5.1 JUnit 5 Module Tests</h2>
+<h2 id="testing"><a class="anchor" href="#testing"></a>16.3.6.1 JUnit 5 Module Tests</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/moduleScripts/testing.adoc"'>
@@ -53554,7 +53773,7 @@ def test_root():
 <p>The generated Java test class carries the runtime <code>MicronautTest</code> and <code>Test</code> annotations required by the JUnit 5 and Micronaut test extensions. The synthetic <code>self</code> parameter is omitted from the Java method signature and is supplied automatically when the Python function is invoked.</p>
 </div>
 
-<h2 id="graalTools"><a class="anchor" href="#graalTools"></a>16.3.6 GraalPy Tools</h2>
+<h2 id="graalTools"><a class="anchor" href="#graalTools"></a>16.3.7 GraalPy Tools</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/graalTools.adoc"'>
@@ -53660,7 +53879,7 @@ dap = true</code></pre>
 </div>
 </div>
 
-<h2 id="asyncAwait"><a class="anchor" href="#asyncAwait"></a>16.3.7 Async/Await</h2>
+<h2 id="asyncAwait"><a class="anchor" href="#asyncAwait"></a>16.3.8 Async/Await</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/asyncAwait.adoc"'>
@@ -53865,7 +54084,7 @@ async def task_group(self) -&gt; str:
 </div>
 </div>
 
-<h2 id="asyncioRuntime"><a class="anchor" href="#asyncioRuntime"></a>16.3.7.1 Netty-Backed Asyncio Runtime</h2>
+<h2 id="asyncioRuntime"><a class="anchor" href="#asyncioRuntime"></a>16.3.8.1 Netty-Backed Asyncio Runtime</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioRuntime.adoc"'>
@@ -53927,7 +54146,7 @@ async def task_group(self) -&gt; str:
 </ul>
 </div>
 
-<h2 id="asyncioNetworking"><a class="anchor" href="#asyncioNetworking"></a>16.3.7.2 Asyncio Networking and TLS</h2>
+<h2 id="asyncioNetworking"><a class="anchor" href="#asyncioNetworking"></a>16.3.8.2 Asyncio Networking and TLS</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioNetworking.adoc"'>
@@ -53970,12 +54189,152 @@ async def task_group(self) -&gt; str:
 </li>
 </ul>
 </div>
+<div class="sect1">
+<h2 id="_address_families_and_name_resolution">Address families and name resolution</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>For ordinary TCP, UDP, and Unix-domain socket usage without a supplied Python socket, <code>create_connection</code>, <code>create_server</code>, <code>open_connection</code>, <code>start_server</code>, <code>create_unix_connection</code>, <code>create_unix_server</code>, and <code>create_datagram_endpoint</code> are backed by Netty channels. Servers returned from <code>asyncio.start_server(&#8230;&#8203;)</code>, <code>loop.create_server(&#8230;&#8203;)</code>, or <code>loop.create_unix_server(&#8230;&#8203;)</code> are Netty-backed servers; their accepted connections use Netty-backed transports. TCP and Unix-domain socket transports support the common <code>asyncio.Transport</code> methods such as <code>write</code>, <code>writelines</code>, <code>write_eof</code>, <code>pause_reading</code>, <code>resume_reading</code>, <code>close</code>, <code>abort</code>, <code>is_closing</code>, and <code>get_extra_info</code>. Datagram transports support <code>sendto</code>, <code>close</code>, <code>abort</code>, <code>is_closing</code>, and <code>get_extra_info</code>.</p>
+<p><code>create_connection</code>, <code>create_server</code>, <code>open_connection</code>, <code>start_server</code>, <code>create_unix_connection</code>, <code>create_unix_server</code>, and <code>create_datagram_endpoint</code> are backed by Netty channels for every address family: an IPv6 literal such as <code>::1</code> or a name that resolves to IPv6 connects the same way as IPv4.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>family</code> argument narrows name resolution the way asyncio&#8217;s own lookup does: <code>family=socket.AF_INET</code> picks an IPv4 address of a name that resolves to both, <code>family=socket.AF_INET6</code> an IPv6 one, and a name with no address of the requested family fails the call.</p>
+</li>
+<li>
+<p>A hostname that resolves to several addresses is tried one address after the other, in resolver order; <code>all_errors=True</code> raises an <code>ExceptionGroup</code> with every attempt&#8217;s failure.</p>
+</li>
+<li>
+<p>A <code>local_addr</code> name is paired with every local address of the same family as each attempt, and a datagram endpoint tries the local and remote candidates of matching families in turn.</p>
+</li>
+<li>
+<p>IPv6 addresses are reported as <code>(host, port, flowinfo, scope_id)</code>, and a scope id given to <code>sendto</code> is kept.</p>
+</li>
+<li>
+<p>Of the <code>flags</code>, <code>AI_NUMERICHOST</code> rejects a host, <code>local_addr</code>, server host or datagram address that is not a literal address; the others have no effect on Netty&#8217;s resolver.</p>
+</li>
+<li>
+<p><code>happy_eyeballs_delay</code> and <code>interleave</code> raise <code>NotImplementedError</code>, and <code>proto</code> must be <code>0</code> or <code>IPPROTO_TCP</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_servers">Servers</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>create_server</code> with a list of hosts binds one Netty server per host and exposes every listening socket in <code>server.sockets</code>; with a hostname it binds one listening socket per resolved address, as asyncio does.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Without a host (<code>None</code> or <code>""</code>) it binds one dual-stack listener on the IPv6 wildcard, which serves IPv4 too (the JDK and Netty&#8217;s native transports clear <code>IPV6_V6ONLY</code> on the sockets they create). A JVM that cannot open IPv6 sockets (<code>java.net.preferIPv4Stack=true</code> included) binds the IPv4 wildcard instead. A bind failure, a port in use included, fails the call.</p>
+</li>
+<li>
+<p><code>start_serving=False</code> binds without accepting until <code>await server.start_serving()</code> runs.</p>
+</li>
+<li>
+<p>The server follows the <code>asyncio.Server</code> contract: <code>start_serving()</code> and <code>wait_closed()</code> are coroutines; cancelling <code>serve_forever()</code> closes the server and <code>close()</code> cancels a running <code>serve_forever()</code>; <code>wait_closed()</code> waits for the listening sockets and for every accepted connection to close (the 3.12 semantics); <code>async with server:</code> closes it on exit; <code>get_loop()</code> returns the loop; and <code>sockets</code> is empty once the server is closed.</p>
+</li>
+<li>
+<p>Servers returned from <code>asyncio.start_server(&#8230;&#8203;)</code>, <code>loop.create_server(&#8230;&#8203;)</code>, or <code>loop.create_unix_server(&#8230;&#8203;)</code> are Netty-backed servers, and their accepted connections use Netty-backed transports.</p>
+</li>
+<li>
+<p>Protocol factories are called only for a connection that was established, once per transport.</p>
+</li>
+<li>
+<p>A caller-supplied Python socket (<code>sock=&#8230;&#8203;</code>) cannot be adopted by the Netty event loop and raises <code>NotImplementedError</code>. <code>loop.connect_accepted_socket(&#8230;&#8203;)</code> accepts a channel that the Netty loop accepted, not a Python socket, and the channel must belong to the loop adopting it.</p>
+</li>
+<li>
+<p>A <code>create_datagram_endpoint(factory, family=&#8230;&#8203;)</code> without addresses binds a wildcard socket of that family.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_transports">Transports</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The transports handed to <code>connection_made</code> are <code>asyncio.Transport</code> and <code>asyncio.DatagramTransport</code> subclasses over the Netty channel, so keyword arguments and <code>isinstance</code> checks work.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>TCP and Unix-domain socket transports support <code>write</code>, <code>writelines</code>, <code>write_eof</code>, <code>can_write_eof</code>, <code>is_reading</code>, <code>pause_reading</code>, <code>resume_reading</code>, <code>get_write_buffer_size</code>, <code>get_write_buffer_limits</code>, <code>set_write_buffer_limits</code>, <code>close</code>, <code>abort</code>, <code>is_closing</code>, <code>get_protocol</code>, and <code>get_extra_info</code>.</p>
+</li>
+<li>
+<p><code>get_write_buffer_size()</code> reports the bytes queued on the channel, and the limits are Netty&#8217;s write-buffer water marks: <code>set_write_buffer_limits()</code> restores asyncio&#8217;s defaults (a 64 KiB high-water mark, low a quarter of high), and a protocol&#8217;s <code>pause_writing</code>/<code>resume_writing</code> follow the channel&#8217;s writability.</p>
+</li>
+<li>
+<p>Datagram transports support <code>sendto</code>, <code>close</code>, <code>abort</code>, <code>is_closing</code>, <code>get_protocol</code>, and <code>get_extra_info</code>. <code>sendto</code> needs an address on an unconnected transport and accepts only the connected address on a connected one, compared as the full <code>(host, port, flowinfo, scope_id)</code> tuple so two IPv6 addresses differing only by scope are distinct, as in asyncio. Closing a datagram transport calls <code>connection_lost(None)</code> once.</p>
+</li>
+<li>
+<p><code>is_closing()</code> is <code>True</code> once the channel is closed by the transport, the peer, or the provider&#8217;s shutdown; a <code>sendto</code> after that, or one whose name resolution finishes after the close, is dropped without an <code>error_received</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_errors_and_argument_validation">Errors and argument validation</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Network failures raise the exceptions asyncio code expects: <code>ConnectionRefusedError</code>, <code>socket.gaierror</code> for a name that does not resolve, <code>TimeoutError</code> for a connect, name-resolution or TLS handshake timeout, and <code>OSError</code> for other I/O failures, each carrying the Java throwable as <code>java_exception</code>.</p>
+</li>
+<li>
+<p><code>server_hostname</code>, <code>ssl_handshake_timeout</code> and <code>ssl_shutdown_timeout</code> without <code>ssl</code> (an empty mapping counts as <code>ssl</code>), and a datagram endpoint with neither address nor an explicit <code>family</code>, raise <code>ValueError</code> as in asyncio. TLS timeouts must be positive numbers and default to asyncio&#8217;s 60 and 30 seconds.</p>
+</li>
+<li>
+<p>The loop itself runs as long as its Netty event loop: <code>close()</code> and <code>stop()</code> raise <code>RuntimeError</code>.</p>
+</li>
+<li>
+<p>A scheduled callback that raises is reported to the loop&#8217;s exception handler. The default handler logs it through Micronaut&#8217;s logger, and a failing custom handler is reported the same way.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_callbacks_execution_frames_and_shutdown">Callbacks, execution frames and shutdown</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Callbacks scheduled with <code>call_soon</code>, <code>call_later</code> and <code>call_at</code> run in the <code>contextvars</code> context of the code that scheduled them.</p>
+</li>
+<li>
+<p>Protocol callbacks and scheduled callbacks run on the Netty event-loop thread inside a Python execution frame, so a graceful shutdown waits for a running callback the same way it waits for a controller.</p>
+</li>
+<li>
+<p>Once the runtime has selected a context for closing, no new callback or bridge call starts on it: a scheduled callback is skipped and a bridge call fails with <code>IllegalStateException</code>, while calls nested in an execution that began earlier still complete. A protocol callback runs only while its context is open; once a close is selected the channel&#8217;s callbacks fail and the channel is closed.</p>
+</li>
+<li>
+<p>Channels opened by a Netty event loop are closed by the shutdown of the provider whose loop opened them. The shutdown waits for connections and binds still in flight, and refuses new ones.</p>
+</li>
+<li>
+<p>Java stages awaited from Python complete on the loop inside an execution frame, so a completion arriving after the awaiting coroutine returned is still tracked, and skipped once the context is closing.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_transport_selection">Transport selection</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Python event loop uses the transport of the Netty event loop it runs on: NIO everywhere, kqueue on macOS, epoll or io_uring on Linux when the native transport is on the classpath. <code>reuse_port=True</code> needs one of the native transports.</p>
 </div>
 <div class="paragraph">
-<p>Hostname connections created by the Netty-backed TCP path use Netty DNS resolver APIs and unresolved remote addresses, so name resolution and connect processing stay on Netty futures instead of blocking the event-loop thread. The generic socket fallback still uses <code>loop.getaddrinfo(&#8230;&#8203;)</code> on Micronaut&#8217;s blocking executor.</p>
+<p>Hostname connections use Netty DNS resolver APIs and unresolved remote addresses, so name resolution and connect processing stay on Netty futures instead of blocking the event-loop thread. <code>loop.getaddrinfo(&#8230;&#8203;)</code> runs on Micronaut&#8217;s blocking executor. The <code>sock_*</code> coroutine helpers drive a non-blocking Python socket supplied by the caller by retrying the operation from the event loop; they exist for code that manages its own sockets and are not used by the Netty-backed transports.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tls">TLS</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>TLS is supported for <code>loop.create_connection(&#8230;&#8203;)</code>, <code>asyncio.open_connection(&#8230;&#8203;)</code>, <code>loop.create_server(&#8230;&#8203;)</code>, <code>asyncio.start_server(&#8230;&#8203;)</code>, <code>loop.connect_accepted_socket(&#8230;&#8203;)</code>, and the Unix-domain socket client/server APIs. Client TLS accepts <code>ssl=True</code>, <code>server_hostname</code>, <code>ssl_handshake_timeout</code>, and <code>ssl_shutdown_timeout</code>. Client and server TLS also accept an explicit Micronaut mapping:</p>
 </div>
@@ -53996,11 +54355,18 @@ async def task_group(self) -&gt; str:
 <div class="paragraph">
 <p>Server TLS requires <code>certfile</code> and <code>keyfile</code>. <code>trust_all</code> is intended for tests and controlled internal environments. Full Python <code>ssl.SSLContext</code> objects are not inspected and fail with <code>NotImplementedError</code>; use <code>ssl=True</code> for default client TLS or the explicit mapping shown above. TLS transports report <code>can_write_eof() == False</code>.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_transport_extras">Transport extras</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Transport extras expose socket-like information instead of raw Netty channels. Use <code>transport.get_extra_info("sockname")</code>, <code>transport.get_extra_info("peername")</code>, or <code>server.sockets[0].getsockname()</code> for addresses. The raw Netty <code>Channel</code> is intentionally not a Python application API.</p>
 </div>
+</div>
+</div>
 
-<h2 id="asyncioUnsupported"><a class="anchor" href="#asyncioUnsupported"></a>16.3.7.3 Unsupported Asyncio APIs</h2>
+<h2 id="asyncioUnsupported"><a class="anchor" href="#asyncioUnsupported"></a>16.3.8.3 Unsupported Asyncio APIs</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioUnsupported.adoc"'>
@@ -54035,10 +54401,25 @@ async def task_group(self) -&gt; str:
 <li>
 <p>Subprocess APIs: <code>subprocess_exec</code> and <code>subprocess_shell</code></p>
 </li>
+<li>
+<p>Caller-supplied Python sockets: <code>sock=&#8230;&#8203;</code> on <code>create_connection</code>, <code>create_server</code> and <code>create_datagram_endpoint</code>, and a Python socket passed to <code>connect_accepted_socket</code></p>
+</li>
+<li>
+<p><code>keep_alive</code> on <code>create_server</code></p>
+</li>
+<li>
+<p><code>happy_eyeballs_delay</code> and <code>interleave</code> on <code>create_connection</code></p>
+</li>
+<li>
+<p><code>set_protocol</code> on a transport</p>
+</li>
+<li>
+<p><code>shutdown_asyncgens()</code> and <code>shutdown_default_executor()</code> return without doing anything: the blocking executor belongs to Micronaut and async generators are finalised by the garbage collector</p>
+</li>
 </ul>
 </div>
 <div class="paragraph">
-<p>When an unsupported socket option, address family, or supplied socket prevents the Netty path, Micronaut uses the generic socket coroutine implementation from <code>micronaut-context-python</code>. That fallback exists for compatibility; HTTP request coroutine execution remains bound to the current Netty event loop while <code>micronaut-context-python-netty</code> is active.</p>
+<p>Every address family is served by Netty; there is no socket-polling fallback, so an unsupported argument fails at the call instead of silently taking a slower path. HTTP request coroutine execution remains bound to the current Netty event loop while <code>micronaut-context-python-netty</code> is active.</p>
 </div>
 
 <h2 id="kotlin"><a class="anchor" href="#kotlin"></a>16.4 Micronaut for Kotlin</h2>
