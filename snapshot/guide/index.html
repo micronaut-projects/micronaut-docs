@@ -27413,6 +27413,21 @@ Generally speaking for database operations you want a thread pool configured tha
 </table>
 </div>
 <div class="paragraph">
+<p>For a Kotlin <code>suspend</code> function, the selected executor is also the dispatcher the coroutine resumes on, so work after a suspension point stays on that executor rather than falling back to <code>Dispatchers.Default</code>. Child coroutines inherit it, and an explicit <code>withContext</code> still wins for the duration of its block.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+An explicit <a href="../api/io/micronaut/scheduling/annotation/ExecuteOn.html">@ExecuteOn</a> and the <code>micronaut.server.thread-selection</code> setting both resolve through the same executor selection, so a <code>suspend</code> route is offloaded under <code>AUTO</code>, <code>IO</code> and <code>BLOCKING</code> thread selection just as a blocking route is. To keep a <code>suspend</code> route on the event loop under <code>AUTO</code>, annotate it with <a href="../api/io/micronaut/core/annotation/NonBlocking.html">@NonBlocking</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
 <p>An alternative to the <a href="../api/io/micronaut/scheduling/annotation/ExecuteOn.html">@ExecuteOn</a> annotation is to use the facility provided by the reactive library you have chosen. Reactive implementations such as <a href="https://projectreactor.io">Project Reactor</a> or <a href="https://github.com/ReactiveX/RxJava">RxJava</a> feature a <code>subscribeOn</code> method which lets you alter which thread executes user code. For example:</p>
 </div>
 <div class="listingblock multi-language-sample">
@@ -62912,6 +62927,15 @@ If the previous behavior is desired, configure the retryable annotation explicit
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Retryable(includes = RuntimeException.class)</code></pre>
 </div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_kotlin_suspend_routes_honour_the_selected_executor">Kotlin <code>suspend</code> routes honour the selected executor</h4>
+<div class="paragraph">
+<p>In Micronaut Framework 4, a Kotlin <code>suspend</code> route ignored <a href="../api/io/micronaut/scheduling/annotation/ExecuteOn.html">@ExecuteOn</a> and the <code>micronaut.server.thread-selection</code> setting: the route ran on the event loop and resumed on <code>Dispatchers.Default</code>. In Micronaut 5 the selected executor is applied, and it is also the dispatcher the coroutine resumes on.</p>
+</div>
+<div class="paragraph">
+<p>This changes which thread a <code>suspend</code> route runs on for applications that annotate one with <a href="../api/io/micronaut/scheduling/annotation/ExecuteOn.html">@ExecuteOn</a>, or that set <code>micronaut.server.thread-selection</code> to <code>AUTO</code>, <code>IO</code> or <code>BLOCKING</code> (the default is <code>MANUAL</code>, which selects no executor and is unaffected). To keep a <code>suspend</code> route on the event loop under <code>AUTO</code>, annotate it with <a href="../api/io/micronaut/core/annotation/NonBlocking.html">@NonBlocking</a>.</p>
 </div>
 </div>
 </div>
