@@ -21103,9 +21103,13 @@ does not call <code>proceed()</code> keeps all of them from running, and the bea
 </div>
 <div class="paragraph">
 <p>The <a href="../api/io/micronaut/aop/MethodInvocationContext.html">MethodInvocationContext</a> passed to the interceptor stands for the event: <code>getKind()</code> is
-<code>POST_CONSTRUCT</code> or <code>PRE_DESTROY</code>, <code>getTarget()</code> is the bean, and <code>getExecutableMethod()</code> describes the event
-rather than a method of the bean, so it carries the annotation metadata of the bean class and no parameters.
-<code>proceed()</code> returns the bean.</p>
+<code>POST_CONSTRUCT</code> or <code>PRE_DESTROY</code>, <code>getTarget()</code> is the bean, and <code>proceed()</code> returns the bean.
+<code>getExecutableMethod()</code> stands for the whole event, and names it after the last callback the event will run: the
+most derived one, which is the one the bean itself declares where it declares any. Its <code>getDeclaringType()</code> and
+<code>getMethodName()</code> are that callback&#8217;s, and <code>getTargetMethod()</code> resolves to that callback&#8217;s <code>Method</code>; only when the
+bean declares no callback of that kind does the name fall back to <code>initialize</code> or <code>dispose</code>. It still describes the
+event rather than that one callback, so it carries the annotation metadata of the bean class and declares no
+parameters, a callback&#8217;s own arguments being resolved only once the event proceeds.</p>
 </div>
 <div class="paragraph">
 <p>The callbacks the event is about to run are available from the bean definition of the intercepted bean:
