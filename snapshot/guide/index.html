@@ -20673,45 +20673,34 @@ MethodInterceptor&lt;Product, Object&gt; aroundInvoke() {
 <div class="sect2">
 <h3 id="_intercepted_callbacks">Intercepted Callbacks</h3>
 <div class="paragraph">
-<p>Each <code>@PostConstruct</code> and <code>@PreDestroy</code> method of the bean is intercepted separately, in invocation order, superclass
-callbacks first. The <a href="../api/io/micronaut/aop/MethodInvocationContext.html">MethodInvocationContext</a> passed to the interceptor describes the callback:
-<code>getExecutableMethod()</code> is the callback as a reflection-free <a href="../api/io/micronaut/inject/ExecutableMethod.html">ExecutableMethod</a>, with the declaring type,
-name, arguments and annotation metadata of the method, <code>getTargetMethod()</code> resolves to it, and <code>getParameterValues()</code>
-holds the arguments the framework resolved for it. <code>proceed()</code> invokes that one callback with those arguments and
-returns the bean:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Override
-public Object intercept(MethodInvocationContext&lt;Object, Object&gt; context) {
-    if (context.getKind() == InterceptorKind.POST_CONSTRUCT) {
-        LOG.info("Initializing {} via {}", context.getTarget(), context.getExecutableMethod().getName()); <i class="conum" data-value="1"></i><b>(1)</b>
-    }
-    return context.proceed(); <i class="conum" data-value="2"></i><b>(2)</b>
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The intercepted method carries the annotation metadata of the callback, for example its <code>@PostConstruct</code> annotation</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td><code>proceed()</code> invokes the callback; invoking <code>getExecutableMethod()</code> on the target runs it in addition</td>
-</tr>
-</table>
+<p>A <code>@PostConstruct</code> or <code>@PreDestroy</code> interception runs once per lifecycle event of the bean, not once per callback.
+The interceptor chain bound to the event runs first, and <code>proceed()</code> in the last interceptor invokes every callback
+of that kind declared by the bean, superclass callbacks first, in the same order for both events. An interceptor that
+does not call <code>proceed()</code> keeps all of them from running, and the bean it returns replaces the instance.</p>
 </div>
 <div class="paragraph">
-<p>A bean that binds the interception kind but declares no callback of that kind is still intercepted once, as a phase, so
-that the binding on the class can be relied on regardless of what the bean declares. In that case
-<code>getExecutableMethod()</code> describes the phase rather than a method of the bean. The same applies to a bean compiled by an
-earlier version of the framework.</p>
+<p>The <a href="../api/io/micronaut/aop/MethodInvocationContext.html">MethodInvocationContext</a> passed to the interceptor stands for the event: <code>getKind()</code> is
+<code>POST_CONSTRUCT</code> or <code>PRE_DESTROY</code>, <code>getTarget()</code> is the bean, and <code>getExecutableMethod()</code> describes the event
+rather than a method of the bean, so it carries the annotation metadata of the bean class and no parameters.
+<code>proceed()</code> returns the bean.</p>
+</div>
+<div class="paragraph">
+<p>The callbacks the event is about to run are available from the bean definition of the intercepted bean:
+<a href="../api/io/micronaut/inject/InitializingBeanDefinition.html">InitializingBeanDefinition</a> exposes <code>getPostConstructExecutableMethods()</code> and
+<a href="../api/io/micronaut/inject/DisposableBeanDefinition.html">DisposableBeanDefinition</a> exposes <code>getPreDestroyExecutableMethods()</code>, each a list of reflection-free
+<a href="../api/io/micronaut/inject/ExecutableMethod.html">ExecutableMethod</a> instances in invocation order. Every entry carries the annotation metadata of its
+callback, for example the <code>@PostConstruct</code> annotation, and can be invoked on the target by an interceptor that needs
+to run a callback itself. The lists are only populated for a bean that binds the corresponding interception kind.</p>
 </div>
 <div class="paragraph">
 <p>The callbacks are not part of the bean definition&#8217;s executable methods: <code>BeanDefinition.getExecutableMethods()</code> does
-not include them, so executable method processors and adapters are not affected.</p>
+not include them, so executable method processors and adapters are not affected. A bean compiled by an earlier
+version of the framework reports no callbacks.</p>
+</div>
+<div class="paragraph">
+<p>An interceptor bound to these lifecycle kinds is a singleton by default, and one instance is then shared by every bean
+it is applied to. To give each intercepted bean its own interceptor, so that state set up in <code>@PostConstruct</code> is still
+available in <code>@PreDestroy</code>, see <a href="#interceptorLifecycle">Interceptor Life Cycle</a>.</p>
 </div>
 </div>
 
@@ -20849,9 +20838,8 @@ public class TrackingInterceptor implements Interceptor&lt;Object, Object&gt; {
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-A lifecycle interception runs once per callback, so a bean with several <code>@PostConstruct</code> methods in its class
-hierarchy is intercepted once for each of them, with <code>getExecutableMethod()</code> naming the callback. See
-<a href="#lifecycleAdvice">Bean Life Cycle Advice</a>.
+A lifecycle interception runs once per event, so a bean with several <code>@PostConstruct</code> methods in its class
+hierarchy is intercepted once, and <code>proceed()</code> invokes all of them. See <a href="#lifecycleAdvice">Bean Life Cycle Advice</a>.
 </td>
 </tr>
 </table>
@@ -20873,15 +20861,13 @@ hierarchy is intercepted once for each of them, with <code>getExecutableMethod()
 <p><code>AROUND_CONSTRUCT</code> interception runs, then the bean&#8217;s constructor.</p>
 </li>
 <li>
-<p><code>POST_CONSTRUCT</code> interception runs around each of the bean&#8217;s <code>@PostConstruct</code> methods, superclass methods first,
-or once for the bean when it declares none.</p>
+<p><code>POST_CONSTRUCT</code> interception runs once, then the bean&#8217;s <code>@PostConstruct</code> methods, superclass methods first.</p>
 </li>
 <li>
 <p><code>AROUND</code> or <code>INTRODUCTION</code> interception runs on each method call, for as long as the bean lives.</p>
 </li>
 <li>
-<p><code>PRE_DESTROY</code> interception runs around each of the bean&#8217;s <code>@PreDestroy</code> methods, or once for the bean when it
-declares none.</p>
+<p><code>PRE_DESTROY</code> interception runs once, then the bean&#8217;s <code>@PreDestroy</code> methods, superclass methods first.</p>
 </li>
 <li>
 <p>The interceptor is destroyed as a dependent of the intercepted bean, so its own <code>@PreDestroy</code> runs <strong>after</strong> the
