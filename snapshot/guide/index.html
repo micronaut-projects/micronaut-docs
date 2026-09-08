@@ -223,13 +223,15 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionEnums"><a href="#introspectionEnums"><strong>3.18.11</strong><span>Introspect Enums</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedAnnotationOnAConfigurationClass"><a href="#introspectedAnnotationOnAConfigurationClass"><strong>3.18.12</strong><span>Use the @Introspected Annotation on a Configuration Class</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionTypeArguments"><a href="#introspectionTypeArguments"><strong>3.18.12</strong><span>Type Arguments</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectExistingAnnotations"><a href="#introspectExistingAnnotations"><strong>3.18.13</strong><span>Write an AnnotationMapper to Introspect Existing Annotations</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedAnnotationOnAConfigurationClass"><a href="#introspectedAnnotationOnAConfigurationClass"><strong>3.18.13</strong><span>Use the @Introspected Annotation on a Configuration Class</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-beanWrapperApi"><a href="#beanWrapperApi"><strong>3.18.14</strong><span>The BeanWrapper API</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectExistingAnnotations"><a href="#introspectExistingAnnotations"><strong>3.18.14</strong><span>Write an AnnotationMapper to Introspect Existing Annotations</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-kotlinAndBeanIntrospection"><a href="#kotlinAndBeanIntrospection"><strong>3.18.15</strong><span>Kotlin and Bean Introspection</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-beanWrapperApi"><a href="#beanWrapperApi"><strong>3.18.15</strong><span>The BeanWrapper API</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-kotlinAndBeanIntrospection"><a href="#kotlinAndBeanIntrospection"><strong>3.18.16</strong><span>Kotlin and Bean Introspection</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-beanMappers"><a href="#beanMappers"><strong>3.19</strong><span>Bean Mappers</span></a></div>
         
@@ -10594,7 +10596,79 @@ Introspection Builder does not work with <a href="https://groovy-lang.org/metapr
 <p>It is possible to introspect enums as well. Add the annotation to the enum, and it can be constructed through the standard <code>valueOf</code> method.</p>
 </div>
 
-<h2 id="introspectedAnnotationOnAConfigurationClass"><a class="anchor" href="#introspectedAnnotationOnAConfigurationClass"></a>3.18.12 Use the @Introspected Annotation on a Configuration Class</h2>
+<h2 id="introspectionTypeArguments"><a class="anchor" href="#introspectionTypeArguments"></a>3.18.12 Type Arguments</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/introspectionTypeArguments.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A <a href="../api/io/micronaut/core/beans/BeanIntrospection.html">BeanIntrospection</a> records the type arguments the introspected type binds in each of its super types, the same way <a href="../api/io/micronaut/inject/BeanDefinition.html">BeanDefinition</a> does for a bean. This answers what a type binds without reading the class reflectively, and without the type having to be a bean.</p>
+</div>
+<div class="paragraph">
+<p>Given a type that binds both arguments of a generic interface:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Introspected
+class PhoneValidator implements Validator&lt;Phone&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+    // ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>Validator</code> is a generic interface, <code>interface Validator&lt;T&gt;</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>the bound arguments are read back from the introspection by super type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">BeanIntrospection&lt;PhoneValidator&gt; introspection = BeanIntrospection.getIntrospection(PhoneValidator.class);
+
+List&lt;Argument&lt;?&gt;&gt; arguments = introspection.getTypeArguments(Validator.class); <i class="conum" data-value="1"></i><b>(1)</b>
+assert arguments.get(0).getType() == Phone.class;
+
+assert introspection.getTypeArguments(Comparable.class).isEmpty(); <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Arguments are looked up by the super class or interface that declares them, either as a <code>Class</code> or by name</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A super type the introspected type does not bind, or does not have, answers an empty list</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Arguments bound through an intermediate super type are resolved too, and an argument the type leaves open is reported as the type variable rather than as a resolved type.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The no-argument <code>getTypeArguments()</code> reports the arguments the introspected type itself <strong>declares</strong>, not what it binds in a super type. For <code>class PhoneValidator implements Validator&lt;Phone&gt;</code> it is empty; for <code>class AnyValidator&lt;T&gt; implements Validator&lt;T&gt;</code> it is <code>[T]</code>.
+</td>
+</tr>
+</table>
+</div>
+
+<h2 id="introspectedAnnotationOnAConfigurationClass"><a class="anchor" href="#introspectedAnnotationOnAConfigurationClass"></a>3.18.13 Use the @Introspected Annotation on a Configuration Class</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/introspectedAnnotationOnAConfigurationClass.adoc"'>
@@ -10660,7 +10734,7 @@ You can also use the <code>packages</code> member of the <a href="../api/io/micr
 </table>
 </div>
 
-<h2 id="introspectExistingAnnotations"><a class="anchor" href="#introspectExistingAnnotations"></a>3.18.13 Write an AnnotationMapper to Introspect Existing Annotations</h2>
+<h2 id="introspectExistingAnnotations"><a class="anchor" href="#introspectExistingAnnotations"></a>3.18.14 Write an AnnotationMapper to Introspect Existing Annotations</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/introspectExistingAnnotations.adoc"'>
@@ -10688,7 +10762,7 @@ The <code>AnnotationMapper</code> must be on the annotation processor classpath.
 </table>
 </div>
 
-<h2 id="beanWrapperApi"><a class="anchor" href="#beanWrapperApi"></a>3.18.14 The BeanWrapper API</h2>
+<h2 id="beanWrapperApi"><a class="anchor" href="#beanWrapperApi"></a>3.18.15 The BeanWrapper API</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/beanWrapperApi.adoc"'>
@@ -10766,7 +10840,7 @@ println("Person's age now $newAge")</code></pre>
 </table>
 </div>
 
-<h2 id="kotlinAndBeanIntrospection"><a class="anchor" href="#kotlinAndBeanIntrospection"></a>3.18.15 Kotlin and Bean Introspection</h2>
+<h2 id="kotlinAndBeanIntrospection"><a class="anchor" href="#kotlinAndBeanIntrospection"></a>3.18.16 Kotlin and Bean Introspection</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/ioc/introspection/kotlinAndBeanIntrospection.adoc"'>
