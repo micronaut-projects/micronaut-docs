@@ -16921,6 +16921,35 @@ class Example:
 <div class="listingblock multi-language-sample">
 <div class="title">Usage of annotation level evaluated expression context</div>
 <div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">package io.micronaut.docs.expressions
+
+import io.micronaut.context.annotation.AnnotationExpressionContext
+import jakarta.inject.Singleton
+
+@Singleton
+@CustomAnnotation("#{firstValue() + secondValue()}") // <b class="conum">(1)</b>
+class Example
+
+@Singleton
+class AnnotationContext { // <b class="conum">(2)</b>
+    fun firstValue(): String = "first value"
+}
+
+@Singleton
+class AnnotationMemberContext { // <b class="conum">(3)</b>
+    fun secondValue(): String = "second value"
+}
+
+@AnnotationExpressionContext(AnnotationContext::class) // <b class="conum">(4)</b>
+annotation class CustomAnnotation(
+    @get:AnnotationExpressionContext(AnnotationMemberContext::class) // <b class="conum">(5)</b>
+    val value: String
+)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Usage of annotation level evaluated expression context</div>
+<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">package io.micronaut.docs.expressions;
 
 import jakarta.inject.Singleton;
