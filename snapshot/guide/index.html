@@ -7580,7 +7580,97 @@ class PreDestroyBean implements AutoCloseable {
 </table>
 </div>
 <div class="paragraph">
-<p>For factory beans, the <code>preDestroy</code> value in the <a href="../api/io/micronaut/context/annotation/Bean.html">Bean</a> annotation tells Micronaut framework which method to invoke.</p>
+<p>The <code>preDestroy</code> value in the <a href="../api/io/micronaut/context/annotation/Bean.html">Bean</a> annotation names the method to invoke instead of annotating it. It can be declared on the bean class itself:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Bean;
+
+import jakarta.inject.Singleton;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+@Singleton
+@Bean(preDestroy = "flush") // <b class="conum">(1)</b>
+public class Cache {
+
+    AtomicBoolean flushed = new AtomicBoolean(false);
+
+    public void flush() { // <b class="conum">(2)</b>
+        flushed.compareAndSet(false, true);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from micronaut.context.annotation import Bean
+from jakarta.inject import Singleton
+
+
+@Singleton
+@Bean(preDestroy = "flush") # <b class="conum">(1)</b>
+class Cache:
+    flushed : bool = False
+
+    def flush(self): # <b class="conum">(2)</b>
+        self.flushed = True</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.Bean
+
+import jakarta.inject.Singleton
+import java.util.concurrent.atomic.AtomicBoolean
+
+@Singleton
+@Bean(preDestroy = "flush") // <b class="conum">(1)</b>
+open class Cache {
+
+    internal var flushed = AtomicBoolean(false)
+
+    open fun flush() { // <b class="conum">(2)</b>
+        flushed.compareAndSet(false, true)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Bean
+
+import jakarta.inject.Singleton
+import java.util.concurrent.atomic.AtomicBoolean
+
+@Singleton
+@Bean(preDestroy = "flush") // <b class="conum">(1)</b>
+class Cache {
+
+    AtomicBoolean flushed = new AtomicBoolean(false)
+
+    void flush() { // <b class="conum">(2)</b>
+        flushed.compareAndSet(false, true)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>preDestroy</code> value is set on the annotation declared on the class</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The annotation value matches the method name</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The named method must be a public, no-argument method of the bean type; a name that resolves to no such method is a compilation error.</p>
+</div>
+<div class="paragraph">
+<p>For factory beans, the value is set on the factory method or field that produces the bean:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">

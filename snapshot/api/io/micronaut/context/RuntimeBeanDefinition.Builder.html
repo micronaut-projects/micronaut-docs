@@ -67,6 +67,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#typeArguments(io.micronaut.core.type.Argument...)" tabindex="0">typeArguments(Argument...)</a></li>
 <li><a href="#typeArguments(java.lang.Class,io.micronaut.core.type.Argument...)" tabindex="0">typeArguments(Class, Argument...)</a></li>
 <li><a href="#annotationMetadata(io.micronaut.core.annotation.AnnotationMetadata)" tabindex="0">annotationMetadata(AnnotationMetadata)</a></li>
+<li><a href="#injectionPoint(io.micronaut.core.type.Argument)" tabindex="0">injectionPoint(Argument)</a></li>
+<li><a href="#injectionPoint(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)" tabindex="0">injectionPoint(Argument, Qualifier)</a></li>
 <li><a href="#disposer(java.util.function.BiConsumer)" tabindex="0">disposer(BiConsumer)</a></li>
 <li><a href="#build()" tabindex="0">build()</a></li>
 </ol>
@@ -131,6 +133,17 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#exposedTypes(java.lang.Class...)" class="member-name-link">exposedTypes</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;...&nbsp;types)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Limit the exposed types of this bean.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="RuntimeBeanDefinition.Builder.html" title="interface in io.micronaut.context">RuntimeBeanDefinition.Builder</a><wbr>&lt;<a href="#type-param-B" title="type parameter in RuntimeBeanDefinition.Builder">B</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#injectionPoint(io.micronaut.core.type.Argument)" class="member-name-link">injectionPoint</a><wbr>(<a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&nbsp;type)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Declares an injection point of this bean.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="RuntimeBeanDefinition.Builder.html" title="interface in io.micronaut.context">RuntimeBeanDefinition.Builder</a><wbr>&lt;<a href="#type-param-B" title="type parameter in RuntimeBeanDefinition.Builder">B</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#injectionPoint(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)" class="member-name-link">injectionPoint</a><wbr>(<a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&nbsp;type,
+ @Nullable <a href="Qualifier.html" title="interface in io.micronaut.context">Qualifier</a>&lt;?&gt;&nbsp;qualifier)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Declares a qualified injection point of this bean.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="RuntimeBeanDefinition.Builder.html" title="interface in io.micronaut.context">RuntimeBeanDefinition.Builder</a><wbr>&lt;<a href="#type-param-B" title="type parameter in RuntimeBeanDefinition.Builder">B</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#named(java.lang.String)" class="member-name-link">named</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
@@ -319,6 +332,63 @@ loadScripts(document, 'script');</script>
 <dd><code>annotationMetadata</code> - The annotation metadata</dd>
 <dt>Returns:</dt>
 <dd>This builder</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="injectionPoint(io.micronaut.core.type.Argument)">
+<h3>injectionPoint</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="RuntimeBeanDefinition.Builder.html" title="interface in io.micronaut.context">RuntimeBeanDefinition.Builder</a>&lt;<a href="#type-param-B" title="type parameter in RuntimeBeanDefinition.Builder">B</a>&gt;</span>&nbsp;<span class="element-name">injectionPoint</span><wbr><span class="parameters">(<a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&nbsp;type)</span></div>
+<div class="block">Declares an injection point of this bean.
+
+<p>The declared injection points are resolved through the resolution context of the bean creation,
+in the order they were declared, and are handed to the bean factory of a definition built
+with <a href="RuntimeBeanDefinition.html#builder(io.micronaut.core.type.Argument,java.util.function.Function)"><code>RuntimeBeanDefinition.builder(Argument, Function)</code></a> as its <a href="RuntimeBeanDefinition.CreationContext.html" title="interface in io.micronaut.context"><code>RuntimeBeanDefinition.CreationContext</code></a>. Resolving them
+this way is what makes core's own dependency handling apply to a runtime built bean: a dependent object
+resolved for an injection point becomes a dependent of the created bean and is destroyed with it,
+a circular dependency is detected, and an unsatisfied injection point fails the creation with the usual
+<a href="exceptions/DependencyInjectionException.html" title="class in io.micronaut.context.exceptions"><code>DependencyInjectionException</code></a>.</p>
+
+<p>An injection point declared with a <a href="../core/annotation/AnnotatedElement.html#isDeclaredNullable()"><code>nullable</code></a> argument resolves
+to <code>null</code> instead of failing when no bean is found.</p>
+
+<p>The declared injection points are also the arguments of <a href="../inject/BeanDefinition.html#getConstructor()"><code>BeanDefinition.getConstructor()</code></a> and
+the types of <a href="../inject/BeanDefinition.html#getRequiredComponents()"><code>BeanDefinition.getRequiredComponents()</code></a>, so that the bean's dependencies can be
+described the way a compiled bean's are.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The type to inject</dd>
+<dt>Returns:</dt>
+<dd>This builder</dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="injectionPoint(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)">
+<h3>injectionPoint</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type"><a href="RuntimeBeanDefinition.Builder.html" title="interface in io.micronaut.context">RuntimeBeanDefinition.Builder</a>&lt;<a href="#type-param-B" title="type parameter in RuntimeBeanDefinition.Builder">B</a>&gt;</span>&nbsp;<span class="element-name">injectionPoint</span><wbr><span class="parameters">(<a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&nbsp;type,
+ @Nullable <a href="Qualifier.html" title="interface in io.micronaut.context">Qualifier</a>&lt;?&gt;&nbsp;qualifier)</span></div>
+<div class="block">Declares a qualified injection point of this bean.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The type to inject</dd>
+<dd><code>qualifier</code> - The qualifier, or <code>null</code> for none</dd>
+<dt>Returns:</dt>
+<dd>This builder</dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="#injectionPoint(io.micronaut.core.type.Argument)"><code>injectionPoint(Argument)</code></a></li>
+</ul>
+</dd>
 </dl>
 </div>
 </section>
