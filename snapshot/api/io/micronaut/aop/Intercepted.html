@@ -132,7 +132,11 @@ extends <a href="../inject/proxy/InterceptedBean.html" title="interface in io.mi
 </span><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../context/BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;<a href="Interceptor.html" title="interface in io.micronaut.aop">Interceptor</a>&lt;?,<wbr>?&gt;&gt;&gt;</span>&nbsp;<span class="element-name">$interceptorRegistrations</span>()</div>
 <div class="block">The interceptor registrations that were resolved for this proxy.
 
-<p>The scenario this exists for is an advised bean that also declares lifecycle advice:</p>
+<p>Every generated proxy retains the registrations its constructor was given, so a proxy can always report the
+interceptors bound to it. For an around- or introduction-only proxy that is the set matching its around
+bindings; a proxy whose target also declares lifecycle advice is given a wider set, described below.</p>
+
+<p>The scenario the retention was introduced for is an advised bean that also declares lifecycle advice:</p>
 
 <pre><code>@Retention(RUNTIME)
 @Around
@@ -150,8 +154,8 @@ and a <code>@Prototype</code> interceptor is one instance for the whole life of 
 particular has no other route to them: it runs with a fresh resolution context, and the proxy instance is the
 only thing that survives from creation to destruction.</p>
 
-<p>Proxies whose target declares no lifecycle binding, and proxies generated before this existed, keep the
-empty default; the runtime then resolves interceptors by binding as it always did.</p>
+<p>Proxies generated before this existed keep the empty default; the runtime then resolves interceptors by
+binding as it always did.</p>
 
 <p>The context reads the same list through <a href="../inject/proxy/InterceptedBean.html#$interceptorRegistrations()"><code>InterceptedBean.$interceptorRegistrations()</code></a> when
 <code>destroyBean(Object)</code> is handed a proxy it tracks no registration for, so the non-singleton interceptors
