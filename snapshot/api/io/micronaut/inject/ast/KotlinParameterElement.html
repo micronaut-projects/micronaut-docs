@@ -77,7 +77,14 @@ loadScripts(document, 'script');</script>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">KotlinParameterElement</span><span class="extends-implements">
 extends <a href="ParameterElement.html" title="interface in io.micronaut.inject.ast">ParameterElement</a></span></div>
-<div class="block">Represents a Kotlin parameter to a method or constructor.</div>
+<div class="block">Represents a Kotlin parameter to a method or constructor.
+
+<p>Implementing this interface additionally signals that defaulted parameters follow
+<i>Kotlin's</i> calling convention: a defaults bitmask plus the synthetic <code>$default</code>
+overload. It is therefore not a general marker for optional parameters — use
+<a href="ParameterElement.html#hasDefault()"><code>ParameterElement.hasDefault()</code></a> for that, and
+<code>io.micronaut.inject.writer.ParameterDefaultValueProvider</code> for languages that evaluate the
+default in the caller.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>4.1.0</dd>
@@ -122,7 +129,10 @@ extends <a href="ParameterElement.html" title="interface in io.micronaut.inject.
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#hasDefault()" class="member-name-link">hasDefault</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Whether the parameter declares a default value in the source language, and is therefore
+optional at the call site.</div>
+</div>
 </div>
 </div>
 </div>
@@ -163,7 +173,23 @@ extends <a href="ParameterElement.html" title="interface in io.micronaut.inject.
 <h3>hasDefault</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">hasDefault</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="ParameterElement.html#hasDefault()">ParameterElement</a></code></span></div>
+<div class="block">Whether the parameter declares a default value in the source language, and is therefore
+optional at the call site.
+
+<p>This reports only that a default <i>exists</i>. How the value is obtained is language
+specific and is deliberately not part of this contract:</p>
+
+<ul>
+    <li>some languages evaluate the default in the <i>caller</i>, in which case the language
+    module may contribute an <code>io.micronaut.inject.writer.ParameterDefaultValueProvider</code>
+    to supply it;</li>
+    <li>others evaluate it in the <i>callee</i> and require a dedicated calling convention,
+    as <a href="KotlinParameterElement.html" title="interface in io.micronaut.inject.ast"><code>KotlinParameterElement</code></a> does.</li>
+</ul></div>
 <dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="ParameterElement.html#hasDefault()">hasDefault</a></code>&nbsp;in interface&nbsp;<code><a href="ParameterElement.html" title="interface in io.micronaut.inject.ast">ParameterElement</a></code></dd>
 <dt>Returns:</dt>
 <dd>True if the parameter has a default value</dd>
 </dl>
