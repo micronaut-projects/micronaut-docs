@@ -19413,10 +19413,16 @@ DataSource firstConfig = applicationContext.getBean(
 <p><code>micronaut-context</code> is a transitive dependency of <code>micronaut-http</code>. If you use a Micronaut HTTP runtime, your project already includes the <code>micronaut-context</code> dependency.</p>
 </div>
 <div class="paragraph">
-<p>There are two ways to define immutable configuration. The preferred way is to define an interface annotated with <a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a>. For example:</p>
+<p>Micronaut framework offers several styles of immutable configuration. They bind values the same way but differ in how a bean behaves when the configuration is <a href="#refreshable">refreshed</a> at runtime.</p>
+</div>
+<div class="sect1">
+<h2 id="_interface_based_configuration">Interface-based configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>One approach is to declare an interface annotated with <a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a>. It reflects refreshed configuration automatically, without any additional annotation:</p>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">@ConfigurationProperties Example</div>
+<div class="title">@ConfigurationProperties Interface</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.Requires;
@@ -19448,7 +19454,7 @@ public interface EngineConfig {
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">@ConfigurationProperties Example</div>
+<div class="title">@ConfigurationProperties Interface</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from micronaut.context.annotation import ConfigurationProperties
 from micronaut.context.annotation import Requires
@@ -19480,7 +19486,7 @@ class EngineConfig(ABC):
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">@ConfigurationProperties Example</div>
+<div class="title">@ConfigurationProperties Interface</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.ConfigurationProperties
 import io.micronaut.core.bind.annotation.Bindable
@@ -19509,7 +19515,7 @@ interface EngineConfig {
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">@ConfigurationProperties Example</div>
+<div class="title">@ConfigurationProperties Interface</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.ConfigurationProperties
 import io.micronaut.core.bind.annotation.Bindable
@@ -19554,7 +19560,7 @@ interface EngineConfig {
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>You can also specify references to other <a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a> beans.</td>
+<td>You can reference other <a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a> beans</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
@@ -19562,15 +19568,12 @@ interface EngineConfig {
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>Optional configuration can be indicated by returning an <code>Optional</code> or specifying <code>@Nullable</code></td>
+<td>Optional configuration is indicated by returning an <code>Optional</code> or specifying <code>@Nullable</code></td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>In this case the Micronaut framework provides a compile-time implementation that delegates all getters to call the <code>getProperty(..)</code> method of the <a href="../api/io/micronaut/context/env/Environment.html">Environment</a> interface.</p>
-</div>
-<div class="paragraph">
-<p>This has the advantage that if the application configuration is <a href="#refreshable">refreshed</a> (for example by invoking the <code>/refresh</code> endpoint), the injected interface automatically sees the new values.</p>
+<p>Micronaut framework provides a compile-time implementation whose getters delegate to the <code>getProperty(..)</code> method of the <a href="../api/io/micronaut/context/env/Environment.html">Environment</a> interface. Because each getter reads the <code>Environment</code> on every call, an interface bean always reflects the current configuration, including after a <a href="#refreshable">refresh</a> — even when it was injected into a long-lived bean before the refresh happened.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -19579,19 +19582,21 @@ interface EngineConfig {
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-If you try to specify any other abstract method other than a getter, a compilation error occurs (default methods are supported).
+Only getter methods are allowed (default methods are supported). Declaring any other abstract method causes a compilation error.
 </td>
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>Another way to implement immutable configuration is to define a class and use the <a href="../api/io/micronaut/context/annotation/ConfigurationInject.html">@ConfigurationInject</a> annotation on a constructor of a <a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a> or <a href="../api/io/micronaut/context/annotation/EachProperty.html">@EachProperty</a> bean.</p>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_constructor_based_configuration">Constructor-based configuration</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>For example:</p>
+<p>Alternatively, define a class and annotate one of its constructors with <a href="../api/io/micronaut/context/annotation/ConfigurationInject.html">@ConfigurationInject</a> on a <a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a> or <a href="../api/io/micronaut/context/annotation/EachProperty.html">@EachProperty</a> bean:</p>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">@ConfigurationProperties Example</div>
+<div class="title">@ConfigurationInject Constructor</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.bind.annotation.Bindable;
@@ -19650,7 +19655,7 @@ public class EngineConfig {
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">@ConfigurationProperties Example</div>
+<div class="title">@ConfigurationInject Constructor</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from micronaut.context.annotation import Requires
 from micronaut.core.bind.annotation import Bindable
@@ -19694,7 +19699,7 @@ class EngineConfig:
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">@ConfigurationProperties Example</div>
+<div class="title">@ConfigurationInject Constructor</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.ConfigurationInject
 import io.micronaut.context.annotation.ConfigurationProperties
@@ -19725,7 +19730,7 @@ data class EngineConfig @ConfigurationInject // <b class="conum">(2)</b>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">@ConfigurationProperties Example</div>
+<div class="title">@ConfigurationInject Constructor</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.ConfigurationInject
 import io.micronaut.context.annotation.ConfigurationProperties
@@ -19777,7 +19782,7 @@ class EngineConfig {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <a href="../api/io/micronaut/context/annotation/ConfigurationInject.html">@ConfigurationInject</a> annotation is defined on the constructor</td>
+<td>The <a href="../api/io/micronaut/context/annotation/ConfigurationInject.html">@ConfigurationInject</a> annotation is declared on the constructor</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
@@ -19793,27 +19798,12 @@ class EngineConfig {
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>Optional configuration can be indicated with <code>@Nullable</code></td>
+<td>Optional configuration is indicated with <code>@Nullable</code></td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The <a href="../api/io/micronaut/context/annotation/ConfigurationInject.html">@ConfigurationInject</a> annotation provides a hint to the Micronaut framework to prioritize binding values from configuration instead of injecting beans.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Using this approach, to make the configuration refreshable, add the <a href="../api/io/micronaut/runtime/context/scope/Refreshable.html">@Refreshable</a> annotation to the class as well. This allows the bean to be re-created in the case of a <a href="#refreshable">runtime configuration refresh event</a>.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>There are a few exceptions to this rule. Micronaut framework will not perform configuration binding for a parameter if any of these conditions is met:</p>
+<p>The <a href="../api/io/micronaut/context/annotation/ConfigurationInject.html">@ConfigurationInject</a> annotation tells the framework to prioritize binding values from configuration over injecting beans. Binding is skipped for a constructor parameter that meets any of these conditions:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -19834,6 +19824,120 @@ Using this approach, to make the configuration refreshable, add the <a href="../
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>Unlike the interface approach, a constructor-based bean binds its values once, when it is constructed, and stores them in fields. Adding the <a href="../api/io/micronaut/runtime/context/scope/Refreshable.html">@Refreshable</a> annotation to the class puts it in the refresh scope, so that a <a href="#refreshable">runtime configuration refresh event</a> discards the instance and the next lookup or injection builds a new one from the current configuration.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<a href="../api/io/micronaut/runtime/context/scope/Refreshable.html">@Refreshable</a> does not update a reference that has already been injected. A bean that received the configuration in its constructor — a singleton, for example — keeps the instance it was given, with the values it held at that time. Use interface-based configuration, or look the configuration bean up from the <a href="../api/io/micronaut/context/BeanContext.html">BeanContext</a> when you need it, if a long-lived bean must observe a refresh.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_record_classes">Record classes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It is also possible to use a record class&#8201;&#8212;&#8201;a <a href="https://docs.oracle.com/en/java/javase/17/language/records.html">Java record</a>, a Kotlin data class or a frozen Python dataclass&#8201;&#8212;&#8201;for immutable configuration with <a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a>. The canonical (record) or primary (data class) constructor is treated as though it were annotated with <a href="../api/io/micronaut/context/annotation/ConfigurationInject.html">@ConfigurationInject</a>, so no annotation is needed on the constructor:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Record Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.context.annotation.Requires;
+import org.jspecify.annotations.NonNull;
+import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
+
+@ConfigurationProperties("vat")
+public record ValueAddedTaxConfiguration(
+    @NonNull @NotNull BigDecimal percentage) { // <b class="conum">(1)</b>
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Record Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from micronaut.context.annotation import ConfigurationProperties
+from micronaut.context.annotation import Requires
+from jakarta.validation.constraints import NotNull
+from java.math import BigDecimal
+
+@ConfigurationProperties("vat")
+@dataclass(frozen=True)
+class ValueAddedTaxConfiguration:
+    percentage: Annotated[BigDecimal, NotNull]  # <b class="conum">(1)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Record Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.ConfigurationProperties
+import io.micronaut.context.annotation.Requires
+import jakarta.validation.constraints.NotNull
+import java.math.BigDecimal
+
+@ConfigurationProperties("vat")
+data class ValueAddedTaxConfiguration(
+    @field:NotNull val percentage: BigDecimal) // <b class="conum">(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>percentage</code> field defines a configuration property for "vat"</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Record classes are constructor-based configuration and behave exactly as described above with respect to a refresh, including when annotated with <a href="../api/io/micronaut/runtime/context/scope/Refreshable.html">@Refreshable</a>. Being <code>final</code> makes no difference here: no AOP proxy is generated for a <a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a> class in any case.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+From a performance perspective records are better than interfaces, because an interface getter resolves its value through the <code>Environment</code> on every call whereas a record returns an already-bound field. The difference is small; let your refresh requirements drive the choice.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_default_values">Default values</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can supply a default for a property in two ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the <code>defaultValue</code> member of <a href="../api/io/micronaut/core/bind/annotation/Bindable.html">@Bindable</a>, for example <code>@Bindable(defaultValue = "Ford")</code></p>
+</li>
+<li>
+<p>a constructor default parameter, in languages that support them (such as Kotlin)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Prefer <a href="../api/io/micronaut/core/bind/annotation/Bindable.html">@Bindable</a>. Its default value is written to the generated configuration metadata, so IDE completion, JSON schema validation, and generated documentation all display it. A language-level default parameter works at runtime but is invisible to that tooling.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_using_immutable_configuration">Using immutable configuration</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Once you have prepared a type-safe configuration it can be injected into your beans like any other bean:</p>
 </div>
@@ -19997,72 +20101,6 @@ System.out.println(vehicle.start())</code></pre>
 <div class="paragraph">
 <p>The above example prints: <code>"Ford Engine Starting V8 [rodLength=7.0]"</code></p>
 </div>
-<div class="sect3">
-<h4 id="_using_record_classes_to_define_immutable_configuration">Using Record Classes to define immutable configuration</h4>
-<div class="paragraph">
-<p>It is also possible to use a record class&#8201;&#8212;&#8201;a <a href="https://docs.oracle.com/en/java/javase/17/language/records.html">Java record</a>, a Kotlin data class or a frozen Python dataclass&#8201;&#8212;&#8201;for immutable configuration with <a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a>. For example:</p>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Record Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.ConfigurationProperties;
-import io.micronaut.context.annotation.Requires;
-import org.jspecify.annotations.NonNull;
-import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
-
-@ConfigurationProperties("vat")
-public record ValueAddedTaxConfiguration(
-    @NonNull @NotNull BigDecimal percentage) { // <b class="conum">(1)</b>
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Record Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from micronaut.context.annotation import ConfigurationProperties
-from micronaut.context.annotation import Requires
-from jakarta.validation.constraints import NotNull
-from java.math import BigDecimal
-
-@ConfigurationProperties("vat")
-@dataclass(frozen=True)
-class ValueAddedTaxConfiguration:
-    percentage: Annotated[BigDecimal, NotNull]  # <b class="conum">(1)</b></code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Record Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.ConfigurationProperties
-import io.micronaut.context.annotation.Requires
-import jakarta.validation.constraints.NotNull
-import java.math.BigDecimal
-
-@ConfigurationProperties("vat")
-data class ValueAddedTaxConfiguration(
-    @field:NotNull val percentage: BigDecimal) // <b class="conum">(1)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <code>percentage</code> field defines a configuration property for "vat"</td>
-</tr>
-</table>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-From a performance perspective records are better than interfaces.
-</td>
-</tr>
-</table>
 </div>
 </div>
 <div class="sect1">
