@@ -203,7 +203,7 @@ extends <a href="BeanReadProperty.html" title="interface in io.micronaut.core.be
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="BeanPropertyMember.html" title="interface in io.micronaut.core.beans">BeanPropertyMember</a>&lt;<a href="#type-param-B" title="type parameter in BeanProperty">B</a>,<wbr>?&gt;&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getMembers()" class="member-name-link">getMembers</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">The individual members (the field, the read method and the write method) that this property is composed of.</div>
+<div class="block">The individual members (the field, the read methods and the write methods) that this property is composed of.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a><wbr>&lt;<a href="#type-param-T" title="type parameter in BeanProperty">T</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getType()" class="member-name-link">getType</a>()</code></div>
@@ -570,15 +570,23 @@ extends <a href="BeanReadProperty.html" title="interface in io.micronaut.core.be
 <h3>getMembers</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="BeanPropertyMember.html" title="interface in io.micronaut.core.beans">BeanPropertyMember</a>&lt;<a href="#type-param-B" title="type parameter in BeanProperty">B</a>,<wbr>?&gt;&gt;</span>&nbsp;<span class="element-name">getMembers</span>()</div>
-<div class="block">The individual members (the field, the read method and the write method) that this property is composed of.
+<div class="block">The individual members (the field, the read methods and the write methods) that this property is composed of.
 
 <p>A property merges its members into a single element with a single merged
 <a href="../annotation/AnnotationMetadata.html" title="interface in io.micronaut.core.annotation"><code>AnnotationMetadata</code></a>. This method exposes each member separately, with its own
 annotation metadata, its own <a href="../type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a> and its own accessor, which is required by specifications such as
-Jakarta Bean Validation that treat a field and a getter as two distinct constrained elements.</p>
+Jakarta Bean Validation that treat a field and a getter as two distinct constrained elements, and a getter an
+interface declares apart from the one implementing it.</p>
+
+<p>The members are the field of the property and the read and write methods of every type of the hierarchy
+declaring one: the accessor of the bean type, then the ones it overrides in its super classes, then the ones
+of its interfaces, each reported by <a href="BeanPropertyMember.html#getDeclaringType()"><code>the type declaring it</code></a> and
+carrying the annotations of its own declaration only, the fields first, then the read methods, then the
+write methods.</p>
 
 <p>The members are only computed at compilation time if the introspection was generated with
-<a href="../annotation/Introspected.html#members()"><code>Introspected.members()</code></a> set to <code>true</code>. Otherwise, and for any
+<a href="../annotation/Introspected.html#members()"><code>Introspected.members()</code></a> set to <code>true</code>, which
+<a href="BeanIntrospection.html#separatesDeclarations()"><code>BeanIntrospection.separatesDeclarations()</code></a> reports. Otherwise, and for any
 <a href="BeanProperty.html" title="interface in io.micronaut.core.beans"><code>BeanProperty</code></a> implementation that doesn't support members, an empty list is returned.</p></div>
 <dl class="notes">
 <dt>Returns:</dt>

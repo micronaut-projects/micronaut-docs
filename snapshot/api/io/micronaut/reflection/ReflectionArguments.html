@@ -191,14 +191,18 @@ for a <code>class A extends AbstractList&lt;@Nullable String&gt;</code>, the arg
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a><wbr>&lt;?&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#returnOf(java.lang.reflect.Method)" class="member-name-link">returnOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link">Method</a>&nbsp;method)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Converts the return type of a method to an <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a> carrying the type-use annotations of the
-return type.</div>
+<div class="block">Converts the return type of a method to an <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a> whose metadata holds the annotations of the
+method and the type-use annotations of its return type, as <a href="#of(java.lang.reflect.Parameter)"><code>of(Parameter)</code></a> builds the argument of
+a parameter from the parameter and its type: a generated executable method of a bean definition reports
+the return value with the annotations of the method on it, and a constraint declared on a method
+constrains the value it returns.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a><wbr>&lt;?&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#returnOf(java.lang.reflect.Method,java.lang.Class)" class="member-name-link">returnOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link">Method</a>&nbsp;method,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;context)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Converts the return type of a method to an <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a> as the type reading it sees it.</div>
+<div class="block">Converts the return type of a method to an <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a> as the type invoking it sees it, with the
+annotations of the method and the type-use annotations of its return type.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#toType(io.micronaut.core.type.Argument)" class="member-name-link">toType</a><wbr>(<a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&nbsp;argument)</code></div>
@@ -355,10 +359,12 @@ field and the type-use annotations of its type.</div>
 <h3>returnOf</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;</span>&nbsp;<span class="element-name">returnOf</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link">Method</a>&nbsp;method)</span></div>
-<div class="block">Converts the return type of a method to an <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a> carrying the type-use annotations of the
-return type. An annotation that targets the method alone belongs to the method, not to its return type;
-one written before the return type whose target includes <code>TYPE_USE</code> annotates both (JLS 9.7.4),
-and is on both, as the processors record it.</div>
+<div class="block">Converts the return type of a method to an <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a> whose metadata holds the annotations of the
+method and the type-use annotations of its return type, as <a href="#of(java.lang.reflect.Parameter)"><code>of(Parameter)</code></a> builds the argument of
+a parameter from the parameter and its type: a generated executable method of a bean definition reports
+the return value with the annotations of the method on it, and a constraint declared on a method
+constrains the value it returns. An annotation written before the return type whose target includes
+<code>TYPE_USE</code> is on both the method and the type (JLS 9.7.4) and is read once.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>method</code> - The method</dd>
@@ -442,16 +448,18 @@ them.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;</span>&nbsp;<span class="element-name">returnOf</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link">Method</a>&nbsp;method,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;context)</span></div>
-<div class="block">Converts the return type of a method to an <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a> as the type reading it sees it.</div>
+<div class="block">Converts the return type of a method to an <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a> as the type invoking it sees it, with the
+annotations of the method and the type-use annotations of its return type.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>method</code> - The method</dd>
-<dd><code>context</code> - The type the method is read through, an implementation of its declaring type</dd>
+<dd><code>context</code> - The type the method is invoked on, an implementation of its declaring type</dd>
 <dt>Returns:</dt>
 <dd>The argument</dd>
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list-long">
+<li><a href="#returnOf(java.lang.reflect.Method)"><code>returnOf(Method)</code></a></li>
 <li><a href="#of(java.lang.reflect.Field,java.lang.Class)"><code>of(Field, Class)</code></a></li>
 </ul>
 </dd>

@@ -516,12 +516,14 @@ to the classs instead.</p>
 <div class="block">Whether the individual members (the field, the read method and the write method) that each property is composed
 of should be included in the introspection.
 
-<p>A <a href="../beans/BeanProperty.html" title="interface in io.micronaut.core.beans"><code>BeanProperty</code></a> normally merges its members into a single element with a
-single merged <a href="AnnotationMetadata.html" title="interface in io.micronaut.core.annotation"><code>AnnotationMetadata</code></a>. When this is set to <code>true</code>
-<a href="../beans/BeanProperty.html#getMembers()"><code>BeanProperty.getMembers()</code></a> additionally exposes each member separately, with its
-own annotation metadata, its own <a href="../type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a> and its own accessor. This is required
-by specifications such as Jakarta Bean Validation that treat a field and a getter as two distinct constrained
-elements.</p>
+<p>A <a href="../beans/BeanProperty.html" title="interface in io.micronaut.core.beans"><code>BeanProperty</code></a> normally merges its members, and what the super types
+declare on them, into a single element with a single merged <a href="AnnotationMetadata.html" title="interface in io.micronaut.core.annotation"><code>AnnotationMetadata</code></a>. When this is set to
+<code>true</code> <a href="../beans/BeanProperty.html#getMembers()"><code>BeanProperty.getMembers()</code></a> additionally exposes each member
+separately - the field, and the read and write method of every type of the hierarchy declaring one - with
+its own annotation metadata, its own <a href="../type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a> and its own accessor, and
+<a href="../beans/BeanIntrospection.html#separatesDeclarations()"><code>BeanIntrospection.separatesDeclarations()</code></a> reports it. This is required by
+specifications such as Jakarta Bean Validation that treat a field and a getter as two distinct constrained
+elements, and attribute a constraint to the type declaring it.</p>
 
 <p>Defaults to <code>false</code> since the additional metadata increases the size of the generated
 introspection. Has no effect when <a href="#annotationMetadata()"><code>annotationMetadata()</code></a> is <code>false</code>, since the members carry

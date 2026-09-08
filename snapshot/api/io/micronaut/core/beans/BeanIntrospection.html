@@ -91,6 +91,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#getReadPropertyNames()" tabindex="0">getReadPropertyNames()</a></li>
 <li><a href="#getConstructor()" tabindex="0">getConstructor()</a></li>
 <li><a href="#getConstructors()" tabindex="0">getConstructors()</a></li>
+<li><a href="#separatesDeclarations()" tabindex="0">separatesDeclarations()</a></li>
 <li><a href="#getIntrospection(java.lang.Class)" tabindex="0">getIntrospection(Class)</a></li>
 </ol>
 </li>
@@ -353,6 +354,11 @@ types.</div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#propertyIndexOf(java.lang.String)" class="member-name-link">propertyIndexOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Obtain the property index position.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#separatesDeclarations()" class="member-name-link">separatesDeclarations</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Whether this introspection tells the declarations of the bean type apart from the ones it inherits.</div>
 </div>
 </div>
 </div>
@@ -941,6 +947,36 @@ non-static inner class the first element of this list does not report the same a
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Every described constructor of the type, <a href="#getConstructor()"><code>getConstructor()</code></a> first</dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="separatesDeclarations()">
+<h3>separatesDeclarations</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">separatesDeclarations</span>()</div>
+<div class="block">Whether this introspection tells the declarations of the bean type apart from the ones it inherits.
+
+<p>A property merges what its field, its accessors and every super type declaring one of them carry
+into one annotation metadata, and a method merges the annotations of the methods it overrides. A
+specification attributing an annotation to the element declaring it - Jakarta Validation puts a
+constraint an interface declares in the implicit group of that interface, validates a constraint of a
+field against the field rather than the getter, and reports the constraints of an element apart from the
+inherited ones - needs them apart. An introspection separating them lists in
+<a href="BeanProperty.html#getMembers()"><code>BeanProperty.getMembers()</code></a> the field of a property and the accessor of every type of the
+hierarchy declaring one, each carrying the annotations of its own declaration only, and answers what a
+method declares itself through <a href="BeanMethod.html#getDeclaredMethodAnnotationMetadata()"><code>BeanMethod.getDeclaredMethodAnnotationMetadata()</code></a>.</p>
+
+<p>A generated introspection separates the declarations when it is compiled with
+<a href="../annotation/Introspected.html#members()"><code>Introspected.members()</code></a>; by default it does not, and the members of
+its properties are empty.</p></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>True if the members of a property and the annotations of a method are reported by the type
+declaring them</dd>
 <dt>Since:</dt>
 <dd>5.2.0</dd>
 </dl>
