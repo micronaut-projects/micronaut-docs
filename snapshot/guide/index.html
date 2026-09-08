@@ -401,9 +401,7 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-form"><a href="#form"><strong>6.21</strong><span>Forms</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-formBinding"><a href="#formBinding"><strong>6.21.1</strong><span>Form Data Binding</span></a></div>
-        
-        <div class="toc-item" style="margin-left:20px" id="toc-item-formCapable"><a href="#formCapable"><strong>6.21.2</strong><span>Detailed Form API</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-formCapable"><a href="#formCapable"><strong>6.21.1</strong><span>Detailed Form API</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-serverIO"><a href="#serverIO"><strong>6.22</strong><span>Writing Response Data</span></a></div>
         
@@ -779,9 +777,7 @@
         
         <div class="toc-item" style="margin-left:40px" id="toc-item-jdbcHealthIndicator"><a href="#jdbcHealthIndicator"><strong>17.2.3.6.2</strong><span>JDBC Health Indicator</span></a></div>
         
-        <div class="toc-item" style="margin-left:40px" id="toc-item-discoveryClientHealthIndicator"><a href="#discoveryClientHealthIndicator"><strong>17.2.3.6.3</strong><span>Discovery Client Health Indicator</span></a></div>
-        
-        <div class="toc-item" style="margin-left:40px" id="toc-item-deadlockedThreads"><a href="#deadlockedThreads"><strong>17.2.3.6.4</strong><span>Deadlocked Threads</span></a></div>
+        <div class="toc-item" style="margin-left:40px" id="toc-item-deadlockedThreads"><a href="#deadlockedThreads"><strong>17.2.3.6.3</strong><span>Deadlocked Threads</span></a></div>
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-metricsEndpoint"><a href="#metricsEndpoint"><strong>17.2.4</strong><span>The Metrics Endpoint</span></a></div>
         
@@ -1066,21 +1062,7 @@
 <p>The following sections walk you through a Quick Start on how to use the Micronaut framework to set up a basic "Hello World" application.</p>
 </div>
 <div class="paragraph">
-<p>Before getting started ensure you have a Java 8 or higher JDK installed.</p>
-</div>
-<div class="openblock lang-java lang-groovy lang-kotlin">
-<div class="content">
-<div class="paragraph">
-<p>It is recommended that you use a <a href="#ideSetup">suitable IDE</a> such as IntelliJ IDEA.</p>
-</div>
-</div>
-</div>
-<div class="openblock lang-python">
-<div class="content">
-<div class="paragraph">
-<p>It is recommended that you use an IDE with Python support, such as IntelliJ IDEA or Visual Studio Code.</p>
-</div>
-</div>
+<p>Before getting started ensure you have a Java 8 or higher JDK installed, and it is recommended that you use a <a href="#ideSetup">suitable IDE</a> such as IntelliJ IDEA.</p>
 </div>
 
 <h2 id="buildCLI"><a class="anchor" href="#buildCLI"></a>2.1 Install the CLI</h2>
@@ -2604,53 +2586,6 @@ class Vehicle:
 <div class="listingblock multi-language-sample">
 <div class="title">Example of Constructor Injection</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">package io.micronaut.docs.ioc.injection.ctor
-
-import io.micronaut.core.annotation.Creator
-import jakarta.inject.Inject
-import jakarta.inject.Singleton
-
-@Singleton
-class Vehicle {
-    private val engine: Engine
-
-    @Inject // <b class="conum">(1)</b>
-    constructor(engine: Engine) {
-        this.engine = engine
-    }
-
-    constructor() {
-        this.engine = Engine.create(6)
-    }
-
-    fun start() {
-        engine.start()
-    }
-}
-
-@Singleton
-class Engine(val cylinders: Int) {
-
-    companion object {
-        @Creator // <b class="conum">(2)</b>
-        fun getDefault(): Engine {
-            return Engine(8)
-        }
-
-        fun create(cylinders: Int): Engine {
-            return Engine(cylinders)
-        }
-    }
-
-    fun start() {
-        println("Vrooom! $cylinders")
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Example of Constructor Injection</div>
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">package io.micronaut.docs.ioc.injection.ctor
 
 import io.micronaut.core.annotation.Creator
@@ -2755,7 +2690,7 @@ If you use <code>@Inject</code> on a <code>private</code> constructor then the t
 <div class="openblock lang-python">
 <div class="content">
 <div class="paragraph">
-<p>You can inject Python attributes by using <code>typing.Annotated[]</code> and passing <code>jakarta.inject.Inject</code>, for example:</p>
+<p>You can inject Python attributes by using <code>typing.Annotated[]</code> and pas <code>jakarta.inject.Inject</code>, for example:</p>
 </div>
 </div>
 </div>
@@ -2806,31 +2741,6 @@ class Vehicle:
 <div class="listingblock multi-language-sample">
 <div class="title">Example of Field Injection</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">package io.micronaut.docs.ioc.injection.field
-
-import jakarta.inject.Inject
-import jakarta.inject.Singleton
-
-@Singleton
-class Vehicle {
-    @Inject lateinit var engine: Engine // <b class="conum">(1)</b>
-
-    fun start() {
-        engine.start()
-    }
-}
-
-@Singleton
-class Engine {
-    fun start() {
-        println("Vrooom!")
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Example of Field Injection</div>
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">package io.micronaut.docs.ioc.injection.field
 
 import jakarta.inject.Inject
@@ -2861,8 +2771,7 @@ class Engine {
 </tr>
 </table>
 </div>
-<div class="openblock lang-kotlin">
-<div class="content">
+<hr>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -2871,11 +2780,10 @@ class Engine {
 </td>
 <td class="content">
 For Kotlin instead of an optional type (a type ending with <code>?</code>) you can use <code>lateinit var</code>
+---
 </td>
 </tr>
 </table>
-</div>
-</div>
 </div>
 <div class="openblock lang-kotlin lang-java lang-groovy">
 <div class="content">
@@ -2965,36 +2873,6 @@ class Vehicle:
 <div class="listingblock multi-language-sample">
 <div class="title">Example of Method Injection</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">package io.micronaut.docs.ioc.injection.method
-
-import jakarta.inject.Inject
-import jakarta.inject.Singleton
-
-@Singleton
-class Vehicle {
-    private lateinit var engine: Engine
-
-    @Inject // <b class="conum">(1)</b>
-    fun initialize(engine: Engine) {
-        this.engine = engine
-    }
-
-    fun start() {
-        engine.start()
-    }
-}
-
-@Singleton
-class Engine {
-    fun start() {
-        println("Vrooom!")
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Example of Method Injection</div>
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">package io.micronaut.docs.ioc.injection.method
 
 import jakarta.inject.Inject
@@ -3065,17 +2943,10 @@ If the method is <code>private</code> scope or inaccessible then the method will
 <div class="paragraph">
 <p>For example if you are trying to build an extensible system where a default implementation is provided by the type but consumers of your API can provide a bean that, if available, will be injected.</p>
 </div>
-<div class="openblock lang-java lang-groovy">
+<div class="openblock lang-kotlin lang-java lang-groovy">
 <div class="content">
 <div class="paragraph">
 <p>One way to make injection optional is to annotate the injected type with <code>org.jspecify.annotations.Nullable</code> which will result in <code>null</code> being injected by the framework if the bean is unavailable:</p>
-</div>
-</div>
-</div>
-<div class="openblock lang-kotlin">
-<div class="content">
-<div class="paragraph">
-<p>In Kotlin, declaring the injected type as nullable (a type ending with <code>?</code>) will result in <code>null</code> being injected by the framework if the bean is unavailable:</p>
 </div>
 </div>
 </div>
@@ -3141,36 +3012,6 @@ class Vehicle:
 <div class="listingblock multi-language-sample">
 <div class="title">Example of Injecting <code>null</code></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">package io.micronaut.docs.ioc.injection.nullable
-
-import jakarta.inject.Singleton
-
-@Singleton
-class Vehicle(engine: Engine?) { // <b class="conum">(1)</b>
-    val engine: Engine = engine ?: Engine.create(6) // <b class="conum">(2)</b>
-
-    fun start() {
-        engine.start()
-    }
-}
-
-class Engine(val cylinders: Int) {
-
-    companion object {
-        fun create(cylinders: Int): Engine {
-            return Engine(cylinders)
-        }
-    }
-
-    fun start() {
-        println("Vrooom! $cylinders")
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Example of Injecting <code>null</code></div>
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">package io.micronaut.docs.ioc.injection.nullable
 
 import org.jspecify.annotations.Nullable
@@ -3200,25 +3041,13 @@ record Engine(int cylinders) {
 }</code></pre>
 </div>
 </div>
-<div class="openblock lang-java lang-groovy">
+<div class="openblock lang-kotlin lang-java lang-groovy">
 <div class="content">
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
 <td>Here the constructor argument is annotated with <code>org.jspecify.annotations.Nullable</code></td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="openblock lang-kotlin">
-<div class="content">
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Here the constructor argument is declared with the nullable type <code>Engine?</code></td>
 </tr>
 </table>
 </div>
@@ -3240,11 +3069,11 @@ record Engine(int cylinders) {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Since there is no bean available <code>null</code> is injected and the code has to handle the possibility that the argument could be <code>null</code>.</td>
+<td>Since there is no bean available <code>null</code> is injected and the code has to handle the possibility that the argument could be `null.</td>
 </tr>
 </table>
 </div>
-<div class="openblock lang-java lang-groovy">
+<div class="openblock lang-kotlin lang-java lang-groovy">
 <div class="content">
 <div class="paragraph">
 <p>Using <code>org.jspecify.annotations.Nullable</code> has the following considerations:</p>
@@ -4811,6 +4640,10 @@ class Vehicle(@param:Any val engineProvider: BeanProvider&lt;Engine&gt;) { // <b
     fun start() {
         engineProvider.ifPresent { it.start() } // <b class="conum">(2)</b>
     }
+    fun startAll() {
+        if (engineProvider.isPresent) { // <b class="conum">(1)</b>
+            engineProvider.forEach { it.start() } // <b class="conum">(2)</b>
+        }
 }</code></pre>
 </div>
 </div>
@@ -7775,44 +7608,6 @@ public class MessagePublisher {
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from jakarta.annotation import PreDestroy
-from jakarta.inject import Singleton
-from micronaut.context.annotation import DependsOn
-
-from . import ShutdownLog
-from .MessagePublisher import MessagePublisher
-
-
-@Singleton
-@DependsOn(MessagePublisher)  # <b class="conum">(1)</b>
-class MessageConsumer:
-
-    def __init__(self):
-        ShutdownLog.add("consumer created")
-
-    @PreDestroy
-    def stop(self):  # <b class="conum">(2)</b>
-        ShutdownLog.add("consumer stopped")
-
-from jakarta.annotation import PreDestroy
-from jakarta.inject import Singleton
-
-from . import ShutdownLog
-
-
-@Singleton
-class MessagePublisher:
-
-    def __init__(self):
-        ShutdownLog.add("publisher created")
-
-    @PreDestroy
-    def close(self):  # <b class="conum">(3)</b>
-        ShutdownLog.add("publisher closed")</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.DependsOn
 import jakarta.annotation.PreDestroy
 import jakarta.inject.Singleton
@@ -8002,7 +7797,7 @@ endpoint.</p>
 </p>
 </div>
 <div class="paragraph">
-<p><code>micronaut-context</code> is a transitive dependency of <code>micronaut-http</code>. If you use a Micronaut HTTP runtime, your project already includes the <code>micronaut-context</code> dependency.</p>
+<p><code>micronaut-context</code> is a transitive dependency of <code>micronaut-http</code>. If you use a Micronaut HTTP runtime, your project already includes the <code>Micronaut-context</code> dependency.</p>
 </div>
 <div class="sect2">
 <h3 id="_publishing_events">Publishing Events</h3>
@@ -8013,7 +7808,7 @@ endpoint.</p>
 <p>To publish an event, use dependency injection to obtain an instance of <a href="../api/io/micronaut/context/event/ApplicationEventPublisher.html">ApplicationEventPublisher</a> where the generic type is the type of event and invoke the <code>publishEvent</code> method with your event object.</p>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Publishing an Event</div>
+<div class="title">"Publishing an Event</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public class SampleEvent {
     private String message = "Something happened";
@@ -8045,7 +7840,7 @@ public class SampleEventEmitterBean {
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Publishing an Event</div>
+<div class="title">"Publishing an Event</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from dataclasses import dataclass
 
@@ -8067,7 +7862,7 @@ class SampleEventEmitterBean:
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Publishing an Event</div>
+<div class="title">"Publishing an Event</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">data class SampleEvent(val message: String = "Something happened")
 
@@ -8089,7 +7884,7 @@ class SampleEventEmitterBean {
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Publishing an Event</div>
+<div class="title">"Publishing an Event</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">class SampleEvent {
     String message = "Something happened"
@@ -9162,8 +8957,6 @@ println("Hello $person.name")</code></pre>
 </tr>
 </table>
 </div>
-<div class="openblock lang-java lang-groovy">
-<div class="content">
 <div class="paragraph">
 <p>It&#8217;s possible to apply the introspection to all the classes in one package. Simply create <code>package-info</code> file and annotate the package with <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a>.</p>
 </div>
@@ -9210,24 +9003,6 @@ Only classes located directly within the package are processed; subpackages are 
 </td>
 </tr>
 </table>
-</div>
-</div>
-</div>
-<div class="openblock lang-kotlin lang-python">
-<div class="content">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Package-level introspection requires a <code>package-info</code> declaration, which only Java and Groovy support. In Kotlin and Python, annotate each class with <a href="../api/io/micronaut/core/annotation/Introspected.html">@Introspected</a>, or list the types with the <code>classes</code> member as shown in <a href="#introspectedAnnotationOnAConfigurationClass">Use the @Introspected Annotation on a Configuration Class</a>.
-</td>
-</tr>
-</table>
-</div>
-</div>
 </div>
 
 <h2 id="introspectedAccessorsStyle"><a class="anchor" href="#introspectedAccessorsStyle"></a>3.18.3 Use @Introspected with @AccessorsStyle</h2>
@@ -9370,15 +9145,6 @@ class Person {
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">        BeanIntrospection&lt;Person&gt; introspection = BeanIntrospection.getIntrospection(Person.class);
-        Person person = introspection.instantiate("John", 42);
-
-        Assertions.assertEquals("John", person.name());
-        Assertions.assertEquals(42, person.age());</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">        BeanIntrospection = java.type("io.micronaut.core.beans.BeanIntrospection")
         Person = java.type("micronaut.docs.ioc.introspection.Person")
         introspection = BeanIntrospection.getIntrospection(Person)
@@ -9402,8 +9168,8 @@ class Person {
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">        BeanIntrospection&lt;Person&gt; introspection = BeanIntrospection.getIntrospection(Person)
         Person person = introspection.instantiate('John', 42)
 
-        assert person.name() == 'John'
-        assert person.age() == 42</code></pre>
+        person.name() == 'John'
+        person.age() == 42</code></pre>
 </div>
 </div>
 
@@ -9480,7 +9246,7 @@ The <code>accessKind</code> accepts an array, so it is possible to allow for bot
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-Introspections on fields are not possible in Kotlin or Python because neither language lets you declare fields directly.
+Introspections on fields are not possible in Kotlin because it is not possible to declare fields directly.
 </td>
 </tr>
 </table>
@@ -9860,8 +9626,6 @@ The accessor is generated, so reading a member does not use reflection - except 
 </div>
 
 
-<div class="openblock lang-java lang-groovy lang-kotlin">
-<div class="content">
 <div class="paragraph">
 <p>For classes with multiple constructors, apply the <a href="../api/io/micronaut/core/annotation/Creator.html">@Creator</a> annotation to the constructor to use.</p>
 </div>
@@ -9967,24 +9731,6 @@ This class has no default constructor, so calls to instantiate without arguments
 </td>
 </tr>
 </table>
-</div>
-</div>
-</div>
-<div class="openblock lang-python">
-<div class="content">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-A Python class declares a single <code><em>init</em></code>, so there is no constructor to disambiguate. To offer an alternative way of building an instance, annotate a <code>classmethod</code> as shown in <a href="#staticAtCreator">Static Creator Methods</a>.
-</td>
-</tr>
-</table>
-</div>
-</div>
 </div>
 
 <h2 id="staticAtCreator"><a class="anchor" href="#staticAtCreator"></a>3.18.8 Static Creator Methods</h2>
@@ -10436,49 +10182,6 @@ public class Person {
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@ReflectiveAccess
-@Introspected(builder = Introspected.IntrospectionBuilder(
-    builderClass = Person.Builder::class
-))
-class Person private constructor(val name: String, val age: Int) {
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Person) return false
-        return age == other.age &amp;&amp; name == other.name
-    }
-
-    override fun hashCode(): Int = 31 * name.hashCode() + age
-
-    class Builder {
-        private var name: String? = null
-        private var age: Int = 0
-
-        fun name(name: String): Builder {
-            this.name = name
-            return this
-        }
-
-        fun age(age: Int): Builder {
-            this.age = age
-            return this
-        }
-
-        fun build(): Person {
-            val name = requireNotNull(name)
-            require(age &gt;= 1) { "Age must be a positive number" }
-            return Person(name, age)
-        }
-    }
-
-    companion object {
-        fun builder(): Builder = Builder()
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.annotation.Introspected
 @CompileStatic
 @Introspected(builder = @Introspected.IntrospectionBuilder(
@@ -10534,16 +10237,6 @@ Person person = builder
     .with("age", 25)
     .with("name", "Fred")
     .build();</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val introspection = BeanIntrospection.getIntrospection(Person::class.java)
-val builder: BeanIntrospection.Builder&lt;Person&gt; = introspection.builder()
-val person = builder
-    .with("age", 25)
-    .with("name", "Fred")
-    .build()</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -10613,18 +10306,6 @@ Introspection Builder does not work with <a href="https://groovy-lang.org/metapr
 @Introspected(classes = Person.class)
 public class PersonConfiguration {
 }</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from micronaut.core.annotation import Introspected
-
-from .Person import Person
-
-
-@Introspected(classes=Person)
-class PersonConfiguration:
-    pass</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -10791,9 +10472,7 @@ data class UserDataClass(val name: String)</code></pre>
 <div class="listingblock">
 <div class="title">Kotlin Data Class instantiated via BeanIntrospection API</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val introspection: BeanIntrospection&lt;UserDataClass&gt; = BeanIntrospection.getIntrospection(UserDataClass::class.java)
-val user: UserDataClass = introspection.instantiate("John")
-assertEquals("John", user.name)</code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin"></code></pre>
 </div>
 </div>
 <div class="admonitionblock warning">
@@ -10822,7 +10501,7 @@ assertEquals("John", user.name)</code></pre>
 <p>Since 4.1.x the <a href="../api/io/micronaut/context/annotation/Mapper.html">@Mapper</a> annotation can be used on any abstract method to automatically create a mapping between one type and another. Since 4.8.x the annotation can also be used for merging beans.</p>
 </div>
 <div class="paragraph">
-<p>Inspired by similar functionality in libraries like <a href="https://mapstruct.org">Map Struct</a>, a <code>Mapper</code> uses the <a href="#introspection">Bean Introspection</a> and <a href="#evaluatedExpressions">Expressions</a> features, built into the Micronaut Framework, which are already reflection free.</p>
+<p>Inspired by similar functionality in libraries like <a href="https://mapstruct.org">Map Struct</a>, a <code>Mapper</code> uses the <a href="#introspections">Bean Introspection</a> and <a href="#evaluatedExpressions">Expressions</a> features, built into the Micronaut Framework, which are already reflection free.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -11336,29 +11015,6 @@ class Present:
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Introspected
-data class ChristmasPresent(
-    val packagingColor: String?,
-    val type: String,
-    val weight: Float,
-    val greetingCard: String
-)
-
-@Introspected
-data class PresentPackaging(
-    val weight: Float,
-    val color: String
-)
-
-@Introspected
-data class Present(
-    val weight: Float,
-    val type: String
-)</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Canonical
 @Introspected
 class ChristmasPresent {
@@ -11417,19 +11073,6 @@ class ChristmasMappers(ABC):
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.Mapper.Mapping
-
-interface ChristmasMappers {
-
-    @Mapping(from = "packaging.color", to = "packagingColor")
-    @Mapping(from = "#{packaging.weight + present.weight}", to = "weight")
-    @Mapping(from = "#{'Merry christmas'}", to = "greetingCard")
-    fun merge(packaging: PresentPackaging, present: Present): ChristmasPresent
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Mapper.Mapping
 
 interface ChristmasMappers {
@@ -11477,17 +11120,7 @@ assert result.greeting_card == "Merry christmas"</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val mappers = context.getBean(ChristmasMappers::class.java)
-
-val result = mappers.merge(
-    ChristmasTypes.PresentPackaging(1f, "red"),
-    ChristmasTypes.Present(10f, "teddy bear")
-)
-
-Assertions.assertEquals(11f, result.weight)
-Assertions.assertEquals("red", result.packagingColor)
-Assertions.assertEquals("teddy bear", result.type)
-Assertions.assertEquals("Merry christmas", result.greetingCard)</code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin"></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -11624,45 +11257,6 @@ class MyMergeStrategy(Mapper.MergeStrategy):
         if isinstance(current_value, float) and isinstance(value, float):
             return current_value + value
         return value</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">interface AdditionalMappers {
-
-    @Mapper // <b class="conum">(1)</b>
-    fun merge(packaging: PresentPackaging, present: Present, christmasCard: Card): ChristmasPresent
-
-    @Mapping(
-        from = "#{updateFields.get('christmasCard') + '!!'}", to = "greetingCard"
-    ) // <b class="conum">(2)</b>
-    fun update(present: ChristmasPresent, updateFields: Map&lt;String, Any&gt;): ChristmasPresent
-
-    @Mapper(
-        mergeStrategy = "add-numbers",
-        value = [
-            Mapping(from = "packaging.color", to = "packagingColor")
-        ]
-    ) // <b class="conum">(3)</b>
-    fun mergeWithMergeStrategy(packaging: PresentPackaging, present: Present): ChristmasPresent
-
-    @Singleton
-    @Named("add-numbers")
-    class MyMergeStrategy : MergeStrategy {
-        override fun merge(currentValue: Any?, value: Any?, valueOwner: Any, propertyName: String, mappedPropertyName: String): Any? {
-            if (currentValue is Float &amp;&amp; value is Float) {
-                return currentValue + value
-            }
-            return value
-        }
-    }
-
-    @ReflectiveAccess
-    @Introspected
-    data class Card(
-        val greetingCard: String
-    )
-}</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -14651,72 +14245,6 @@ fun importsDemoDefaults() {
 }</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
-<div class="title">Custom importer test</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">void "imports demo defaults"() {
-    given:
-    ApplicationContext context = ApplicationContext.run()
-    DemoPropertySourceImporter importer = new DemoPropertySourceImporter()
-    DemoPropertySourceImporter.DemoImport declaration = importer.newImportDeclaration(ConnectionString.parse("demo://defaults"))
-    PropertySourceImporter.ImportContext&lt;DemoPropertySourceImporter.DemoImport&gt; importContext = new PropertySourceImporter.ImportContext&lt;DemoPropertySourceImporter.DemoImport&gt;() {
-        @Override
-        Environment environment() {
-            context.environment
-        }
-
-        @Override
-        ConnectionString connectionString() {
-            ConnectionString.parse("demo://defaults")
-        }
-
-        @Override
-        DemoPropertySourceImporter.DemoImport importDeclaration() {
-            declaration
-        }
-
-        @Override
-        PropertySource.Origin parentOrigin() {
-            PropertySource.Origin.of("classpath:application.yml")
-        }
-
-        @Override
-        Optional&lt;PropertySource&gt; importPropertySource(ResourceLoader resourceLoader,
-                                                      String resourcePath,
-                                                      String sourceName,
-                                                      PropertySource.Origin origin) {
-            Optional.empty()
-        }
-
-        @Override
-        Optional&lt;PropertySource&gt; importPropertySource(String content,
-                                                      String sourceName,
-                                                      String extension,
-                                                      PropertySource.Origin origin) {
-            Optional.empty()
-        }
-
-        @Override
-        Optional&lt;PropertySource&gt; importClasspathPropertySource(String resourcePath,
-                                                               String sourceName,
-                                                               PropertySource.Origin origin,
-                                                               boolean allowMultiple) {
-            Optional.empty()
-        }
-    }
-
-    when:
-    Optional&lt;PropertySource&gt; propertySource = importer.importPropertySource(importContext)
-
-    then:
-    propertySource.present
-    propertySource.get().get("demo.message") == "hello-from-demo-importer"
-
-    cleanup:
-    context.close()
-}</code></pre>
-</div>
-</div>
 <div class="paragraph">
 <p>Register your implementation in <code>META-INF/services/io.micronaut.context.env.PropertySourceImporter</code>:</p>
 </div>
@@ -16257,39 +15785,6 @@ class ExampleJob:
 <div class="listingblock multi-language-sample">
 <div class="title">Job Control with Expressions</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.scheduling.annotation.Scheduled
-import jakarta.inject.Singleton
-
-@Singleton
-class ExampleJob {
-    private var jobRan = false
-
-    var paused = true // <b class="conum">(2)</b>
-        private set
-
-    @Scheduled(
-        fixedRate = "1s",
-        condition = "#{!this.paused}") // <b class="conum">(1)</b>
-    fun run() {
-        println("Job Running")
-        jobRan = true
-    }
-
-    fun hasJobRun(): Boolean = jobRan
-
-    fun unpause() {
-        paused = false
-    }
-
-    fun pause() {
-        paused = true
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Job Control with Expressions</div>
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.scheduling.annotation.Scheduled
 import jakarta.inject.Singleton
 
@@ -16899,7 +16394,7 @@ class AnnotationMemberContext { // <b class="conum">(3)</b>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>On the <code>value()</code> member of the <code>@CustomAnnotation</code> annotation the methods of the <code>AnnotationMemberContext</code> type are made available but scoped only to the <code>value()</code> member.</td>
+<td>On the <code>value()</code> member of the <code>@CustomAnnotation</code> annotation the methods of the <code>AnnotationContextExample</code> are made available but scoped only to the <code>value()</code> member.</td>
 </tr>
 </table>
 </div>
@@ -19307,7 +18802,7 @@ DataSource firstConfig = applicationContext.getBean(
 </p>
 </div>
 <div class="paragraph">
-<p><code>micronaut-context</code> is a transitive dependency of <code>micronaut-http</code>. If you use a Micronaut HTTP runtime, your project already includes the <code>micronaut-context</code> dependency.</p>
+<p><code>micronaut-context</code> is a transitive dependency of <code>micronaut-http</code>. If you use a Micronaut HTTP runtime, your project already includes the <code>Micronaut-context</code> dependency.</p>
 </div>
 <div class="paragraph">
 <p>There are two ways to define immutable configuration. The preferred way is to define an interface annotated with <a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a>. For example:</p>
@@ -19892,15 +19387,15 @@ System.out.println(vehicle.start())</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The above example prints: <code>"Ford Engine Starting V8 [rodLength=7.0]"</code></p>
+<p>The above example prints: <code>"Ford Engine Starting V8 [rodLength=7B.0]"</code></p>
 </div>
 <div class="sect3">
-<h4 id="_using_record_classes_to_define_immutable_configuration">Using Record Classes to define immutable configuration</h4>
+<h4 id="_using_java_record_classes_to_define_immutable_configuration">Using Java Record Classes to define immutable configuration</h4>
 <div class="paragraph">
-<p>It is also possible to use a record class&#8201;&#8212;&#8201;a <a href="https://docs.oracle.com/en/java/javase/17/language/records.html">Java record</a>, a Kotlin data class or a frozen Python dataclass&#8201;&#8212;&#8201;for immutable configuration with <a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a>. For example:</p>
+<p>For Java language applications, it&#8217;s also possible to use <a href="https://docs.oracle.com/en/java/javase/17/language/records.html">Java Record Classes</a> for immutable configuration with <a href="../api/io/micronaut/context/annotation/ConfigurationProperties.html">@ConfigurationProperties</a>. For example:</p>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Record Example</div>
+<div class="title">Java Record Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.Requires;
@@ -19915,7 +19410,7 @@ public record ValueAddedTaxConfiguration(
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Record Example</div>
+<div class="title">Java Record Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from micronaut.context.annotation import ConfigurationProperties
 from micronaut.context.annotation import Requires
@@ -19926,19 +19421,6 @@ from java.math import BigDecimal
 @dataclass(frozen=True)
 class ValueAddedTaxConfiguration:
     percentage: Annotated[BigDecimal, NotNull]  # <b class="conum">(1)</b></code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Record Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.ConfigurationProperties
-import io.micronaut.context.annotation.Requires
-import jakarta.validation.constraints.NotNull
-import java.math.BigDecimal
-
-@ConfigurationProperties("vat")
-data class ValueAddedTaxConfiguration(
-    @field:NotNull val percentage: BigDecimal) // <b class="conum">(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -19956,7 +19438,7 @@ data class ValueAddedTaxConfiguration(
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-From a performance perspective records are better than interfaces.
+From a performance perspective Java records are better than interfaces.
 </td>
 </tr>
 </table>
@@ -20461,16 +19943,7 @@ class NotNullExample {
 <div class="listingblock multi-language-sample">
 <div class="title">Around Advice Test</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
-void testNotNull() {
-    try (ApplicationContext applicationContext = ApplicationContext.run()) {
-        var ex = assertThrows(IllegalArgumentException.class, () -&gt; {
-            var exampleBean = applicationContext.getBean(NotNullExample.class);
-            exampleBean.doWork(null);
-        });
-        assertEquals(ex.getMessage(), "Null parameter [taskName] not allowed");
-    }
-}</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java"></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -24008,22 +23481,7 @@ class IssuesController:
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.PathVariable
-
-@Controller("/issues") // <b class="conum">(1)</b>
-class IssuesController {
-
-    @Get("/{number}") // <b class="conum">(2)</b>
-    fun issue(number: Int): String { // <b class="conum">(3)</b>
-        return "Issue # $number!" // <b class="conum">(4)</b>
-    }
-
-    @Get("/issue/{number}")
-    fun issueFromId(@PathVariable("number") id: Int): String { // <b class="conum">(5)</b>
-        return "Issue # $id!"
-    }
-
-}</code></pre>
+import io.micronaut.http.annotation.PathVariable</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -24205,54 +23663,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.micronaut.context.ApplicationContext
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
-import io.micronaut.runtime.server.EmbeddedServer
-
-class IssuesControllerTest: StringSpec() {
-
-    val embeddedServer = autoClose( // <b class="conum">(2)</b>
-        ApplicationContext.run(EmbeddedServer::class.java) // <b class="conum">(1)</b>
-    )
-
-    val client = autoClose( // <b class="conum">(2)</b>
-        embeddedServer.applicationContext.createBean(
-            HttpClient::class.java,
-            embeddedServer.url) // <b class="conum">(1)</b>
-    )
-
-    init {
-
-        "test issue" {
-            val body = client.toBlocking().retrieve("/issues/12") // <b class="conum">(3)</b>
-
-            body shouldNotBe null
-            body shouldBe "Issue # 12!" // <b class="conum">(4)</b>
-        }
-
-        "test issue from id" {
-            val body = client.toBlocking().retrieve("/issues/issue/13")
-
-            body shouldNotBe null
-            body shouldBe "Issue # 13!" // <b class="conum">(5)</b>
-        }
-
-        "test issue with invalid integer" {
-            val e = shouldThrow&lt;HttpClientResponseException&gt; {
-                client.toBlocking().exchange&lt;Any&gt;("/issues/hello")
-            }
-
-            e.status.code shouldBe 400 // <b class="conum">(6)</b>
-        }
-
-        "test issue without number" {
-            val e = shouldThrow&lt;HttpClientResponseException&gt; {
-                client.toBlocking().exchange&lt;Any&gt;("/issues/")
-            }
-
-            e.status.code shouldBe 404 // <b class="conum">(7)</b>
-        }
-
-    }
-}</code></pre>
+import io.micronaut.runtime.server.EmbeddedServer</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -24351,7 +23762,6 @@ class IssuesControllerTest extends Specification {
 <p>Note that the URI template in the previous example requires that the <code>number</code> variable is specified. You can specify optional URI templates with the syntax: <code>/issues{/number}</code> and by annotating the <code>number</code> parameter with <code>@Nullable</code>. Alternatively, you can use the <code>defaultValue</code> element of the <a href="../api/io/micronaut/http/annotation/PathVariable.html">PathVariable</a> annotation to specify a default value when the URI variable is missing. For example:</p>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Default Value Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Get("/default{/number}") // <b class="conum">(1)</b>
 public String issueFromIdOrDefault(@PathVariable(defaultValue = "0") Integer number) { // <b class="conum">(2)</b>
@@ -24360,7 +23770,6 @@ public String issueFromIdOrDefault(@PathVariable(defaultValue = "0") Integer num
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Default Value Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">@Get("/default{/number}")  # <b class="conum">(1)</b>
 def issue_from_id_or_default(self, number: Annotated[int, PathVariable(defaultValue="0")]) -&gt; str:  # <b class="conum">(2)</b>
@@ -24368,16 +23777,11 @@ def issue_from_id_or_default(self, number: Annotated[int, PathVariable(defaultVa
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Default Value Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Get("/default{/number}") // <b class="conum">(1)</b>
-fun issueFromIdOrDefault(@PathVariable(defaultValue = "0") number: Int): String { // <b class="conum">(2)</b>
-    return "Issue # $number!"
-}</code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin"></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Default Value Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Get("/default{/number}") // <b class="conum">(1)</b>
 String issueFromIdOrDefault(@PathVariable(defaultValue = "0") Integer number) { // <b class="conum">(2)</b>
@@ -24398,7 +23802,6 @@ String issueFromIdOrDefault(@PathVariable(defaultValue = "0") Integer number) { 
 </table>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Testing Default Value</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
 void testDefaultIssue() {
@@ -24418,7 +23821,6 @@ void testNotDefaultIssue() {
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Testing Default Value</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">@Test
 def test_default_issue(self):
@@ -24436,25 +23838,11 @@ def test_not_default_issue(self):
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Testing Default Value</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">"test default issue" {
-    val body = client.toBlocking().retrieve("/issues/default")
-
-    body shouldNotBe null
-    body shouldBe "Issue # 0!" // <b class="conum">(1)</b>
-}
-
-"test not default issue" {
-    val body = client.toBlocking().retrieve("/issues/default/1")
-
-    body shouldNotBe null
-    body shouldBe "Issue # 1!" // <b class="conum">(2)</b>
-}</code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin"></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">Testing Default Value</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">void "test default issue"() {
     when:
@@ -24479,7 +23867,7 @@ void "test not default issue"() {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This test illustrates the substitution of a default <code>PathVariable</code> value when the URI variable is missing</td>
+<td>This test illustrates the substitution of a default `PathVariable' value when the URI variable is missing</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -24911,15 +24299,11 @@ Route validation is more complicated with multiple templates. If a variable that
 <div class="sect1">
 <h2 id="_building_routes_programmatically">Building Routes Programmatically</h2>
 <div class="sectionbody">
-<div class="openblock lang-java lang-groovy lang-kotlin">
-<div class="content">
 <div class="paragraph">
 <p>If you prefer to not use annotations and instead declare all routes in code then never fear, the Micronaut framework has a flexible <a href="../api/io/micronaut/web/router/RouteBuilder.html">RouteBuilder</a> API that makes it a breeze to define routes programmatically.</p>
 </div>
 <div class="paragraph">
 <p>To start, subclass <a href="../api/io/micronaut/web/router/DefaultRouteBuilder.html">DefaultRouteBuilder</a> and inject the controller to route to into the method, and define your routes:</p>
-</div>
-</div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">URI Variables Example</div>
@@ -24992,8 +24376,6 @@ class MyRoutes extends GroovyRouteBuilder { // <b class="conum">(1)</b>
 }</code></pre>
 </div>
 </div>
-<div class="openblock lang-java lang-groovy lang-kotlin">
-<div class="content">
 <div class="colist arabic">
 <table>
 <tr>
@@ -25021,15 +24403,6 @@ Unfortunately due to type erasure, a Java method lambda reference cannot be used
 </td>
 </tr>
 </table>
-</div>
-</div>
-</div>
-<div class="openblock lang-python">
-<div class="content">
-<div class="paragraph">
-<p>Python applications declare routes as module-level functions instead of subclassing a route builder. See <a href="#moduleScripts">Module Scripts</a> for how a module of route functions is turned into a controller.</p>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -25133,13 +24506,6 @@ String lock(String name)</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">def index(self, request: HttpRequest) -&gt; str:
     route_match = RouteAttributes.getRouteMatch(request).orElse(None)</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">fun index(request: HttpRequest&lt;*&gt;): String? {
-    val routeMatch: RouteMatch&lt;*&gt;? = RouteAttributes.getRouteMatch(request)
-        .orElse(null)</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -26359,9 +25725,11 @@ It is common to use <a href="../api/io/micronaut/core/convert/ConversionService.
 <div class="listingblock multi-language-sample">
 <div class="title">A controller operation with this annotated binding</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Get("/annotated")
-HttpResponse&lt;String&gt; checkSession(@ShoppingCart Long sessionId) { //<b class="conum">(1)</b>
-    return HttpResponse.ok("Session:" + sessionId);
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    @Get("/annotated")
+    HttpResponse&lt;String&gt; checkSession(@ShoppingCart Long sessionId) { //<b class="conum">(1)</b>
+        return HttpResponse.ok("Session:" + sessionId);
+    }
+    // end::method
 }</code></pre>
 </div>
 </div>
@@ -26385,9 +25753,11 @@ fun checkSession(@ShoppingCart sessionId: Long): HttpResponse&lt;String&gt; { //
 <div class="listingblock multi-language-sample">
 <div class="title">A controller operation with this annotated binding</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Get("/annotated")
-HttpResponse&lt;String&gt; checkSession(@ShoppingCart Long sessionId) { //<b class="conum">(1)</b>
-    HttpResponse.ok("Session:" + sessionId)
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">    @Get("/annotated")
+    HttpResponse&lt;String&gt; checkSession(@ShoppingCart Long sessionId) { //<b class="conum">(1)</b>
+        HttpResponse.ok("Session:" + sessionId)
+    }
+    // end::method
 }</code></pre>
 </div>
 </div>
@@ -29417,21 +28787,6 @@ class TextPlainController:
 <div class="listingblock multi-language-sample">
 <div class="title">HTTP Response with text/plain Content-Type</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Controller("/txt")
-class TextPlainController {
-
-    @Get("/date")
-    @Produces(MediaType.TEXT_PLAIN) // <b class="conum">(1)</b>
-    fun date(): String {
-        return Calendar.Builder().setDate(2023, 7, 4).build().toString() // <b class="conum">(2)</b>
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">HTTP Response with text/plain Content-Type</div>
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Controller('/txt')
 class TextPlainController {
 
@@ -32063,24 +31418,6 @@ class PersonController:
 <div class="listingblock multi-language-sample">
 <div class="title">Binding Form Data to POJOs</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Controller("/people")
-class PersonController {
-
-    val inMemoryDatastore: MutableMap&lt;String, Person&gt; = ConcurrentHashMap()
-
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Post
-    fun save(@Body person: Person): HttpResponse&lt;Person&gt; {
-        inMemoryDatastore[person.firstName!!] = person
-        return HttpResponse.created(person)
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Binding Form Data to POJOs</div>
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Controller("/people")
 class PersonController {
 
@@ -32161,28 +31498,6 @@ class PersonController:
 <div class="listingblock multi-language-sample">
 <div class="title">Binding Form Data to Parameters</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Controller("/people")
-class PersonController {
-
-    val inMemoryDatastore: MutableMap&lt;String, Person&gt; = ConcurrentHashMap()
-
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Post("/saveWithArgs")
-    fun save(firstName: String, lastName: String, age: Int?): HttpResponse&lt;Person&gt; {
-        val p = Person(firstName, lastName)
-        if (age != null) {
-            p.age = age
-        }
-        inMemoryDatastore[p.firstName!!] = p
-        return HttpResponse.created(p)
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Binding Form Data to Parameters</div>
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Controller("/people")
 class PersonController {
 
@@ -32221,1037 +31536,7 @@ class PersonController {
 <p>The Micronaut HTTP server includes support for forms, both using <code>multipart/form-data</code> and using <code>application/x-www-form-urlencoded</code> format.</p>
 </div>
 
-<h2 id="formBinding"><a class="anchor" href="#formBinding"></a>6.21.1 Form Data Binding</h2>
-
-<div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/httpServer/form/formBinding.adoc"'>
-        <i class='fa fa-pencil-square-o'></i> Improve this doc
-    </button>
-</div>
-
-
-<div class="paragraph">
-<p>For a typical web application, the low-level form API is unnecessary. Instead, you will <em>bind</em> individual form fields to controller parameters of different types.</p>
-</div>
-<div class="paragraph">
-<p>When you bind at least one form field to a controller parameter, the framework will take over the FormCapableHttpRequest, making the body only available through controller argument binding.</p>
-</div>
-<div class="paragraph">
-<p>There are various buffered and streaming types you can bind form fields to.</p>
-</div>
-<div class="sect2">
-<h3 id="_standard_types">Standard Types</h3>
-<div class="paragraph">
-<p>The simplest binding is a <code>String</code>. The framework will wait for the form field to arrive, and then call your controller with the full value of the form field.</p>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">String controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.HttpStatus;
-import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Consumes;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.exceptions.HttpStatusException;
-import io.micronaut.http.multipart.CompletedFileUpload;
-import io.micronaut.http.multipart.PartData;
-import io.micronaut.http.multipart.StreamingFileUpload;
-import io.micronaut.scheduling.TaskExecutors;
-import io.micronaut.scheduling.annotation.ExecuteOn;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.stream.Collectors;
-
-@Controller("/form")
-public class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/string")
-    public String setUserName(int userId, String userName) {
-        if (!userName.matches("[a-z]+")) {
-            throw new HttpStatusException(HttpStatus.BAD_REQUEST, "Invalid username");
-        }
-        return "New user name for user ID " + userId + ": " + userName;
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">String controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-import java.nio.file.Files
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/string")
-    fun setUserName(userId: Int, userName: String): String {
-        if (!userName.matches(Regex("[a-z]+"))) {
-            throw HttpStatusException(HttpStatus.BAD_REQUEST, "Invalid username")
-        }
-        return "New user name for user ID $userId: $userName"
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">String controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-
-import java.nio.file.Files
-import java.nio.file.Path
-import java.util.stream.Collectors
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/string")
-    String setUserName(int userId, String userName) {
-        if (!(userName ==~ /[a-z]+/)) {
-            throw new HttpStatusException(HttpStatus.BAD_REQUEST, "Invalid username")
-        }
-        "New user name for user ID $userId: $userName"
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>It is also possible to bind to other simple types, such as <code>int</code> or <code>byte[]</code>.</p>
-</div>
-<div class="paragraph">
-<p>Note that if there are multiple form fields of the same name, only the first one is bound. Any later fields are discarded.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_completedfileupload">CompletedFileUpload</h3>
-<div class="paragraph">
-<p>A <a href="../api/io/micronaut/http/multipart/CompletedFileUpload.html">CompletedFileUpload</a> is similar to a <code>byte[]</code> parameter, except that the upload can be buffered to disk instead of memory. This allows you to receive even large files without consuming a lot of memory. This behavior needs to be configured, though.</p>
-</div>
-<div class="openblock">
-<div class="content">
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.server.multipart.mixed=true
-micronaut.server.multipart.threshold=10MB</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
-  server:
-    multipart:
-      mixed: true
-      # Default threshold to transfer data to disk is 10MB
-      threshold: 10MB</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {server = {multipart = {mixed = true, threshold = "10MB"}}}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
-  server {
-    multipart {
-      mixed = true
-      threshold = "10MB"
-    }
-  }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
-  micronaut {
-    server {
-      multipart {
-        mixed = true
-        threshold = "10MB"
-      }
-    }
-  }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
-  "micronaut": {
-    "server": {
-      "multipart": {
-        "mixed": true,
-        "threshold": "10MB"
-      }
-    }
-  }
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>If you don&#8217;t configure this value, the file will be kept in memory. The controller is called once the entire file has been uploaded.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The uploaded file is automatically deleted when the controller terminates, so if you want to keep it around, you need to move or copy it elsewhere beforehand. You can also call <code>CompletedFileUpload.moveResource()</code> to get a new <code>CompletedFileUpload</code> instance that sticks around after the controller lifetime.
-</td>
-</tr>
-</table>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">CompletedFileUpload controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.HttpStatus;
-import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Consumes;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.exceptions.HttpStatusException;
-import io.micronaut.http.multipart.CompletedFileUpload;
-import io.micronaut.http.multipart.PartData;
-import io.micronaut.http.multipart.StreamingFileUpload;
-import io.micronaut.scheduling.TaskExecutors;
-import io.micronaut.scheduling.annotation.ExecuteOn;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.stream.Collectors;
-
-@Controller("/form")
-public class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/file-upload")
-    @ExecuteOn(TaskExecutors.BLOCKING) // <b class="conum">(1)</b>
-    public String fileUpload(int userId, CompletedFileUpload avatar) throws IOException {
-        Path tmp = Files.createTempFile("avatar" + userId, null);
-        try {
-            avatar.transferTo(tmp); // <b class="conum">(2)</b>
-
-            return "Uploaded avatar for user " + userId + ": " + Files.size(tmp) + " bytes";
-        } finally {
-            Files.delete(tmp);
-        }
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">CompletedFileUpload controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-import java.nio.file.Files
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/file-upload")
-    @ExecuteOn(TaskExecutors.BLOCKING) // <b class="conum">(1)</b>
-    fun fileUpload(userId: Int, avatar: CompletedFileUpload): String {
-        val tmp = Files.createTempFile("avatar$userId", null)
-        try {
-            avatar.transferTo(tmp) // <b class="conum">(2)</b>
-
-            return "Uploaded avatar for user $userId: ${Files.size(tmp)} bytes"
-        } finally {
-            Files.delete(tmp)
-        }
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">CompletedFileUpload controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-
-import java.nio.file.Files
-import java.nio.file.Path
-import java.util.stream.Collectors
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/file-upload")
-    @ExecuteOn(TaskExecutors.BLOCKING) // <b class="conum">(1)</b>
-    String fileUpload(int userId, CompletedFileUpload avatar) {
-        Path tmp = Files.createTempFile("avatar" + userId, null)
-        try {
-            avatar.transferTo(tmp) // <b class="conum">(2)</b>
-
-            return "Uploaded avatar for user $userId: ${Files.size(tmp)} bytes"
-        } finally {
-            Files.delete(tmp)
-        }
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><code>transferTo</code> may block, so we need to run this controller on an IO thread</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Transfer the upload to the temp file. If this upload is already on disk (depending on configuration), this is a simple move operation. If the upload is still in memory, this will write the data to disk</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_streamingfileupload">StreamingFileUpload</h3>
-<div class="paragraph">
-<p>A <a href="../api/io/micronaut/http/multipart/StreamingFileUpload.html">StreamingFileUpload</a> <em>lazily</em> streams a form field. Your controller can be called before the full content is received. Similar to <code>RawFormField</code>, you must consume the input data so that the upload does not stall.</p>
-</div>
-<div class="paragraph">
-<p>The advantage of <code>StreamingFileUpload</code> over <code>CompletedFileUpload</code> is that you do not need any disk space, and that you can start streaming the data immediately to e.g. forward it to a backend service. If the backend is slow to receive the uploaded data, this backpressure will also apply to the browser upload, and that upload will slow down – there is no (significant) buffering in the Micronaut service, unlike with <code>CompletedFileUpload</code>.</p>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">StreamingFileUpload controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.HttpStatus;
-import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Consumes;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.exceptions.HttpStatusException;
-import io.micronaut.http.multipart.CompletedFileUpload;
-import io.micronaut.http.multipart.PartData;
-import io.micronaut.http.multipart.StreamingFileUpload;
-import io.micronaut.scheduling.TaskExecutors;
-import io.micronaut.scheduling.annotation.ExecuteOn;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.stream.Collectors;
-
-@Controller("/form")
-public class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/file-upload-streaming")
-    @ExecuteOn(TaskExecutors.BLOCKING) // <b class="conum">(1)</b>
-    public String streamingFileUpload(int userId, StreamingFileUpload avatar) throws IOException {
-        int count;
-        try (InputStream stream = avatar.asInputStream()) { // <b class="conum">(2)</b>
-            count = stream.readAllBytes().length; // <b class="conum">(3)</b>
-        }
-        return "Streamed avatar for user " + userId + ": " + count + " bytes";
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">StreamingFileUpload controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-import java.nio.file.Files
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/file-upload-streaming")
-    @ExecuteOn(TaskExecutors.BLOCKING) // <b class="conum">(1)</b>
-    fun streamingFileUpload(userId: Int, avatar: StreamingFileUpload): String {
-        val count = avatar.asInputStream().use { stream -&gt; // <b class="conum">(2)</b>
-            stream.readAllBytes().size // <b class="conum">(3)</b>
-        }
-        return "Streamed avatar for user $userId: $count bytes"
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">StreamingFileUpload controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-
-import java.nio.file.Files
-import java.nio.file.Path
-import java.util.stream.Collectors
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/file-upload-streaming")
-    @ExecuteOn(TaskExecutors.BLOCKING) // <b class="conum">(1)</b>
-    String streamingFileUpload(int userId, StreamingFileUpload avatar) {
-        int count
-        try (InputStream stream = avatar.asInputStream()) { // <b class="conum">(2)</b>
-            count = stream.readAllBytes().length // <b class="conum">(3)</b>
-        }
-        "Streamed avatar for user $userId: $count bytes"
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Reading from the <code>InputStream</code> may block, so we need to run on the IO thread. <code>StreamingFileUpload</code> also provides methods for asynchronous operation</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <code>InputStream</code> must be closed properly, here we use a try-with-resources for that purpose</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>This is just an example, in real applications you should not read all bytes all at once</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Note that using <code>StreamingFileUpload</code> in combination with other form fields can be tricky. To run your controller, all "normal" form field parameters must have been received, but a <code>StreamingFileUpload</code> will pause the request until you consume it in your controller. If the normal parameters actually come <em>after</em> the file upload in the request, this creates a "deadlock". The Micronaut HTTP server will produce an error in this scenario. One possible solution is to replace the "normal" form parameters with publisher-based parameters so that the controller can be executed before those fields are received.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_publishers">Publishers</h3>
-<div class="paragraph">
-<p>Publisher parameters let you handle various special scenarios, such as asynchronous binding or handling multiple form fields of the same name.</p>
-</div>
-<div class="sect3">
-<h4 id="_of_completed_parts">… of completed parts</h4>
-<div class="paragraph">
-<p>A publisher of <a href="../api/io/micronaut/http/multipart/CompletedPart.html">CompletedPart</a>, <a href="../api/io/micronaut/http/multipart/CompletedAttribute.html">CompletedAttribute</a> or <a href="../api/io/micronaut/http/multipart/CompletedFileUpload.html">CompletedFileUpload</a> contains the buffered content of the form field. The publisher can produce multiple items if there are multiple values for the same field name.</p>
-</div>
-<div class="paragraph">
-<p>Note that there is <em>no backpressure</em> on this publisher. To avoid deadlocks with other parameters, the fields will be read in their entirety immediately, even if you haven&#8217;t subscribed to the publisher yet. Configured form field count and size limits still apply.</p>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Publisher&lt;CompletedFileUpload&gt; controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.HttpStatus;
-import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Consumes;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.exceptions.HttpStatusException;
-import io.micronaut.http.multipart.CompletedFileUpload;
-import io.micronaut.http.multipart.PartData;
-import io.micronaut.http.multipart.StreamingFileUpload;
-import io.micronaut.scheduling.TaskExecutors;
-import io.micronaut.scheduling.annotation.ExecuteOn;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.stream.Collectors;
-
-@Controller("/form")
-public class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/file-upload-completed-publisher")
-    public Mono&lt;String&gt; fileUploadCompletedPublisher(int userId, Publisher&lt;CompletedFileUpload&gt; avatar) {
-        return Mono.from(avatar) // <b class="conum">(1)</b>
-            .map(cfu -&gt; "Uploaded avatar for user " + userId + ": " + cfu.getSize() + " bytes");
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Publisher&lt;CompletedFileUpload&gt; controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-import java.nio.file.Files
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/file-upload-completed-publisher")
-    fun fileUploadCompletedPublisher(userId: Int, avatar: Publisher&lt;CompletedFileUpload&gt;): Mono&lt;String&gt; {
-        return Mono.from(avatar) // <b class="conum">(1)</b>
-            .map { cfu -&gt; "Uploaded avatar for user $userId: ${cfu.size} bytes" }
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Publisher&lt;CompletedFileUpload&gt; controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-
-import java.nio.file.Files
-import java.nio.file.Path
-import java.util.stream.Collectors
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/file-upload-completed-publisher")
-    Mono&lt;String&gt; fileUploadCompletedPublisher(int userId, Publisher&lt;CompletedFileUpload&gt; avatar) {
-        Mono.from(avatar) // <b class="conum">(1)</b>
-                .map(cfu -&gt; "Uploaded avatar for user $userId: ${cfu.size} bytes".toString())
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>If you expect multiple form fields of the same name, you can use <code>Flux</code> instead of <code>Mono</code> here</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_of_streamingfileupload">… of StreamingFileUpload</h4>
-<div class="paragraph">
-<p>Similar to the <code>StreamingFileUpload</code> parameter described above, except that the controller can be called before the <code>StreamingFileUpload</code> is received, and that the publisher can contain multiple uploads of the same name.</p>
-</div>
-<div class="paragraph">
-<p>Once again, the <code>StreamingFileUpload</code> instances exert backpressure on the request, so you must consume them in their entirety before other fields can be processed.</p>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Publisher&lt;StreamingFileUpload&gt; controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.HttpStatus;
-import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Consumes;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.exceptions.HttpStatusException;
-import io.micronaut.http.multipart.CompletedFileUpload;
-import io.micronaut.http.multipart.PartData;
-import io.micronaut.http.multipart.StreamingFileUpload;
-import io.micronaut.scheduling.TaskExecutors;
-import io.micronaut.scheduling.annotation.ExecuteOn;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.stream.Collectors;
-
-@Controller("/form")
-public class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/file-upload-streaming-publisher")
-    public Publisher&lt;String&gt; fileUploadStreamingPublisher(int userId, Publisher&lt;StreamingFileUpload&gt; avatar) throws IOException {
-        Path tmp = Files.createTempFile("upload", null); // <b class="conum">(1)</b>
-        return Mono.from(avatar)
-            .flatMap(sfu -&gt; Mono.from(sfu.transferTo(tmp)))
-            .then(Mono.fromCallable(() -&gt;{
-                try {
-                    return "Streamed avatar for user " + userId + ": " + Files.size(tmp) + " bytes"; // <b class="conum">(1)</b>
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            }))
-            .doOnTerminate(() -&gt; {
-                try {
-                    Files.deleteIfExists(tmp); // <b class="conum">(1)</b>
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            });
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Publisher&lt;StreamingFileUpload&gt; controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-import java.nio.file.Files
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/file-upload-streaming-publisher")
-    fun fileUploadStreamingPublisher(userId: Int, avatar: Publisher&lt;StreamingFileUpload&gt;): Publisher&lt;String&gt; {
-        val tmp = Files.createTempFile("upload", null) // <b class="conum">(1)</b>
-        return Mono.from(avatar)
-            .flatMap { sfu -&gt; Mono.from(sfu.transferTo(tmp)) }
-            .then(Mono.fromCallable { "Streamed avatar for user $userId: ${Files.size(tmp)} bytes" }) // <b class="conum">(1)</b>
-            .doOnTerminate { Files.deleteIfExists(tmp) } // <b class="conum">(1)</b>
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Publisher&lt;StreamingFileUpload&gt; controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-
-import java.nio.file.Files
-import java.nio.file.Path
-import java.util.stream.Collectors
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/file-upload-streaming-publisher")
-    Publisher&lt;String&gt; fileUploadStreamingPublisher(int userId, Publisher&lt;StreamingFileUpload&gt; avatar) {
-        Path tmp = Files.createTempFile("upload", null) // <b class="conum">(1)</b>
-        Mono.from(avatar)
-                .flatMap(sfu -&gt; Mono.from(sfu.transferTo(tmp)))
-                .then(Mono.fromCallable(() -&gt;
-                        "Streamed avatar for user $userId: ${Files.size(tmp)} bytes".toString())) // <b class="conum">(1)</b>
-                .doOnTerminate(() -&gt; Files.deleteIfExists(tmp)) // <b class="conum">(1)</b>
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Calls to <code>Files</code> are blocking operations and you should do them asynchronously. They are done synchronously here for simplicity</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_of_publisher">… of Publisher</h4>
-<div class="paragraph">
-<p>A <code>Publisher&lt;Publisher&lt;…&gt;&gt;&gt;</code> behaves similar to <code>Publisher&lt;StreamingFileUpload&gt;</code> as described above, allowing you to stream individual fields.</p>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Publisher&lt;Publisher&lt;byte[]&gt;&gt; controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.HttpStatus;
-import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Consumes;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.exceptions.HttpStatusException;
-import io.micronaut.http.multipart.CompletedFileUpload;
-import io.micronaut.http.multipart.PartData;
-import io.micronaut.http.multipart.StreamingFileUpload;
-import io.micronaut.scheduling.TaskExecutors;
-import io.micronaut.scheduling.annotation.ExecuteOn;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.stream.Collectors;
-
-@Controller("/form")
-public class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/publisher-publisher")
-    public Publisher&lt;String&gt; publisherPublisher(int userId, Publisher&lt;Publisher&lt;byte[]&gt;&gt; avatar) {
-        return Flux.from(avatar)
-            .flatMap(p -&gt; Flux.from(p).collect(Collectors.summingInt(arr -&gt; arr.length)))
-            .collectList()
-            .map(lengths -&gt; "Streamed avatars for user " + userId + ": " + lengths + " bytes");
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Publisher&lt;Publisher&lt;byte[]&gt;&gt; controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-import java.nio.file.Files
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/publisher-publisher")
-    fun publisherPublisher(userId: Int, avatar: Publisher&lt;Publisher&lt;ByteArray&gt;&gt;): Publisher&lt;String&gt; {
-        return Flux.from(avatar)
-            .flatMap { p -&gt; Flux.from(p).reduce(0) { acc, arr -&gt; acc + arr.size } }
-            .collectList()
-            .map { lengths -&gt; "Streamed avatars for user $userId: $lengths bytes" }
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Publisher&lt;Publisher&lt;byte[]&gt;&gt; controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-
-import java.nio.file.Files
-import java.nio.file.Path
-import java.util.stream.Collectors
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/publisher-publisher")
-    Publisher&lt;String&gt; publisherPublisher(int userId, Publisher&lt;Publisher&lt;byte[]&gt;&gt; avatar) {
-        Flux.from(avatar)
-                .flatMap(p -&gt; Flux.from(p).collect(Collectors.summingInt(arr -&gt; ((byte[]) arr).length)))
-                .collectList()
-                .map(lengths -&gt; "Streamed avatars for user $userId: $lengths bytes".toString())
-    }
-
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_of_partdata">… of PartData</h4>
-<div class="paragraph">
-<p>A <a href="../api/io/micronaut/http/multipart/PartData.html">PartData</a> object represents a <em>piece</em> of a form field, containing the field metadata and a piece of the field value buffered in memory. For large fields and file uploads, a single field may produce multiple <code>PartData</code> objects. If there are multiple fields of the same name, they will also produce multiple <code>PartData</code> instances.</p>
-</div>
-<div class="paragraph">
-<p>This publisher exerts backpressure as described for <code>StreamingFileUpload</code>.</p>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Publisher&lt;PartData&gt; controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.HttpStatus;
-import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Consumes;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.exceptions.HttpStatusException;
-import io.micronaut.http.multipart.CompletedFileUpload;
-import io.micronaut.http.multipart.PartData;
-import io.micronaut.http.multipart.StreamingFileUpload;
-import io.micronaut.scheduling.TaskExecutors;
-import io.micronaut.scheduling.annotation.ExecuteOn;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.stream.Collectors;
-
-@Controller("/form")
-public class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/publisher-part-data")
-    public Publisher&lt;String&gt; publisherPartData(int userId, Publisher&lt;PartData&gt; avatar) {
-        return Flux.from(avatar)
-            .collect(Collectors.summingInt(part -&gt; {
-                try (part) {
-                    return part.getBytes().length;
-                }
-            }))
-            .map(lengths -&gt; "Streamed avatars for user " + userId + ": " + lengths + " bytes");
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Publisher&lt;PartData&gt; controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-import java.nio.file.Files
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/publisher-part-data")
-    fun publisherPartData(userId: Int, avatar: Publisher&lt;PartData&gt;): Publisher&lt;String&gt; {
-        return Flux.from(avatar)
-            .reduce(0) { acc, part -&gt; part.use { acc + it.bytes.size } }
-            .map { lengths -&gt; "Streamed avatars for user $userId: $lengths bytes" }
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Publisher&lt;PartData&gt; controller example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.exceptions.HttpStatusException
-import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.multipart.PartData
-import io.micronaut.http.multipart.StreamingFileUpload
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-import org.reactivestreams.Publisher
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-
-import java.nio.file.Files
-import java.nio.file.Path
-import java.util.stream.Collectors
-
-@Controller("/form")
-class FormController {
-
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Post("/publisher-part-data")
-    Publisher&lt;String&gt; publisherPartData(int userId, Publisher&lt;PartData&gt; avatar) {
-        Flux.from(avatar)
-                .collect(Collectors.summingInt(part -&gt; {
-                    try (PartData p = (PartData) part) {
-                        return p.bytes.length
-                    }
-                }))
-                .map(lengths -&gt; "Streamed avatars for user $userId: $lengths bytes".toString())
-    }
-
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_of_anything_else">… of anything else</h4>
-<div class="paragraph">
-<p>A publisher of any other type will be created by taking a publisher of completed parts as described above, and converting the parts to the target type. For file uploads where a media type is given, this may include conversion from e.g. JSON.</p>
-</div>
-</div>
-</div>
-
-<h2 id="formCapable"><a class="anchor" href="#formCapable"></a>6.21.2 Detailed Form API</h2>
+<h2 id="formCapable"><a class="anchor" href="#formCapable"></a>6.21.1 Detailed Form API</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/httpServer/form/formCapable.adoc"'>
@@ -33916,7 +32201,8 @@ class UploadController {
                 .body("Upload Failed"))
     }
 
-}</code></pre>
+}
+// end::endclass]</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -34086,7 +32372,8 @@ class UploadController {
                 .body("Upload Failed"))
     }
 
-}</code></pre>
+}
+// end::endclass]</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -34852,21 +33139,6 @@ def downloadCsv(self) -&gt; HttpResponse:
 <div class="listingblock multi-language-sample">
 <div class="title">Sending Reactive Stream</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Get("/csv")
-fun downloadCsv(): HttpResponse&lt;Flux&lt;String&gt;&gt; {
-    val data = Flux.just(
-        "data1,data2",
-        "data3,data4"
-    )
-    return HttpResponse.ok(data)
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"data.csv\"")
-        .contentType(MediaType.TEXT_PLAIN_TYPE)
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Sending Reactive Stream</div>
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Get("/csv")
  HttpResponse&lt;Flux&lt;String&gt;&gt; downloadCsv() {
     Flux&lt;String&gt; data = Flux.just(
@@ -35115,7 +33387,7 @@ Using <code>FilterPatternStyle.ANT</code> is preferred as the pattern matching i
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Request filters can be executed before the route is matched if annotated with <a href="../api/io/micronaut/http/server/annotation/PreMatching.html">PreMatching</a>.
+Request filters can be executed before the route is matched if annotated with <a href="../api/io/micronaut/http/server/annotation/PreMatching.html">PreMatching</a>`
 </td>
 </tr>
 </table>
@@ -35230,25 +33502,6 @@ class TraceService:
 <div class="listingblock multi-language-sample">
 <div class="title">A TraceService Example using Reactive Streams</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.HttpRequest
-import jakarta.inject.Singleton
-import org.slf4j.LoggerFactory
-
-@Singleton
-class TraceService {
-
-    private val LOG = LoggerFactory.getLogger(TraceService::class.java)
-
-    fun trace(request: HttpRequest&lt;*&gt;) {
-        LOG.debug("Tracing request: {}", request.uri)
-        // trace logic here, potentially performing I/O <b class="conum">(1)</b>
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">A TraceService Example using Reactive Streams</div>
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.HttpRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -35337,36 +33590,6 @@ class TraceFilter:
     @ResponseFilter  # <b class="conum">(5)</b>
     def filterResponse(self, res: MutableHttpResponse) -&gt; None:
         res.getHeaders().add("X-Trace-Enabled", "true")</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">An Example ServerFilter</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.Requires
-import io.micronaut.http.HttpRequest
-import io.micronaut.http.MutableHttpResponse
-import io.micronaut.http.annotation.RequestFilter
-import io.micronaut.http.annotation.ResponseFilter
-import io.micronaut.http.annotation.ServerFilter
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
-
-@ServerFilter("/hello/**") // <b class="conum">(1)</b>
-class TraceFilter(
-    private val traceService: TraceService // <b class="conum">(2)</b>
-) {
-
-    @RequestFilter
-    @ExecuteOn(TaskExecutors.BLOCKING) // <b class="conum">(3)</b>
-    fun filterRequest(request: HttpRequest&lt;*&gt;) {
-        traceService.trace(request) // <b class="conum">(4)</b>
-    }
-
-    @ResponseFilter // <b class="conum">(5)</b>
-    fun filterResponse(res: MutableHttpResponse&lt;*&gt;) {
-        res.headers.add("X-Trace-Enabled", "true")
-    }
-}</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -35542,18 +33765,6 @@ def filterRequest(self, request: HttpRequest, continuation: FilterContinuation) 
     self.traceService.trace(request)
     res = continuation.proceed()  # <b class="conum">(2)</b>
     res.getHeaders().add("X-Trace-Enabled", "true")  # <b class="conum">(3)</b></code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Single request filter</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@RequestFilter
-@ExecuteOn(TaskExecutors.BLOCKING) // <b class="conum">(4)</b>
-fun filterRequest(request: HttpRequest&lt;*&gt;, continuation: FilterContinuation&lt;MutableHttpResponse&lt;*&gt;&gt;) { // <b class="conum">(1)</b>
-    traceService.trace(request)
-    val res = continuation.proceed() // <b class="conum">(2)</b>
-    res.headers.add("X-Trace-Enabled", "true") // <b class="conum">(3)</b>
-}</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -35904,22 +34115,7 @@ import io.micronaut.http.MutableHttpResponse
 import io.micronaut.http.annotation.Filter
 import io.micronaut.http.filter.HttpServerFilter
 import io.micronaut.http.filter.ServerFilterChain
-import org.reactivestreams.Publisher
-
-@Filter("/hello/**") // <b class="conum">(1)</b>
-class TraceFilter( // <b class="conum">(2)</b>
-    private val traceService: TraceService // <b class="conum">(3)</b>
-) : HttpServerFilter {
-
-    override fun doFilter(request: HttpRequest&lt;*&gt;,
-                          chain: ServerFilterChain): Publisher&lt;MutableHttpResponse&lt;*&gt;&gt; {
-        return traceService.trace(request) // <b class="conum">(4)</b>
-            .switchMap { aBoolean -&gt; chain.proceed(request) } // <b class="conum">(5)</b>
-            .doOnNext { res -&gt;
-                res.headers.add("X-Trace-Enabled", "true") // <b class="conum">(6)</b>
-            }
-    }
-}</code></pre>
+import org.reactivestreams.Publisher</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -36257,63 +34453,6 @@ class BodyLogController:
 </div>
 </div>
 <div class="listingblock multi-language-sample">
-<div class="title">A simple controller</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.Requires
-import io.micronaut.core.annotation.Introspected
-import io.micronaut.http.annotation.Body
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import org.slf4j.LoggerFactory
-
-@Controller("/person")
-class BodyLogController {
-
-    @Post
-    fun create(@Body person: Person) { // <b class="conum">(1)</b>
-        LOG.info("Creating person {}", person)
-    }
-
-    @Introspected
-    data class Person(val firstName: String, val lastName: String)
-
-    companion object {
-        private val LOG = LoggerFactory.getLogger(BodyLogController::class.java)
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">A simple controller</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import groovy.transform.Canonical
-import io.micronaut.context.annotation.Requires
-import io.micronaut.core.annotation.Introspected
-import io.micronaut.http.annotation.Body
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Post
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-
-@Controller("/person")
-class BodyLogController {
-    private static final Logger LOG = LoggerFactory.getLogger(BodyLogController)
-
-    @Post
-    void create(@Body Person person) { // <b class="conum">(1)</b>
-        LOG.info("Creating person {}", person)
-    }
-
-    @Canonical
-    @Introspected
-    static class Person {
-        String firstName
-        String lastName
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
 <div class="title">Logging filter</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Requires;
@@ -36377,70 +34516,6 @@ class BodyLogFilter:
             )
         finally:
             ourCopy.close()</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Logging filter</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.Requires
-import io.micronaut.http.ServerHttpRequest
-import io.micronaut.http.annotation.RequestFilter
-import io.micronaut.http.annotation.ServerFilter
-import io.micronaut.http.body.ByteBody
-import org.slf4j.LoggerFactory
-import reactor.core.publisher.Flux
-import java.util.Base64
-
-@ServerFilter("/person")
-class BodyLogFilter {
-
-    @RequestFilter
-    fun logBody(request: ServerHttpRequest&lt;*&gt;) { // <b class="conum">(2)</b>
-        request.byteBody()
-            .split(ByteBody.SplitBackpressureMode.SLOWEST) // <b class="conum">(3)</b>
-            .allowDiscard() // <b class="conum">(5)</b>
-            .use { ourCopy -&gt; // <b class="conum">(4)</b>
-                Flux.from(ourCopy.toByteArrayPublisher()) // <b class="conum">(6)</b>
-                    .onErrorComplete(ByteBody.BodyDiscardedException::class.java) // <b class="conum">(7)</b>
-                    .subscribe { array -&gt; LOG.info("Received body: {}", Base64.getEncoder().encodeToString(array)) } // <b class="conum">(8)</b>
-            }
-    }
-
-    companion object {
-        private val LOG = LoggerFactory.getLogger(BodyLogFilter::class.java)
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Logging filter</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Requires
-import io.micronaut.http.ServerHttpRequest
-import io.micronaut.http.annotation.RequestFilter
-import io.micronaut.http.annotation.ServerFilter
-import io.micronaut.http.body.ByteBody
-import io.micronaut.http.body.CloseableByteBody
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import reactor.core.publisher.Flux
-
-@ServerFilter("/person")
-class BodyLogFilter {
-    private static final Logger LOG = LoggerFactory.getLogger(BodyLogFilter)
-
-    @RequestFilter
-    void logBody(ServerHttpRequest&lt;?&gt; request) { // <b class="conum">(2)</b>
-        try (CloseableByteBody ourCopy = // <b class="conum">(4)</b>
-                 request.byteBody()
-                         .split(ByteBody.SplitBackpressureMode.SLOWEST) // <b class="conum">(3)</b>
-                         .allowDiscard()) { // <b class="conum">(5)</b>
-            Flux.from(ourCopy.toByteArrayPublisher()) // <b class="conum">(6)</b>
-                    .onErrorComplete(ByteBody.BodyDiscardedException) // <b class="conum">(7)</b>
-                    .subscribe(array -&gt; LOG.info("Received body: {}", Base64.encoder.encodeToString(array))) // <b class="conum">(8)</b>
-        }
-    }
-}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -39326,21 +37401,6 @@ class HelloWorldController:
 <div class="listingblock multi-language-sample">
 <div class="title">Configuring the Server I/O Thread Pool</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Controller("/hello")
-class HelloWorldController {
-
-    @ExecuteOn(TaskExecutors.BLOCKING)
-    @Produces(MediaType.TEXT_PLAIN)
-    @Get("/world")
-    fun index(): String {
-        return "Hello World"
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Configuring the Server I/O Thread Pool</div>
-<div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Controller("/hello")
 class HelloWorldController {
 
@@ -40775,33 +38835,6 @@ class CorsController:
     @Get("/nocors")  # <b class="conum">(3)</b>
     def nocorstoday(self) -&gt; str:
         return "No more CORS for you"</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">@CrossOrigin Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.Requires
-import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.Produces
-import io.micronaut.http.server.cors.CrossOrigin
-
-@Controller("/hello")
-class CorsController {
-
-    @CrossOrigin("https://myui.com") // <b class="conum">(1)</b>
-    @Get(produces = [MediaType.TEXT_PLAIN]) // <b class="conum">(2)</b>
-    fun cors(): String {
-        return "Welcome to the worlds of CORS"
-    }
-
-    @Produces(MediaType.TEXT_PLAIN)
-    @Get("/nocors") // <b class="conum">(3)</b>
-    fun nocorstoday(): String {
-        return "No more CORS for you"
-    }
-}</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -50313,38 +48346,6 @@ String userId = context.propagate(() -&gt; {
         MDC.remove("userId")</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
-<div class="title">MDC propagation example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">fun createUser(name: String): String {
-    try {
-        val newUserId = UUID.randomUUID()
-        MDC.put("userId", newUserId.toString())
-        return PropagatedContext.getOrEmpty()
-            .plus(MdcPropagationContext())
-            .propagate(Supplier { createUserInternal(newUserId, name) })
-    } finally {
-        MDC.remove("userId")
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">MDC propagation example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">String createUser(String name) {
-    try {
-        UUID newUserId = UUID.randomUUID()
-        MDC.put("userId", newUserId.toString())
-        return PropagatedContext.getOrEmpty()
-                .plus(new MdcPropagationContext())
-                .propagate({ createUserInternal(newUserId, name) } as Supplier&lt;String&gt;)
-    } finally {
-        MDC.remove("userId")
-    }
-}</code></pre>
-</div>
-</div>
 <div class="admonitionblock important">
 <table>
 <tr>
@@ -50593,30 +48594,6 @@ class HelloController:
 @dataclass
 class MyContextElement(PropagatedContextElement):
     value: str</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.core.async.propagation.ReactorPropagation
-import io.micronaut.core.propagation.PropagatedContext
-import io.micronaut.core.propagation.PropagatedContextElement
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.QueryValue
-import reactor.core.publisher.Mono
-
-@Controller
-class HelloController {
-
-    @Get("/hello")
-    fun hello(@QueryValue("name") name: String): Mono&lt;String&gt; {
-        val propagatedContext = PropagatedContext.get().plus(MyContextElement(name)) // <b class="conum">(1)</b>
-        return Mono.just("Hello, $name")
-            .contextWrite { ctx -&gt; ReactorPropagation.addPropagatedContext(ctx, propagatedContext) } // <b class="conum">(2)</b>
-    }
-}
-
-data class MyContextElement(val value: String) : PropagatedContextElement</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -56972,16 +54949,7 @@ suspend fun simple(): String { <i class="conum" data-value="1"></i><b>(1)</b>
 </tr>
 </table>
 </div>
-<div class="listingblock">
-<div class="title">Controller suspend function example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Get("/delayed", produces = [MediaType.TEXT_PLAIN])
-suspend fun delayed(): String { <i class="conum" data-value="1"></i><b>(1)</b>
-    delay(1) <i class="conum" data-value="2"></i><b>(2)</b>
-    return "Delayed"
-}</code></pre>
-</div>
-</div>
+
 <div class="colist arabic">
 <table>
 <tr>
@@ -58524,18 +56492,7 @@ Message deleted</code></pre>
 <div class="listingblock multi-language-sample">
 <div class="title">AlertsEndpoint</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.management.endpoint.annotation.Delete;
-import io.micronaut.management.endpoint.annotation.Endpoint;
-import io.micronaut.management.endpoint.annotation.Read;
-import io.micronaut.management.endpoint.annotation.Sensitive;
-import io.micronaut.management.endpoint.annotation.Write;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-@Endpoint(id = "alerts", defaultSensitive = false) // <b class="conum">(1)</b>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Endpoint(id = "alerts", defaultSensitive = false) // <b class="conum">(1)</b>
 public class AlertsEndpoint {
 
     private final List&lt;String&gt; alerts = new CopyOnWriteArrayList&lt;&gt;();
@@ -59737,7 +57694,7 @@ micronaut.health.monitor.enabled=true</code></pre>
 
 
 <div class="paragraph">
-<p>The Micronaut framework provided health indicators are exposed on the <code>/health</code> endpoint. They are additionally exposed on <code>/health/readiness</code>, except for <code>DeadlockedThreadsHealthIndicator</code>, which is a liveness indicator and is exposed on <code>/health/liveness</code> instead.</p>
+<p>All the Micronaut framework provided health indicators are exposed on <code>/health</code> and <code>/health/readiness</code> endpoints.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -59899,23 +57856,10 @@ endpoints.health.disk-space.threshold=String | Long</code></pre>
 <p>The JDBC health indicator determines the health of your application based on the ability to successfully create connections to datasources in the application context. The only configuration option supported is to enable or disable the indicator by the <code>endpoints.health.jdbc.enabled</code> key.</p>
 </div>
 
-<h2 id="discoveryClientHealthIndicator"><a class="anchor" href="#discoveryClientHealthIndicator"></a>17.2.3.6.3 Discovery Client Health Indicator</h2>
+<h2 id="deadlockedThreads"><a class="anchor" href="#deadlockedThreads"></a>17.2.3.6.3 Deadlocked Threads</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/management/providedEndpoints/healthEndpoint/healthProvidedIndicators/discoveryClientHealthIndicator.adoc"'>
-        <i class='fa fa-pencil-square-o'></i> Improve this doc
-    </button>
-</div>
-
-
-<div class="paragraph">
-<p>If your application uses service discovery, a health indicator is included to monitor the health of the discovery client. The data returned can include a list of the services available.</p>
-</div>
-
-<h2 id="deadlockedThreads"><a class="anchor" href="#deadlockedThreads"></a>17.2.3.6.4 Deadlocked Threads</h2>
-
-<div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/management/providedEndpoints/healthEndpoint/healthProvidedIndicators/deadlockedThreads.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/management/providedEndpoints/healthEndpoint/deadlockedThreads.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -59925,7 +57869,7 @@ endpoints.health.disk-space.threshold=String | Long</code></pre>
 <p>The deadlocked threads health indicator uses the <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.management/java/lang/management/ThreadMXBean.html">ThreadMXBean</a> to check for deadlocked threads and is part of the <code>/health</code> and <code>/health/liveness</code> endpoints.</p>
 </div>
 <div class="paragraph">
-<p>Its only configuration option is to enable or disable the indicator by the <code>endpoints.health.deadlocked-threads.enabled</code> key. It is enabled by default.</p>
+<p>Its only configuration option is to enable or disable the indicator by the <code>endpoints.health.deadlocked-thread.enabled</code> key. It is enabled by default.</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -62187,14 +60131,12 @@ class MessageSourceFactory:
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.MessageSource
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.i18n.ResourceBundleMessageSource
-import io.micronaut.core.order.Ordered
 import jakarta.inject.Singleton
 
 @Factory
 internal class MessageSourceFactory {
     @Singleton
-    fun createMessageSource(): MessageSource =
-        ResourceBundleMessageSource("io.micronaut.docs.i18n.messages", Ordered.HIGHEST_PRECEDENCE)
+    fun createMessageSource(): MessageSource = ResourceBundleMessageSource("io.micronaut.docs.i18n.messages")
 }</code></pre>
 </div>
 </div>
@@ -62305,7 +60247,7 @@ See the guide for <a href="https://guides.micronaut.io/latest/localized-message-
 </ul>
 </div>
 <div class="paragraph">
-<p>A convenience class <a href="../api/io/micronaut/core/io/ResourceResolver.html">ResourceResolver</a> is provided that leverages these implementations. The following example illustrates using the API to read a text file from the classpath.</p>
+<p>A convenience class <a href="../api/io/micronaut/core/io/ResourceResolver.html">ResourceResolver</a> is provided that leverages both of these  implementations. The following example illustrates using the API to read a text file from the classpath.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">ResourceResolver Example</div>
@@ -62347,23 +60289,6 @@ class MyResourceLoader:
             )
         else:
             return Optional.empty()</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">ResourceResolver Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Singleton
-class MyResourceLoader(private val resourceResolver: ResourceResolver) { // <b class="conum">(1)</b>
-
-    fun getClasspathResourceAsText(path: String): Optional&lt;String&gt; {
-        val url = resourceResolver.getResource("classpath:$path") // <b class="conum">(2)</b>
-        return if (url.isPresent) {
-            Optional.of(IOUtils.readText(BufferedReader(InputStreamReader(url.get().openStream())))) // <b class="conum">(3)</b>
-        } else {
-            Optional.empty()
-        }
-    }
-}</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -62422,7 +60347,7 @@ class MyResourceLoader {
 </ul>
 </div>
 <div class="paragraph">
-<p>To use a fixed value for a resource instead of loading it from the file system or classpath, use the <code>string:</code> and
+<p>To use a fixed value for a resource instead of loading it from the file system or classpath, the <code>string:</code> and
 <code>base64:</code> prefixes. While <code>string:</code> returns the value as is (decoded as UTF-8), <code>base64:</code> first decodes the value from
 Base64. This allows you to serve e.g. a small binary as a static HTTP file.</p>
 </div>
@@ -62484,7 +60409,7 @@ Since this documentation covers the internal workings of Micronaut, many APIs re
 <p>Java - the <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.compiler/javax/annotation/processing/package-summary.html">Java Annotation Processing (APT) API</a> is used for Java  code.</p>
 </li>
 <li>
-<p>Kotlin - <a href="https://kotlinlang.org/docs/kapt.html">KAPT</a> or <a href="https://kotlinlang.org/docs/ksp-overview.html">KSP</a> is used for Kotlin code.</p>
+<p>Kotlin - <a href="#kapt">KAPT</a> or <a href="#ksp">KSP</a> is used for Kotlin code.</p>
 </li>
 <li>
 <p>Groovy - Groovy <a href="https://docs.groovy-lang.org/latest/html/api/org/codehaus/groovy/transform/ASTTransformation.html">AST Transformations</a> are used to participate in the compilation of Groovy code.</p>
@@ -62543,7 +60468,7 @@ Since this documentation covers the internal workings of Micronaut, many APIs re
 <p>It is often necessary to fuse annotation metadata together from different sources. For example, for JavaBean properties you want to combine the metadata from the private field, public getter and public setters into a single view otherwise you have to run logic to runtime to somehow combine this metadata from 3 distinct sources.</p>
 </li>
 <li>
-<p>Annotations meta-annotated with <a href="../api/io/micronaut/core/annotation/Retainable.html">Retainable</a> are, in addition to being flattened into the element&#8217;s stereotypes, retained as a tree under the annotation that composed them, so an individual occurrence can be attributed to the annotation that introduced it.</p>
+<p>Annotations meta-annotated with <a href="../api/io/micronaut/core/annotation/Retainable.html">Retainable</a> are, in addition to being flattened into the element&#8217;s stereotypes, retained as a tree under the annotation that composed them, so an individual occurrence can be attributed to the annotation that introduced it. See <a href="#annotationMetadata">Bean Annotation Metadata</a>.</p>
 </li>
 <li>
 <p>Repeatable annotations are combined and normalized. If inherited the annotations are combined from parent interfaces or classes providing a single API to evaluate repeatable annotations instead of requiring runtime logic to perform normalization.</p>
@@ -64309,7 +62234,7 @@ Check <a href="https://groovy-lang.org/releasenotes/groovy-5.0.html#Groovy5.0-br
 <div class="sect3">
 <h4 id="_jspecify_nullability_annotations">JSpecify Nullability Annotations</h4>
 <div class="paragraph">
-<p>The Micronaut APIs use <a href="https://jspecify.dev">JSpecify</a> annotations, and we recommend users to embrace JSpecify nullability annotations.</p>
+<p>The Micronaut APIs use <a href="#jspecify">JSpecify Annotations</a>, and we recommend users to embrace JSpecify nullability annotations.</p>
 </div>
 </div>
 <div class="sect3">
@@ -64977,7 +62902,7 @@ old behavior.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_eachbean_requires_a_named_qualifier"><code>@EachBean</code> requires a <code>@Named</code> qualifier</h4>
+<h4 id="_eachbean_requires_a_named_qualifier"><code>@EachBean</code> requires a `@Named qualifier</h4>
 <div class="paragraph">
 <p><code>@EachBean</code> throws a "multiple possible bean candidates found" exception if any parent bean lacks a name qualifier.</p>
 </div>
