@@ -21852,6 +21852,48 @@ MethodInterceptor&lt;Product, Object&gt; aroundInvoke() {
 </table>
 </div>
 <div class="sect2">
+<h3 id="_exceptions_thrown_by_construct_advice">Exceptions Thrown by Construct Advice</h3>
+<div class="paragraph">
+<p>An exception thrown by a <a href="../api/io/micronaut/aop/ConstructorInterceptor.html">ConstructorInterceptor</a> reaches whoever asked for the bean as it was thrown,
+the same way an exception thrown by a <a href="../api/io/micronaut/aop/MethodInterceptor.html">MethodInterceptor</a> reaches the caller of the method it advises.
+It is not wrapped in a <a href="../api/io/micronaut/context/exceptions/BeanInstantiationException.html">BeanInstantiationException</a>. This holds whether the interceptor
+throws before <code>proceed()</code>, rejecting the arguments the constructor was about to receive, or after it, rejecting
+the instance the constructor produced:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@InterceptorBean(ProductBean.class)
+class ProductInterceptor implements ConstructorInterceptor&lt;Product&gt; {
+    @Override
+    public Product intercept(ConstructorInvocationContext&lt;Product&gt; context) {
+        if (context.getParameterValues()[0] == null) {
+            throw new IllegalArgumentException("A product needs a name"); <i class="conum" data-value="1"></i><b>(1)</b>
+        }
+        return context.proceed();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>context.getBean(Product.class)</code> throws this <code>IllegalArgumentException</code>, not a <code>BeanInstantiationException</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This lets advice reject a construction in its own terms. It is what allows constraints declared on a
+constructor to be enforced when the container creates the bean, so that the caller catches the validation
+exception rather than a wrapper around it.</p>
+</div>
+<div class="paragraph">
+<p>An exception thrown by the constructor&#8217;s own body is not advice throwing, and is wrapped in a
+<a href="../api/io/micronaut/context/exceptions/BeanInstantiationException.html">BeanInstantiationException</a> as it is for a bean with no construct advice at all. So is
+any failure during eager initialization at startup, where the bean is not being created on anyone&#8217;s behalf.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_intercepted_callbacks">Intercepted Callbacks</h3>
 <div class="paragraph">
 <p>A <code>@PostConstruct</code> or <code>@PreDestroy</code> interception runs once per lifecycle event of the bean, not once per callback.
