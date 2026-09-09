@@ -829,7 +829,7 @@
         <h1>Micronaut Core</h1>
         <p></p>
         <p>Core components supporting the Micronaut Framework</p>
-        <p><strong>Version:</strong> 5.1.13 </p>
+        <p><strong>Version:</strong> 5.1.14 </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -1945,7 +1945,7 @@ repositories {
 }
 
 micronaut {
-    version = "5.1.13" <i class="conum" data-value="2"></i><b>(2)</b>
+    version = "5.1.14" <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
 </div>
@@ -10390,8 +10390,8 @@ final class AccountService {
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    annotationProcessor "io.micronaut:micronaut-inject-java:5.1.13"
-    compileOnly "io.micronaut:micronaut-inject-java:5.1.13"
+    annotationProcessor "io.micronaut:micronaut-inject-java:5.1.14"
+    compileOnly "io.micronaut:micronaut-inject-java:5.1.14"
     ...
 }</code></pre>
 </div>
@@ -10788,7 +10788,7 @@ Previously, we recommended using <code>Micronaut.defaultEnvironments("dev")</cod
 | |\/| | |/ __| '__/ _ \| '_ \ / _` | | | | __|
 | |  | | | (__| | | (_) | | | | (_| | |_| | |_
 |_|  |_|_|\___|_|  \___/|_| |_|\__,_|\__,_|\__|
-  Micronaut (5.1.13)
+  Micronaut (5.1.14)
 
 17:07:22.997 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 611ms. Server Running: http://localhost:8080</code></pre>
 </div>
@@ -25324,6 +25324,20 @@ The default implementation outputs HTML which <a href="#i18n">can be localized</
 </div>
 </div>
 <div class="paragraph">
+<p>For unhandled exceptions, the default error response does not include the exception message.
+This avoids exposing implementation details to HTTP clients while the exception remains available in server logs.
+To include these messages for compatibility or debugging, set <code>micronaut.server.error-response-include-message</code> to <code>always</code>.
+The supported values are <code>never</code> (the default), <code>always</code>, and <code>on-param</code>. The <code>on-param</code> value includes the message when the request has a <code>message</code> query parameter whose value is not <code>false</code>.
+Enabling this option may expose sensitive implementation details and is not recommended for production environments.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  server:
+    error-response-include-message: always</code></pre>
+</div>
+</div>
+<div class="paragraph">
 <p>If customization of the response other than items related to the errors is desired, the <a href="#exceptionHandler">exception handler</a> that is handling the exception needs to be overridden.</p>
 </div>
 
@@ -30530,6 +30544,12 @@ micronaut.server.netty.childOptions.autoRead=true</code></pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.log-handled-exceptions</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.error-response-include-message</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/server/HttpServerConfiguration.ErrorResponseIncludeMessageMode.html">HttpServerConfiguration$ErrorResponseIncludeMessageMode</a></p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
