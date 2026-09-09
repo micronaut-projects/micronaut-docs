@@ -58,7 +58,6 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
-<li><a href="#getBeanContext()" tabindex="0">getBeanContext()</a></li>
 <li><a href="#getInjectionPoint()" tabindex="0">getInjectionPoint()</a></li>
 <li><a href="#getInjectedBeanCount()" tabindex="0">getInjectedBeanCount()</a></li>
 <li><a href="#getInjectedBean(int)" tabindex="0">getInjectedBean(int)</a></li>
@@ -75,24 +74,32 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
+<dt>All Superinterfaces:</dt>
+<dd><code><a href="RuntimeBeanDefinition.LookupContext.html" title="interface in io.micronaut.context">RuntimeBeanDefinition.LookupContext</a></code></dd>
+</dl>
+<dl class="notes">
 <dt>Enclosing interface:</dt>
 <dd><code><a href="RuntimeBeanDefinition.html" title="interface in io.micronaut.context">RuntimeBeanDefinition</a>&lt;<a href="RuntimeBeanDefinition.html#type-param-T" title="type parameter in RuntimeBeanDefinition">T</a>&gt;</code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public static interface </span><span class="element-name type-name-label">RuntimeBeanDefinition.CreationContext</span></div>
+<div class="type-signature"><span class="modifiers">public static interface </span><span class="element-name type-name-label">RuntimeBeanDefinition.CreationContext</span><span class="extends-implements">
+extends <a href="RuntimeBeanDefinition.LookupContext.html" title="interface in io.micronaut.context">RuntimeBeanDefinition.LookupContext</a></span></div>
 <div class="block">The context of a single creation of a bean built at runtime, passed to the bean factory of a definition
 built with <a href="RuntimeBeanDefinition.html#builder(io.micronaut.core.type.Argument,java.util.function.Function)"><code>RuntimeBeanDefinition.builder(Argument, Function)</code></a>.
 
 <p>It carries the beans resolved for the injection points the definition declared with
 <a href="RuntimeBeanDefinition.Builder.html#injectionPoint(io.micronaut.core.type.Argument)"><code>RuntimeBeanDefinition.Builder.injectionPoint(Argument)</code></a>, the injection point the bean is being created for, and the
-<a href="BeanContext.html" title="interface in io.micronaut.context"><code>BeanContext</code></a> to look anything else up in.</p>
+lookups of <a href="RuntimeBeanDefinition.LookupContext.html" title="interface in io.micronaut.context"><code>RuntimeBeanDefinition.LookupContext</code></a> for anything the definition could not declare up front.</p>
 
 <p>The injected beans were resolved through the resolution context of this creation, so any of them that
 is a dependent object (a <code>@Prototype</code> or <code>@Dependent</code> bean, for example) is a dependent of the
-created bean and is destroyed with it. The exception is a bean obtained from
-<a href="BeanContext.html#createBean(java.lang.Class)"><code>BeanContext.createBean(Class)</code></a>, which records no dependents for any bean, runtime built or
-compiled.</p></div>
+created bean and is destroyed with it. A bean the factory looks up itself with
+<a href="RuntimeBeanDefinition.LookupContext.html#getBean(io.micronaut.core.type.Argument)"><code>RuntimeBeanDefinition.LookupContext.getBean(Argument)</code></a> is resolved through the same resolution context and has the same lifetime; the
+difference between the two is only that a declared injection point is described by the definition and
+resolved before the factory runs, while a lookup is decided by the factory as it runs. The exception is a
+bean obtained from <a href="BeanContext.html#createBean(java.lang.Class)"><code>BeanContext.createBean(Class)</code></a>, which records no dependents for any bean,
+runtime built or compiled.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.2.0</dd>
@@ -114,37 +121,37 @@ compiled.</p></div>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="BeanContext.html" title="interface in io.micronaut.context">BeanContext</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getBeanContext()" class="member-name-link">getBeanContext</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;V&gt;&nbsp;@Nullable V</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getInjectedBean(int)" class="member-name-link">getInjectedBean</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;V&gt;&nbsp;@Nullable V</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getInjectedBean(int)" class="member-name-link">getInjectedBean</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">The bean resolved for the injection point at the given index, in the order the injection points were
 declared on the builder.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;V&gt;&nbsp;@Nullable V</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getInjectedBean(io.micronaut.core.type.Argument)" class="member-name-link">getInjectedBean</a><wbr>(<a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;V&gt;&nbsp;type)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;V&gt;&nbsp;@Nullable V</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getInjectedBean(io.micronaut.core.type.Argument)" class="member-name-link">getInjectedBean</a><wbr>(<a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;V&gt;&nbsp;type)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">The bean resolved for the injection point declared with the given type and no qualifier.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;V&gt;&nbsp;@Nullable V</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getInjectedBean(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)" class="member-name-link">getInjectedBean</a><wbr>(<a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;V&gt;&nbsp;type,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;V&gt;&nbsp;@Nullable V</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getInjectedBean(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)" class="member-name-link">getInjectedBean</a><wbr>(<a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;V&gt;&nbsp;type,
  @Nullable <a href="Qualifier.html" title="interface in io.micronaut.context">Qualifier</a>&lt;V&gt;&nbsp;qualifier)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">The bean resolved for the injection point declared with the given type and qualifier.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getInjectedBeanCount()" class="member-name-link">getInjectedBeanCount</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../inject/InjectionPoint.html" title="interface in io.micronaut.inject">InjectionPoint</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getInjectionPoint()" class="member-name-link">getInjectionPoint</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getInjectedBeanCount()" class="member-name-link">getInjectedBeanCount</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../inject/InjectionPoint.html" title="interface in io.micronaut.inject">InjectionPoint</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getInjectionPoint()" class="member-name-link">getInjectionPoint</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">The injection point the bean is being created for.</div>
 </div>
 </div>
 </div>
 </div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-io.micronaut.context.RuntimeBeanDefinition.LookupContext">Methods inherited from interface&nbsp;<a href="RuntimeBeanDefinition.LookupContext.html#method-summary" title="interface in io.micronaut.context">RuntimeBeanDefinition.LookupContext</a></h3>
+<code><a href="RuntimeBeanDefinition.LookupContext.html#findBean(io.micronaut.core.type.Argument)" title="findBean(Argument)">findBean</a>, <a href="RuntimeBeanDefinition.LookupContext.html#findBean(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)" title="findBean(Argument, Qualifier)">findBean</a>, <a href="RuntimeBeanDefinition.LookupContext.html#getBean(io.micronaut.core.type.Argument)" title="getBean(Argument)">getBean</a>, <a href="RuntimeBeanDefinition.LookupContext.html#getBean(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)" title="getBean(Argument, Qualifier)">getBean</a>, <a href="RuntimeBeanDefinition.LookupContext.html#getBeanContext()" title="getBeanContext()">getBeanContext</a>, <a href="RuntimeBeanDefinition.LookupContext.html#getBeansOfType(io.micronaut.core.type.Argument)" title="getBeansOfType(Argument)">getBeansOfType</a>, <a href="RuntimeBeanDefinition.LookupContext.html#getBeansOfType(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)" title="getBeansOfType(Argument, Qualifier)">getBeansOfType</a></code></div>
 </section>
 </li>
 </ul>
@@ -156,18 +163,6 @@ declared on the builder.</div>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
-<li>
-<section class="detail" id="getBeanContext()">
-<h3>getBeanContext</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="return-type"><a href="BeanContext.html" title="interface in io.micronaut.context">BeanContext</a></span>&nbsp;<span class="element-name">getBeanContext</span>()</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>The bean context creating the bean</dd>
-</dl>
-</div>
-</section>
-</li>
 <li>
 <section class="detail" id="getInjectionPoint()">
 <h3>getInjectionPoint</h3>
