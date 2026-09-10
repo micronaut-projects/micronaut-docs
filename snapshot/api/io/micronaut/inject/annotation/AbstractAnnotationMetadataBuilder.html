@@ -77,6 +77,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#lookupOrBuildForType(T)" tabindex="0">lookupOrBuildForType(T)</a></li>
 <li><a href="#lookupOrBuildForMethod(T,T)" tabindex="0">lookupOrBuildForMethod(T, T)</a></li>
 <li><a href="#lookupOrBuildForField(T,T)" tabindex="0">lookupOrBuildForField(T, T)</a></li>
+<li><a href="#lookupOrBuildForField(T,T,T,boolean)" tabindex="0">lookupOrBuildForField(T, T, T, boolean)</a></li>
+<li><a href="#lookupOrBuildForOwner(java.lang.Object,java.lang.Object,T,boolean)" tabindex="0">lookupOrBuildForOwner(Object, Object, T, boolean)</a></li>
 <li><a href="#lookupOrBuild(java.lang.Object,T)" tabindex="0">lookupOrBuild(Object, T)</a></li>
 <li><a href="#buildInternal(T)" tabindex="0">buildInternal(T)</a></li>
 <li><a href="#getTypeForAnnotation(A)" tabindex="0">getTypeForAnnotation(A)</a></li>
@@ -466,10 +468,28 @@ is created without bean creation.</div>
 <div class="block">Build the metadata for the given field element excluding any class metadata.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookupOrBuildForMethod(T,T)" class="member-name-link">lookupOrBuildForMethod</a><wbr>(<a href="#type-param-T" title="type parameter in AbstractAnnotationMetadataBuilder">T</a>&nbsp;owningType,
- <a href="#type-param-T" title="type parameter in AbstractAnnotationMetadataBuilder">T</a>&nbsp;element)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookupOrBuildForField(T,T,T,boolean)" class="member-name-link">lookupOrBuildForField</a><wbr>(<a href="#type-param-T" title="type parameter in AbstractAnnotationMetadataBuilder">T</a>&nbsp;owningType,
+ <a href="#type-param-T" title="type parameter in AbstractAnnotationMetadataBuilder">T</a>&nbsp;declaringType,
+ <a href="#type-param-T" title="type parameter in AbstractAnnotationMetadataBuilder">T</a>&nbsp;element,
+ boolean&nbsp;propertyComponent)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Build the metadata for the given field element read through the given owning type, excluding any class
+metadata.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookupOrBuildForMethod(T,T)" class="member-name-link">lookupOrBuildForMethod</a><wbr>(<a href="#type-param-T" title="type parameter in AbstractAnnotationMetadataBuilder">T</a>&nbsp;owningType,
+ <a href="#type-param-T" title="type parameter in AbstractAnnotationMetadataBuilder">T</a>&nbsp;element)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Build the metadata for the given method element excluding any class metadata.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookupOrBuildForOwner(java.lang.Object,java.lang.Object,T,boolean)" class="member-name-link">lookupOrBuildForOwner</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;sharedKey,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;ownerKey,
+ <a href="#type-param-T" title="type parameter in AbstractAnnotationMetadataBuilder">T</a>&nbsp;element,
+ boolean&nbsp;ownerMutation)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Lookup or build the metadata of a member shared by the types it is read through, keeping the mutations made
+for one owning type apart from the shared metadata.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookupOrBuildForParameter(T,T,T)" class="member-name-link">lookupOrBuildForParameter</a><wbr>(<a href="#type-param-T" title="type parameter in AbstractAnnotationMetadataBuilder">T</a>&nbsp;declaringType,
@@ -741,6 +761,65 @@ through one must be visible through the other.</div>
 <dd><code>element</code> - The element</dd>
 <dt>Returns:</dt>
 <dd>The <a href="AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation"><code>AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</code></a></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="lookupOrBuildForField(T,T,T,boolean)">
+<h3 id="lookupOrBuildForField(java.lang.Object,java.lang.Object,java.lang.Object,boolean)">lookupOrBuildForField</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></span>&nbsp;<span class="element-name">lookupOrBuildForField</span><wbr><span class="parameters">(<a href="#type-param-T" title="type parameter in AbstractAnnotationMetadataBuilder">T</a>&nbsp;owningType,
+ <a href="#type-param-T" title="type parameter in AbstractAnnotationMetadataBuilder">T</a>&nbsp;declaringType,
+ <a href="#type-param-T" title="type parameter in AbstractAnnotationMetadataBuilder">T</a>&nbsp;element,
+ boolean&nbsp;propertyComponent)</span></div>
+<div class="block">Build the metadata for the given field element read through the given owning type, excluding any class
+metadata. A mutation made on the field itself is keyed by the declaring type, as with
+<a href="#lookupOrBuildForField(T,T)"><code>lookupOrBuildForField(Object, Object)</code></a>, and is visible through every type the field is read through.
+A mutation made on the field as a component of a bean property belongs to the owning type: a bean property is
+resolved for the type it is read through, as its accessor methods are, so annotating the property of a super
+type must not annotate the same property read through a subclass. Once the owning type holds such a mutation,
+the field read or mutated through the owning type uses it.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>owningType</code> - The type the field is read through</dd>
+<dd><code>declaringType</code> - The type declaring the field</dd>
+<dd><code>element</code> - The element</dd>
+<dd><code>propertyComponent</code> - Whether a mutation is made on the field as a component of a bean property</dd>
+<dt>Returns:</dt>
+<dd>The <a href="AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation"><code>AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</code></a></dd>
+<dt>Since:</dt>
+<dd>5.2.1</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="lookupOrBuildForOwner(java.lang.Object,java.lang.Object,T,boolean)">
+<h3 id="lookupOrBuildForOwner(java.lang.Object,java.lang.Object,java.lang.Object,boolean)">lookupOrBuildForOwner</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></span>&nbsp;<span class="element-name">lookupOrBuildForOwner</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;sharedKey,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;ownerKey,
+ <a href="#type-param-T" title="type parameter in AbstractAnnotationMetadataBuilder">T</a>&nbsp;element,
+ boolean&nbsp;ownerMutation)</span></div>
+<div class="block">Lookup or build the metadata of a member shared by the types it is read through, keeping the mutations made
+for one owning type apart from the shared metadata.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>sharedKey</code> - The cache key of the metadata shared by every owning type</dd>
+<dd><code>ownerKey</code> - The cache key of the metadata mutated for the owning type</dd>
+<dd><code>element</code> - The element</dd>
+<dd><code>ownerMutation</code> - Whether a mutation belongs to the owning type</dd>
+<dt>Returns:</dt>
+<dd>The <a href="AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation"><code>AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</code></a></dd>
+<dt>Since:</dt>
+<dd>5.2.1</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#lookupOrBuildForField(T,T,T,boolean)"><code>lookupOrBuildForField(Object, Object, Object, boolean)</code></a></li>
+</ul>
+</dd>
 </dl>
 </div>
 </section>
