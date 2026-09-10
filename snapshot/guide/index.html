@@ -435,6 +435,8 @@
         
         <div class="toc-item" style="margin-left:30px" id="toc-item-httpServerFilterErrorStates"><a href="#httpServerFilterErrorStates"><strong>6.25.3.2</strong><span>HttpServerFilter Error States</span></a></div>
         
+        <div class="toc-item" style="margin-left:20px" id="toc-item-responseHeaderPopulator"><a href="#responseHeaderPopulator"><strong>6.25.4</strong><span>Response Header Populators</span></a></div>
+        
         <div class="toc-item" style="margin-left:10px" id="toc-item-byteBody"><a href="#byteBody"><strong>6.26</strong><span>Advanced body access</span></a></div>
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-byteBodyPrimary"><a href="#byteBodyPrimary"><strong>6.26.1</strong><span>Primary operations</span></a></div>
@@ -36297,6 +36299,119 @@ The examples use <a href="https://projectreactor.io">Project Reactor</a>, howeve
 
 <div class="paragraph">
 <p>The publisher returned from <code>chain.proceed</code> should never emit an error. In the cases where an upstream filter emitted an error or the route itself threw an exception, the error response should be emitted instead of the exception. In some cases it may be desirable to know the cause of the error response and for this purpose an attribute exists on the response if it was created as a result of an exception being emitted or thrown. The original cause is stored as the attribute <a href="../api/io/micronaut/http/HttpAttributes.html#EXCEPTION">EXCEPTION</a>.</p>
+</div>
+
+<h2 id="responseHeaderPopulator"><a class="anchor" href="#responseHeaderPopulator"></a>6.25.4 Response Header Populators</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.2.x/src/main/docs/guide/httpServer/filters/responseHeaderPopulator.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/http/server/filter/ResponseHeaderPopulator.html">ResponseHeaderPopulator</a> interface provides a lightweight way to add response headers without implementing a complete <a href="../api/io/micronaut/http/filter/HttpServerFilter.html">HttpServerFilter</a>.</p>
+</div>
+<div class="paragraph">
+<p>Register an implementation as a bean. The <code>findHttpHeaders</code> method receives the current <a href="../api/io/micronaut/http/HttpRequest.html">HttpRequest</a> and <a href="../api/io/micronaut/http/HttpResponse.html">HttpResponse</a> and returns the headers to add:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A ResponseHeaderPopulator example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Requires;
+import io.micronaut.http.HttpHeaderEntry;
+import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.server.filter.ResponseHeaderPopulator;
+import jakarta.inject.Singleton;
+
+import java.util.List;
+
+@Singleton // <b class="conum">(1)</b>
+public class SecurityHeaderPopulator implements ResponseHeaderPopulator {
+    @Override
+    public List&lt;HttpHeaderEntry&gt; findHttpHeaders(HttpRequest&lt;?&gt; request, HttpResponse&lt;?&gt; response) { // <b class="conum">(2)</b>
+        return List.of(new HttpHeaderEntry("X-Content-Type-Options", "nosniff")); // <b class="conum">(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A ResponseHeaderPopulator example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from micronaut.context.annotation import Requires
+from micronaut.http import HttpHeaderEntry, HttpRequest, HttpResponse
+from micronaut.http.server.filter import ResponseHeaderPopulator
+from jakarta.inject import Singleton
+
+@Singleton  # <b class="conum">(1)</b>
+class SecurityHeaderPopulator(ResponseHeaderPopulator):
+    def findHttpHeaders(self, request: HttpRequest, response: HttpResponse) -&gt; list[HttpHeaderEntry]:  # <b class="conum">(2)</b>
+        return [HttpHeaderEntry("X-Content-Type-Options", "nosniff")]  # <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A ResponseHeaderPopulator example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.Requires
+import io.micronaut.http.HttpHeaderEntry
+import io.micronaut.http.HttpRequest
+import io.micronaut.http.HttpResponse
+import io.micronaut.http.server.filter.ResponseHeaderPopulator
+import jakarta.inject.Singleton
+
+@Singleton // <b class="conum">(1)</b>
+class SecurityHeaderPopulator : ResponseHeaderPopulator {
+    override fun findHttpHeaders(request: HttpRequest&lt;*&gt;, response: HttpResponse&lt;*&gt;): List&lt;HttpHeaderEntry&gt; { // <b class="conum">(2)</b>
+        return listOf(HttpHeaderEntry("X-Content-Type-Options", "nosniff")) // <b class="conum">(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A ResponseHeaderPopulator example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Requires
+import io.micronaut.http.HttpHeaderEntry
+import io.micronaut.http.HttpRequest
+import io.micronaut.http.HttpResponse
+import io.micronaut.http.server.filter.ResponseHeaderPopulator
+import jakarta.inject.Singleton
+
+@Singleton // <b class="conum">(1)</b>
+class SecurityHeaderPopulator implements ResponseHeaderPopulator {
+    @Override
+    List&lt;HttpHeaderEntry&gt; findHttpHeaders(HttpRequest&lt;?&gt; request, HttpResponse&lt;?&gt; response) { // <b class="conum">(2)</b>
+        [new HttpHeaderEntry('X-Content-Type-Options', 'nosniff')] // <b class="conum">(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>@Singleton</code> annotation registers the populator as a bean.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>findHttpHeaders</code> receives the current request and response.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Each <a href="../api/io/micronaut/http/HttpHeaderEntry.html">HttpHeaderEntry</a> contains a response header name and value.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The HTTP server invokes each <code>ResponseHeaderPopulator</code> for every response. Return <code>null</code> when no headers apply to the request and response. If the response already contains a returned header, its existing value takes precedence.</p>
+</div>
+<div class="paragraph">
+<p><code>ResponseHeaderPopulator</code> extends <a href="../api/io/micronaut/core/order/Ordered.html">Ordered</a>. If multiple populators are registered, implement <code>getOrder()</code> to control their invocation order.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut&#8217;s built-in support for the Cross-Origin-Embedder-Policy and Cross-Origin-Resource-Policy response headers uses response header populators. See <a href="#corsCrossOriginEmbedderPolicy">Cross-Origin-Embedder-Policy</a> and <a href="#corsCrossOriginResourcePolicy">Cross-Origin-Resource-Policy</a>.</p>
 </div>
 
 <h2 id="byteBody"><a class="anchor" href="#byteBody"></a>6.26 Advanced body access</h2>
