@@ -871,7 +871,7 @@
         <h1>Micronaut Core</h1>
         <p></p>
         <p>Core components supporting the Micronaut Framework</p>
-        <p><strong>Version:</strong> 5.2.1 </p>
+        <p><strong>Version:</strong> 5.2.2 </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -2096,7 +2096,7 @@ repositories {
 }
 
 micronaut {
-    version = "5.2.1" <i class="conum" data-value="2"></i><b>(2)</b>
+    version = "5.2.2" <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
 </div>
@@ -2734,7 +2734,7 @@ If no <code>@Inject</code> or <code>@Creator</code> is specified Micronaut will 
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-If you use <code>@Inject</code> on a <code>private</code> constructor then the type will be instantiated via the Java reflection API which is not recommended.
+A <code>private</code> constructor can only be invoked via the Java reflection API, which is not recommended. If you use <code>@Inject</code> or <a href="../api/io/micronaut/core/annotation/Creator.html">@Creator</a> on a <code>private</code> constructor you must also annotate it with <a href="../api/io/micronaut/core/annotation/ReflectiveAccess.html">@ReflectiveAccess</a> to opt into reflective instantiation, otherwise a compilation error will occur. Note that a type instantiated reflectively cannot have AOP advice applied to it, because the generated proxy has to invoke the constructor directly.
 </td>
 </tr>
 </table>
@@ -13798,8 +13798,8 @@ final class AccountService {
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.1"
-    compileOnly "io.micronaut:micronaut-inject-java:5.2.1"
+    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.2"
+    compileOnly "io.micronaut:micronaut-inject-java:5.2.2"
     ...
 }</code></pre>
 </div>
@@ -14221,7 +14221,7 @@ Previously, we recommended using <code>Micronaut.defaultEnvironments("dev")</cod
 | |\/| | |/ __| '__/ _ \| '_ \ / _` | | | | __|
 | |  | | | (__| | | (_) | | | | (_| | |_| | |_
 |_|  |_|_|\___|_|  \___/|_| |_|\__,_|\__,_|\__|
-  Micronaut (5.2.1)
+  Micronaut (5.2.2)
 
 17:07:22.997 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 611ms. Server Running: http://localhost:8080</code></pre>
 </div>
@@ -21750,6 +21750,14 @@ ConstructorInterceptor&lt;Product&gt; aroundConstruct() { // <b class="conum">(1
 <td>The constructor can be invoked with the <code>proceed()</code> method</td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/core/beans/BeanConstructor.html">BeanConstructor</a> returned by <code>getConstructor()</code> describes the constructor being advised. For a
+bean that is also proxied with <code>@Around</code> it describes the constructor of the intercepted class, with only the
+parameters that class declares, rather than the generated proxy constructor. Its <code>getTargetConstructor()</code> returns
+the corresponding <code>java.lang.reflect.Constructor</code>, the way <code>getTargetMethod()</code> does for an intercepted method; the
+constructors the framework hands out resolve it once and hold it. It returns <code>null</code> when the bean is not created
+through a constructor of its own type, as for a bean produced by a factory method.</p>
 </div>
 <div class="paragraph">
 <p>Defining <a href="../api/io/micronaut/aop/MethodInterceptor.html">MethodInterceptor</a> instances that interceptor the <code>@PostConstruct</code> and <code>@PreDestroy</code> methods is no different from defining interceptors for regular methods. Note however that you can use the passed <a href="../api/io/micronaut/aop/MethodInvocationContext.html">MethodInvocationContext</a> to identify what kind of interception is occurring and adapt the code accordingly like in the following example:</p>
@@ -38463,6 +38471,14 @@ that defining this listener will disable the implicit TCP listeners. You can add
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/discovery/event/ServiceStoppedEvent.html">ServiceStoppedEvent</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Emitted after all <a href="../api/io/micronaut/runtime/server/event/ServerShutdownEvent.html">ServerShutdownEvent</a> listeners have been invoked and exposes the <a href="../api/io/micronaut/discovery/EmbeddedServerInstance.html">EmbeddedServerInstance</a></p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/context/event/HttpRequestReceivedEvent.html">HttpRequestReceivedEvent</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Emitted for every request the server receives, before the request is routed. Exposes the request without its body.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/context/event/HttpRequestTerminatedEvent.html">HttpRequestTerminatedEvent</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Emitted for every request once the server is done with it. This does not imply that a response was delivered.</p></td>
+</tr>
 </tbody>
 </table>
 <div class="admonitionblock warning">
@@ -38473,6 +38489,18 @@ that defining this listener will disable the implicit TCP listeners. You can add
 </td>
 <td class="content">
 Doing significant work within a listener for a <a href="../api/io/micronaut/runtime/server/event/ServerStartupEvent.html">ServerStartupEvent</a> will increase startup time.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Listeners for <a href="../api/io/micronaut/http/context/event/HttpRequestReceivedEvent.html">HttpRequestReceivedEvent</a> and <a href="../api/io/micronaut/http/context/event/HttpRequestTerminatedEvent.html">HttpRequestTerminatedEvent</a> are invoked on the thread the server selects for request handling, which with the default <code>micronaut.server.thread-selection</code> (<code>MANUAL</code>, and also with <code>AUTO</code>) is the Netty event loop of the connection. They must not block: a slow listener delays every other connection on that event loop. Annotate the <code>@EventListener</code> method with <a href="../api/io/micronaut/scheduling/annotation/Async.html">@Async</a> to run it on an executor, or set <code>micronaut.server.thread-selection</code> to <code>BLOCKING</code> to move listeners (and controllers) off the event loop. With debug logging enabled for <code>io.micronaut.http.server.netty.RoutingInBoundHandler</code>, the server logs listeners that take longer than 100 ms on the event loop.
 </td>
 </tr>
 </table>
