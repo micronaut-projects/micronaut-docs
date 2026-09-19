@@ -58,6 +58,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#invokePythonMethod(org.graalvm.polyglot.Value,java.lang.String,java.lang.Object%5B%5D)" tabindex="0">invokePythonMethod(Value, String, Object[])</a></li>
+<li><a href="#withVarargs(java.lang.Object%5B%5D,java.lang.Object)" tabindex="0">withVarargs(Object[], Object)</a></li>
+<li><a href="#invokeIntroducedMethod(org.graalvm.polyglot.Value,java.lang.String,java.lang.Class,java.lang.Object%5B%5D)" tabindex="0">invokeIntroducedMethod(Value, String, Class, Object[])</a></li>
 <li><a href="#getRawClassMember(org.graalvm.polyglot.Value,java.lang.String)" tabindex="0">getRawClassMember(Value, String)</a></li>
 <li><a href="#bindPythonDescriptor(org.graalvm.polyglot.Value,java.lang.Object,org.graalvm.polyglot.Value)" tabindex="0">bindPythonDescriptor(Value, Object, Value)</a></li>
 </ol>
@@ -112,11 +114,26 @@ loadScripts(document, 'script');</script>
 <div class="block">Read a Python class member directly from the MRO dictionaries, bypassing descriptor binding.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static org.graalvm.polyglot.Value</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#invokePythonMethod(org.graalvm.polyglot.Value,java.lang.String,java.lang.Object%5B%5D)" class="member-name-link">invokePythonMethod</a><wbr>(org.graalvm.polyglot.Value&nbsp;receiver,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#invokeIntroducedMethod(org.graalvm.polyglot.Value,java.lang.String,java.lang.Class,java.lang.Object%5B%5D)" class="member-name-link">invokeIntroducedMethod</a><wbr>(org.graalvm.polyglot.Value&nbsp;receiver,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;returnType,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a> @Nullable []&nbsp;arguments)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Invoke a method that an introduction advice adds to a Python class through the interfaces of its
+<code>@Introduction</code>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static org.graalvm.polyglot.Value</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#invokePythonMethod(org.graalvm.polyglot.Value,java.lang.String,java.lang.Object%5B%5D)" class="member-name-link">invokePythonMethod</a><wbr>(org.graalvm.polyglot.Value&nbsp;receiver,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a> @Nullable []&nbsp;arguments)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Invoke a generated bridge method on a Python receiver.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>[]</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#withVarargs(java.lang.Object%5B%5D,java.lang.Object)" class="member-name-link">withVarargs</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>[]&nbsp;arguments,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;varargs)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Spread a Java varargs array into the positional arguments of a Python call.</div>
 </div>
 </div>
 </div>
@@ -161,6 +178,56 @@ methods are invoked with Python semantics before the result crosses back to Java
 <dd><code>arguments</code> - The method arguments, or <code>null</code> for none</dd>
 <dt>Returns:</dt>
 <dd>The invocation result</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="withVarargs(java.lang.Object[],java.lang.Object)">
+<h3>withVarargs</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>[]</span>&nbsp;<span class="element-name">withVarargs</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>[]&nbsp;arguments,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;varargs)</span></div>
+<div class="block">Spread a Java varargs array into the positional arguments of a Python call.
+<p>
+A Python <code>*args</code> parameter is bridged as a trailing Java array. Python expects the
+elements as separate positional arguments, so the generated bridge appends them to the
+fixed arguments instead of passing the array as a single argument.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>arguments</code> - The fixed arguments</dd>
+<dd><code>varargs</code> - The varargs array, or <code>null</code> for no additional arguments</dd>
+<dt>Returns:</dt>
+<dd>The positional arguments of the Python call</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="invokeIntroducedMethod(org.graalvm.polyglot.Value,java.lang.String,java.lang.Class,java.lang.Object[])">
+<h3>invokeIntroducedMethod</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">org.graalvm.polyglot.Value</span>&nbsp;<span class="element-name">invokeIntroducedMethod</span><wbr><span class="parameters">(org.graalvm.polyglot.Value&nbsp;receiver,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;returnType,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a> @Nullable []&nbsp;arguments)</span></div>
+<div class="block">Invoke a method that an introduction advice adds to a Python class through the interfaces of its
+<code>@Introduction</code>. The proxy of the class carries such a method as a Python member; an instance
+that is not the proxy (an entity instantiated by JPA, a value created from Java) has no member of
+that name and, as in Java where only the proxy class implements the introduced interface, no
+implementation for it: the result is then <code>None</code> when the method returns a reference or
+nothing. A method returning a primitive has no value to answer without an implementation, so the
+missing member is reported instead of surfacing later as a failed conversion of <code>None</code>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>receiver</code> - The Python receiver</dd>
+<dd><code>name</code> - The method name</dd>
+<dd><code>returnType</code> - The declared return type of the introduced method</dd>
+<dd><code>arguments</code> - The method arguments, or <code>null</code> for none</dd>
+<dt>Returns:</dt>
+<dd>The invocation result, or <code>None</code> if the receiver has no such member</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - If the receiver has no such member and the method returns a primitive</dd>
 </dl>
 </div>
 </section>

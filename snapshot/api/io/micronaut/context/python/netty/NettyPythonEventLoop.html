@@ -448,7 +448,11 @@ provider that owns the channel, and the asyncio members that only depend on them
 <div class="block">Queue a Python callback for execution on the loop.
 <p>
 A loop that owns a GraalPy context runs the callback inside an execution frame of the
-callback's context, so shutdown waits for callbacks scheduled with <code>call_soon</code>.</div>
+callback's context, so shutdown waits for callbacks scheduled with <code>call_soon</code>. The
+<a href="../../../core/propagation/PropagatedContext.html" title="interface in io.micronaut.core.propagation"><code>PropagatedContext</code></a> of the callback is not captured here: it belongs to the asyncio task
+that owns the callback, which keeps it in its <code>contextvars</code> and restores it when the
+callback runs, so a task resumed by another task (a shared <code>asyncio.Event</code>) or by a
+Java thread completing an awaited stage keeps its own context.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../PythonEventLoop.html#executeCallback(org.graalvm.polyglot.Value)">executeCallback</a></code>&nbsp;in interface&nbsp;<code><a href="../PythonEventLoop.html" title="interface in io.micronaut.context.python">PythonEventLoop</a></code></dd>

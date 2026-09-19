@@ -64,6 +64,8 @@ loadScripts(document, 'script');</script>
 </li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
+<li><a href="#%3Cinit%3E(java.lang.String,io.micronaut.python.processing.model.ArgumentsDef,java.util.List,io.micronaut.python.processing.model.ReturnDef,java.lang.String,java.util.List,java.lang.String,boolean,boolean,boolean,boolean,boolean,io.micronaut.python.processing.model.ClassDef,java.util.List)" tabindex="0">FunctionDef(String, ArgumentsDef, List, ReturnDef, String, List, String, boolean, boolean, boolean, boolean, boolean, ClassDef, List)</a></li>
+<li><a href="#%3Cinit%3E(java.lang.String,io.micronaut.python.processing.model.ArgumentsDef,java.util.List,io.micronaut.python.processing.model.ReturnDef,java.lang.String,java.util.List,java.lang.String,boolean,boolean,boolean,boolean,boolean,io.micronaut.python.processing.model.ClassDef)" tabindex="0">FunctionDef(String, ArgumentsDef, List, ReturnDef, String, List, String, boolean, boolean, boolean, boolean, boolean, ClassDef)</a></li>
 <li><a href="#%3Cinit%3E(java.lang.String,io.micronaut.python.processing.model.ArgumentsDef,java.util.List,io.micronaut.python.processing.model.ReturnDef,java.lang.String,java.util.List,java.lang.String,boolean,boolean,boolean,boolean,io.micronaut.python.processing.model.ClassDef)" tabindex="0">FunctionDef(String, ArgumentsDef, List, ReturnDef, String, List, String, boolean, boolean, boolean, boolean, ClassDef)</a></li>
 <li><a href="#%3Cinit%3E(java.lang.String,io.micronaut.python.processing.model.ArgumentsDef,java.util.List,io.micronaut.python.processing.model.ReturnDef)" tabindex="0">FunctionDef(String, ArgumentsDef, List, ReturnDef)</a></li>
 <li><a href="#%3Cinit%3E(java.lang.String,io.micronaut.python.processing.model.ArgumentsDef,io.micronaut.python.processing.model.ReturnDef)" tabindex="0">FunctionDef(String, ArgumentsDef, ReturnDef)</a></li>
@@ -85,6 +87,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#hashCode()" tabindex="0">hashCode()</a></li>
 <li><a href="#returnType()" tabindex="0">returnType()</a></li>
 <li><a href="#withClassDef(io.micronaut.python.processing.model.ClassDef)" tabindex="0">withClassDef(ClassDef)</a></li>
+<li><a href="#withSuperArguments(java.util.List)" tabindex="0">withSuperArguments(List)</a></li>
 <li><a href="#toString()" tabindex="0">toString()</a></li>
 <li><a href="#name()" tabindex="0">name()</a></li>
 <li><a href="#arguments()" tabindex="0">arguments()</a></li>
@@ -96,7 +99,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#isStatic()" tabindex="0">isStatic()</a></li>
 <li><a href="#isAsync()" tabindex="0">isAsync()</a></li>
 <li><a href="#hasReturnValue()" tabindex="0">hasReturnValue()</a></li>
+<li><a href="#hasPlaceholderBody()" tabindex="0">hasPlaceholderBody()</a></li>
 <li><a href="#declaringClass()" tabindex="0">declaringClass()</a></li>
+<li><a href="#superArguments()" tabindex="0">superArguments()</a></li>
 </ol>
 </li>
 </ol>
@@ -121,11 +126,17 @@ loadScripts(document, 'script');</script>
 <dd><code><span id="param-typeComment">typeComment</span></code> - The type comment.</dd>
 <dd><code><span id="param-typeParams">typeParams</span></code> - The type parameters.</dd>
 <dd><code><span id="param-documentation">documentation</span></code> - The function documentation string.</dd>
-<dd><code><span id="param-isAbstract">isAbstract</span></code> - Whether the function is abstract (decorated with @abstractmethod).</dd>
+<dd><code><span id="param-isAbstract">isAbstract</span></code> - Whether the function is abstract: decorated with <code>@abstractmethod</code>, a member of a
+                  <code>Protocol</code>, or a placeholder body in an <code>ABC</code>.</dd>
 <dd><code><span id="param-isStatic">isStatic</span></code> - Whether the function is static (decorated with @staticmethod or @classmethod).</dd>
 <dd><code><span id="param-isAsync">isAsync</span></code> - Whether the function was declared with <code>async def</code>.</dd>
 <dd><code><span id="param-hasReturnValue">hasReturnValue</span></code> - Whether the function body contains a return statement with a non-None value.</dd>
+<dd><code><span id="param-hasPlaceholderBody">hasPlaceholderBody</span></code> - Whether the function body is only the <code>...</code> placeholder. Such a function is
+                          abstract in an introduction type, whose methods are implemented by the introduction
+                          advice, and a method returning <code>None</code> in a concrete class.</dd>
 <dd><code><span id="param-declaringClass">declaringClass</span></code> - Declaring class, can be null if there is none</dd>
+<dd><code><span id="param-superArguments">superArguments</span></code> - The arguments of the <code>super().__init__(...)</code> call of a constructor, or
+<code>null</code> when the function is not a constructor or does not call the super constructor</dd>
 </dl>
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
@@ -133,7 +144,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">FunctionDef</span>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name, <a href="ArgumentsDef.html" title="class in io.micronaut.python.processing.model">ArgumentsDef</a>&nbsp;arguments, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="DecoratorDef.html" title="class in io.micronaut.python.processing.model">DecoratorDef</a>&gt;&nbsp;decorators, <a href="ReturnDef.html" title="class in io.micronaut.python.processing.model">ReturnDef</a>&nbsp;returnType, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeComment, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeVar.html" title="class in io.micronaut.python.processing.model">TypeVar</a>&gt;&nbsp;typeParams, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;documentation, boolean&nbsp;isAbstract, boolean&nbsp;isStatic, boolean&nbsp;isAsync, boolean&nbsp;hasReturnValue, <a href="ClassDef.html" title="class in io.micronaut.python.processing.model">ClassDef</a>&nbsp;declaringClass)
+<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">FunctionDef</span>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name, <a href="ArgumentsDef.html" title="class in io.micronaut.python.processing.model">ArgumentsDef</a>&nbsp;arguments, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="DecoratorDef.html" title="class in io.micronaut.python.processing.model">DecoratorDef</a>&gt;&nbsp;decorators, <a href="ReturnDef.html" title="class in io.micronaut.python.processing.model">ReturnDef</a>&nbsp;returnType, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeComment, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeVar.html" title="class in io.micronaut.python.processing.model">TypeVar</a>&gt;&nbsp;typeParams, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;documentation, boolean&nbsp;isAbstract, boolean&nbsp;isStatic, boolean&nbsp;isAsync, boolean&nbsp;hasReturnValue, boolean&nbsp;hasPlaceholderBody, <a href="ClassDef.html" title="class in io.micronaut.python.processing.model">ClassDef</a>&nbsp;declaringClass, <a href="../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="SuperArgumentDef.html" title="class in io.micronaut.python.processing.model">SuperArgumentDef</a>&gt;&nbsp;superArguments)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a>
 implements <a href="ElementDef.html" title="interface in io.micronaut.python.processing.model">ElementDef</a>, <a href="MemberDef.html" title="interface in io.micronaut.python.processing.model">MemberDef</a></span></div>
 <div class="block">A FunctionDef node represents a function definition.
@@ -228,6 +239,39 @@ FunctionDef(identifier name, arguments args, list[stmt] body, list[expr] decorat
  boolean&nbsp;isAsync,
  boolean&nbsp;hasReturnValue)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.String,io.micronaut.python.processing.model.ArgumentsDef,java.util.List,io.micronaut.python.processing.model.ReturnDef,java.lang.String,java.util.List,java.lang.String,boolean,boolean,boolean,boolean,boolean,io.micronaut.python.processing.model.ClassDef)" class="member-name-link">FunctionDef</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="ArgumentsDef.html" title="class in io.micronaut.python.processing.model">ArgumentsDef</a>&nbsp;arguments,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="DecoratorDef.html" title="class in io.micronaut.python.processing.model">DecoratorDef</a>&gt;&nbsp;decorators,
+ <a href="ReturnDef.html" title="class in io.micronaut.python.processing.model">ReturnDef</a>&nbsp;returnType,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeComment,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeVar.html" title="class in io.micronaut.python.processing.model">TypeVar</a>&gt;&nbsp;typeParams,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;documentation,
+ boolean&nbsp;isAbstract,
+ boolean&nbsp;isStatic,
+ boolean&nbsp;isAsync,
+ boolean&nbsp;hasReturnValue,
+ boolean&nbsp;hasPlaceholderBody,
+ <a href="ClassDef.html" title="class in io.micronaut.python.processing.model">ClassDef</a>&nbsp;declaringClass)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a function without a recorded super constructor call.</div>
+</div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,io.micronaut.python.processing.model.ArgumentsDef,java.util.List,io.micronaut.python.processing.model.ReturnDef,java.lang.String,java.util.List,java.lang.String,boolean,boolean,boolean,boolean,boolean,io.micronaut.python.processing.model.ClassDef,java.util.List)" class="member-name-link">FunctionDef</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="ArgumentsDef.html" title="class in io.micronaut.python.processing.model">ArgumentsDef</a>&nbsp;arguments,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="DecoratorDef.html" title="class in io.micronaut.python.processing.model">DecoratorDef</a>&gt;&nbsp;decorators,
+ <a href="ReturnDef.html" title="class in io.micronaut.python.processing.model">ReturnDef</a>&nbsp;returnType,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeComment,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeVar.html" title="class in io.micronaut.python.processing.model">TypeVar</a>&gt;&nbsp;typeParams,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;documentation,
+ boolean&nbsp;isAbstract,
+ boolean&nbsp;isStatic,
+ boolean&nbsp;isAsync,
+ boolean&nbsp;hasReturnValue,
+ boolean&nbsp;hasPlaceholderBody,
+ <a href="ClassDef.html" title="class in io.micronaut.python.processing.model">ClassDef</a>&nbsp;declaringClass,
+ <a href="../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="SuperArgumentDef.html" title="class in io.micronaut.python.processing.model">SuperArgumentDef</a>&gt;&nbsp;superArguments)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates an instance of a <code>FunctionDef</code> record class.</div>
+</div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.String,io.micronaut.python.processing.model.ArgumentsDef,java.util.List,io.micronaut.python.processing.model.ReturnDef,java.lang.String,java.util.List,java.lang.String,boolean,boolean,boolean,boolean,io.micronaut.python.processing.model.ClassDef)" class="member-name-link">FunctionDef</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="ArgumentsDef.html" title="class in io.micronaut.python.processing.model">ArgumentsDef</a>&nbsp;arguments,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="DecoratorDef.html" title="class in io.micronaut.python.processing.model">DecoratorDef</a>&gt;&nbsp;decorators,
@@ -241,7 +285,7 @@ FunctionDef(identifier name, arguments args, list[stmt] body, list[expr] decorat
  boolean&nbsp;hasReturnValue,
  <a href="ClassDef.html" title="class in io.micronaut.python.processing.model">ClassDef</a>&nbsp;declaringClass)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Creates an instance of a <code>FunctionDef</code> record class.</div>
+<div class="block">Creates a function with a regular body and without a recorded super constructor call.</div>
 </div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,io.micronaut.python.processing.model.ArgumentsDef,java.util.List,io.micronaut.python.processing.model.ReturnDef,java.lang.String,java.util.List,java.lang.String,boolean,boolean,io.micronaut.python.processing.model.ClassDef)" class="member-name-link">FunctionDef</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="ArgumentsDef.html" title="class in io.micronaut.python.processing.model">ArgumentsDef</a>&nbsp;arguments,
@@ -319,34 +363,44 @@ FunctionDef(identifier name, arguments args, list[stmt] body, list[expr] decorat
 <div class="block">Returns a hash code value for this object.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasReturnValue()" class="member-name-link">hasReturnValue</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasPlaceholderBody()" class="member-name-link">hasPlaceholderBody</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-hasPlaceholderBody"><code>hasPlaceholderBody</code></a> record component.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasReturnValue()" class="member-name-link">hasReturnValue</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-hasReturnValue"><code>hasReturnValue</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAbstract()" class="member-name-link">isAbstract</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAbstract()" class="member-name-link">isAbstract</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-isAbstract"><code>isAbstract</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAsync()" class="member-name-link">isAsync</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAsync()" class="member-name-link">isAsync</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-isAsync"><code>isAsync</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isStatic()" class="member-name-link">isStatic</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isStatic()" class="member-name-link">isStatic</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-isStatic"><code>isStatic</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#name()" class="member-name-link">name</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#name()" class="member-name-link">name</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-name"><code>name</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ReturnDef.html" title="class in io.micronaut.python.processing.model">ReturnDef</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#returnType()" class="member-name-link">returnType</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ReturnDef.html" title="class in io.micronaut.python.processing.model">ReturnDef</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#returnType()" class="member-name-link">returnType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the parsed return type as ReturnDef.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="SuperArgumentDef.html" title="class in io.micronaut.python.processing.model">SuperArgumentDef</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#superArguments()" class="member-name-link">superArguments</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-superArguments"><code>superArguments</code></a> record component.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
@@ -366,6 +420,11 @@ FunctionDef(identifier name, arguments args, list[stmt] body, list[expr] decorat
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FunctionDef.html" title="class in io.micronaut.python.processing.model">FunctionDef</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withClassDef(io.micronaut.python.processing.model.ClassDef)" class="member-name-link">withClassDef</a><wbr>(<a href="ClassDef.html" title="class in io.micronaut.python.processing.model">ClassDef</a>&nbsp;classDef)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FunctionDef.html" title="class in io.micronaut.python.processing.model">FunctionDef</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withSuperArguments(java.util.List)" class="member-name-link">withSuperArguments</a><wbr>(<a href="../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="SuperArgumentDef.html" title="class in io.micronaut.python.processing.model">SuperArgumentDef</a>&gt;&nbsp;superArguments)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Records the arguments of the <code>super().__init__(...)</code> call of this constructor.</div>
+</div>
 </div>
 </div>
 </div>
@@ -408,6 +467,67 @@ FunctionDef(identifier name, arguments args, list[stmt] body, list[expr] decorat
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="&lt;init&gt;(java.lang.String,io.micronaut.python.processing.model.ArgumentsDef,java.util.List,io.micronaut.python.processing.model.ReturnDef,java.lang.String,java.util.List,java.lang.String,boolean,boolean,boolean,boolean,boolean,io.micronaut.python.processing.model.ClassDef,java.util.List)">
+<h3>FunctionDef</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">FunctionDef</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="ArgumentsDef.html" title="class in io.micronaut.python.processing.model">ArgumentsDef</a>&nbsp;arguments,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="DecoratorDef.html" title="class in io.micronaut.python.processing.model">DecoratorDef</a>&gt;&nbsp;decorators,
+ <a href="ReturnDef.html" title="class in io.micronaut.python.processing.model">ReturnDef</a>&nbsp;returnType,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeComment,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeVar.html" title="class in io.micronaut.python.processing.model">TypeVar</a>&gt;&nbsp;typeParams,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;documentation,
+ boolean&nbsp;isAbstract,
+ boolean&nbsp;isStatic,
+ boolean&nbsp;isAsync,
+ boolean&nbsp;hasReturnValue,
+ boolean&nbsp;hasPlaceholderBody,
+ <a href="ClassDef.html" title="class in io.micronaut.python.processing.model">ClassDef</a>&nbsp;declaringClass,
+ <a href="../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a>
+ <a href="../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="SuperArgumentDef.html" title="class in io.micronaut.python.processing.model">SuperArgumentDef</a>&gt;&nbsp;superArguments)</span></div>
+<div class="block">Creates an instance of a <code>FunctionDef</code> record class.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - the value for the <a href="#param-name"><code>name</code></a> record component</dd>
+<dd><code>arguments</code> - the value for the <a href="#param-arguments"><code>arguments</code></a> record component</dd>
+<dd><code>decorators</code> - the value for the <a href="#param-decorators"><code>decorators</code></a> record component</dd>
+<dd><code>returnType</code> - the value for the <a href="#param-returnType"><code>returnType</code></a> record component</dd>
+<dd><code>typeComment</code> - the value for the <a href="#param-typeComment"><code>typeComment</code></a> record component</dd>
+<dd><code>typeParams</code> - the value for the <a href="#param-typeParams"><code>typeParams</code></a> record component</dd>
+<dd><code>documentation</code> - the value for the <a href="#param-documentation"><code>documentation</code></a> record component</dd>
+<dd><code>isAbstract</code> - the value for the <a href="#param-isAbstract"><code>isAbstract</code></a> record component</dd>
+<dd><code>isStatic</code> - the value for the <a href="#param-isStatic"><code>isStatic</code></a> record component</dd>
+<dd><code>isAsync</code> - the value for the <a href="#param-isAsync"><code>isAsync</code></a> record component</dd>
+<dd><code>hasReturnValue</code> - the value for the <a href="#param-hasReturnValue"><code>hasReturnValue</code></a> record component</dd>
+<dd><code>hasPlaceholderBody</code> - the value for the <a href="#param-hasPlaceholderBody"><code>hasPlaceholderBody</code></a> record component</dd>
+<dd><code>declaringClass</code> - the value for the <a href="#param-declaringClass"><code>declaringClass</code></a> record component</dd>
+<dd><code>superArguments</code> - the value for the <a href="#param-superArguments"><code>superArguments</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(java.lang.String,io.micronaut.python.processing.model.ArgumentsDef,java.util.List,io.micronaut.python.processing.model.ReturnDef,java.lang.String,java.util.List,java.lang.String,boolean,boolean,boolean,boolean,boolean,io.micronaut.python.processing.model.ClassDef)">
+<h3>FunctionDef</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">FunctionDef</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="ArgumentsDef.html" title="class in io.micronaut.python.processing.model">ArgumentsDef</a>&nbsp;arguments,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="DecoratorDef.html" title="class in io.micronaut.python.processing.model">DecoratorDef</a>&gt;&nbsp;decorators,
+ <a href="ReturnDef.html" title="class in io.micronaut.python.processing.model">ReturnDef</a>&nbsp;returnType,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeComment,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeVar.html" title="class in io.micronaut.python.processing.model">TypeVar</a>&gt;&nbsp;typeParams,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;documentation,
+ boolean&nbsp;isAbstract,
+ boolean&nbsp;isStatic,
+ boolean&nbsp;isAsync,
+ boolean&nbsp;hasReturnValue,
+ boolean&nbsp;hasPlaceholderBody,
+ <a href="ClassDef.html" title="class in io.micronaut.python.processing.model">ClassDef</a>&nbsp;declaringClass)</span></div>
+<div class="block">Creates a function without a recorded super constructor call.</div>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="&lt;init&gt;(java.lang.String,io.micronaut.python.processing.model.ArgumentsDef,java.util.List,io.micronaut.python.processing.model.ReturnDef,java.lang.String,java.util.List,java.lang.String,boolean,boolean,boolean,boolean,io.micronaut.python.processing.model.ClassDef)">
 <h3>FunctionDef</h3>
 <div class="horizontal-scroll">
@@ -423,22 +543,7 @@ FunctionDef(identifier name, arguments args, list[stmt] body, list[expr] decorat
  boolean&nbsp;isAsync,
  boolean&nbsp;hasReturnValue,
  <a href="ClassDef.html" title="class in io.micronaut.python.processing.model">ClassDef</a>&nbsp;declaringClass)</span></div>
-<div class="block">Creates an instance of a <code>FunctionDef</code> record class.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>name</code> - the value for the <a href="#param-name"><code>name</code></a> record component</dd>
-<dd><code>arguments</code> - the value for the <a href="#param-arguments"><code>arguments</code></a> record component</dd>
-<dd><code>decorators</code> - the value for the <a href="#param-decorators"><code>decorators</code></a> record component</dd>
-<dd><code>returnType</code> - the value for the <a href="#param-returnType"><code>returnType</code></a> record component</dd>
-<dd><code>typeComment</code> - the value for the <a href="#param-typeComment"><code>typeComment</code></a> record component</dd>
-<dd><code>typeParams</code> - the value for the <a href="#param-typeParams"><code>typeParams</code></a> record component</dd>
-<dd><code>documentation</code> - the value for the <a href="#param-documentation"><code>documentation</code></a> record component</dd>
-<dd><code>isAbstract</code> - the value for the <a href="#param-isAbstract"><code>isAbstract</code></a> record component</dd>
-<dd><code>isStatic</code> - the value for the <a href="#param-isStatic"><code>isStatic</code></a> record component</dd>
-<dd><code>isAsync</code> - the value for the <a href="#param-isAsync"><code>isAsync</code></a> record component</dd>
-<dd><code>hasReturnValue</code> - the value for the <a href="#param-hasReturnValue"><code>hasReturnValue</code></a> record component</dd>
-<dd><code>declaringClass</code> - the value for the <a href="#param-declaringClass"><code>declaringClass</code></a> record component</dd>
-</dl>
+<div class="block">Creates a function with a regular body and without a recorded super constructor call.</div>
 </div>
 </section>
 </li>
@@ -656,6 +761,22 @@ FunctionDef(identifier name, arguments args, list[stmt] body, list[expr] decorat
 </section>
 </li>
 <li>
+<section class="detail" id="withSuperArguments(java.util.List)">
+<h3>withSuperArguments</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="FunctionDef.html" title="class in io.micronaut.python.processing.model">FunctionDef</a></span>&nbsp;<span class="element-name">withSuperArguments</span><wbr><span class="parameters">(<a href="../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a>
+ <a href="../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="SuperArgumentDef.html" title="class in io.micronaut.python.processing.model">SuperArgumentDef</a>&gt;&nbsp;superArguments)</span></div>
+<div class="block">Records the arguments of the <code>super().__init__(...)</code> call of this constructor.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>superArguments</code> - The arguments, or <code>null</code> when the constructor does not call the super constructor</dd>
+<dt>Returns:</dt>
+<dd>The function with the super constructor call recorded</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="toString()">
 <h3>toString</h3>
 <div class="horizontal-scroll">
@@ -805,6 +926,19 @@ FunctionDef(identifier name, arguments args, list[stmt] body, list[expr] decorat
 </section>
 </li>
 <li>
+<section class="detail" id="hasPlaceholderBody()">
+<h3>hasPlaceholderBody</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasPlaceholderBody</span>()</div>
+<div class="block">Returns the value of the <a href="#param-hasPlaceholderBody"><code>hasPlaceholderBody</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-hasPlaceholderBody"><code>hasPlaceholderBody</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="declaringClass()">
 <h3>declaringClass</h3>
 <div class="horizontal-scroll">
@@ -815,6 +949,20 @@ FunctionDef(identifier name, arguments args, list[stmt] body, list[expr] decorat
 <dd><code><a href="MemberDef.html#declaringClass()">declaringClass</a></code>&nbsp;in interface&nbsp;<code><a href="MemberDef.html" title="interface in io.micronaut.python.processing.model">MemberDef</a></code></dd>
 <dt>Returns:</dt>
 <dd>the value of the <a href="#param-declaringClass"><code>declaringClass</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="superArguments()">
+<h3>superArguments</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="SuperArgumentDef.html" title="class in io.micronaut.python.processing.model">SuperArgumentDef</a>&gt;</span>&nbsp;<span class="element-name">superArguments</span>()</div>
+<div class="block">Returns the value of the <a href="#param-superArguments"><code>superArguments</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-superArguments"><code>superArguments</code></a> record component</dd>
 </dl>
 </div>
 </section>

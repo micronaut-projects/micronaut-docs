@@ -59,6 +59,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#toCompletionStage(org.graalvm.polyglot.Value)" tabindex="0">toCompletionStage(Value)</a></li>
+<li><a href="#toPublisher(org.graalvm.polyglot.Value)" tabindex="0">toPublisher(Value)</a></li>
 <li><a href="#toAwaitable(org.graalvm.polyglot.Context,java.util.concurrent.CompletionStage)" tabindex="0">toAwaitable(Context, CompletionStage)</a></li>
 <li><a href="#setEnabled(boolean)" tabindex="0">setEnabled(boolean)</a></li>
 <li><a href="#reportLoopError(java.lang.String)" tabindex="0">reportLoopError(String)</a></li>
@@ -160,6 +161,14 @@ frame of the callback's context; the callback is skipped once the context is clo
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Convert a Python coroutine or awaitable value into a Java <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a>.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#toPublisher(org.graalvm.polyglot.Value)" class="member-name-link">toPublisher</a><wbr>(org.graalvm.polyglot.Value&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Convert a Python coroutine into a publisher that starts the coroutine when it is first
+subscribed, in the reactive context of that subscriber: the publishers the coroutine awaits
+are subscribed with the Reactor context (a reactive transaction status, for instance) and
+the propagated context of the subscriber.</div>
+</div>
 </div>
 </div>
 </div>
@@ -188,6 +197,31 @@ frame of the callback's context; the callback is skipped once the context is clo
 <dd><code>value</code> - The Python result value.</dd>
 <dt>Returns:</dt>
 <dd>A stage that completes when the Python awaitable completes.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="toPublisher(org.graalvm.polyglot.Value)">
+<h3>toPublisher</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</span>&nbsp;<span class="element-name">toPublisher</span><wbr><span class="parameters">(org.graalvm.polyglot.Value&nbsp;value)</span></div>
+<div class="block">Convert a Python coroutine into a publisher that starts the coroutine when it is first
+subscribed, in the reactive context of that subscriber: the publishers the coroutine awaits
+are subscribed with the Reactor context (a reactive transaction status, for instance) and
+the propagated context of the subscriber. A <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> is eager; a bridged
+<code>async def</code> declared to return a publisher uses this deferred form instead.
+<p>
+Consequences of the deferred form: the coroutine never runs when nobody subscribes (Python
+then warns that the coroutine was never awaited), the event loop is the one of the
+subscribing thread, so a <code>subscribeOn</code> decides which loop runs the coroutine, and the
+result of the first subscription is shared with later subscribers, a cancelled subscription
+leaving the coroutine running for them.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>value</code> - The Python coroutine or awaitable value.</dd>
+<dt>Returns:</dt>
+<dd>A publisher of the coroutine's result, empty when the coroutine returns <code>None</code>.</dd>
 </dl>
 </div>
 </section>

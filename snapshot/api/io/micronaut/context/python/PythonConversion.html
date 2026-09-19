@@ -58,6 +58,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#isNone(org.graalvm.polyglot.Value)" tabindex="0">isNone(Value)</a></li>
+<li><a href="#subclassWrapper(org.graalvm.polyglot.Value,java.lang.Class)" tabindex="0">subclassWrapper(Value, Class)</a></li>
 <li><a href="#asObject(java.lang.Object)" tabindex="0">asObject(Object)</a></li>
 <li><a href="#convertObject(org.graalvm.polyglot.Value)" tabindex="0">convertObject(Value)</a></li>
 <li><a href="#unwrapHostObject(org.graalvm.polyglot.Value,java.lang.Class)" tabindex="0">unwrapHostObject(Value, Class)</a></li>
@@ -181,10 +182,18 @@ shrink a collection.</div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns whether the value represents Java null or Python None.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#unwrapHostObject(org.graalvm.polyglot.Value,java.lang.Class)" class="member-name-link">unwrapHostObject</a><wbr>(@Nullable org.graalvm.polyglot.Value&nbsp;value,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;targetType)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;@Nullable T</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#subclassWrapper(org.graalvm.polyglot.Value,java.lang.Class)" class="member-name-link">subclassWrapper</a><wbr>(@Nullable org.graalvm.polyglot.Value&nbsp;value,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;declaredType)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">The wrapper of a Python object for the generated subclass it is an instance of, when the object's
+own class is a generated subclass of the declared wrapper type: a Python subclass instance passed
+or returned as its Python base type then keeps its runtime type, and with it its introspection.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#unwrapHostObject(org.graalvm.polyglot.Value,java.lang.Class)" class="member-name-link">unwrapHostObject</a><wbr>(@Nullable org.graalvm.polyglot.Value&nbsp;value,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;targetType)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Unwraps a generated Python wrapper that crossed a polyglot boundary as a host or proxy object.</div>
 </div>
 </div>
@@ -219,6 +228,32 @@ object or the string representation of the value.</p></div>
 <dd><code>value</code> - The polyglot value</dd>
 <dt>Returns:</dt>
 <dd>Whether the value represents Java null or Python None</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="subclassWrapper(org.graalvm.polyglot.Value,java.lang.Class)">
+<h3>subclassWrapper</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">@Nullable T</span>&nbsp;<span class="element-name">subclassWrapper</span><wbr><span class="parameters">(@Nullable org.graalvm.polyglot.Value&nbsp;value,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;declaredType)</span></div>
+<div class="block">The wrapper of a Python object for the generated subclass it is an instance of, when the object's
+own class is a generated subclass of the declared wrapper type: a Python subclass instance passed
+or returned as its Python base type then keeps its runtime type, and with it its introspection.
+Returns <code>null</code> when the object is of the declared type itself, of a class with no generated
+wrapper, or not a Python object at all, in which case the caller wraps it as the declared type.
+
+<p>The lookup reads the module and qualified name of the object's class; the resolved factory
+is cached per declared type and Python class.</p></div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="subclassWrapper(org.graalvm.polyglot.Value,java.lang.Class)-type-param-T"><code>T</code> - The declared wrapper type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>value</code> - The Python object</dd>
+<dd><code>declaredType</code> - The declared wrapper type</dd>
+<dt>Returns:</dt>
+<dd>The wrapper of the object's own generated class, or <code>null</code></dd>
 </dl>
 </div>
 </section>

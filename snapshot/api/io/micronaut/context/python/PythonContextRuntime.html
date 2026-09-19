@@ -66,6 +66,8 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#getContext()" tabindex="0">getContext()</a></li>
 <li><a href="#isInitialized()" tabindex="0">isInitialized()</a></li>
+<li><a href="#isLiveInstance(org.graalvm.polyglot.Value)" tabindex="0">isLiveInstance(Value)</a></li>
+<li><a href="#isCurrentContext(org.graalvm.polyglot.Context)" tabindex="0">isCurrentContext(Context)</a></li>
 <li><a href="#resetContext()" tabindex="0">resetContext()</a></li>
 <li><a href="#setReuseContext(boolean)" tabindex="0">setReuseContext(boolean)</a></li>
 <li><a href="#isReuseContext()" tabindex="0">isReuseContext()</a></li>
@@ -310,9 +312,21 @@ is still leased to the call; the context is returned to the pool once the stage 
 <div class="block">Invoke a static method on the given Python class.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isInitialized()" class="member-name-link">isInitialized</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isCurrentContext(org.graalvm.polyglot.Context)" class="member-name-link">isCurrentContext</a><wbr>(@Nullable org.graalvm.polyglot.Context&nbsp;context)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Check whether the supplied context is the primary context of the installed runtime, the one a
+generated wrapper creates its Python object in.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isInitialized()" class="member-name-link">isInitialized</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Check if an application runtime is installed.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isLiveInstance(org.graalvm.polyglot.Value)" class="member-name-link">isLiveInstance</a><wbr>(@Nullable org.graalvm.polyglot.Value&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Whether a Python object owned by a generated stub belongs to the primary context of a running
+application.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isReuseContext()" class="member-name-link">isReuseContext</a>()</code></div>
@@ -431,7 +445,9 @@ to Python constructor defaults.</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#resetContext()" class="member-name-link">resetContext</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Uninstall the application runtime.</div>
+<div class="block">Uninstall every installed application runtime, so no application is running as far as
+generated code is concerned; with context reuse enabled it only reloads the Python modules
+of the primary context.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setInstanceProperty(org.graalvm.polyglot.Value,java.lang.String,java.lang.Object)" class="member-name-link">setInstanceProperty</a><wbr>(org.graalvm.polyglot.Value&nbsp;instance,
@@ -562,13 +578,62 @@ context.</div>
 </section>
 </li>
 <li>
+<section class="detail" id="isLiveInstance(org.graalvm.polyglot.Value)">
+<h3>isLiveInstance</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isLiveInstance</span><wbr><span class="parameters">(@Nullable org.graalvm.polyglot.Value&nbsp;value)</span></div>
+<div class="block">Whether a Python object owned by a generated stub belongs to the primary context of a running
+application.
+<p>
+A stub that owns its Python object (one created through a constructor of the stub rather than
+wrapping an existing object) creates it on first use and again when the application the object
+was created in has shut down, that is when its runtime is no longer installed: a stub held in a
+JVM-wide singleton, such as a service loaded once per JVM, then follows the application currently
+running instead of failing with a cancelled execution of a closed context. An object of an
+enclosing application stays live while a nested <code>ApplicationContext.run(...)</code> is the current
+one, so the beans of the enclosing application keep their state across the nested run.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>value</code> - The Python object the stub holds, or <code>null</code> when none was created yet</dd>
+<dt>Returns:</dt>
+<dd><code>true</code> when the object belongs to the primary context of an installed runtime</dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isCurrentContext(org.graalvm.polyglot.Context)">
+<h3>isCurrentContext</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isCurrentContext</span><wbr><span class="parameters">(@Nullable org.graalvm.polyglot.Context&nbsp;context)</span></div>
+<div class="block">Check whether the supplied context is the primary context of the installed runtime, the one a
+generated wrapper creates its Python object in.
+<p>
+<code>Context.equals(Object)</code> compares the underlying context, so the creator instance and the
+view returned by <code>Value.getContext()</code> both match the primary context.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>context</code> - The context to compare</dd>
+<dt>Returns:</dt>
+<dd><code>true</code> when the context is the primary runtime context</dd>
+<dt>Since:</dt>
+<dd>5.2.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="resetContext()">
 <h3>resetContext</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">resetContext</span>()</div>
-<div class="block">Uninstall the application runtime. This method is called during application shutdown
-to ensure proper cleanup and prevent memory leaks; with context reuse enabled it only
-reloads the Python modules of the primary context.</div>
+<div class="block">Uninstall every installed application runtime, so no application is running as far as
+generated code is concerned; with context reuse enabled it only reloads the Python modules
+of the primary context. An application shutting down uninstalls its own runtime through
+<a href="GraalPyContextFactory.html" title="class in io.micronaut.context.python"><code>GraalPyContextFactory</code></a>; this method serves tests and tooling that reset the JVM-wide
+state between applications.</div>
 </div>
 </section>
 </li>
@@ -1411,7 +1476,13 @@ context. Used for callbacks on channels that outlive a Python context.</div>
 <div class="member-signature"><span class="annotations"><a href="../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
 </span><span class="modifiers">public static</span>&nbsp;<span class="return-type">org.graalvm.polyglot.Value</span>&nbsp;<span class="element-name">helper</span><wbr><span class="parameters">(org.graalvm.polyglot.Context&nbsp;context,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
-<div class="block">A function of the <code>micronaut_runtime</code> module, resolved once per context.</div>
+<div class="block">A function of the <code>micronaut_runtime</code> module, resolved once per context.
+<p>
+Helpers are stored per context because Graal values cannot be shared across contexts. Their
+initialization deliberately takes no Java monitor, because GraalPy operations acquire the
+Python GIL: a thread that owns the GIL and re-enters the runtime from Python would deadlock with
+a thread holding the monitor while waiting for the GIL. Concurrent first calls are safe instead
+because the module import is serialised by the Python import lock and the caches are atomic.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>context</code> - The context</dd>

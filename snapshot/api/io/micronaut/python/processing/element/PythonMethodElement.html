@@ -67,6 +67,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#getDescription(boolean)" tabindex="0">getDescription(boolean)</a></li>
 <li><a href="#withNewParameters(io.micronaut.inject.ast.ParameterElement...)" tabindex="0">withNewParameters(ParameterElement...)</a></li>
 <li><a href="#withNewOwningType(io.micronaut.inject.ast.ClassElement)" tabindex="0">withNewOwningType(ClassElement)</a></li>
+<li><a href="#copyValues(io.micronaut.python.processing.element.AbstractPythonElement)" tabindex="0">copyValues(AbstractPythonElement)</a></li>
 <li><a href="#isAbstract()" tabindex="0">isAbstract()</a></li>
 <li><a href="#isAsync()" tabindex="0">isAsync()</a></li>
 <li><a href="#getAnnotationMetadataToWrite()" tabindex="0">getAnnotationMetadataToWrite()</a></li>
@@ -86,12 +87,14 @@ loadScripts(document, 'script');</script>
 <li><a href="#isDeclaredNonNull()" tabindex="0">isDeclaredNonNull()</a></li>
 <li><a href="#getParameters()" tabindex="0">getParameters()</a></li>
 <li><a href="#withParameters(io.micronaut.inject.ast.ParameterElement...)" tabindex="0">withParameters(ParameterElement...)</a></li>
+<li><a href="#withInheritedSignature(io.micronaut.inject.ast.ParameterElement%5B%5D,io.micronaut.inject.ast.ClassElement)" tabindex="0">withInheritedSignature(ParameterElement[], ClassElement)</a></li>
 <li><a href="#isPublic()" tabindex="0">isPublic()</a></li>
 <li><a href="#isPrivate()" tabindex="0">isPrivate()</a></li>
 <li><a href="#getDeclaringType()" tabindex="0">getDeclaringType()</a></li>
 <li><a href="#getOwningType()" tabindex="0">getOwningType()</a></li>
 <li><a href="#getOverriddenMethods()" tabindex="0">getOverriddenMethods()</a></li>
 <li><a href="#getGenericReturnType()" tabindex="0">getGenericReturnType()</a></li>
+<li><a href="#isVarArgs()" tabindex="0">isVarArgs()</a></li>
 <li><a href="#getDocumentation(boolean)" tabindex="0">getDocumentation(boolean)</a></li>
 <li><a href="#equals(java.lang.Object)" tabindex="0">equals(Object)</a></li>
 <li><a href="#hashCode()" tabindex="0">hashCode()</a></li>
@@ -99,10 +102,10 @@ loadScripts(document, 'script');</script>
 <li><a href="#withAnnotationMetadata(io.micronaut.core.annotation.AnnotationMetadata)" tabindex="0">withAnnotationMetadata(AnnotationMetadata)</a></li>
 <li><a href="#getDeclaredTypeVariables()" tabindex="0">getDeclaredTypeVariables()</a></li>
 <li><a href="#element()" tabindex="0">element()</a></li>
-<li><a href="#copyValues(io.micronaut.python.processing.element.AbstractPythonElement)" tabindex="0">copyValues(AbstractPythonElement)</a></li>
 <li><a href="#makeCopy()" tabindex="0">makeCopy()</a></li>
 <li><a href="#getName()" tabindex="0">getName()</a></li>
 <li><a href="#isProtected()" tabindex="0">isProtected()</a></li>
+<li><a href="#getModifiers()" tabindex="0">getModifiers()</a></li>
 </ol>
 </li>
 </ol>
@@ -250,90 +253,106 @@ MethodElement interface implementation including parameters, return types, and v
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the method annotations.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getName()" class="member-name-link">getName</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../model/FunctionDef.html" title="class in io.micronaut.python.processing.model">FunctionDef</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNativeType()" class="member-name-link">getNativeType</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="../../../inject/ast/ElementModifier.html" title="enum class in io.micronaut.inject.ast">ElementModifier</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getModifiers()" class="member-name-link">getModifiers</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Python has no access modifiers, so the modifiers are derived from the visibility, static, abstract and
+final predicates of the element: an element is public unless its name marks it private, which keeps the
+modifier set consistent with <a href="../../../inject/ast/Element.html#isPublic()"><code>Element.isPublic()</code></a>, <a href="../../../inject/ast/Element.html#isStatic()"><code>Element.isStatic()</code></a>, <a href="../../../inject/ast/Element.html#isAbstract()"><code>Element.isAbstract()</code></a> and
+<a href="../../../inject/ast/Element.html#isFinal()"><code>Element.isFinal()</code></a> for the callers that filter on modifiers, such as
+<code>ElementQuery.modifiers(...)</code> and <code>BeanElementBuilder.produceBeans(...)</code>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getName()" class="member-name-link">getName</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../model/FunctionDef.html" title="class in io.micronaut.python.processing.model">FunctionDef</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNativeType()" class="member-name-link">getNativeType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the native <a href="../model/FunctionDef.html" title="class in io.micronaut.python.processing.model"><code>FunctionDef</code></a> object that backs this element.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a><wbr>&lt;<a href="../../../inject/ast/MethodElement.html" title="interface in io.micronaut.inject.ast">MethodElement</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOverriddenMethods()" class="member-name-link">getOverriddenMethods</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a><wbr>&lt;<a href="../../../inject/ast/MethodElement.html" title="interface in io.micronaut.inject.ast">MethodElement</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOverriddenMethods()" class="member-name-link">getOverriddenMethods</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get overridden methods by this method.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../inject/ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOwningType()" class="member-name-link">getOwningType</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../inject/ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOwningType()" class="member-name-link">getOwningType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The owning type is the type that owns this element.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../inject/ast/ParameterElement.html" title="interface in io.micronaut.inject.ast">ParameterElement</a>[]</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParameters()" class="member-name-link">getParameters</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../inject/ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getReturnType()" class="member-name-link">getReturnType</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../inject/ast/ParameterElement.html" title="interface in io.micronaut.inject.ast">ParameterElement</a>[]</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParameters()" class="member-name-link">getParameters</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/annotation/AnnotationMetadata.html" title="interface in io.micronaut.core.annotation">AnnotationMetadata</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTargetAnnotationMetadata()" class="member-name-link">getTargetAnnotationMetadata</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../inject/ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getReturnType()" class="member-name-link">getReturnType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/annotation/AnnotationMetadata.html" title="interface in io.micronaut.core.annotation">AnnotationMetadata</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTargetAnnotationMetadata()" class="member-name-link">getTargetAnnotationMetadata</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Unwraps possible delegate or provider.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasStereotype(java.lang.Class)" class="member-name-link">hasStereotype</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>&gt;&nbsp;annotation)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Checks whether this object has the given annotation stereotype on the object itself or inherited from a parent</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasStereotype(java.lang.Class)" class="member-name-link">hasStereotype</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>&gt;&nbsp;annotation)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasStereotype(java.lang.String)" class="member-name-link">hasStereotype</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;annotation)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Checks whether this object has the given annotation stereotype on the object itself or inherited from a parent</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasStereotype(java.lang.String)" class="member-name-link">hasStereotype</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;annotation)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAbstract()" class="member-name-link">isAbstract</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Checks whether this object has the given annotation stereotype on the object itself or inherited from a parent</div>
+<div class="block">Whether the method is abstract.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAbstract()" class="member-name-link">isAbstract</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAsync()" class="member-name-link">isAsync</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAsync()" class="member-name-link">isAsync</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns whether this method was declared with <code>async def</code>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDeclaredNonNull()" class="member-name-link">isDeclaredNonNull</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDeclaredNullable()" class="member-name-link">isDeclaredNullable</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDeclaredNonNull()" class="member-name-link">isDeclaredNonNull</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isNonNull()" class="member-name-link">isNonNull</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDeclaredNullable()" class="member-name-link">isDeclaredNullable</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isNullable()" class="member-name-link">isNullable</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isNonNull()" class="member-name-link">isNonNull</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isPrivate()" class="member-name-link">isPrivate</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isNullable()" class="member-name-link">isNullable</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isProtected()" class="member-name-link">isProtected</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isPrivate()" class="member-name-link">isPrivate</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isPublic()" class="member-name-link">isPublic</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isProtected()" class="member-name-link">isProtected</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReflectionRequired()" class="member-name-link">isReflectionRequired</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns whether this member element will require reflection to invoke or retrieve at runtime.</div>
-</div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isPublic()" class="member-name-link">isPublic</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReflectionRequired(io.micronaut.inject.ast.ClassElement)" class="member-name-link">isReflectionRequired</a><wbr>(<a href="../../../inject/ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;callingType)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReflectionRequired()" class="member-name-link">isReflectionRequired</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns whether this member element will require reflection to invoke or retrieve at runtime.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isStatic()" class="member-name-link">isStatic</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReflectionRequired(io.micronaut.inject.ast.ClassElement)" class="member-name-link">isReflectionRequired</a><wbr>(<a href="../../../inject/ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;callingType)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns whether this member element will require reflection to invoke or retrieve at runtime.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isStatic()" class="member-name-link">isStatic</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isVarArgs()" class="member-name-link">isVarArgs</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">If method has varargs parameter.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final io.micronaut.python.processing.element.AbstractPythonElement</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#makeCopy()" class="member-name-link">makeCopy</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -342,19 +361,26 @@ MethodElement interface implementation including parameters, return types, and v
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Copies this element and overrides its annotations.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../../inject/ast/MethodElement.html" title="interface in io.micronaut.inject.ast">MethodElement</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withNewOwningType(io.micronaut.inject.ast.ClassElement)" class="member-name-link">withNewOwningType</a><wbr>(@NonNull <a href="../../../inject/ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;owningType)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../inject/ast/MethodElement.html" title="interface in io.micronaut.inject.ast">MethodElement</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withInheritedSignature(io.micronaut.inject.ast.ParameterElement%5B%5D,io.micronaut.inject.ast.ClassElement)" class="member-name-link">withInheritedSignature</a><wbr>(<a href="../../../inject/ast/ParameterElement.html" title="interface in io.micronaut.inject.ast">ParameterElement</a>[]&nbsp;newParameters,
+ @Nullable <a href="../../../inject/ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;newReturnType)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns a new method with a new owning type.</div>
+<div class="block">Returns a copy of this method that reports the given signature instead of the one derived from the
+Python type hints.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../../inject/ast/MethodElement.html" title="interface in io.micronaut.inject.ast">MethodElement</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withNewParameters(io.micronaut.inject.ast.ParameterElement...)" class="member-name-link">withNewParameters</a><wbr>(@NotNull @NonNull <a href="../../../inject/ast/ParameterElement.html" title="interface in io.micronaut.inject.ast">ParameterElement</a>...&nbsp;newParameters)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withNewOwningType(io.micronaut.inject.ast.ClassElement)" class="member-name-link">withNewOwningType</a><wbr>(@NonNull <a href="../../../inject/ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;owningType)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns a new method with a new owning type.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../../inject/ast/MethodElement.html" title="interface in io.micronaut.inject.ast">MethodElement</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withNewParameters(io.micronaut.inject.ast.ParameterElement...)" class="member-name-link">withNewParameters</a><wbr>(@NotNull @NonNull <a href="../../../inject/ast/ParameterElement.html" title="interface in io.micronaut.inject.ast">ParameterElement</a>...&nbsp;newParameters)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Takes this method element and transforms into a new method element with the given parameters appended to the existing parameters.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../inject/ast/MethodElement.html" title="interface in io.micronaut.inject.ast">MethodElement</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withParameters(io.micronaut.inject.ast.ParameterElement...)" class="member-name-link">withParameters</a><wbr>(<a href="../../../inject/ast/ParameterElement.html" title="interface in io.micronaut.inject.ast">ParameterElement</a>...&nbsp;newParameters)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../inject/ast/MethodElement.html" title="interface in io.micronaut.inject.ast">MethodElement</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withParameters(io.micronaut.inject.ast.ParameterElement...)" class="member-name-link">withParameters</a><wbr>(<a href="../../../inject/ast/ParameterElement.html" title="interface in io.micronaut.inject.ast">ParameterElement</a>...&nbsp;newParameters)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Takes this method element and transforms into a new method element with the given parameters.</div>
 </div>
 </div>
@@ -380,7 +406,7 @@ MethodElement interface implementation including parameters, return types, and v
 <code><a href="../../../inject/ast/MemberElement.html#getModifiers()" title="getModifiers()">getModifiers</a>, <a href="../../../inject/ast/MemberElement.html#isAccessible()" title="isAccessible()">isAccessible</a>, <a href="../../../inject/ast/MemberElement.html#isAccessible(io.micronaut.inject.ast.ClassElement)" title="isAccessible(ClassElement)">isAccessible</a>, <a href="../../../inject/ast/MemberElement.html#isAccessible(io.micronaut.inject.ast.ClassElement,boolean)" title="isAccessible(ClassElement, boolean)">isAccessible</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.micronaut.inject.ast.MethodElement">Methods inherited from interface&nbsp;<a href="../../../inject/ast/MethodElement.html#method-summary" title="interface in io.micronaut.inject.ast">MethodElement</a></h3>
-<code><a href="../../../inject/ast/MethodElement.html#addAssociatedBean(io.micronaut.inject.ast.ClassElement)" title="addAssociatedBean(ClassElement)">addAssociatedBean</a>, <a href="../../../inject/ast/MethodElement.html#findParameterIndex(java.lang.String)" title="findParameterIndex(String)">findParameterIndex</a>, <a href="../../../inject/ast/MethodElement.html#getDeclaredMethodAnnotationMetadata()" title="getDeclaredMethodAnnotationMetadata()">getDeclaredMethodAnnotationMetadata</a>, <a href="../../../inject/ast/MethodElement.html#getDeclaredTypeArguments()" title="getDeclaredTypeArguments()">getDeclaredTypeArguments</a>, <a href="../../../inject/ast/MethodElement.html#getParameter(java.lang.String)" title="getParameter(String)">getParameter</a>, <a href="../../../inject/ast/MethodElement.html#getReceiverType()" title="getReceiverType()">getReceiverType</a>, <a href="../../../inject/ast/MethodElement.html#getSuspendParameters()" title="getSuspendParameters()">getSuspendParameters</a>, <a href="../../../inject/ast/MethodElement.html#getThrownTypes()" title="getThrownTypes()">getThrownTypes</a>, <a href="../../../inject/ast/MethodElement.html#getTypeArguments()" title="getTypeArguments()">getTypeArguments</a>, <a href="../../../inject/ast/MethodElement.html#hasParameters()" title="hasParameters()">hasParameters</a>, <a href="../../../inject/ast/MethodElement.html#hides(io.micronaut.inject.ast.MemberElement)" title="hides(MemberElement)">hides</a>, <a href="../../../inject/ast/MethodElement.html#hides(io.micronaut.inject.ast.MethodElement)" title="hides(MethodElement)">hides</a>, <a href="../../../inject/ast/MethodElement.html#isDefault()" title="isDefault()">isDefault</a>, <a href="../../../inject/ast/MethodElement.html#isSubSignature(io.micronaut.inject.ast.MethodElement)" title="isSubSignature(MethodElement)">isSubSignature</a>, <a href="../../../inject/ast/MethodElement.html#isSuspend()" title="isSuspend()">isSuspend</a>, <a href="../../../inject/ast/MethodElement.html#isVarArgs()" title="isVarArgs()">isVarArgs</a>, <a href="../../../inject/ast/MethodElement.html#overrides(io.micronaut.inject.ast.MethodElement)" title="overrides(MethodElement)">overrides</a></code></div>
+<code><a href="../../../inject/ast/MethodElement.html#addAssociatedBean(io.micronaut.inject.ast.ClassElement)" title="addAssociatedBean(ClassElement)">addAssociatedBean</a>, <a href="../../../inject/ast/MethodElement.html#findParameterIndex(java.lang.String)" title="findParameterIndex(String)">findParameterIndex</a>, <a href="../../../inject/ast/MethodElement.html#getDeclaredMethodAnnotationMetadata()" title="getDeclaredMethodAnnotationMetadata()">getDeclaredMethodAnnotationMetadata</a>, <a href="../../../inject/ast/MethodElement.html#getDeclaredTypeArguments()" title="getDeclaredTypeArguments()">getDeclaredTypeArguments</a>, <a href="../../../inject/ast/MethodElement.html#getParameter(java.lang.String)" title="getParameter(String)">getParameter</a>, <a href="../../../inject/ast/MethodElement.html#getReceiverType()" title="getReceiverType()">getReceiverType</a>, <a href="../../../inject/ast/MethodElement.html#getSuspendParameters()" title="getSuspendParameters()">getSuspendParameters</a>, <a href="../../../inject/ast/MethodElement.html#getThrownTypes()" title="getThrownTypes()">getThrownTypes</a>, <a href="../../../inject/ast/MethodElement.html#getTypeArguments()" title="getTypeArguments()">getTypeArguments</a>, <a href="../../../inject/ast/MethodElement.html#hasParameters()" title="hasParameters()">hasParameters</a>, <a href="../../../inject/ast/MethodElement.html#hides(io.micronaut.inject.ast.MemberElement)" title="hides(MemberElement)">hides</a>, <a href="../../../inject/ast/MethodElement.html#hides(io.micronaut.inject.ast.MethodElement)" title="hides(MethodElement)">hides</a>, <a href="../../../inject/ast/MethodElement.html#isDefault()" title="isDefault()">isDefault</a>, <a href="../../../inject/ast/MethodElement.html#isSubSignature(io.micronaut.inject.ast.MethodElement)" title="isSubSignature(MethodElement)">isSubSignature</a>, <a href="../../../inject/ast/MethodElement.html#isSuspend()" title="isSuspend()">isSuspend</a>, <a href="../../../inject/ast/MethodElement.html#overrides(io.micronaut.inject.ast.MethodElement)" title="overrides(MethodElement)">overrides</a></code></div>
 </section>
 </li>
 </ul>
@@ -483,15 +509,32 @@ MethodElement interface implementation including parameters, return types, and v
 </section>
 </li>
 <li>
+<section class="detail" id="copyValues(io.micronaut.python.processing.element.AbstractPythonElement)">
+<h3>copyValues</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">copyValues</span><wbr><span class="parameters">(io.micronaut.python.processing.element.AbstractPythonElement&nbsp;element)</span></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>element</code> - the values to be copied to</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="isAbstract()">
 <h3>isAbstract</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isAbstract</span>()</div>
+<div class="block">Whether the method is abstract. A function decorated with <code>@abstractmethod</code>, declared by a
+<code>Protocol</code>, or declared by an <code>ABC</code> with the <code>...</code> placeholder body is abstract. A
+placeholder body is also abstract in an <a href="../../../aop/Introduction.html" title="annotation interface in io.micronaut.aop"><code>introduction</code></a> type (<code>@Client</code>, a
+repository, an AI service), whose methods are implemented by the introduction advice; in a concrete
+class it is a method returning <code>None</code>.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../../inject/ast/Element.html#isAbstract()">isAbstract</a></code>&nbsp;in interface&nbsp;<code><a href="../../../inject/ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a></code></dd>
 <dt>Returns:</dt>
-<dd>True if the element is abstract.</dd>
+<dd>True if the method is abstract</dd>
 </dl>
 </div>
 </section>
@@ -816,6 +859,27 @@ element.</p></div>
 </section>
 </li>
 <li>
+<section class="detail" id="withInheritedSignature(io.micronaut.inject.ast.ParameterElement[],io.micronaut.inject.ast.ClassElement)">
+<h3>withInheritedSignature</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../inject/ast/MethodElement.html" title="interface in io.micronaut.inject.ast">MethodElement</a></span>&nbsp;<span class="element-name">withInheritedSignature</span><wbr><span class="parameters">(<a href="../../../inject/ast/ParameterElement.html" title="interface in io.micronaut.inject.ast">ParameterElement</a>[]&nbsp;newParameters,
+ @Nullable
+ @Nullable <a href="../../../inject/ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;newReturnType)</span></div>
+<div class="block">Returns a copy of this method that reports the given signature instead of the one derived from the
+Python type hints. A Python method that overrides a Java method adopts the Java signature this way: the
+hints are lossy (<code>int</code> for a boxed <code>Integer</code> id, <code>list[T]</code> for <code>Iterable&lt;T&gt;</code>) while
+the generated stub implements the Java signature, and the bean definition has to dispatch to that one.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>newParameters</code> - The parameters</dd>
+<dd><code>newReturnType</code> - The return type, or <code>null</code> to keep the declared one</dd>
+<dt>Returns:</dt>
+<dd>The copy</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="isPublic()">
 <h3>isPublic</h3>
 <div class="horizontal-scroll">
@@ -903,6 +967,22 @@ whilst <a href="../../../inject/ast/MemberElement.html#getDeclaringType()"><code
 <dd><code><a href="../../../inject/ast/MethodElement.html#getGenericReturnType()">getGenericReturnType</a></code>&nbsp;in interface&nbsp;<code><a href="../../../inject/ast/MethodElement.html" title="interface in io.micronaut.inject.ast">MethodElement</a></code></dd>
 <dt>Returns:</dt>
 <dd>The return type of the method</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isVarArgs()">
+<h3>isVarArgs</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isVarArgs</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../../inject/ast/MethodElement.html#isVarArgs()">MethodElement</a></code></span></div>
+<div class="block">If method has varargs parameter.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../../inject/ast/MethodElement.html#isVarArgs()">isVarArgs</a></code>&nbsp;in interface&nbsp;<code><a href="../../../inject/ast/MethodElement.html" title="interface in io.micronaut.inject.ast">MethodElement</a></code></dd>
+<dt>Returns:</dt>
+<dd>True if it does</dd>
 </dl>
 </div>
 </section>
@@ -1003,18 +1083,6 @@ whilst <a href="../../../inject/ast/MemberElement.html#getDeclaringType()"><code
 </section>
 </li>
 <li>
-<section class="detail" id="copyValues(io.micronaut.python.processing.element.AbstractPythonElement)">
-<h3>copyValues</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">copyValues</span><wbr><span class="parameters">(io.micronaut.python.processing.element.AbstractPythonElement&nbsp;element)</span></div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>element</code> - the values to be copied to</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
 <section class="detail" id="makeCopy()">
 <h3>makeCopy</h3>
 <div class="horizontal-scroll">
@@ -1048,6 +1116,25 @@ whilst <a href="../../../inject/ast/MemberElement.html#getDeclaringType()"><code
 <dd><code><a href="../../../inject/ast/Element.html#isProtected()">isProtected</a></code>&nbsp;in interface&nbsp;<code><a href="../../../inject/ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a></code></dd>
 <dt>Returns:</dt>
 <dd>True if the element is protected.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getModifiers()">
+<h3>getModifiers</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../inject/ast/ElementModifier.html" title="enum class in io.micronaut.inject.ast">ElementModifier</a>&gt;</span>&nbsp;<span class="element-name">getModifiers</span>()</div>
+<div class="block">Python has no access modifiers, so the modifiers are derived from the visibility, static, abstract and
+final predicates of the element: an element is public unless its name marks it private, which keeps the
+modifier set consistent with <a href="../../../inject/ast/Element.html#isPublic()"><code>Element.isPublic()</code></a>, <a href="../../../inject/ast/Element.html#isStatic()"><code>Element.isStatic()</code></a>, <a href="../../../inject/ast/Element.html#isAbstract()"><code>Element.isAbstract()</code></a> and
+<a href="../../../inject/ast/Element.html#isFinal()"><code>Element.isFinal()</code></a> for the callers that filter on modifiers, such as
+<code>ElementQuery.modifiers(...)</code> and <code>BeanElementBuilder.produceBeans(...)</code>.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../../inject/ast/Element.html#getModifiers()">getModifiers</a></code>&nbsp;in interface&nbsp;<code><a href="../../../inject/ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a></code></dd>
+<dt>Returns:</dt>
+<dd>The modifiers</dd>
 </dl>
 </div>
 </section>
