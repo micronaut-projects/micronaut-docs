@@ -75,8 +75,6 @@ loadScripts(document, 'script');</script>
 <li><a href="#subscribe0(io.micronaut.http.body.stream.BufferConsumer,io.micronaut.http.body.stream.BufferConsumer.Upstream)" tabindex="0">subscribe0(BufferConsumer, BufferConsumer.Upstream)</a></li>
 <li><a href="#subscribeFull0(io.micronaut.core.execution.DelayedExecutionFlow,io.micronaut.http.body.stream.BufferConsumer.Upstream,boolean)" tabindex="0">subscribeFull0(DelayedExecutionFlow, BufferConsumer.Upstream, boolean)</a></li>
 <li><a href="#add(io.micronaut.core.io.buffer.ReadBuffer)" tabindex="0">add(ReadBuffer)</a></li>
-<li><a href="#addAndComplete(io.micronaut.core.io.buffer.ReadBuffer)" tabindex="0">addAndComplete(ReadBuffer)</a></li>
-<li><a href="#addGuarded(io.micronaut.core.io.buffer.ReadBuffer,boolean)" tabindex="0">addGuarded(ReadBuffer, boolean)</a></li>
 <li><a href="#complete()" tabindex="0">complete()</a></li>
 <li><a href="#error(java.lang.Throwable)" tabindex="0">error(Throwable)</a></li>
 </ol>
@@ -171,18 +169,6 @@ received.</div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Add a given buffer to this <a href="BaseSharedBuffer.html" title="class in io.micronaut.http.body.stream"><code>BaseSharedBuffer</code></a>.<br>
 Not thread safe, caller must handle concurrency.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addAndComplete(io.micronaut.core.io.buffer.ReadBuffer)" class="member-name-link">addAndComplete</a><wbr>(<a href="../../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&nbsp;rb)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Add a given buffer to this <a href="BaseSharedBuffer.html" title="class in io.micronaut.http.body.stream"><code>BaseSharedBuffer</code></a> and complete it, in one operation.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addGuarded(io.micronaut.core.io.buffer.ReadBuffer,boolean)" class="member-name-link">addGuarded</a><wbr>(<a href="../../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&nbsp;rb,
- boolean&nbsp;completeAfter)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Hook for subclasses that need to apply a concurrency guard around the <a href="#add(io.micronaut.core.io.buffer.ReadBuffer)"><code>add(ReadBuffer)</code></a> portion
-of <a href="#add(io.micronaut.core.io.buffer.ReadBuffer)"><code>add(ReadBuffer)</code></a> and <a href="#addAndComplete(io.micronaut.core.io.buffer.ReadBuffer)"><code>addAndComplete(ReadBuffer)</code></a>.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addSizeLimitTrackers(io.micronaut.http.body.stream.SizeLimitTracker.TrackerPair)" class="member-name-link">addSizeLimitTrackers</a><wbr>(<a href="SizeLimitTracker.TrackerPair.html" title="class in io.micronaut.http.body.stream">SizeLimitTracker.TrackerPair</a>&nbsp;sizeLimitTrackers)</code></div>
@@ -417,45 +403,6 @@ Not thread safe, caller must handle concurrency.</div>
 <dd><code><a href="BufferConsumer.html#add(io.micronaut.core.io.buffer.ReadBuffer)">add</a></code>&nbsp;in interface&nbsp;<code><a href="BufferConsumer.html" title="interface in io.micronaut.http.body.stream">BufferConsumer</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>rb</code> - The buffer</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="addAndComplete(io.micronaut.core.io.buffer.ReadBuffer)">
-<h3>addAndComplete</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addAndComplete</span><wbr><span class="parameters">(<a href="../../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&nbsp;rb)</span></div>
-<div class="block">Add a given buffer to this <a href="BaseSharedBuffer.html" title="class in io.micronaut.http.body.stream"><code>BaseSharedBuffer</code></a> and complete it, in one operation. This
-allows subscribers that implement <a href="BufferConsumer.html#addAndComplete(io.micronaut.core.io.buffer.ReadBuffer)"><code>BufferConsumer.addAndComplete(ReadBuffer)</code></a> to
-combine the final bytes and the completion signal into a single downstream message.<br>
-Not thread safe, caller must handle concurrency.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="BufferConsumer.html#addAndComplete(io.micronaut.core.io.buffer.ReadBuffer)">addAndComplete</a></code>&nbsp;in interface&nbsp;<code><a href="BufferConsumer.html" title="interface in io.micronaut.http.body.stream">BufferConsumer</a></code></dd>
-<dt>Parameters:</dt>
-<dd><code>rb</code> - The final buffer</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="addGuarded(io.micronaut.core.io.buffer.ReadBuffer,boolean)">
-<h3>addGuarded</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;</span>&nbsp;<span class="element-name">addGuarded</span><wbr><span class="parameters">(<a href="../../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&nbsp;rb,
- boolean&nbsp;completeAfter)</span></div>
-<div class="block">Hook for subclasses that need to apply a concurrency guard around the <a href="#add(io.micronaut.core.io.buffer.ReadBuffer)"><code>add(ReadBuffer)</code></a> portion
-of <a href="#add(io.micronaut.core.io.buffer.ReadBuffer)"><code>add(ReadBuffer)</code></a> and <a href="#addAndComplete(io.micronaut.core.io.buffer.ReadBuffer)"><code>addAndComplete(ReadBuffer)</code></a>. Subclasses must call
-<code>super.addGuarded(rb, completeAfter)</code> and return its result.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>rb</code> - The buffer to add</dd>
-<dd><code>completeAfter</code> - Whether the subscribers should be completed together with this buffer</dd>
-<dt>Returns:</dt>
-<dd>With <code>completeAfter</code>, the copies of <code>rb</code> still to be delivered to the
-streaming subscribers together with their completion, one per subscriber in order, or
-<code>null</code> if there are none to deliver. Always <code>null</code> without <code>completeAfter</code>.</dd>
 </dl>
 </div>
 </section>
