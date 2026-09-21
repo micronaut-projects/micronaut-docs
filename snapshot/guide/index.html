@@ -66429,6 +66429,18 @@ repositories {
 <p>This section documents breaking changes between Micronaut versions</p>
 </div>
 <div class="sect2">
+<h3 id="_a_reflectively_dispatched_executable_method_propagates_the_methods_exception">A reflectively dispatched executable method propagates the method&#8217;s exception</h3>
+<div class="paragraph">
+<p>An executable method that generated code cannot call directly, for example a <code>private</code> method annotated with <code>@Executable</code> and <code>@ReflectiveAccess</code>, is dispatched through reflection. Previously <code>ExecutableMethod.invoke</code> wrapped whatever such a method threw in an <a href="../api/io/micronaut/core/reflect/exception/InvocationException.html">InvocationException</a>, with the <code>java.lang.reflect.InvocationTargetException</code> as its cause, while the same method declared package-private or public threw its own exception.</p>
+</div>
+<div class="paragraph">
+<p>A reflectively dispatched method now propagates the method&#8217;s exception unchanged, checked exceptions included, just as a directly dispatched method does. The same applies to an interceptor that invokes one of its own private executable methods, and to a private <code>@PostConstruct</code> or <code>@PreDestroy</code> callback of an intercepted bean. An <code>InvocationException</code> is still thrown when the reflective call itself fails before the method runs, for example on illegal access. Bean introspections are not affected: a private property accessor dispatched through reflection still wraps what it threw in an <code>InvocationException</code>.</p>
+</div>
+<div class="paragraph">
+<p>Code that caught <code>InvocationException</code> to unwrap the cause should catch the method&#8217;s exception instead. Ordinary executable method dispatch changes for classes compiled with Micronaut 5.2.1 or later: bean definitions compiled with an earlier version keep the previous behavior until they are recompiled. Intercepted lifecycle callbacks are the exception, because the AOP runtime unwraps the exception itself: an interceptor of a private <code>@PostConstruct</code> or <code>@PreDestroy</code> callback sees the callback&#8217;s exception, checked exceptions included, even when the bean definition was compiled with an earlier version.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_http_client_redirect_forwarding_no_longer_retains_authorization_headers_cross_origin_by_default">HTTP client redirect forwarding no longer retains authorization headers cross-origin by default</h3>
 <div class="paragraph">
 <p>The Netty HTTP client no longer forwards <code>Authorization</code>, <code>Proxy-Authorization</code>, or <code>Cookie</code> headers on cross-origin redirects by default.
