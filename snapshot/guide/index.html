@@ -57239,6 +57239,9 @@ from io.lettuce.core.codec import ByteArrayCodec, RedisCodec</code></pre>
 <div class="paragraph">
 <p>A module is a Java package when it contains classes on the compile classpath or lies in a namespace reserved for Java (<code>java</code>, <code>javax</code>, <code>jakarta</code>, <code>io</code> and <code>micronaut</code>). Modules of the project&#8217;s own Python sources, the Python standard library and third-party Python packages are never treated as Java imports.</p>
 </div>
+<div class="paragraph">
+<p>At run time no Python module exists for a Java package. The compiler records the Java packages, types and annotations the sources import in a manifest next to the compiled sources, and the runtime installs an import finder that serves them as modules: a package binds its classes on first access, a sub-package is imported when it is first used, and an annotation is a decorator that carries the annotation type and returns its target, the metadata having been compiled into the generated Java class. Every import form works as for a Python package (<code>import micronaut.http.annotation as a</code>, <code>from micronaut.core import util</code>, <code>micronaut.core.util.StringUtils</code> after <code>import micronaut</code>, and <code>from micronaut.http.annotation import *</code>, which binds the imported annotations and classes of the package). A class that is on the compile classpath but missing at run time is bound to a facade that resolves it on first use, so importing the package does not fail for a compile-time-only dependency. A Python module of the application may live in a package of the same name as a Java package (<code>micronaut/context/helper.py</code> next to <code>io.micronaut.context</code>): its package serves both, but a module named like a Java type imported from the package (<code>jakarta/inject/Singleton.py</code>) is a compile error.</p>
+</div>
 
 <h2 id="keywords"><a class="anchor" href="#keywords"></a>16.3.11 Python Keywords in Java APIs</h2>
 
@@ -57334,13 +57337,13 @@ class PetController:
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The generated runtime package for a Java <code>io.&lt;name&gt;</code> package is the top-level Python package <code>&lt;name&gt;</code> (<code>micronaut</code>, <code>swagger</code>, <code>kubernetes</code>, &#8230;&#8203;). It occupies the same name as a Python library called <code>&lt;name&gt;</code> would (for example the <code>grpc</code>, <code>opentelemetry</code> or <code>kubernetes</code> distributions from PyPI): an application that imports both the Java package <code>io.grpc</code> and the Python package <code>grpc</code> sees one of the two shadowed, depending on the order of <code>sys.path</code>. Use either the Java package or the Python library of a given name within one application.
+At run time a Java <code>io.&lt;name&gt;</code> package is the top-level Python package <code>&lt;name&gt;</code> (<code>micronaut</code>, <code>swagger</code>, <code>kubernetes</code>, &#8230;&#8203;). It occupies the same name as a Python library called <code>&lt;name&gt;</code> would (for example the <code>grpc</code>, <code>opentelemetry</code> or <code>kubernetes</code> distributions from PyPI): a Python package of that name on the path takes precedence, and the classes of the Java package <code>io.grpc</code> are then not importable. Use either the Java package or the Python library of a given name within one application.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The same convention applies to Java packages with a segment that is a Python keyword, such as <code>software.amazon.awssdk.http.async</code>: import from the package with the trailing underscore, and the generated module maps the segment back to the Java package:</p>
+<p>The same convention applies to Java packages with a segment that is a Python keyword, such as <code>software.amazon.awssdk.http.async</code>: import from the package with the trailing underscore, and the runtime maps the segment back to the Java package:</p>
 </div>
 <div class="listingblock">
 <div class="content">
