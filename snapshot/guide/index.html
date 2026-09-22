@@ -58037,6 +58037,48 @@ class PythonGreeter(AbstractGreeter):
 </table>
 </div>
 <div class="sect1">
+<h2 id="_checked_exceptions">Checked exceptions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A method of the Java base that declares checked exceptions is overridden like any other; the generated Java override declares the same exceptions. A Java exception raised by the Python override (a <code>java.io.IOException</code> imported from Java, or a Python exception class extending it) reaches the Java caller as that exception, so a <code>catch</code> block of the base, or of the framework calling the method, handles it as it handles a Java implementation. An exception the base method itself throws when called through <code>super()</code> is caught in Python with <code>except</code>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Overriding a method declaring a checked exception</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from java.io import IOException
+from jakarta.inject import Singleton
+from docs.javabases import ChannelInitializer
+
+@Singleton
+class QueueInitializer(ChannelInitializer):
+    def initialize(self, channel: str, name: str) -&gt; None:  # <b class="conum">(1)</b>
+        if name.startswith("reserved"):
+            raise IOException(f"{name} is reserved")  # <b class="conum">(2)</b>
+        super().initialize(channel, "queue:" + name)  # <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>ChannelInitializer.initialize(String, String)</code> declares <code>throws IOException</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>An <code>IOException</code> raised in Python is thrown by the generated override</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The Java implementation may throw the <code>IOException</code> too; Python code catches it with <code>except IOException</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A Python exception that is not one of the declared exceptions (a <code>ValueError</code>, for instance) propagates to Java as a <code>PolyglotException</code>, as from any other bridged method.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_how_it_works">How it works</h2>
 <div class="sectionbody">
 <div class="paragraph">
