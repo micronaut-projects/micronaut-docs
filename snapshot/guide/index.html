@@ -57552,13 +57552,37 @@ names.sort(lambda left, right: (left &gt; right) - (left &lt; right))  <i class=
 </table>
 </div>
 <div class="paragraph">
-<p>This rule covers every interface of <code>java.util.function</code> plus <code>Runnable</code>, <code>java.util.concurrent.Callable</code> and <code>java.util.Comparator</code>.</p>
+<p>This rule covers every interface of <code>java.util.function</code> plus <code>Runnable</code>, <code>java.util.concurrent.Callable</code> and <code>java.util.Comparator</code>, and every functional interface (an interface annotated with <code>@FunctionalInterface</code>, or one with a single abstract method) the Python compiler finds in the Java types the Python sources reference: the imported Java types, the Java bases of the Python classes and the Java types named in type hints, the parameters of their methods (inherited ones included) and, one level further, the parameters of the methods of the types those methods return. A data repository overloaded on a specification and on <code>Iterable</code>, for example <code>deleteAll(PredicateSpecification&lt;T&gt;)</code> and <code>deleteAll(Iterable&lt;T&gt;)</code>, or a <code>KStream</code> returned by a factory and overloaded on <code>ValueMapper</code> and <code>ValueMapperWithKey</code>, is called with a plain lambda:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">def name_equals(name: str):
+    return lambda root, criteria_builder: criteria_builder.equal(root.get("name"), name)
+
+person_repository.deleteAll(name_equals("Denis"))  <i class="conum" data-value="1"></i><b>(1)</b>
+person_repository.deleteAll([denis, josh])  <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A callable is not an <code>Iterable</code>: the lambda selects <code>deleteAll(PredicateSpecification&lt;Person&gt;)</code>. Without the rule the host interop treats <code>Iterable</code> as a functional interface too, and the call is ambiguous.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A sequence selects <code>deleteAll(Iterable&lt;Person&gt;)</code> as before.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>An interface of a library counts as a functional interface when it has a single abstract method, whether or not it is annotated: a lambda passed to a method overloaded on <code>Iterable&lt;String&gt;</code> and <code>org.reactivestreams.Publisher&lt;String&gt;</code> implements <code>subscribe(Subscriber)</code> and selects the <code>Publisher</code> overload, while a list selects the <code>Iterable</code> one.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_adapting_a_callable_explicitly">Adapting a Callable Explicitly</h3>
 <div class="paragraph">
-<p>For overloads on custom functional interfaces, or on interfaces of the same arity, adapt the callable to the interface with <a href="../api/io/micronaut/context/python/PythonInterop.html">PythonInterop</a> before passing it:</p>
+<p>For overloads on functional interfaces of the same arity, or on an interface the compiler did not see because it is only reachable through objects obtained at run time, adapt the callable to the interface with <a href="../api/io/micronaut/context/python/PythonInterop.html">PythonInterop</a> before passing it:</p>
 </div>
 <div class="listingblock">
 <div class="content">
