@@ -57647,7 +57647,56 @@ class PythonDescribable(Describable):
 <p>On the Python side the instance is a plain Python object: <code>isinstance</code>, <code>==</code> and <code>is</code> behave as for any Python class, whether the object is injected into another Python bean, looked up with <code>ApplicationContext.getBean</code> or created with the class itself. The default methods of the interface (and of the interfaces it extends) that the class does not override are available on it all the same. Calling one runs the Java default implementation on the Java view of the object, so the calls a default implementation makes to other interface methods reach the Python definitions.</p>
 </div>
 <div class="paragraph">
-<p>Only interfaces can be implemented this way: a Python class cannot extend a concrete Java class.</p>
+<p>A Python class extends a Java class, abstract or concrete, as described in <a href="#extendingJavaClasses">Extending Java Classes</a>.</p>
+</div>
+<div class="sect1">
+<h2 id="_classes_defined_inside_functions">Classes Defined Inside Functions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A class defined inside a function (a factory function, a test method) has no generated Java class. It keeps the Java interface as its base, and the GraalPy host adapter implements the interface: its instances are Java objects of the interface, so a Java method overloaded on several interfaces, such as <code>subscribe(Subscriber)</code> next to <code>subscribe(Consumer)</code> of a reactive publisher, accepts them, <code>isinstance(obj, Interface)</code> is <code>True</code>, and the default methods of the interface are inherited.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Implementing a Java interface inside a function</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from docs.javabases import EventBus, EventListener
+
+def counting_listener(counts: dict[str, int]) -&gt; EventListener:
+    class CountingListener(EventListener):  # <b class="conum">(1)</b>
+
+        def onEvent(self, event: str) -&gt; None:
+            counts["events"] += 1
+
+        def onComplete(self) -&gt; None:
+            counts["complete"] += 1
+
+    return CountingListener()  # <b class="conum">(2)</b>
+
+EventBus.publish(counting_listener(counts), ["a", "b"])  # <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The class is defined inside a function and keeps the interface as its base</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Its instances are Java objects implementing the interface</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>A Java method overloaded on other interfaces accepts the instance</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A type argument of the base (<code>class Sub(Subscriber[str])</code>) is dropped at run time; the raw interface is the base of the adapter.</p>
+</div>
+<div class="paragraph">
+<p>The adapter passes the constructor arguments on to the Java constructor, which an interface has none of, and cannot combine the interface with another base. A class defined inside a function that declares an <code><em>init</em></code> with parameters, that is decorated (a decorator such as <code>@dataclass</code> may generate the constructor), or that has more than one base, is therefore a plain Python object as described above: Java receives a proxy of the interface, which suffices for a Java method that is not overloaded on other interfaces.</p>
+</div>
+</div>
 </div>
 <div class="sect1">
 <h2 id="_inherited_parameter_constraints">Inherited Parameter Constraints</h2>
