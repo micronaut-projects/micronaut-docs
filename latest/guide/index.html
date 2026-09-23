@@ -899,7 +899,7 @@
         <h1>Micronaut Core</h1>
         <p></p>
         <p>Core components supporting the Micronaut Framework</p>
-        <p><strong>Version:</strong> 5.2.4 </p>
+        <p><strong>Version:</strong> 5.2.5 </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -2124,7 +2124,7 @@ repositories {
 }
 
 micronaut {
-    version = "5.2.4" <i class="conum" data-value="2"></i><b>(2)</b>
+    version = "5.2.5" <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
 </div>
@@ -13878,8 +13878,8 @@ final class AccountService {
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.4"
-    compileOnly "io.micronaut:micronaut-inject-java:5.2.4"
+    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.5"
+    compileOnly "io.micronaut:micronaut-inject-java:5.2.5"
     ...
 }</code></pre>
 </div>
@@ -14301,7 +14301,7 @@ Previously, we recommended using <code>Micronaut.defaultEnvironments("dev")</cod
 | |\/| | |/ __| '__/ _ \| '_ \ / _` | | | | __|
 | |  | | | (__| | | (_) | | | | (_| | |_| | |_
 |_|  |_|_|\___|_|  \___/|_| |_|\__,_|\__,_|\__|
-  Micronaut (5.2.4)
+  Micronaut (5.2.5)
 
 17:07:22.997 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 611ms. Server Running: http://localhost:8080</code></pre>
 </div>
@@ -56942,7 +56942,7 @@ class Friend(ABC):
 </div>
 </div>
 <div class="paragraph">
-<p>With <code>@AiService</code> mapped to the hint by the LangChain4j module, or declared <code>@AllowsReflection</code> on the Python class, or compiled with <code>-Amicronaut.introspection.allowReflection=example.micronaut.aiservice.*</code>, the generated <code>Friend</code> interface carries <code>@SystemMessage</code> and <code>@UserMessage</code> on <code>chat</code> and <code>@V("topic")</code> on its parameter; otherwise the compiler reports the interface as one whose annotations are left off and names the option.</p>
+<p>With <code>@AiService</code> mapped to the hint by the LangChain4j module, or declared <code>@AllowsReflection</code> on the Python class, or compiled with <code>-Amicronaut.introspection.allowReflection=example.micronaut.aiservice.*</code>, the generated <code>Friend</code> interface carries <code>@SystemMessage</code> and <code>@UserMessage</code> on <code>chat</code> and <code>@V("topic")</code> on its parameter; otherwise the annotations are left off, which <code>-Amicronaut.python.reflection.warnings=true</code> has the compiler report as a note (see <a href="#generatedClasses">Generated Java Classes</a>).</p>
 </div>
 <div class="paragraph">
 <p>Micronaut annotations are served to Micronaut through the annotation metadata of the Python class and are not copied, unless their annotation type is annotated with <a href="../api/io/micronaut/core/annotation/ReflectiveAccess.html">@ReflectiveAccess</a>, which declares that a framework reads the annotation reflectively; those are copied regardless of the hint and the option, as are the JUnit annotations. Python-defined annotations and the <code>java.lang</code> annotations that constrain a declaration, such as <code>@FunctionalInterface</code>, are never copied. An annotation whose member values cannot be written to Java source is reported as a compilation warning and left out.</p>
@@ -57647,7 +57647,56 @@ class PythonDescribable(Describable):
 <p>On the Python side the instance is a plain Python object: <code>isinstance</code>, <code>==</code> and <code>is</code> behave as for any Python class, whether the object is injected into another Python bean, looked up with <code>ApplicationContext.getBean</code> or created with the class itself. The default methods of the interface (and of the interfaces it extends) that the class does not override are available on it all the same. Calling one runs the Java default implementation on the Java view of the object, so the calls a default implementation makes to other interface methods reach the Python definitions.</p>
 </div>
 <div class="paragraph">
-<p>Only interfaces can be implemented this way: a Python class cannot extend a concrete Java class.</p>
+<p>A Python class extends a Java class, abstract or concrete, as described in <a href="#extendingJavaClasses">Extending Java Classes</a>.</p>
+</div>
+<div class="sect1">
+<h2 id="_classes_defined_inside_functions">Classes Defined Inside Functions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A class defined inside a function (a factory function, a test method) has no generated Java class. It keeps the Java interface as its base, and the GraalPy host adapter implements the interface: its instances are Java objects of the interface, so a Java method overloaded on several interfaces, such as <code>subscribe(Subscriber)</code> next to <code>subscribe(Consumer)</code> of a reactive publisher, accepts them, <code>isinstance(obj, Interface)</code> is <code>True</code>, and the default methods of the interface are inherited.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Implementing a Java interface inside a function</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from docs.javabases import EventBus, EventListener
+
+def counting_listener(counts: dict[str, int]) -&gt; EventListener:
+    class CountingListener(EventListener):  # <b class="conum">(1)</b>
+
+        def onEvent(self, event: str) -&gt; None:
+            counts["events"] += 1
+
+        def onComplete(self) -&gt; None:
+            counts["complete"] += 1
+
+    return CountingListener()  # <b class="conum">(2)</b>
+
+EventBus.publish(counting_listener(counts), ["a", "b"])  # <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The class is defined inside a function and keeps the interface as its base</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Its instances are Java objects implementing the interface</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>A Java method overloaded on other interfaces accepts the instance</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A type argument of the base (<code>class Sub(Subscriber[str])</code>) is dropped at run time; the raw interface is the base of the adapter.</p>
+</div>
+<div class="paragraph">
+<p>The adapter passes the constructor arguments on to the Java constructor, which an interface has none of, and cannot combine the interface with another base. A class defined inside a function that declares an <code><em>init</em></code> with parameters, that is decorated (a decorator such as <code>@dataclass</code> may generate the constructor), or that has more than one base, is therefore a plain Python object as described above: Java receives a proxy of the interface, which suffices for a Java method that is not overloaded on other interfaces.</p>
+</div>
+</div>
 </div>
 <div class="sect1">
 <h2 id="_inherited_parameter_constraints">Inherited Parameter Constraints</h2>
@@ -57863,7 +57912,13 @@ tasks.named("compileTestPython") {
 </div>
 </div>
 <div class="paragraph">
-<p>A JPA or Hibernate entity written in Python needs the hint or the option: without them the class is found by the entity scan, which reads the annotation metadata, but Hibernate rejects the generated class as not annotated with <code>@Entity</code>. The same holds for any library that reads annotations from the class reflectively, such as JAXB or Jackson used without the Micronaut introspection module. Each class whose annotations are left off the generated source because neither names it is reported once as a compiler note naming the option; Bean Validation constraints, which Micronaut Validation reads from the annotation metadata, are left off without a note.</p>
+<p>A JPA or Hibernate entity written in Python needs the hint or the option: without them the class is found by the entity scan, which reads the annotation metadata, but Hibernate rejects the generated class as not annotated with <code>@Entity</code>. The same holds for any library that reads annotations from the class reflectively, such as JAXB or Jackson used without the Micronaut introspection module.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_reporting_the_classes_that_were_left_off">Reporting the Classes That Were Left Off</h3>
+<div class="paragraph">
+<p>The compiler says nothing about the classes whose annotations it leaves off: most applications read no annotation reflectively, so a note per class is noise. When a reflection-based framework does not see an annotation, <code>-Amicronaut.python.reflection.warnings=true</code> - or the system property of that name of the compiler JVM - has the compiler report each such class once as a note listing the annotations it left off and naming the option that copies them. Bean Validation constraints, which Micronaut Validation reads from the annotation metadata, are left off without a note even then.</p>
 </div>
 </div>
 <div class="sect2">
