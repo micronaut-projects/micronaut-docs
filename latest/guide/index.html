@@ -899,7 +899,7 @@
         <h1>Micronaut Core</h1>
         <p></p>
         <p>Core components supporting the Micronaut Framework</p>
-        <p><strong>Version:</strong> 5.2.3 </p>
+        <p><strong>Version:</strong> 5.2.4 </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -2124,7 +2124,7 @@ repositories {
 }
 
 micronaut {
-    version = "5.2.3" <i class="conum" data-value="2"></i><b>(2)</b>
+    version = "5.2.4" <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
 </div>
@@ -13878,8 +13878,8 @@ final class AccountService {
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.3"
-    compileOnly "io.micronaut:micronaut-inject-java:5.2.3"
+    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.4"
+    compileOnly "io.micronaut:micronaut-inject-java:5.2.4"
     ...
 }</code></pre>
 </div>
@@ -14301,7 +14301,7 @@ Previously, we recommended using <code>Micronaut.defaultEnvironments("dev")</cod
 | |\/| | |/ __| '__/ _ \| '_ \ / _` | | | | __|
 | |  | | | (__| | | (_) | | | | (_| | |_| | |_
 |_|  |_|_|\___|_|  \___/|_| |_|\__,_|\__,_|\__|
-  Micronaut (5.2.3)
+  Micronaut (5.2.4)
 
 17:07:22.997 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 611ms. Server Running: http://localhost:8080</code></pre>
 </div>
@@ -56057,7 +56057,7 @@ static class MyRoutes extends GroovyRouteBuilder {
 <h2 id="_choosing_a_jdk">Choosing a JDK</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The GraalPy version is <code>25.2.4</code>. Use a GraalVM JDK from the matching GraalVM release line, for example GraalVM 25.2.x for GraalPy 25.2.x. The JDK&#8217;s build string then contains the same Truffle line, such as <code>25.0.4+7-jvmci-25.2-b20</code>.</p>
+<p>The GraalPy version is <code>25.4.4.1.1</code>. Use a GraalVM JDK from the matching GraalVM release line, for example GraalVM 25.4.x for GraalPy 25.4.x. The JDK&#8217;s build string then contains the same Truffle line, such as <code>25.0.4.1.1+1-LTS-jvmci-25.4-b23</code>.</p>
 </div>
 <div class="paragraph">
 <p>The following JVMs run Python interpreted, even though some of them are GraalVM builds:</p>
@@ -56068,7 +56068,7 @@ static class MyRoutes extends GroovyRouteBuilder {
 <p>A stock OpenJDK or Oracle JDK.</p>
 </li>
 <li>
-<p>A GraalVM JDK from a different release line, for example GraalVM for JDK 25.0.x with GraalPy 25.2.x. The bundled compiler rejects the mismatched Truffle runtime and Truffle falls back to the interpreter.</p>
+<p>A GraalVM JDK from a different release line, for example GraalVM for JDK 25.0.x with GraalPy 25.4.x. The bundled compiler rejects the mismatched Truffle runtime and Truffle falls back to the interpreter.</p>
 </li>
 </ul>
 </div>
@@ -56667,6 +56667,28 @@ def hello(self) -&gt; str:
 <p>in a class carrying an <a href="../api/io/micronaut/aop/Introduction.html">Introduction</a> stereotype, such as a declarative HTTP client, a Micronaut Data repository or an AI service, whose methods are implemented by the introduction advice.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>A docstring before the <code>&#8230;&#8203;</code> documents the declared method and keeps the body a placeholder:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A documented placeholder method</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from micronaut.http import MediaType
+from micronaut.http.annotation import Get
+from micronaut.http.client.annotation import Client
+
+@Client("/placeholders/books")
+class BookClient:
+
+    @Get("/{id}", consumes=MediaType.TEXT_PLAIN)
+    def find(self, id: int) -&gt; str:
+        """Fetches the title of the book with the given id."""
+        ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A body of <code>pass</code>, or one raising <code>NotImplementedError</code>, is not a placeholder: such a method is a concrete method with that body.</p>
 </div>
 <div class="paragraph">
 <p>In any other class the placeholder is a method body that returns <code>None</code>, so a concrete bean whose methods are placeholders, such as a messaging listener written before its handlers, is a concrete, injectable bean:</p>
@@ -57530,13 +57552,37 @@ names.sort(lambda left, right: (left &gt; right) - (left &lt; right))  <i class=
 </table>
 </div>
 <div class="paragraph">
-<p>This rule covers every interface of <code>java.util.function</code> plus <code>Runnable</code>, <code>java.util.concurrent.Callable</code> and <code>java.util.Comparator</code>.</p>
+<p>This rule covers every interface of <code>java.util.function</code> plus <code>Runnable</code>, <code>java.util.concurrent.Callable</code> and <code>java.util.Comparator</code>, and every functional interface (an interface annotated with <code>@FunctionalInterface</code>, or one with a single abstract method) the Python compiler finds in the Java types the Python sources reference: the imported Java types, the Java bases of the Python classes and the Java types named in type hints, the parameters of their methods (inherited ones included) and, one level further, the parameters of the methods of the types those methods return. A data repository overloaded on a specification and on <code>Iterable</code>, for example <code>deleteAll(PredicateSpecification&lt;T&gt;)</code> and <code>deleteAll(Iterable&lt;T&gt;)</code>, or a <code>KStream</code> returned by a factory and overloaded on <code>ValueMapper</code> and <code>ValueMapperWithKey</code>, is called with a plain lambda:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">def name_equals(name: str):
+    return lambda root, criteria_builder: criteria_builder.equal(root.get("name"), name)
+
+person_repository.deleteAll(name_equals("Denis"))  <i class="conum" data-value="1"></i><b>(1)</b>
+person_repository.deleteAll([denis, josh])  <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A callable is not an <code>Iterable</code>: the lambda selects <code>deleteAll(PredicateSpecification&lt;Person&gt;)</code>. Without the rule the host interop treats <code>Iterable</code> as a functional interface too, and the call is ambiguous.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A sequence selects <code>deleteAll(Iterable&lt;Person&gt;)</code> as before.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>An interface of a library counts as a functional interface when it has a single abstract method, whether or not it is annotated: a lambda passed to a method overloaded on <code>Iterable&lt;String&gt;</code> and <code>org.reactivestreams.Publisher&lt;String&gt;</code> implements <code>subscribe(Subscriber)</code> and selects the <code>Publisher</code> overload, while a list selects the <code>Iterable</code> one.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_adapting_a_callable_explicitly">Adapting a Callable Explicitly</h3>
 <div class="paragraph">
-<p>For overloads on custom functional interfaces, or on interfaces of the same arity, adapt the callable to the interface with <a href="../api/io/micronaut/context/python/PythonInterop.html">PythonInterop</a> before passing it:</p>
+<p>For overloads on functional interfaces of the same arity, or on an interface the compiler did not see because it is only reachable through objects obtained at run time, adapt the callable to the interface with <a href="../api/io/micronaut/context/python/PythonInterop.html">PythonInterop</a> before passing it:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -57603,6 +57649,54 @@ class PythonDescribable(Describable):
 <div class="paragraph">
 <p>Only interfaces can be implemented this way: a Python class cannot extend a concrete Java class.</p>
 </div>
+<div class="sect1">
+<h2 id="_inherited_parameter_constraints">Inherited Parameter Constraints</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A Python override adopts the parameter annotations of the Java method it overrides, the way an overriding Java method does. When the interface declares <a href="#validation">validation</a> constraints on its parameters and <code>micronaut-validation-processor</code> is on the annotation processor path of the Python sources, the Python bean is validated without any decorator of its own, including the constraints inherited by the methods it does not override:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Implementing a constrained Java interface</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from dataclasses import dataclass
+from typing import Annotated
+
+from jakarta.inject import Singleton
+from jakarta.validation.constraints import NotBlank
+from micronaut.core.annotation import Introspected
+from docs.javainterfaces import MessageSender
+
+@Introspected
+@dataclass
+class Message:
+    text: Annotated[str, NotBlank]  # <b class="conum">(1)</b>
+
+
+@Singleton
+class PythonMessageSender(MessageSender[Message]):  # <b class="conum">(2)</b>
+
+    def send(self, recipient: str, message: Message) -&gt; str:  # <b class="conum">(3)</b>
+        return f"{recipient}: {message.text}"</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A cascaded (<code>@Valid</code>) argument is validated through the introspection of the dataclass</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The interface, declared as <code>interface MessageSender&lt;M&gt; { String send(@NotBlank String recipient, @NotNull @Valid M message); default String broadcast(@NotNull @Valid M message) { &#8230;&#8203; } }</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The override needs no constraint of its own: <code>send("", message)</code> and <code>send("bob", None)</code> raise a <code>ConstraintViolationException</code>, as does <code>broadcast(Message(""))</code>, the inherited default method</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
 
 <h2 id="generatedClasses"><a class="anchor" href="#generatedClasses"></a>16.3.16 Generated Java Classes</h2>
 
@@ -57655,7 +57749,40 @@ class OrderServiceTest:
 <p>An instance of a generated class created through its no-argument constructor, for example a service listed in <code>META-INF/services</code> that the framework instantiates, creates its Python object in the Python context of the application running at that time. The instance is not bound to that context: when the application is stopped and another one started in the same JVM, the next use creates the object again in the new context, so a service held in a static holder keeps working across applications and test classes. Instances created with constructor arguments, and instances wrapping an existing Python object, keep the object they were created with.</p>
 </div>
 <div class="paragraph">
-<p>A class is resolved through the module named after it before its package is imported, so a class instantiated on another thread while its package is being imported (a service the parallel service loader creates for a call made at import time) does not wait for the import of the package.</p>
+<p>A class is resolved through its package, which is imported first: classes of one package instantiated on several threads at once wait for the one import of the package. While the package is being imported, a class of it is resolved through the module named after it instead, so a class instantiated on another thread during that import (a service the parallel service loader creates for a call made at import time) does not wait for the import of the package.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_string_representation">String Representation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>toString()</code> of the generated class calls <code><em>str</em></code> of the Python class, or <code><em>repr</em></code> when the class defines no <code><em>str</em></code>, so Java code that formats the object sees the Python representation: a serializer writing the object as a map key, a log statement, a <code>text/plain</code> response or <code>String.valueOf(&#8230;&#8203;)</code>. A class defining neither keeps the default <code>Object.toString()</code>.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">The string representation of a Python class</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">class Feature:
+    def __init__(self, name: str):
+        self._name = name
+
+    def name(self) -&gt; str:
+        return self._name
+
+    def __str__(self) -&gt; str:  # <b class="conum">(1)</b>
+        return self._name</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>String.valueOf(feature)</code> and the string form of a Java collection holding the object give the feature name</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><code><em>eq</em></code> and <code><em>hash</em></code> are not bridged: the identity of a generated instance is that of the Java object, as for a Python class defining neither.</p>
 </div>
 </div>
 </div>
@@ -57954,6 +58081,48 @@ class PythonGreeter(AbstractGreeter):
 <td>The Python object calls the inherited Java methods on itself</td>
 </tr>
 </table>
+</div>
+<div class="sect1">
+<h2 id="_checked_exceptions">Checked exceptions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A method of the Java base that declares checked exceptions is overridden like any other; the generated Java override declares the same exceptions. A Java exception raised by the Python override (a <code>java.io.IOException</code> imported from Java, or a Python exception class extending it) reaches the Java caller as that exception, so a <code>catch</code> block of the base, or of the framework calling the method, handles it as it handles a Java implementation. An exception the base method itself throws when called through <code>super()</code> is caught in Python with <code>except</code>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Overriding a method declaring a checked exception</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from java.io import IOException
+from jakarta.inject import Singleton
+from docs.javabases import ChannelInitializer
+
+@Singleton
+class QueueInitializer(ChannelInitializer):
+    def initialize(self, channel: str, name: str) -&gt; None:  # <b class="conum">(1)</b>
+        if name.startswith("reserved"):
+            raise IOException(f"{name} is reserved")  # <b class="conum">(2)</b>
+        super().initialize(channel, "queue:" + name)  # <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>ChannelInitializer.initialize(String, String)</code> declares <code>throws IOException</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>An <code>IOException</code> raised in Python is thrown by the generated override</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The Java implementation may throw the <code>IOException</code> too; Python code catches it with <code>except IOException</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A Python exception that is not one of the declared exceptions (a <code>ValueError</code>, for instance) propagates to Java as a <code>PolyglotException</code>, as from any other bridged method.</p>
+</div>
+</div>
 </div>
 <div class="sect1">
 <h2 id="_how_it_works">How it works</h2>
@@ -59715,7 +59884,7 @@ suspend fun ServerFilterChain.next(request: HttpRequest&lt;*&gt;): MutableHttpRe
 <p>Any Micronaut application can be run on the GraalVM JDK, however special support has been added to Micronaut to support running Micronaut applications using <a href="https://www.graalvm.org/reference-manual/native-image/">GraalVM&#8217;s <code>native-image</code> tool</a>.</p>
 </div>
 <div class="paragraph">
-<p>Micronaut framework currently supports GraalVM version 25.0.2 and the team is improving the support in every new release. Don&#8217;t hesitate to <a href="https://github.com/micronaut-projects/micronaut-core/issues">report issues</a> however if you find any problem.</p>
+<p>Micronaut framework currently supports GraalVM version 25.4.4+1 and the team is improving the support in every new release. Don&#8217;t hesitate to <a href="https://github.com/micronaut-projects/micronaut-core/issues">report issues</a> however if you find any problem.</p>
 </div>
 <div class="paragraph">
 <p>Many of Micronaut&#8217;s modules and third-party libraries have been verified to work with GraalVM: HTTP server, HTTP client, Function support, Micronaut Data JDBC and JPA, Service Discovery, RabbitMQ, Views, Security, Zipkin, etc. Support for other modules is evolving and will improve over time.</p>
@@ -59789,10 +59958,10 @@ Only Java and Kotlin projects support using GraalVM’s <code>native-image</code
 <p>To build your native image without using Docker, install a GraalVM JDK. The easiest way to install GraalVM on Linux or Mac is to use <a href="https://sdkman.io/">SDKMAN!</a>. For other installation options, visit the <a href="https://www.graalvm.org/downloads/">Downloads page</a>.</p>
 </div>
 <div class="listingblock">
-<div class="title">Installing GraalVM 25.0.2 with SDKMAN!</div>
+<div class="title">Installing GraalVM 25.4.4+1 with SDKMAN!</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ sdk install java 25.0.2-graal
-$ sdk use java 25.0.2-graal</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ sdk install java 25.4.4+1-graal
+$ sdk use java 25.4.4+1-graal</code></pre>
 </div>
 </div>
 <div class="paragraph">
