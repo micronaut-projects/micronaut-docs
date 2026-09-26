@@ -445,7 +445,9 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-byteBodySplitting"><a href="#byteBodySplitting"><strong>6.27.2</strong><span>Splitting</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-byteBodyExample"><a href="#byteBodyExample"><strong>6.27.3</strong><span>Example</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-byteBodyTrailers"><a href="#byteBodyTrailers"><strong>6.27.3</strong><span>Trailers</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-byteBodyExample"><a href="#byteBodyExample"><strong>6.27.4</strong><span>Example</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-sessions"><a href="#sessions"><strong>6.28</strong><span>HTTP Sessions</span></a></div>
         
@@ -36924,7 +36926,53 @@ you can call <code>allowDiscard()</code> and be assured that you will still log 
 </div>
 </div>
 
-<h2 id="byteBodyExample"><a class="anchor" href="#byteBodyExample"></a>6.27.3 Example</h2>
+<h2 id="byteBodyTrailers"><a class="anchor" href="#byteBodyTrailers"></a>6.27.3 Trailers</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/byteBody/byteBodyTrailers.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The trailers of an HTTP message are header fields that follow the last bytes of the body: the trailer section of a
+chunked HTTP/1.1 message, or the headers frame that ends an HTTP/2 stream. gRPC for example reports the status of a
+call in the <code>grpc-status</code> response trailer.</p>
+</div>
+<div class="paragraph">
+<p>The trailers travel with the body. <a href="../api/io/micronaut/http/body/ByteBody.html">ByteBody</a><code>.trailers()</code> returns a <code>CompletionStage</code> that
+completes once the body has ended, with empty headers if the message carried no trailers. It is not a primary
+operation, so it can be called before the body is claimed, and the bodies returned by <code>split()</code> and <code>move()</code> share it.
+Buffering the body with <code>buffer()</code> does not keep the trailers, so read <code>trailers()</code> first when they are needed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">CompletionStage&lt;HttpHeaders&gt; trailers = request.byteBody().trailers();
+return Mono.fromFuture(request.byteBody().buffer())
+    .flatMap(body -&gt; Mono.fromFuture(trailers.toCompletableFuture())
+        .map(t -&gt; body.toString(StandardCharsets.UTF_8) + " " + t.get("x-checksum")));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To send trailers, create the body with <a href="../api/io/micronaut/http/body/ByteBodyFactory.html">ByteBodyFactory</a><code>.withTrailers(body, trailers)</code>.
+The trailers are sent when the given stage completes, so they can be computed while the bytes are being sent, for
+example a checksum. A message with such a body always uses the chunked transfer coding on HTTP/1.1, because trailers
+cannot follow a body with a <code>Content-Length</code>. The same holds for a relayed body whose trailers have already arrived,
+for example one that was received fully before it is sent on: its length is known, but the message is still chunked
+so that the trailers are not lost. A route sends trailers by returning a
+<a href="../api/io/micronaut/http/ByteBodyHttpResponse.html">ByteBodyHttpResponse</a> with such a body, and the raw HTTP client sends the trailers of the
+request body it is given.</p>
+</div>
+<div class="paragraph">
+<p>The Netty server, the Netty client and the raw client relay support trailers on HTTP/1.1, HTTP/2 and HTTP/3. A relay
+that strips the hop-by-hop headers with <code>HttpHeadersUtil.stripHopByHopHeaders</code> keeps <code>TE: trailers</code>, so that the next
+hop knows the trailers reach the client. The
+JDK-based HTTP client neither sends nor receives trailers: it completes the trailers of a response empty, and it sends
+a request body without its trailers.</p>
+</div>
+
+<h2 id="byteBodyExample"><a class="anchor" href="#byteBodyExample"></a>6.27.4 Example</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/byteBody/byteBodyExample.adoc"'>
