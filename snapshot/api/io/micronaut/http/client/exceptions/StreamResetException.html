@@ -54,16 +54,19 @@ loadScripts(document, 'script');</script>
 <div class="toc-header">Contents&nbsp;<input type="text" class="filter-input" disabled placeholder="Filter contents (type .)" aria-label="Filter table of contents" autocomplete="off" spellcheck="false"><input type="reset" class="reset-filter" disabled tabindex="-1" value="Reset"></div>
 <ol class="toc-list" tabindex="-1">
 <li><a href="#" tabindex="0">Description</a></li>
+<li><a href="#nested-class-summary" tabindex="0">Nested Class Summary</a></li>
 <li><a href="#constructor-summary" tabindex="0">Constructor Summary</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
 <li><a href="#%3Cinit%3E(long)" tabindex="0">StreamResetException(long)</a></li>
+<li><a href="#%3Cinit%3E(long,io.micronaut.http.client.exceptions.StreamResetException.Protocol)" tabindex="0">StreamResetException(long, StreamResetException.Protocol)</a></li>
 </ol>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#getErrorCode()" tabindex="0">getErrorCode()</a></li>
+<li><a href="#getProtocol()" tabindex="0">getProtocol()</a></li>
 </ol>
 </li>
 </ol>
@@ -95,9 +98,11 @@ loadScripts(document, 'script');</script>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">StreamResetException</span>
 <span class="extends-implements">extends <a href="HttpClientException.html" title="class in io.micronaut.http.client.exceptions">HttpClientException</a></span></div>
-<div class="block">The server reset the HTTP/2 stream of the request (<code>RST_STREAM</code>) with an error code other
-than <code>REFUSED_STREAM</code>, which is an <a href="UnprocessedRequestException.html" title="class in io.micronaut.http.client.exceptions"><code>UnprocessedRequestException</code></a> instead. The
-request may have been processed: whether it can be retried depends on its method.</div>
+<div class="block">The server reset the stream of the request with an error code that does not say the request
+was left unprocessed: an HTTP/2 <code>RST_STREAM</code> other than <code>REFUSED_STREAM</code>, or an
+HTTP/3 <code>RESET_STREAM</code> other than <code>H3_REQUEST_REJECTED</code>, which are
+<a href="UnprocessedRequestException.html" title="class in io.micronaut.http.client.exceptions"><code>UnprocessedRequestException</code></a>s instead. The request may have been processed: whether it
+can be retried depends on its method.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -114,6 +119,23 @@ request may have been processed: whether it can be retried depends on its method
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li>
+<section class="nested-class-summary" id="nested-class-summary">
+<h2>Nested Class Summary</h2>
+<div class="caption"><span>Nested Classes</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static enum&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="StreamResetException.Protocol.html" class="type-name-link" title="enum class in io.micronaut.http.client.exceptions">StreamResetException.Protocol</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">The protocol of a reset stream: HTTP/2 and HTTP/3 have different error codes.</div>
+</div>
+</div>
+</section>
+</li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <li>
 <section class="constructor-summary" id="constructor-summary">
@@ -124,6 +146,9 @@ request may have been processed: whether it can be retried depends on its method
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(long)" class="member-name-link">StreamResetException</a><wbr>(long&nbsp;errorCode)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(long,io.micronaut.http.client.exceptions.StreamResetException.Protocol)" class="member-name-link">StreamResetException</a><wbr>(long&nbsp;errorCode,
+ <a href="StreamResetException.Protocol.html" title="enum class in io.micronaut.http.client.exceptions">StreamResetException.Protocol</a>&nbsp;protocol)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -141,6 +166,9 @@ request may have been processed: whether it can be retried depends on its method
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getErrorCode()" class="member-name-link">getErrorCode</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StreamResetException.Protocol.html" title="enum class in io.micronaut.http.client.exceptions">StreamResetException.Protocol</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getProtocol()" class="member-name-link">getProtocol</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -176,6 +204,20 @@ request may have been processed: whether it can be retried depends on its method
 </div>
 </section>
 </li>
+<li>
+<section class="detail" id="&lt;init&gt;(long,io.micronaut.http.client.exceptions.StreamResetException.Protocol)">
+<h3>StreamResetException</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StreamResetException</span><wbr><span class="parameters">(long&nbsp;errorCode,
+ <a href="StreamResetException.Protocol.html" title="enum class in io.micronaut.http.client.exceptions">StreamResetException.Protocol</a>&nbsp;protocol)</span></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>errorCode</code> - The error code of the reset, in the error code space of the protocol</dd>
+<dd><code>protocol</code> - The protocol of the stream</dd>
+</dl>
+</div>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -191,7 +233,20 @@ request may have been processed: whether it can be retried depends on its method
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">long</span>&nbsp;<span class="element-name">getErrorCode</span>()</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The HTTP/2 error code of the reset, e.g. <code>0x8</code> for <code>CANCEL</code></dd>
+<dd>The error code of the reset, e.g. <code>0x8</code> for the HTTP/2 <code>CANCEL</code>, or
+<code>0x10c</code> for the HTTP/3 <code>H3_REQUEST_CANCELLED</code>; see <a href="#getProtocol()"><code>getProtocol()</code></a></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getProtocol()">
+<h3>getProtocol</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="StreamResetException.Protocol.html" title="enum class in io.micronaut.http.client.exceptions">StreamResetException.Protocol</a></span>&nbsp;<span class="element-name">getProtocol</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The protocol of the stream, whose error code space <a href="#getErrorCode()"><code>getErrorCode()</code></a> is in</dd>
 </dl>
 </div>
 </section>
