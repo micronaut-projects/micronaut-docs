@@ -23194,6 +23194,219 @@ CircuitBreakerPolicy circuitBreakerPolicy = CircuitBreakerPolicy.builder()
 </div>
 </div>
 <div class="sect1">
+<h2 id="_named_retry_policies">Named Retry Policies</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Named retry policies are experimental.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Retry settings shared by several methods can be configured once as a named policy under <code>micronaut.retry.policies.&lt;name&gt;</code>, and referenced with the <code>name</code> member of <a href="../api/io/micronaut/retry/annotation/Retryable.html">@Retryable</a>:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.retry.policies.books.attempts=5
+micronaut.retry.policies.books.delay=200ms
+micronaut.retry.policies.books.multiplier=2
+micronaut.retry.policies.books.max-delay=10s
+micronaut.retry.policies.books.jitter=0.1
+micronaut.retry.policies.books.includes[0]=java.io.IOException
+micronaut.retry.policies.books.excludes[0]=java.io.FileNotFoundException</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  retry:
+    policies:
+      books:
+        attempts: 5
+        delay: 200ms
+        multiplier: 2
+        max-delay: 10s
+        jitter: 0.1
+        includes:
+          - java.io.IOException
+        excludes:
+          - java.io.FileNotFoundException</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {retry = {policies = {books = {attempts = 5, delay = "200ms", multiplier = 2, max-delay = "10s", jitter = 0.1, includes = ["java.io.IOException"], excludes = ["java.io.FileNotFoundException"]}}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  retry {
+    policies {
+      books {
+        attempts = 5
+        delay = "200ms"
+        multiplier = 2
+        maxDelay = "10s"
+        jitter = 0.1
+        includes = ["java.io.IOException"]
+        excludes = ["java.io.FileNotFoundException"]
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    retry {
+      policies {
+        books {
+          attempts = 5
+          delay = "200ms"
+          multiplier = 2
+          max-delay = "10s"
+          jitter = 0.1
+          includes = ["java.io.IOException"]
+          excludes = ["java.io.FileNotFoundException"]
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "retry": {
+      "policies": {
+        "books": {
+          "attempts": 5,
+          "delay": "200ms",
+          "multiplier": 2,
+          "max-delay": "10s",
+          "jitter": 0.1,
+          "includes": ["java.io.IOException"],
+          "excludes": ["java.io.FileNotFoundException"]
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Applying a Named Retry Policy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Retryable(name = "books") // <b class="conum">(1)</b>
+public Book findBook(String title) {
+    // ...</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Applying a Named Retry Policy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">@Retryable(name="books")  # <b class="conum">(1)</b>
+def find_book(self, title: str) -&gt; Book:
+    # ...</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Applying a Named Retry Policy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Retryable(name = "books") // <b class="conum">(1)</b>
+open fun findBook(title: String): Book {
+    // ...</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Applying a Named Retry Policy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Retryable(name = 'books') // <b class="conum">(1)</b>
+Book findBook(String title) {
+    // ...</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The method takes the attempts, delay, multiplier, maximum delay, jitter, includes and excludes of the <code>books</code> policy</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>As with the annotation, <code>attempts</code> is the maximum number of retries after the first call: <code>attempts: 5</code> calls the method at most six times. The <code>includes</code> and <code>excludes</code> are fully qualified class names of exception types.</p>
+</div>
+<div class="paragraph">
+<p>A member set explicitly on the annotation overrides that setting of the policy alone, e.g. <code>includes</code> on the annotation replaces the includes of the policy and keeps its excludes:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Overriding a Named Retry Policy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Retryable(name = "books", attempts = "1") // <b class="conum">(1)</b>
+public Book getBook(String title) {
+    // ...</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Overriding a Named Retry Policy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">@Retryable(name="books", attempts="1")  # <b class="conum">(1)</b>
+def get_book(self, title: str) -&gt; Book:
+    # ...</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Overriding a Named Retry Policy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Retryable(name = "books", attempts = "1") // <b class="conum">(1)</b>
+open fun getBook(title: String): Book {
+    // ...</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Overriding a Named Retry Policy</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Retryable(name = 'books', attempts = '1') // <b class="conum">(1)</b>
+Book getBook(String title) {
+    // ...</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>One retry, so at most two calls, with the other settings of the <code>books</code> policy</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A policy member that is not configured takes the default of <a href="../api/io/micronaut/retry/annotation/Retryable.html">@Retryable</a>. A name that is not configured fails each call of the method with an <code>IllegalStateException</code> naming the missing policy; a method returning a <code>CompletionStage</code> or a <code>Publisher</code> returns it failed. A policy that is invalid, e.g. with an include that is not the name of an exception class, fails the startup of the application. Without a <code>name</code>, the annotation behaves as before.</p>
+</div>
+<div class="paragraph">
+<p>A <a href="../api/io/micronaut/retry/annotation/CircuitBreaker.html">@CircuitBreaker</a> method that has a <code>name</code> of <a href="../api/io/micronaut/retry/annotation/Retryable.html">@Retryable</a>, e.g. on its class, retries with the named policy in the same way.</p>
+</div>
+<div class="paragraph">
+<p>The policies are also available programmatically through the <a href="../api/io/micronaut/retry/RetryRegistry.html">RetryRegistry</a> bean, whose <code>retry(name)</code> returns the <code>RetryOperations</code> of a policy.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_factory_bean_retry">Factory Bean Retry</h2>
 <div class="sectionbody">
 <div class="paragraph">
