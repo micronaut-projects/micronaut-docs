@@ -447,7 +447,9 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-byteBodyTrailers"><a href="#byteBodyTrailers"><strong>6.27.3</strong><span>Trailers</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-byteBodyExample"><a href="#byteBodyExample"><strong>6.27.4</strong><span>Example</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-byteBodyLimitReplay"><a href="#byteBodyLimitReplay"><strong>6.27.4</strong><span>Limiting and replaying</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-byteBodyExample"><a href="#byteBodyExample"><strong>6.27.5</strong><span>Example</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-sessions"><a href="#sessions"><strong>6.28</strong><span>HTTP Sessions</span></a></div>
         
@@ -37714,7 +37716,38 @@ JDK-based HTTP client neither sends nor receives trailers: it completes the trai
 a request body without its trailers.</p>
 </div>
 
-<h2 id="byteBodyExample"><a class="anchor" href="#byteBodyExample"></a>6.27.4 Example</h2>
+<h2 id="byteBodyLimitReplay"><a class="anchor" href="#byteBodyLimitReplay"></a>6.27.4 Limiting and replaying</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/byteBody/byteBodyLimitReplay.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="../api/io/micronaut/http/body/ByteBodyFactory.html">ByteBodyFactory</a> has two methods that wrap a streamed body without buffering it first.</p>
+</div>
+<div class="paragraph">
+<p><code>limit(body, maxBodySize)</code> returns a body with the same bytes that fails with a
+<a href="../api/io/micronaut/http/exceptions/ContentLengthExceededException.html">ContentLengthExceededException</a> once more than <code>maxBodySize</code> bytes arrive. A body
+whose known length is over the limit fails right away, and one whose known length is within the limit is returned
+as is. Use it to apply a size limit to a body that is relayed rather than read, for example a different limit per
+route.</p>
+</div>
+<div class="paragraph">
+<p><code>replayable(body, maxBufferSize)</code> returns a <a href="../api/io/micronaut/http/body/ReplayableByteBody.html">ReplayableByteBody</a>. Each call to <code>next()</code>
+returns a body with all the bytes from the start, so a body can be sent again after a failed attempt while it is
+still arriving. The first reader streams the bytes and up to <code>maxBufferSize</code> of them are kept for the next readers.
+Once more bytes arrive, the kept bytes are released: readers that already subscribed still get every byte,
+<code>isReplayable()</code> returns <code>false</code> and <code>next()</code> throws a <a href="../api/io/micronaut/http/exceptions/BufferLengthExceededException.html">BufferLengthExceededException</a>.
+The bytes kept for a body from <code>next()</code> that is not read yet count against the same limit, and a reader holds at most
+<code>maxBufferSize</code> bytes it has not consumed yet. A body whose known length is over the limit keeps nothing and is read
+once. A body whose bytes are all available is replayable whatever its size. Close the <a href="../api/io/micronaut/http/body/ReplayableByteBody.html">ReplayableByteBody</a> once no more
+attempts are made, to release the kept bytes, and close every body from <code>next()</code> that is not read.</p>
+</div>
+
+<h2 id="byteBodyExample"><a class="anchor" href="#byteBodyExample"></a>6.27.5 Example</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/byteBody/byteBodyExample.adoc"'>
