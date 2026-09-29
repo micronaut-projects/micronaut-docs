@@ -69,6 +69,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#encodeHttpResponseSafe(io.micronaut.http.HttpRequest,io.micronaut.http.HttpResponse,java.util.function.Function)" tabindex="0">encodeHttpResponseSafe(HttpRequest, HttpResponse, Function)</a></li>
 <li><a href="#encodeNoBody(io.micronaut.http.HttpResponse)" tabindex="0">encodeNoBody(HttpResponse)</a></li>
 <li><a href="#concatenate(org.reactivestreams.Publisher)" tabindex="0">concatenate(Publisher)</a></li>
+<li><a href="#jsonSeparators()" tabindex="0">jsonSeparators()</a></li>
 <li><a href="#concatenateJson(org.reactivestreams.Publisher)" tabindex="0">concatenateJson(Publisher)</a></li>
 <li><a href="#handleStreamingError(io.micronaut.http.HttpRequest,java.lang.Throwable)" tabindex="0">handleStreamingError(HttpRequest, Throwable)</a></li>
 </ol>
@@ -133,7 +134,9 @@ class is internal, it is used from servlet and must not be broken.</div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../body/CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#concatenateJson(org.reactivestreams.Publisher)" class="member-name-link">concatenateJson</a><wbr>(<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;<a href="../body/ByteBody.html" title="interface in io.micronaut.http.body">ByteBody</a>&gt;&nbsp;items)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Concatenate the pieces of a JSON array response.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a><wbr>&lt;? extends <a href="../ByteBodyHttpResponse.html" title="interface in io.micronaut.http">ByteBodyHttpResponse</a>&lt;?&gt;&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#encodeHttpResponseSafe(io.micronaut.http.HttpRequest,io.micronaut.http.HttpResponse)" class="member-name-link">encodeHttpResponseSafe</a><wbr>(<a href="../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;httpRequest,
  <a href="../HttpResponse.html" title="interface in io.micronaut.http">HttpResponse</a>&lt;?&gt;&nbsp;response)</code></div>
@@ -164,9 +167,14 @@ response.</div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">The IO executor for blocking writers.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected &lt;T&gt;&nbsp;<a href="../body/ResponseBodyWriter.html" title="interface in io.micronaut.http.body">ResponseBodyWriter</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#wrap(io.micronaut.http.body.MessageBodyWriter)" class="member-name-link">wrap</a><wbr>(<a href="../body/MessageBodyWriter.html" title="interface in io.micronaut.http.body">MessageBodyWriter</a>&lt;T&gt;&nbsp;messageBodyWriter)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../body/ConcatenatingSubscriber.Separators.html" title="class in io.micronaut.http.body">ConcatenatingSubscriber.Separators</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#jsonSeparators()" class="member-name-link">jsonSeparators</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The separators that frame the pieces of a JSON array response.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected &lt;T&gt;&nbsp;<a href="../body/ResponseBodyWriter.html" title="interface in io.micronaut.http.body">ResponseBodyWriter</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#wrap(io.micronaut.http.body.MessageBodyWriter)" class="member-name-link">wrap</a><wbr>(<a href="../body/MessageBodyWriter.html" title="interface in io.micronaut.http.body">MessageBodyWriter</a>&lt;T&gt;&nbsp;messageBodyWriter)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Transform the given writer into a <a href="../body/ResponseBodyWriter.html" title="interface in io.micronaut.http.body"><code>ResponseBodyWriter</code></a>.</div>
 </div>
 </div>
@@ -314,10 +322,29 @@ response.</div>
 </section>
 </li>
 <li>
+<section class="detail" id="jsonSeparators()">
+<h3>jsonSeparators</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../body/ConcatenatingSubscriber.Separators.html" title="class in io.micronaut.http.body">ConcatenatingSubscriber.Separators</a></span>&nbsp;<span class="element-name">jsonSeparators</span>()</div>
+<div class="block">The separators that frame the pieces of a JSON array response. Those in front of the pieces
+are written by the <a href="../body/PieceWriter.html" title="interface in io.micronaut.http.body"><code>PieceWriter</code></a>s, those that go with the completion by
+<a href="#concatenateJson(org.reactivestreams.Publisher)"><code>concatenateJson(Publisher)</code></a>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The separators</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="concatenateJson(org.reactivestreams.Publisher)">
 <h3>concatenateJson</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../body/CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a></span>&nbsp;<span class="element-name">concatenateJson</span><wbr><span class="parameters">(<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;<a href="../body/ByteBody.html" title="interface in io.micronaut.http.body">ByteBody</a>&gt;&nbsp;items)</span></div>
+<div class="block">Concatenate the pieces of a JSON array response. The pieces already carry the separators in
+front of them, see <a href="#jsonSeparators()"><code>jsonSeparators()</code></a>, so only the trailing ones are added here.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>items</code> - The items</dd>
