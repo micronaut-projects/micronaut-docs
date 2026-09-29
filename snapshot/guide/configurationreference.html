@@ -46,7 +46,7 @@
         <div class="docs-content">
             <div class="project">
                 <h1>Configuration Reference</h1>
-                <p><strong>Version:</strong>5.2.10-SNAPSHOT</p>
+                <p><strong>Version:</strong>5.3.0-SNAPSHOT</p>
                 <p></p>
             </div>
 <div class="sect2">
@@ -929,7 +929,7 @@
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.pool.size</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The size of the pool. Defaults to the number of processors divided by four, at least 2 and at most 8. More contexts cost throughput on a route that reaches a Python bean that is not itself pooled, so raise this only for a workload measured to want it.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The size of the pool. Defaults to the number of processors * 2.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 </tr>
 <tr>
@@ -1171,6 +1171,12 @@
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.client.read-timeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.client.expect-continue-timeout</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"></td>
@@ -1446,6 +1452,15 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.client.read-timeout</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the read timeout. Default value (10 seconds).</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.client.expect-continue-timeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets how long a request with {@code Expect: 100-continue} waits for {@code 100 Continue}
+ before it sends the body anyway. Default value
+ (1 second).
+ {@code null} waits until the read timeout.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -1733,7 +1748,7 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.client.pool.version</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/client/HttpClientConfiguration.ConnectionPoolConfiguration.PoolVersion.html">HttpClientConfiguration$ConnectionPoolConfiguration$PoolVersion</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The version of the connection pool implementation. Defaults to {@code V4_9}, can be set
- to {@code V4_0} for compatibility.</p></td>
+ to the deprecated {@code V4_0} for compatibility.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
@@ -1981,6 +1996,15 @@
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.expect-continue-timeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets how long a request with {@code Expect: 100-continue} waits for {@code 100 Continue}
+ before it sends the body anyway. Default value
+ (1 second).
+ {@code null} waits until the read timeout.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.request-timeout</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The request timeout for non-streaming requests. This is the maximum time until the response
@@ -2177,6 +2201,18 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the default duration to check health status. Default value (30 seconds).</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.load-balancer-strategy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the strategy, or {@code null}</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.load-balancer-key-header</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the header, or {@code null}</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
 </tbody>
 </table>
 <div style="page-break-after: always;"></div>
@@ -2228,9 +2264,73 @@
 </tbody>
 </table>
 <div style="page-break-after: always;"></div>
+<a id="io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceOutlierDetectionConfiguration" href="#io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceOutlierDetectionConfiguration">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 29. Configuration Properties for <a href="../api/io/micronaut/http/client/ServiceHttpClientConfiguration.ServiceOutlierDetectionConfiguration.html">ServiceHttpClientConfiguration$ServiceOutlierDetectionConfiguration</a></caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.outlier-detection.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets whether outlier detection is enabled. Default value {@code false}.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.outlier-detection.consecutive-failures</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the number of consecutive transport failures that eject an instance. Default value
+ ({@value #DEFAULT_CONSECUTIVE_FAILURES}).</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.outlier-detection.consecutive-server-errors</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the number of consecutive responses with a status of 500 or above that eject an
+ instance. Default value {@code 0}: such responses do not count.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.outlier-detection.base-ejection-time</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets how long an instance is ejected the first time; each further ejection lasts one more
+ base time, up to the maximum. Default value ({@value #DEFAULT_BASE_EJECTION_TIME_SECONDS}
+ seconds).</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.outlier-detection.max-ejection-time</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the longest an instance is ejected at once. Default value
+ ({@value #DEFAULT_MAX_EJECTION_TIME_SECONDS} seconds).</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.outlier-detection.max-ejection-percent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the maximum percentage of the instances of the service that are ejected at once: an
+ instance is not ejected when that would eject more. Default value
+ ({@value #DEFAULT_MAX_EJECTION_PERCENT}).</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceConnectionPoolConfiguration" href="#io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceConnectionPoolConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 29. Configuration Properties for <a href="../api/io/micronaut/http/client/ServiceHttpClientConfiguration.ServiceConnectionPoolConfiguration.html">ServiceHttpClientConfiguration$ServiceConnectionPoolConfiguration</a></caption>
+<caption class="title">Table 30. Configuration Properties for <a href="../api/io/micronaut/http/client/ServiceHttpClientConfiguration.ServiceConnectionPoolConfiguration.html">ServiceHttpClientConfiguration$ServiceConnectionPoolConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2301,7 +2401,7 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.pool.version</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/client/HttpClientConfiguration.ConnectionPoolConfiguration.PoolVersion.html">HttpClientConfiguration$ConnectionPoolConfiguration$PoolVersion</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The version of the connection pool implementation. Defaults to {@code V4_9}, can be set
- to {@code V4_0} for compatibility.</p></td>
+ to the deprecated {@code V4_0} for compatibility.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
@@ -2309,7 +2409,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceSslClientConfiguration" href="#io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceSslClientConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 30. Configuration Properties for <a href="../api/io/micronaut/http/client/ServiceHttpClientConfiguration.ServiceSslClientConfiguration.html">ServiceHttpClientConfiguration$ServiceSslClientConfiguration</a></caption>
+<caption class="title">Table 31. Configuration Properties for <a href="../api/io/micronaut/http/client/ServiceHttpClientConfiguration.ServiceSslClientConfiguration.html">ServiceHttpClientConfiguration$ServiceSslClientConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2402,7 +2502,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceSslClientConfiguration$DefaultKeyConfiguration" href="#io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceSslClientConfiguration$DefaultKeyConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 31. Configuration Properties for <a href="../api/io/micronaut/http/client/ServiceHttpClientConfiguration.ServiceSslClientConfiguration.DefaultKeyConfiguration.html">ServiceHttpClientConfiguration$ServiceSslClientConfiguration$DefaultKeyConfiguration</a></caption>
+<caption class="title">Table 32. Configuration Properties for <a href="../api/io/micronaut/http/client/ServiceHttpClientConfiguration.ServiceSslClientConfiguration.DefaultKeyConfiguration.html">ServiceHttpClientConfiguration$ServiceSslClientConfiguration$DefaultKeyConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2435,7 +2535,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceSslClientConfiguration$DefaultKeyStoreConfiguration" href="#io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceSslClientConfiguration$DefaultKeyStoreConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 32. Configuration Properties for <a href="../api/io/micronaut/http/client/ServiceHttpClientConfiguration.ServiceSslClientConfiguration.DefaultKeyStoreConfiguration.html">ServiceHttpClientConfiguration$ServiceSslClientConfiguration$DefaultKeyStoreConfiguration</a></caption>
+<caption class="title">Table 33. Configuration Properties for <a href="../api/io/micronaut/http/client/ServiceHttpClientConfiguration.ServiceSslClientConfiguration.DefaultKeyStoreConfiguration.html">ServiceHttpClientConfiguration$ServiceSslClientConfiguration$DefaultKeyStoreConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2492,7 +2592,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceSslClientConfiguration$DefaultTrustStoreConfiguration" href="#io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceSslClientConfiguration$DefaultTrustStoreConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 33. Configuration Properties for <a href="../api/io/micronaut/http/client/ServiceHttpClientConfiguration.ServiceSslClientConfiguration.DefaultTrustStoreConfiguration.html">ServiceHttpClientConfiguration$ServiceSslClientConfiguration$DefaultTrustStoreConfiguration</a></caption>
+<caption class="title">Table 34. Configuration Properties for <a href="../api/io/micronaut/http/client/ServiceHttpClientConfiguration.ServiceSslClientConfiguration.DefaultTrustStoreConfiguration.html">ServiceHttpClientConfiguration$ServiceSslClientConfiguration$DefaultTrustStoreConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2537,7 +2637,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceWebSocketCompressionConfiguration" href="#io.micronaut.http.client.ServiceHttpClientConfiguration$ServiceWebSocketCompressionConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 34. Configuration Properties for <a href="../api/io/micronaut/http/client/ServiceHttpClientConfiguration.ServiceWebSocketCompressionConfiguration.html">ServiceHttpClientConfiguration$ServiceWebSocketCompressionConfiguration</a></caption>
+<caption class="title">Table 35. Configuration Properties for <a href="../api/io/micronaut/http/client/ServiceHttpClientConfiguration.ServiceWebSocketCompressionConfiguration.html">ServiceHttpClientConfiguration$ServiceWebSocketCompressionConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2568,7 +2668,7 @@
 <h3 id="_micronaut_http_config_properties">Micronaut Http Config Properties</h3>
 <a id="io.micronaut.http.ssl.FileCertificateProvider$Config" href="#io.micronaut.http.ssl.FileCertificateProvider$Config">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 35. Configuration Properties for <a href="../api/io/micronaut/http/ssl/FileCertificateProvider.Config.html">FileCertificateProvider$Config</a></caption>
+<caption class="title">Table 36. Configuration Properties for <a href="../api/io/micronaut/http/ssl/FileCertificateProvider.Config.html">FileCertificateProvider$Config</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2632,7 +2732,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.ResourceCertificateProvider$Config" href="#io.micronaut.http.ssl.ResourceCertificateProvider$Config">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 36. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ResourceCertificateProvider.Config.html">ResourceCertificateProvider$Config</a></caption>
+<caption class="title">Table 37. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ResourceCertificateProvider.Config.html">ResourceCertificateProvider$Config</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2675,7 +2775,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.SelfSignedCertificateProvider$Config" href="#io.micronaut.http.ssl.SelfSignedCertificateProvider$Config">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 37. Configuration Properties for <a href="../api/io/micronaut/http/ssl/SelfSignedCertificateProvider.Config.html">SelfSignedCertificateProvider$Config</a></caption>
+<caption class="title">Table 38. Configuration Properties for <a href="../api/io/micronaut/http/ssl/SelfSignedCertificateProvider.Config.html">SelfSignedCertificateProvider$Config</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2724,7 +2824,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.codec.CodecConfiguration" href="#io.micronaut.http.codec.CodecConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 38. Configuration Properties for <a href="../api/io/micronaut/http/codec/CodecConfiguration.html">CodecConfiguration</a></caption>
+<caption class="title">Table 39. Configuration Properties for <a href="../api/io/micronaut/http/codec/CodecConfiguration.html">CodecConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2751,7 +2851,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.ClientSslConfiguration" href="#io.micronaut.http.ssl.ClientSslConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 39. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ClientSslConfiguration.html">ClientSslConfiguration</a></caption>
+<caption class="title">Table 40. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ClientSslConfiguration.html">ClientSslConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2871,7 +2971,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.ClientSslConfiguration$DefaultKeyConfiguration" href="#io.micronaut.http.ssl.ClientSslConfiguration$DefaultKeyConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 40. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ClientSslConfiguration.DefaultKeyConfiguration.html">ClientSslConfiguration$DefaultKeyConfiguration</a></caption>
+<caption class="title">Table 41. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ClientSslConfiguration.DefaultKeyConfiguration.html">ClientSslConfiguration$DefaultKeyConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2904,7 +3004,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.ClientSslConfiguration$DefaultKeyStoreConfiguration" href="#io.micronaut.http.ssl.ClientSslConfiguration$DefaultKeyStoreConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 41. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ClientSslConfiguration.DefaultKeyStoreConfiguration.html">ClientSslConfiguration$DefaultKeyStoreConfiguration</a></caption>
+<caption class="title">Table 42. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ClientSslConfiguration.DefaultKeyStoreConfiguration.html">ClientSslConfiguration$DefaultKeyStoreConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2967,7 +3067,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.ClientSslConfiguration$DefaultTrustStoreConfiguration" href="#io.micronaut.http.ssl.ClientSslConfiguration$DefaultTrustStoreConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 42. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ClientSslConfiguration.DefaultTrustStoreConfiguration.html">ClientSslConfiguration$DefaultTrustStoreConfiguration</a></caption>
+<caption class="title">Table 43. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ClientSslConfiguration.DefaultTrustStoreConfiguration.html">ClientSslConfiguration$DefaultTrustStoreConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3014,7 +3114,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.form.FormConfigurationProperties" href="#io.micronaut.http.form.FormConfigurationProperties">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 43. Configuration Properties for <a href="../api/io/micronaut/http/form/FormConfigurationProperties.html">FormConfigurationProperties</a></caption>
+<caption class="title">Table 44. Configuration Properties for <a href="../api/io/micronaut/http/form/FormConfigurationProperties.html">FormConfigurationProperties</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3047,7 +3147,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.ServerSslConfiguration" href="#io.micronaut.http.ssl.ServerSslConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 44. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ServerSslConfiguration.html">ServerSslConfiguration</a></caption>
+<caption class="title">Table 45. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ServerSslConfiguration.html">ServerSslConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3159,7 +3259,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.ServerSslConfiguration$DefaultKeyConfiguration" href="#io.micronaut.http.ssl.ServerSslConfiguration$DefaultKeyConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 45. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ServerSslConfiguration.DefaultKeyConfiguration.html">ServerSslConfiguration$DefaultKeyConfiguration</a></caption>
+<caption class="title">Table 46. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ServerSslConfiguration.DefaultKeyConfiguration.html">ServerSslConfiguration$DefaultKeyConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3192,7 +3292,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.ServerSslConfiguration$DefaultKeyStoreConfiguration" href="#io.micronaut.http.ssl.ServerSslConfiguration$DefaultKeyStoreConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 46. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ServerSslConfiguration.DefaultKeyStoreConfiguration.html">ServerSslConfiguration$DefaultKeyStoreConfiguration</a></caption>
+<caption class="title">Table 47. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ServerSslConfiguration.DefaultKeyStoreConfiguration.html">ServerSslConfiguration$DefaultKeyStoreConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3255,7 +3355,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.ServerSslConfiguration$DefaultTrustStoreConfiguration" href="#io.micronaut.http.ssl.ServerSslConfiguration$DefaultTrustStoreConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 47. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ServerSslConfiguration.DefaultTrustStoreConfiguration.html">ServerSslConfiguration$DefaultTrustStoreConfiguration</a></caption>
+<caption class="title">Table 48. Configuration Properties for <a href="../api/io/micronaut/http/ssl/ServerSslConfiguration.DefaultTrustStoreConfiguration.html">ServerSslConfiguration$DefaultTrustStoreConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3302,7 +3402,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.DefaultSslConfiguration" href="#io.micronaut.http.ssl.DefaultSslConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 48. Configuration Properties for <a href="../api/io/micronaut/http/ssl/DefaultSslConfiguration.html">DefaultSslConfiguration</a></caption>
+<caption class="title">Table 49. Configuration Properties for <a href="../api/io/micronaut/http/ssl/DefaultSslConfiguration.html">DefaultSslConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3396,7 +3496,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.DefaultSslConfiguration$DefaultKeyConfiguration" href="#io.micronaut.http.ssl.DefaultSslConfiguration$DefaultKeyConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 49. Configuration Properties for <a href="../api/io/micronaut/http/ssl/DefaultSslConfiguration.DefaultKeyConfiguration.html">DefaultSslConfiguration$DefaultKeyConfiguration</a></caption>
+<caption class="title">Table 50. Configuration Properties for <a href="../api/io/micronaut/http/ssl/DefaultSslConfiguration.DefaultKeyConfiguration.html">DefaultSslConfiguration$DefaultKeyConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3429,7 +3529,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.DefaultSslConfiguration$DefaultKeyStoreConfiguration" href="#io.micronaut.http.ssl.DefaultSslConfiguration$DefaultKeyStoreConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 50. Configuration Properties for <a href="../api/io/micronaut/http/ssl/DefaultSslConfiguration.DefaultKeyStoreConfiguration.html">DefaultSslConfiguration$DefaultKeyStoreConfiguration</a></caption>
+<caption class="title">Table 51. Configuration Properties for <a href="../api/io/micronaut/http/ssl/DefaultSslConfiguration.DefaultKeyStoreConfiguration.html">DefaultSslConfiguration$DefaultKeyStoreConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3492,7 +3592,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.ssl.DefaultSslConfiguration$DefaultTrustStoreConfiguration" href="#io.micronaut.http.ssl.DefaultSslConfiguration$DefaultTrustStoreConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 51. Configuration Properties for <a href="../api/io/micronaut/http/ssl/DefaultSslConfiguration.DefaultTrustStoreConfiguration.html">DefaultSslConfiguration$DefaultTrustStoreConfiguration</a></caption>
+<caption class="title">Table 52. Configuration Properties for <a href="../api/io/micronaut/http/ssl/DefaultSslConfiguration.DefaultTrustStoreConfiguration.html">DefaultSslConfiguration$DefaultTrustStoreConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3542,7 +3642,7 @@
 <h3 id="_micronaut_http_netty_config_properties">Micronaut Http Netty Config Properties</h3>
 <a id="io.micronaut.http.netty.channel.DefaultEventLoopGroupConfiguration" href="#io.micronaut.http.netty.channel.DefaultEventLoopGroupConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 52. Configuration Properties for <a href="../api/io/micronaut/http/netty/channel/DefaultEventLoopGroupConfiguration.html">DefaultEventLoopGroupConfiguration</a></caption>
+<caption class="title">Table 53. Configuration Properties for <a href="../api/io/micronaut/http/netty/channel/DefaultEventLoopGroupConfiguration.html">DefaultEventLoopGroupConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3634,7 +3734,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.netty.channel.loom.LoomCarrierConfiguration" href="#io.micronaut.http.netty.channel.loom.LoomCarrierConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 53. Configuration Properties for <a href="../api/io/micronaut/http/netty/channel/loom/LoomCarrierConfiguration.html">LoomCarrierConfiguration</a></caption>
+<caption class="title">Table 54. Configuration Properties for <a href="../api/io/micronaut/http/netty/channel/loom/LoomCarrierConfiguration.html">LoomCarrierConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3704,7 +3804,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.netty.configuration.NettyGlobalConfiguration" href="#io.micronaut.http.netty.configuration.NettyGlobalConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 54. Configuration Properties for <a href="../api/io/micronaut/http/netty/configuration/NettyGlobalConfiguration.html">NettyGlobalConfiguration</a></caption>
+<caption class="title">Table 55. Configuration Properties for <a href="../api/io/micronaut/http/netty/configuration/NettyGlobalConfiguration.html">NettyGlobalConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3767,7 +3867,7 @@
 <h3 id="_micronaut_http_server_config_properties">Micronaut Http Server Config Properties</h3>
 <a id="io.micronaut.http.server.HttpServerConfiguration" href="#io.micronaut.http.server.HttpServerConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 55. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.html">HttpServerConfiguration</a></caption>
+<caption class="title">Table 56. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.html">HttpServerConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3892,7 +3992,7 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.error-response-include-message</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/http/server/HttpServerConfiguration.ErrorResponseIncludeMessageMode.html">HttpServerConfiguration$ErrorResponseIncludeMessageMode</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets when unhandled exception messages should be included in error responses.
- Default value (ErrorResponseIncludeMessageMode.NEVER).</p></td>
+ Default value ({@link #DEFAULT_ERROR_RESPONSE_INCLUDE_MESSAGE}).</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -3955,6 +4055,20 @@
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.http10-keep-alive</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">{@code true} to keep such a connection; {@code false}, the default, to end the
+ connection of an HTTP/1.0 client after each response</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.reject-unsupported-http-versions</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">{@code true} to reject such a request; {@code false}, the default, to serve it and
+ answer with its version</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.max-params</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">the maximum parameter count.</p></td>
@@ -3964,7 +4078,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.HttpServerConfiguration$CorsConfiguration" href="#io.micronaut.http.server.HttpServerConfiguration$CorsConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 56. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.CorsConfiguration.html">HttpServerConfiguration$CorsConfiguration</a></caption>
+<caption class="title">Table 57. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.CorsConfiguration.html">HttpServerConfiguration$CorsConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -4022,7 +4136,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.HttpServerConfiguration$HostResolutionConfiguration" href="#io.micronaut.http.server.HttpServerConfiguration$HostResolutionConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 57. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.HostResolutionConfiguration.html">HttpServerConfiguration$HostResolutionConfiguration</a></caption>
+<caption class="title">Table 58. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.HostResolutionConfiguration.html">HttpServerConfiguration$HostResolutionConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -4073,7 +4187,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.HttpServerConfiguration$HttpLocaleResolutionConfigurationProperties" href="#io.micronaut.http.server.HttpServerConfiguration$HttpLocaleResolutionConfigurationProperties">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 58. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.HttpLocaleResolutionConfigurationProperties.html">HttpServerConfiguration$HttpLocaleResolutionConfigurationProperties</a></caption>
+<caption class="title">Table 59. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.HttpLocaleResolutionConfigurationProperties.html">HttpServerConfiguration$HttpLocaleResolutionConfigurationProperties</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -4127,7 +4241,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.HttpServerConfiguration$MultipartConfiguration" href="#io.micronaut.http.server.HttpServerConfiguration$MultipartConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 59. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.MultipartConfiguration.html">HttpServerConfiguration$MultipartConfiguration</a></caption>
+<caption class="title">Table 60. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.MultipartConfiguration.html">HttpServerConfiguration$MultipartConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -4186,7 +4300,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.HttpServerConfiguration$FileTypeHandlerConfiguration" href="#io.micronaut.http.server.HttpServerConfiguration$FileTypeHandlerConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 60. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.FileTypeHandlerConfiguration.html">HttpServerConfiguration$FileTypeHandlerConfiguration</a></caption>
+<caption class="title">Table 61. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.FileTypeHandlerConfiguration.html">HttpServerConfiguration$FileTypeHandlerConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -4213,7 +4327,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.HttpServerConfiguration$FileTypeHandlerConfiguration$CacheControlConfiguration" href="#io.micronaut.http.server.HttpServerConfiguration$FileTypeHandlerConfiguration$CacheControlConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 61. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.FileTypeHandlerConfiguration.CacheControlConfiguration.html">HttpServerConfiguration$FileTypeHandlerConfiguration$CacheControlConfiguration</a></caption>
+<caption class="title">Table 62. Configuration Properties for <a href="../api/io/micronaut/http/server/HttpServerConfiguration.FileTypeHandlerConfiguration.CacheControlConfiguration.html">HttpServerConfiguration$FileTypeHandlerConfiguration$CacheControlConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -4249,7 +4363,7 @@
 <h3 id="_micronaut_http_server_netty_config_properties">Micronaut Http Server Netty Config Properties</h3>
 <a id="io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration" href="#io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 62. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.html">NettyHttpServerConfiguration</a></caption>
+<caption class="title">Table 63. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.html">NettyHttpServerConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -4411,6 +4525,18 @@
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.semicolon-is-normal-char</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.http10-keep-alive</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.reject-unsupported-http-versions</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"></td>
@@ -4643,7 +4769,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$AccessLogger" href="#io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$AccessLogger">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 63. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.AccessLogger.html">NettyHttpServerConfiguration$AccessLogger</a></caption>
+<caption class="title">Table 64. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.AccessLogger.html">NettyHttpServerConfiguration$AccessLogger</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -4688,7 +4814,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$Http2Settings" href="#io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$Http2Settings">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 64. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.Http2Settings.html">NettyHttpServerConfiguration$Http2Settings</a></caption>
+<caption class="title">Table 65. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.Http2Settings.html">NettyHttpServerConfiguration$Http2Settings</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -4765,7 +4891,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$Http3Settings" href="#io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$Http3Settings">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 65. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.Http3Settings.html">NettyHttpServerConfiguration$Http3Settings</a></caption>
+<caption class="title">Table 66. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.Http3Settings.html">NettyHttpServerConfiguration$Http3Settings</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -4810,7 +4936,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$NettyListenerConfiguration" href="#io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$NettyListenerConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 66. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.NettyListenerConfiguration.html">NettyHttpServerConfiguration$NettyListenerConfiguration</a></caption>
+<caption class="title">Table 67. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.NettyListenerConfiguration.html">NettyHttpServerConfiguration$NettyListenerConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -4922,7 +5048,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$Parent" href="#io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$Parent">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 67. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.Parent.html">NettyHttpServerConfiguration$Parent</a></caption>
+<caption class="title">Table 68. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.Parent.html">NettyHttpServerConfiguration$Parent</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5021,7 +5147,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$FileTypeHandlerConfiguration" href="#io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$FileTypeHandlerConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 68. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.FileTypeHandlerConfiguration.html">NettyHttpServerConfiguration$FileTypeHandlerConfiguration</a></caption>
+<caption class="title">Table 69. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.FileTypeHandlerConfiguration.html">NettyHttpServerConfiguration$FileTypeHandlerConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5048,7 +5174,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$FileTypeHandlerConfiguration$CacheControlConfiguration" href="#io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$FileTypeHandlerConfiguration$CacheControlConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 69. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.FileTypeHandlerConfiguration.CacheControlConfiguration.html">NettyHttpServerConfiguration$FileTypeHandlerConfiguration$CacheControlConfiguration</a></caption>
+<caption class="title">Table 70. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.FileTypeHandlerConfiguration.CacheControlConfiguration.html">NettyHttpServerConfiguration$FileTypeHandlerConfiguration$CacheControlConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5081,7 +5207,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$Worker" href="#io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration$Worker">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 70. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.Worker.html">NettyHttpServerConfiguration$Worker</a></caption>
+<caption class="title">Table 71. Configuration Properties for <a href="../api/io/micronaut/http/server/netty/configuration/NettyHttpServerConfiguration.Worker.html">NettyHttpServerConfiguration$Worker</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5183,7 +5309,7 @@
 <h3 id="_micronaut_jackson_databind_config_properties">Micronaut Jackson Databind Config Properties</h3>
 <a id="io.micronaut.jackson.JacksonConfiguration" href="#io.micronaut.jackson.JacksonConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 71. Configuration Properties for <a href="../api/io/micronaut/jackson/JacksonConfiguration.html">JacksonConfiguration</a></caption>
+<caption class="title">Table 72. Configuration Properties for <a href="../api/io/micronaut/jackson/JacksonConfiguration.html">JacksonConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5335,6 +5461,23 @@
  classpath at runtime.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.bean-introspection-creators</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether Jackson creates a bean through its <a href="../api/io/micronaut/core/beans/BeanIntrospection.html">BeanIntrospection</a> when the
+ constructor it binds the properties to is the constructor of the introspection. The introspection calls
+ the constructor from generated code instead of a method handle. Default value: {@code true}.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jackson.event-loop-recycler-pool</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the {@link JsonFactory} keeps one Jackson buffer recycler per Netty event loop thread instead of
+ taking one from a shared concurrent pool for every parser and generator. Other threads, including virtual
+ threads, keep using the shared pool. Only applies when Netty is on the class path. Default value:
+ {@code true}.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
 </tbody>
 </table>
 <div style="page-break-after: always;"></div>
@@ -5343,7 +5486,7 @@
 <h3 id="_micronaut_management_config_properties">Micronaut Management Config Properties</h3>
 <a id="io.micronaut.management.endpoint.EndpointConfiguration" href="#io.micronaut.management.endpoint.EndpointConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 72. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/EndpointConfiguration.html">EndpointConfiguration</a></caption>
+<caption class="title">Table 73. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/EndpointConfiguration.html">EndpointConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5382,7 +5525,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.management.endpoint.EndpointDefaultConfiguration" href="#io.micronaut.management.endpoint.EndpointDefaultConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 73. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/EndpointDefaultConfiguration.html">EndpointDefaultConfiguration</a></caption>
+<caption class="title">Table 74. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/EndpointDefaultConfiguration.html">EndpointDefaultConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5433,7 +5576,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.management.endpoint.env.EnvironmentEndpoint" href="#io.micronaut.management.endpoint.env.EnvironmentEndpoint">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 74. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/env/EnvironmentEndpoint.html">EnvironmentEndpoint</a></caption>
+<caption class="title">Table 75. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/env/EnvironmentEndpoint.html">EnvironmentEndpoint</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5461,7 +5604,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.management.endpoint.health.HealthEndpoint" href="#io.micronaut.management.endpoint.health.HealthEndpoint">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 75. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/health/HealthEndpoint.html">HealthEndpoint</a></caption>
+<caption class="title">Table 76. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/health/HealthEndpoint.html">HealthEndpoint</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5494,7 +5637,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.management.health.indicator.discovery.DiscoveryClientHealthIndicatorConfiguration" href="#io.micronaut.management.health.indicator.discovery.DiscoveryClientHealthIndicatorConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 76. Configuration Properties for <a href="../api/io/micronaut/management/health/indicator/discovery/DiscoveryClientHealthIndicatorConfiguration.html">DiscoveryClientHealthIndicatorConfiguration</a></caption>
+<caption class="title">Table 77. Configuration Properties for <a href="../api/io/micronaut/management/health/indicator/discovery/DiscoveryClientHealthIndicatorConfiguration.html">DiscoveryClientHealthIndicatorConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5521,7 +5664,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.management.health.indicator.diskspace.DiskSpaceIndicatorConfiguration" href="#io.micronaut.management.health.indicator.diskspace.DiskSpaceIndicatorConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 77. Configuration Properties for <a href="../api/io/micronaut/management/health/indicator/diskspace/DiskSpaceIndicatorConfiguration.html">DiskSpaceIndicatorConfiguration</a></caption>
+<caption class="title">Table 78. Configuration Properties for <a href="../api/io/micronaut/management/health/indicator/diskspace/DiskSpaceIndicatorConfiguration.html">DiskSpaceIndicatorConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5560,7 +5703,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.management.endpoint.health.HealthEndpoint$StatusConfiguration" href="#io.micronaut.management.endpoint.health.HealthEndpoint$StatusConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 78. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/health/HealthEndpoint.StatusConfiguration.html">HealthEndpoint$StatusConfiguration</a></caption>
+<caption class="title">Table 79. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/health/HealthEndpoint.StatusConfiguration.html">HealthEndpoint$StatusConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5587,7 +5730,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.management.endpoint.info.InfoEndpoint" href="#io.micronaut.management.endpoint.info.InfoEndpoint">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 79. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/info/InfoEndpoint.html">InfoEndpoint</a></caption>
+<caption class="title">Table 80. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/info/InfoEndpoint.html">InfoEndpoint</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5620,7 +5763,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.management.endpoint.loggers.LoggersEndpoint" href="#io.micronaut.management.endpoint.loggers.LoggersEndpoint">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 80. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/loggers/LoggersEndpoint.html">LoggersEndpoint</a></caption>
+<caption class="title">Table 81. Configuration Properties for <a href="../api/io/micronaut/management/endpoint/loggers/LoggersEndpoint.html">LoggersEndpoint</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5651,7 +5794,7 @@
 <h3 id="_micronaut_reflection_config_properties">Micronaut Reflection Config Properties</h3>
 <a id="io.micronaut.reflection.ReflectionIntrospectionConfiguration" href="#io.micronaut.reflection.ReflectionIntrospectionConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 81. Configuration Properties for <a href="../api/io/micronaut/reflection/ReflectionIntrospectionConfiguration.html">ReflectionIntrospectionConfiguration</a></caption>
+<caption class="title">Table 82. Configuration Properties for <a href="../api/io/micronaut/reflection/ReflectionIntrospectionConfiguration.html">ReflectionIntrospectionConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5681,7 +5824,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.reflection.ReflectionIntrospectionConfiguration$Description" href="#io.micronaut.reflection.ReflectionIntrospectionConfiguration$Description">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 82. Configuration Properties for <a href="../api/io/micronaut/reflection/ReflectionIntrospectionConfiguration.Description.html">ReflectionIntrospectionConfiguration$Description</a></caption>
+<caption class="title">Table 83. Configuration Properties for <a href="../api/io/micronaut/reflection/ReflectionIntrospectionConfiguration.Description.html">ReflectionIntrospectionConfiguration$Description</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5754,7 +5897,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.reflection.ReflectionIntrospectionConfiguration$Description$Indexed" href="#io.micronaut.reflection.ReflectionIntrospectionConfiguration$Description$Indexed">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 83. Configuration Properties for <a href="../api/io/micronaut/reflection/ReflectionIntrospectionConfiguration.Description.Indexed.html">ReflectionIntrospectionConfiguration$Description$Indexed</a></caption>
+<caption class="title">Table 84. Configuration Properties for <a href="../api/io/micronaut/reflection/ReflectionIntrospectionConfiguration.Description.Indexed.html">ReflectionIntrospectionConfiguration$Description$Indexed</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5789,10 +5932,171 @@
 <div style="page-break-after: always;"></div>
 </div>
 <div class="sect2">
+<h3 id="_micronaut_retry_config_properties">Micronaut Retry Config Properties</h3>
+<a id="io.micronaut.retry.NamedCircuitBreakerConfiguration" href="#io.micronaut.retry.NamedCircuitBreakerConfiguration">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 85. Configuration Properties for <a href="../api/io/micronaut/retry/NamedCircuitBreakerConfiguration.html">NamedCircuitBreakerConfiguration</a></caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.circuit-breakers.*.attempts</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum number of attempts of an operation of {@link CircuitBreakerRegistry#circuitBreaker(String)}</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.circuit-breakers.*.delay</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The delay between attempts</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.circuit-breakers.*.max-delay</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum overall delay</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.circuit-breakers.*.multiplier</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The multiplier of the delay</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.circuit-breakers.*.jitter</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The jitter factor of the delay</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.circuit-breakers.*.reset</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The time the circuit stays open before it half-opens</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.circuit-breakers.*.throw-wrapped-exception</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the error of an open circuit is wrapped in a <a href="../api/io/micronaut/retry/exception/CircuitOpenException.html">CircuitOpenException</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.circuit-breakers.*.request-volume-threshold</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The size of the rolling window, if the circuit has one</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.circuit-breakers.*.failure-ratio</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The ratio of failures that opens the circuit</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.circuit-breakers.*.success-threshold</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The number of trial calls of a half-open circuit</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.circuit-breakers.*.fail-on</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.List</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The class names of the exceptions that count as a failure</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.circuit-breakers.*.skip-on</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.List</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The class names of the exceptions that count as a success</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+<a id="io.micronaut.retry.NamedRetryPolicyConfiguration" href="#io.micronaut.retry.NamedRetryPolicyConfiguration">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 86. Configuration Properties for <a href="../api/io/micronaut/retry/NamedRetryPolicyConfiguration.html">NamedRetryPolicyConfiguration</a></caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.policies.*.attempts</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum number of retries, after the first call</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.policies.*.delay</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The delay between attempts</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.policies.*.max-delay</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum overall delay</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.policies.*.multiplier</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The multiplier of the delay</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.policies.*.jitter</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The jitter factor of the delay</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.policies.*.includes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.List</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The exception types to retry, by fully qualified name. A name that is not a class on the
+ classpath fails {@link #toPolicy()}, rather than being dropped.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.retry.policies.*.excludes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.List</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The exception types not to retry, by fully qualified name. A name that is not a class on
+ the classpath fails {@link #toPolicy()}, rather than being dropped.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+</div>
+<div class="sect2">
 <h3 id="_micronaut_router_config_properties">Micronaut Router Config Properties</h3>
 <a id="io.micronaut.web.router.resource.StaticResourceConfiguration" href="#io.micronaut.web.router.resource.StaticResourceConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 84. Configuration Properties for <a href="../api/io/micronaut/web/router/resource/StaticResourceConfiguration.html">StaticResourceConfiguration</a></caption>
+<caption class="title">Table 87. Configuration Properties for <a href="../api/io/micronaut/web/router/resource/StaticResourceConfiguration.html">StaticResourceConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5831,7 +6135,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.web.router.version.RoutesVersioningConfiguration" href="#io.micronaut.web.router.version.RoutesVersioningConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 85. Configuration Properties for <a href="../api/io/micronaut/web/router/version/RoutesVersioningConfiguration.html">RoutesVersioningConfiguration</a></caption>
+<caption class="title">Table 88. Configuration Properties for <a href="../api/io/micronaut/web/router/version/RoutesVersioningConfiguration.html">RoutesVersioningConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5864,7 +6168,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.web.router.version.resolution.HeaderVersionResolverConfiguration" href="#io.micronaut.web.router.version.resolution.HeaderVersionResolverConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 86. Configuration Properties for <a href="../api/io/micronaut/web/router/version/resolution/HeaderVersionResolverConfiguration.html">HeaderVersionResolverConfiguration</a></caption>
+<caption class="title">Table 89. Configuration Properties for <a href="../api/io/micronaut/web/router/version/resolution/HeaderVersionResolverConfiguration.html">HeaderVersionResolverConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -5897,7 +6201,7 @@
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.web.router.version.resolution.ParameterVersionResolverConfiguration" href="#io.micronaut.web.router.version.resolution.ParameterVersionResolverConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 87. Configuration Properties for <a href="../api/io/micronaut/web/router/version/resolution/ParameterVersionResolverConfiguration.html">ParameterVersionResolverConfiguration</a></caption>
+<caption class="title">Table 90. Configuration Properties for <a href="../api/io/micronaut/web/router/version/resolution/ParameterVersionResolverConfiguration.html">ParameterVersionResolverConfiguration</a></caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
