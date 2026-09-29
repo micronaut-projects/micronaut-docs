@@ -54721,6 +54721,387 @@ micronaut.http.services.foo.outlier-detection.max-ejection-percent=50</code></pr
 <div class="paragraph">
 <p>In fact that is exactly what the Netflix Ribbon support does, described in the next section.</p>
 </div>
+<div class="sect2">
+<h3 id="_load_balancer_strategies">Load Balancer Strategies</h3>
+<div class="paragraph">
+<p>Without replacing the load balancer, you can change how it picks among the available instances of a service with the <code>load-balancer-strategy</code> setting of the service. This applies to every <code>@Client</code> of the service id, whether its instances come from <code>micronaut.http.services.&lt;id&gt;.urls</code> or from a discovery client:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.http.services.foo.urls[0]=http://foo1
+micronaut.http.services.foo.urls[1]=http://foo2
+micronaut.http.services.foo.load-balancer-strategy=p2c</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  http:
+    services:
+      foo:
+        urls:
+          - http://foo1
+          - http://foo2
+        load-balancer-strategy: p2c</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {http = {services = {foo = {urls = ["http://foo1", "http://foo2"], load-balancer-strategy = "p2c"}}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  http {
+    services {
+      foo {
+        urls = ["http://foo1", "http://foo2"]
+        loadBalancerStrategy = "p2c"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    http {
+      services {
+        foo {
+          urls = ["http://foo1", "http://foo2"]
+          load-balancer-strategy = "p2c"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "http": {
+      "services": {
+        "foo": {
+          "urls": ["http://foo1", "http://foo2"],
+          "load-balancer-strategy": "p2c"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>The built-in strategies are:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Selection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>round-robin</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Each instance in turn. The default: without the setting, the selection is unchanged.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>random</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A random instance.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>p2c</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Power of two choices: of two random instances, the one with fewer exchanges in flight. An exchange counts from its selection until the client reports its outcome.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>weighted</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Smooth weighted round robin by the <code>weight</code> metadata of the instances. An instance without a valid <code>weight</code> has a weight of <code>1</code>, and an instance of weight <code>0</code> is selected only when every instance has weight <code>0</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sticky</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The same instance for the same key, with rendezvous hashing: when an instance goes away only its keys move to another one. Without a key, round robin.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The weight is the <code>weight</code> entry of the <a href="../api/io/micronaut/discovery/ServiceInstance.html#getMetadata--">getMetadata--</a> of the instance, as registered with the discovery server, for example the service metadata in Consul or Eureka.</p>
+</div>
+<div class="paragraph">
+<p>The key of the <code>sticky</code> strategy, such as a session or user id, is the load balancer key of the request: the request attribute named by <code>LoadBalancerKey.ATTRIBUTE</code>, which <code>LoadBalancerKey.set(request, key)</code> sets, see <a href="../api/io/micronaut/http/client/loadbalance/LoadBalancerKey.html">LoadBalancerKey</a>. Its string form is hashed, so it should be stable, for example a <code>String</code> or a <code>Long</code>. The request itself is never hashed: a request without a key is load balanced round robin. A load balancer asked directly with <a href="../api/io/micronaut/http/client/LoadBalancer.html#select-java.lang.Object-">select-java.lang.Object-</a> uses its argument as the key.</p>
+</div>
+<div class="paragraph">
+<p>The key can also come from a request header, named with the <code>load-balancer-key-header</code> setting of the service; the attribute takes precedence over the header:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.http.services.foo.urls[0]=http://foo1
+micronaut.http.services.foo.urls[1]=http://foo2
+micronaut.http.services.foo.load-balancer-strategy=sticky
+micronaut.http.services.foo.load-balancer-key-header=X-Session-Id</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  http:
+    services:
+      foo:
+        urls:
+          - http://foo1
+          - http://foo2
+        load-balancer-strategy: sticky
+        load-balancer-key-header: X-Session-Id</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {http = {services = {foo = {urls = ["http://foo1", "http://foo2"], load-balancer-strategy = "sticky", load-balancer-key-header = "X-Session-Id"}}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  http {
+    services {
+      foo {
+        urls = ["http://foo1", "http://foo2"]
+        loadBalancerStrategy = "sticky"
+        loadBalancerKeyHeader = "X-Session-Id"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    http {
+      services {
+        foo {
+          urls = ["http://foo1", "http://foo2"]
+          load-balancer-strategy = "sticky"
+          load-balancer-key-header = "X-Session-Id"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "http": {
+      "services": {
+        "foo": {
+          "urls": ["http://foo1", "http://foo2"],
+          "load-balancer-strategy": "sticky",
+          "load-balancer-key-header": "X-Session-Id"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>With a strategy configured, an instance whose <code>backup</code> metadata is <code>true</code> is a backup, like the backup servers of nginx: it is selected only when no other instance is available, whatever the strategy. Without the <code>load-balancer-strategy</code> setting, the <code>backup</code> metadata is ignored and a backup instance is selected in turn like any other.</p>
+</div>
+<div class="paragraph">
+<p>Every strategy picks among the instances that are up and that the <a href="#serviceDiscoveryManual">outlier detection</a> has not ejected: an ejected instance is never selected, whatever the strategy. The instances are those of each selection, so instances added or removed by a refresh of the discovery client are taken into account on the next selection.</p>
+</div>
+<div class="paragraph">
+<p>To pick the instance in another way, implement <a href="../api/io/micronaut/http/client/loadbalance/LoadBalancerStrategy.html">LoadBalancerStrategy</a> and register it as a bean named after the strategy:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A strategy that prefers the first instance</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Prototype;
+import io.micronaut.discovery.ServiceInstance;
+import io.micronaut.http.client.loadbalance.LoadBalancerStrategy;
+import jakarta.inject.Named;
+import org.jspecify.annotations.Nullable;
+
+import java.util.List;
+
+@Prototype // <b class="conum">(1)</b>
+@Named("primary") // <b class="conum">(2)</b>
+public class PrimaryStrategy implements LoadBalancerStrategy {
+
+    @Override
+    public ServiceInstance select(List&lt;ServiceInstance&gt; available, @Nullable Object discriminator) {
+        return available.get(0); // <b class="conum">(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A strategy that prefers the first instance</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from jakarta.inject import Named
+from micronaut.context.annotation import Prototype
+from micronaut.discovery import ServiceInstance
+from micronaut.http.client.loadbalance import LoadBalancerStrategy
+
+@Prototype  # <b class="conum">(1)</b>
+@Named("primary")  # <b class="conum">(2)</b>
+class PrimaryStrategy(LoadBalancerStrategy):
+    def select(self, available: list[ServiceInstance], discriminator: object | None) -&gt; ServiceInstance:
+        return available[0]  # <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A strategy that prefers the first instance</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.Prototype
+import io.micronaut.discovery.ServiceInstance
+import io.micronaut.http.client.loadbalance.LoadBalancerStrategy
+import jakarta.inject.Named
+
+@Prototype // <b class="conum">(1)</b>
+@Named("primary") // <b class="conum">(2)</b>
+class PrimaryStrategy : LoadBalancerStrategy {
+
+    override fun select(available: List&lt;ServiceInstance&gt;, discriminator: Any?): ServiceInstance =
+        available[0] // <b class="conum">(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A strategy that prefers the first instance</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Prototype
+import io.micronaut.discovery.ServiceInstance
+import io.micronaut.http.client.loadbalance.LoadBalancerStrategy
+import jakarta.inject.Named
+import org.jspecify.annotations.Nullable
+
+@Prototype // <b class="conum">(1)</b>
+@Named("primary") // <b class="conum">(2)</b>
+class PrimaryStrategy implements LoadBalancerStrategy {
+
+    @Override
+    ServiceInstance select(List&lt;ServiceInstance&gt; available, @Nullable Object discriminator) {
+        available[0] // <b class="conum">(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The strategy may keep state per service: a prototype bean gives each service its own instance.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The name of the bean is the value of the <code>load-balancer-strategy</code> setting.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Selects among the available instances; the default <code>report</code> method receives the outcome of each exchange.</td>
+</tr>
+</table>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.http.services.foo.urls[0]=http://foo1
+micronaut.http.services.foo.urls[1]=http://foo2
+micronaut.http.services.foo.load-balancer-strategy=primary</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  http:
+    services:
+      foo:
+        urls:
+          - http://foo1
+          - http://foo2
+        load-balancer-strategy: primary</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {http = {services = {foo = {urls = ["http://foo1", "http://foo2"], load-balancer-strategy = "primary"}}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  http {
+    services {
+      foo {
+        urls = ["http://foo1", "http://foo2"]
+        loadBalancerStrategy = "primary"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    http {
+      services {
+        foo {
+          urls = ["http://foo1", "http://foo2"]
+          load-balancer-strategy = "primary"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "http": {
+      "services": {
+        "foo": {
+          "urls": ["http://foo1", "http://foo2"],
+          "load-balancer-strategy": "primary"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>A bean takes precedence over a built-in strategy of the same name. A strategy applies to the round-robin load balancers that the framework creates; a custom <a href="../api/io/micronaut/http/client/LoadBalancer.html">LoadBalancer</a> keeps controlling its own selection.</p>
+</div>
+</div>
 
 <h2 id="distributedTracing"><a class="anchor" href="#distributedTracing"></a>10.4 Distributed Tracing</h2>
 
