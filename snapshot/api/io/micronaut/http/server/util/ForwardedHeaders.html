@@ -100,7 +100,13 @@ whether the peer that sent it is a <a href="ForwardedHeaders.Builder.html#truste
     <code>-Prefix</code> values the first proxy set are kept. If the trusted chain only comes in
     one of the two formats, it is translated to the other one before this hop is appended
     (RFC 7239 section 7.4), so that both headers describe the same chain: a downstream server
-    that prefers <code>Forwarded</code> must not see this hop as the client.</li>
+    that prefers <code>Forwarded</code> must not see this hop as the client. A trusted proxy is
+    trusted with the values, not with their syntax: an <code>X-Forwarded-Proto</code> with a scheme
+    that is not <code>http</code>, <code>https</code>, <code>ws</code> or <code>wss</code>, or an
+    <code>X-Forwarded-Port</code> with a port that is not a number between 1 and 65535, is dropped,
+    also from the translated <code>Forwarded</code> header, and the value of this hop is sent
+    instead. Such a port is dropped from an <code>X-Forwarded-Host</code>, and such a scheme or port
+    from the <code>proto</code> and <code>host</code> of a <code>Forwarded</code> element.</li>
     <li>From any other peer, the inbound values could be forged, so they are replaced with the
     values of this hop.</li>
 </ul>

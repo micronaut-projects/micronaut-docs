@@ -40037,6 +40037,18 @@ micronaut.server.netty.childOptions.autoRead=true</code></pre>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.http10-keep-alive</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.reject-unsupported-http-versions</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.max-params</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
 <td class="tableblock halign-left valign-top"></td>
@@ -40261,6 +40273,79 @@ micronaut.server.netty.childOptions.autoRead=true</code></pre>
 </tr>
 </tbody>
 </table>
+<div class="sect2">
+<h3 id="_http1_x_protocol_settings">HTTP/1.x Protocol Settings</h3>
+<div class="paragraph">
+<p>Two settings of the Netty server, both off by default, are useful when the server sits in front of other servers as a proxy:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.server.http10-keep-alive=true
+micronaut.server.reject-unsupported-http-versions=true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  server:
+    http10-keep-alive: true
+    reject-unsupported-http-versions: true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {server = {http10-keep-alive = true, reject-unsupported-http-versions = true}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  server {
+    http10KeepAlive = true
+    rejectUnsupportedHttpVersions = true
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    server {
+      http10-keep-alive = true
+      reject-unsupported-http-versions = true
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "server": {
+      "http10-keep-alive": true,
+      "reject-unsupported-http-versions": true
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>http10-keep-alive</code> keeps the connection of an HTTP/1.0 client that sends <code>Connection: keep-alive</code> after a response of known length, and answers with <code>Connection: keep-alive</code>. A response has a known length when it has a <code>Content-Length</code> or has no body, e.g. a <code>204</code> or <code>304</code> response or the response to a <code>HEAD</code> request. A response of unknown length still ends with the connection. By default, the connection of an HTTP/1.0 client ends after each response.</p>
+</li>
+<li>
+<p><code>reject-unsupported-http-versions</code> answers a request of an HTTP major version other than 1, e.g. <code>HTTP/9.9</code> or <code>HTTP/2.0</code> on an HTTP/1 connection, which the request decoder accepts, with <code>505 HTTP Version Not Supported</code> over HTTP/1.1 and closes the connection. A later minor version of HTTP/1, e.g. <code>HTTP/1.2</code>, is served as HTTP/1.1 (RFC 9112 section 2.3). By default, such a request is served and answered with its own version.</p>
+</li>
+</ul>
+</div>
+</div>
 <div class="sect2">
 <h3 id="_using_native_transports">Using Native Transports</h3>
 <div class="paragraph">
@@ -48050,6 +48135,36 @@ The <a href="../api/io/micronaut/http/client/ProxyHttpClient.html">ProxyHttpClie
 </td>
 </tr>
 </table>
+</div>
+<div class="sect2">
+<h3 id="_forwarding_headers">Forwarding Headers</h3>
+<div class="paragraph">
+<p>To tell the backend who the original client is, write the forwarding headers of the proxied request with <a href="../api/io/micronaut/http/server/util/ForwardedHeaders.html">ForwardedHeaders</a>: <code>X-Forwarded-For</code>, <code>X-Forwarded-Proto</code>, <code>X-Forwarded-Host</code>, <code>X-Forwarded-Port</code>, <code>X-Forwarded-Prefix</code> and the RFC 7239 <code>Forwarded</code> header.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ForwardedHeaders forwardedHeaders = ForwardedHeaders.builder()
+    .trustedProxy(address -&gt; address.getAddress().isSiteLocalAddress()) <i class="conum" data-value="1"></i><b>(1)</b>
+    .build();
+
+forwardedHeaders.write(inboundRequest, proxiedRequest); <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Only the forwarding headers sent by a trusted peer are kept. By default no peer is trusted, and the inbound values, which could be forged, are replaced with the values of this hop.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Writes the headers of this hop onto the proxied request.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A trusted proxy is trusted with the values, not with their syntax: an <code>X-Forwarded-Proto</code> with a scheme that is not <code>http</code>, <code>https</code>, <code>ws</code> or <code>wss</code>, or an <code>X-Forwarded-Port</code> with a port that is not a number between 1 and 65535, is dropped, and the value of this hop is sent instead. Such a port is also dropped from an <code>X-Forwarded-Host</code>, and such a scheme or port from the <code>proto</code> and <code>host</code> of a <code>Forwarded</code> element. A list of valid values, one per proxy, is kept.</p>
+</div>
 </div>
 
 <h2 id="clientAnnotation"><a class="anchor" href="#clientAnnotation"></a>7.5 Declarative HTTP Clients with @Client</h2>
