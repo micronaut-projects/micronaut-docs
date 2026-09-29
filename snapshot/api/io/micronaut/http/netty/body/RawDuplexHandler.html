@@ -113,10 +113,14 @@ loadScripts(document, 'script');</script>
 implements <a href="../../body/stream/BufferConsumer.Upstream.html" title="interface in io.micronaut.http.body.stream">BufferConsumer.Upstream</a></span></div>
 <div class="block">The last handler of a connection that switched protocols (<code>101 Switching Protocols</code>):
 the raw bytes the peer sends are <a href="#inbound()"><code>inbound()</code></a>, a streaming body read with backpressure,
-and <a href="#send(io.micronaut.http.body.CloseableByteBody)"><code>send(CloseableByteBody)</code></a> writes a body to the peer. The connection is closed when
-the sent body ends or fails, when the consumer of the inbound bytes gives up, when the peer
-closes, or on an <code>IdleStateEvent</code> of an activity timeout in front of this handler.
-Once the connection is inactive, <code>onClosed</code> runs once.</div>
+and <a href="#send(io.micronaut.http.body.CloseableByteBody)"><code>send(CloseableByteBody)</code></a> writes a body to the peer. On a plain TCP connection, the
+end of one direction is relayed as a half-close: when the peer shuts down its output, the
+inbound bytes end and the sent body still flows; when the sent body ends, the output of the
+connection is shut down and the inbound bytes still flow. The connection is closed once both
+directions ended. A connection that cannot be half-closed, e.g. over TLS, is closed when the
+sent body ends or the peer closes. It is also closed when the sent body fails, when the
+consumer of the inbound bytes gives up, or on an <code>IdleStateEvent</code> of an activity timeout
+in front of this handler. Once the connection is inactive, <code>onClosed</code> runs once.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
