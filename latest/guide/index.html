@@ -899,7 +899,7 @@
         <h1>Micronaut Core</h1>
         <p></p>
         <p>Core components supporting the Micronaut Framework</p>
-        <p><strong>Version:</strong> 5.2.9 </p>
+        <p><strong>Version:</strong> 5.2.10 </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -2124,7 +2124,7 @@ repositories {
 }
 
 micronaut {
-    version = "5.2.9" <i class="conum" data-value="2"></i><b>(2)</b>
+    version = "5.2.10" <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
 </div>
@@ -13878,8 +13878,8 @@ final class AccountService {
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.9"
-    compileOnly "io.micronaut:micronaut-inject-java:5.2.9"
+    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.10"
+    compileOnly "io.micronaut:micronaut-inject-java:5.2.10"
     ...
 }</code></pre>
 </div>
@@ -14301,7 +14301,7 @@ Previously, we recommended using <code>Micronaut.defaultEnvironments("dev")</cod
 | |\/| | |/ __| '__/ _ \| '_ \ / _` | | | | __|
 | |  | | | (__| | | (_) | | | | (_| | |_| | |_
 |_|  |_|_|\___|_|  \___/|_| |_|\__,_|\__,_|\__|
-  Micronaut (5.2.9)
+  Micronaut (5.2.10)
 
 17:07:22.997 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 611ms. Server Running: http://localhost:8080</code></pre>
 </div>
@@ -31778,11 +31778,56 @@ To include these messages for compatibility or debugging, set <code>micronaut.se
 The supported values are <code>never</code> (the default), <code>always</code>, and <code>on-param</code>. The <code>on-param</code> value includes the message when the request has a <code>message</code> query parameter whose value is not <code>false</code>.
 Enabling this option may expose sensitive implementation details and is not recommended for production environments.</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.server.error-response-include-message=always</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
   server:
     error-response-include-message: always</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {server = {error-response-include-message = "always"}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  server {
+    errorResponseIncludeMessage = "always"
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    server {
+      error-response-include-message = "always"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "server": {
+      "error-response-include-message": "always"
+    }
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
@@ -38635,8 +38680,16 @@ runtime = [
 <div class="paragraph">
 <p>Instead of the TCP used for HTTP/1.1 and HTTP/2, HTTP/3 runs on UDP. To expose an HTTP/3 server, you need to define a <a href="#listener">listener</a> with the special <code>QUIC</code> protocol family:</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="title">Enabling HTTP/3 Support</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.server.netty.listeners.http3Listener.family=QUIC
+micronaut.server.netty.listeners.http3Listener.port=8443</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
   server:
@@ -38645,6 +38698,65 @@ runtime = [
         http3Listener:
           family: QUIC
           port: 8443</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {server = {netty = {listeners = {http3Listener = {family = "QUIC", port = 8443}}}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  server {
+    netty {
+      listeners {
+        http3Listener {
+          family = "QUIC"
+          port = 8443
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    server {
+      netty {
+        listeners {
+          http3Listener {
+            family = "QUIC"
+            port = 8443
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "server": {
+      "netty": {
+        "listeners": {
+          "http3Listener": {
+            "family": "QUIC",
+            "port": 8443
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -50239,13 +50351,64 @@ ReactorHttpClient client;</code></pre>
 <div class="paragraph">
 <p>Instead of the TCP used for HTTP/1.1 and HTTP/2, HTTP/3 runs on UDP. If the client is configured with the special <code>h3</code> value for the <code>alpn-modes</code> property, the client will automatically use HTTP/3 over UDP instead of HTTP/1.1 or HTTP/2 over TCP. At this time, the client cannot fall back to TCP if the server does not support HTTP/3.</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="title">Enabling HTTP/3 in Clients</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.http.client.alpn-modes[0]=h3</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
   http:
     client:
       alpn-modes: [h3]</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {http = {client = {alpn-modes = ["h3"]}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  http {
+    client {
+      alpnModes = ["h3"]
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    http {
+      client {
+        alpn-modes = ["h3"]
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "http": {
+      "client": {
+        "alpn-modes": ["h3"]
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
@@ -51238,10 +51401,49 @@ context.propagate(() -&gt; {
 <div class="paragraph">
 <p>To opt into scoped-value mode globally (default: <code>thread-local</code>), set <code>micronaut.propagation</code>:</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.propagation=scoped-value</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
   propagation: scoped-value</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {propagation = "scoped-value"}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  propagation = "scoped-value"
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    propagation = "scoped-value"
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "propagation": "scoped-value"
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
@@ -56413,7 +56615,21 @@ micronaut.python.pool.warn-wait=2s</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p><code>enabled</code> defaults to <code>true</code>. <code>size</code> is the target number of additional GraalPy contexts; a value of <code>0</code> selects the default of twice the number of available processors. Contexts are created lazily and each one consumes memory and requires initialization work. Compiled Python code is shared across contexts where possible. For CPU-bound Python code, start with a pool size near the number of available processors and increase it only when measurements show useful parallelism. For I/O-heavy Python code, a larger pool may improve throughput, but it should remain bounded by the concurrency the application can sustain. Set <code>warn-wait</code> to a useful threshold, such as <code>2s</code>, to log when requests wait for an available context and use that signal when tuning <code>size</code>.</p>
+<p><code>enabled</code> defaults to <code>true</code>. <code>size</code> is the target number of additional GraalPy contexts; a value of <code>0</code> selects the default, which is half the number of available processors, at least <code>2</code> and at most <code>8</code>. Contexts are created lazily and each one consumes memory and requires initialization work. Compiled Python code is shared across contexts where possible. Set <code>warn-wait</code> to a useful threshold, such as <code>2s</code>, to log when requests wait for an available context, and use that signal when tuning <code>size</code>.</p>
+</div>
+<div class="sect3">
+<h4 id="_choosing_a_pool_size">Choosing a pool size</h4>
+<div class="paragraph">
+<p>More contexts are not straightforwardly better, and the size that suits an application depends on something under its own control: whether the Python beans its routes reach are themselves pooled.</p>
+</div>
+<div class="paragraph">
+<p>A route module is pooled, so it exists once per context. A <code>@Singleton</code> Python bean it injects does not: it is one object in one context, and every call through it runs in that context however many the pool has. While the beans behind a route are singletons, adding contexts divides the traffic without adding throughput — so a small pool is better, and a large one is worse than a small one. Annotate a service with <code>@ContextPooled</code> and the relationship inverts, because contexts then add real concurrency. <code>pyronaut process</code> warns about each pooled type that depends on a singleton Python bean, which is the signal that this applies.</p>
+</div>
+<div class="paragraph">
+<p>The rest is workload. A request that does little Python work benefits from contexts until they outnumber what the processors can run; one that builds a large response in Python — say a page of entities projected into DTOs — reaches its best at fewer contexts, and past that point extra interpreters compete for cores rather than adding parallelism. Measured on one 12-core machine with the services pooled, a keyed read was still gaining at 12 contexts while a paged read of 20 rows peaked at 6 and had lost a third of its throughput by 12. The default is a compromise between those, not the best value for either.</p>
+</div>
+<div class="paragraph">
+<p>So: pool the services the routes reach before tuning <code>size</code>, then measure the endpoints that matter. <code>warn-wait</code> tells you when the pool is the constraint; it cannot tell you when the pool is too large, which shows up only as throughput that falls when you add contexts.</p>
 </div>
 <div class="paragraph">
 <p>When the asyncio bridge is enabled, each Netty event loop that executes Python coroutines additionally owns a dedicated context. Those contexts are created lazily, one per event loop, and are not counted against <code>size</code>. The number of contexts an application can create is therefore the pool <code>size</code> plus the number of Netty event loops that run Python, plus the primary context. Reduce <code>micronaut.netty.event-loops.default.num-threads</code> or disable <code>micronaut.python.asyncio.enabled</code> when that footprint is too large. Alternatively cap the dedicated contexts with <code>micronaut.python.pool.max-event-loop-contexts</code>: the first event loops to run Python get a context each, and the others run Python through the shared pool, which keeps memory bounded at the cost of blocking those event loops while a coroutine runs; the pooled context a coroutine runs on stays leased to it until the coroutine completes, so it is never shared with another caller. Such a coroutine, like one started from a thread with no event loop at all, is driven to completion on the calling thread by a private loop that needs no sockets: its timers, <code>call_soon_threadsafe</code> and executors work, while networking must go through a Netty event loop. A warning names each event loop that is refused a context.</p>
@@ -56513,7 +56729,7 @@ micronaut.python.pool.warn-wait=2s</code></pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.pool.size</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The size of the pool. Defaults to the number of processors * 2.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The size of the pool. Defaults to the number of processors divided by four, at least 2 and at most 8. More contexts cost throughput on a route that reaches a Python bean that is not itself pooled, so raise this only for a workload measured to want it.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 </tr>
 <tr>
@@ -56544,6 +56760,7 @@ Python context pooling, including the <code>@ContextPooled</code> scope, is expe
 </div>
 <div class="paragraph">
 <p>The current GIL and virtual-thread limitations are temporary. A future GraalPy release will provide GIL-free Python execution and virtual-thread support; revisit the executor and pool recommendations when using that runtime.</p>
+</div>
 </div>
 </div>
 </div>
