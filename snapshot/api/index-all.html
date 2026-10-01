@@ -9079,7 +9079,11 @@ required to perform successful startup without starting the context itself.</div
 </dd>
 <dt><a href="io/micronaut/logging/impl/LogbackUtils.html#configure(java.lang.ClassLoader,ch.qos.logback.classic.LoggerContext,java.lang.String)" class="member-name-link">configure(ClassLoader, LoggerContext, String)</a> - Static method in class io.micronaut.logging.impl.<a href="io/micronaut/logging/impl/LogbackUtils.html" title="class in io.micronaut.logging.impl">LogbackUtils</a></dt>
 <dd>
-<div class="block">Configures a Logger Context.</div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">This method cannot tell a location set in configuration from a default one, and
+it uses the first <code>Configurator</code> service whatever its rank and status. Call
+<a href="io/micronaut/logging/LoggingSystem.html#refresh()"><code>LoggingSystem.refresh()</code></a> on the logging system bean instead.</div>
+</div>
 </dd>
 <dt><a href="io/micronaut/reflection/ReflectionIntrospectionPolicy.html#configure(java.util.Collection)" class="member-name-link">configure(Collection)</a> - Static method in class io.micronaut.reflection.<a href="io/micronaut/reflection/ReflectionIntrospectionPolicy.html" title="class in io.micronaut.reflection">ReflectionIntrospectionPolicy</a></dt>
 <dd>
@@ -41260,7 +41264,18 @@ written to a logger named <code>io.micronaut.context.resolution</code> at DEBUG 
 <div class="block">An implementation of <a href="io/micronaut/management/endpoint/loggers/ManagedLoggingSystem.html" title="interface in io.micronaut.management.endpoint.loggers"><code>ManagedLoggingSystem</code></a> that works with logback.</div>
 </dd>
 <dt><a href="io/micronaut/management/endpoint/loggers/impl/LogbackLoggingSystem.html#%3Cinit%3E(java.lang.String)" class="member-name-link">LogbackLoggingSystem(String)</a> - Constructor for class io.micronaut.management.endpoint.loggers.impl.<a href="io/micronaut/management/endpoint/loggers/impl/LogbackLoggingSystem.html" title="class in io.micronaut.management.endpoint.loggers.impl">LogbackLoggingSystem</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">Do not construct this class. The Micronaut framework creates this bean when the loggers
+endpoint is enabled, with a constructor that also honours <code>logback.configurationFile</code>. Obtain
+it from the application context, for example by injecting <a href="io/micronaut/logging/LoggingSystem.html" title="interface in io.micronaut.logging"><code>LoggingSystem</code></a>
+or <a href="io/micronaut/management/endpoint/loggers/ManagedLoggingSystem.html" title="interface in io.micronaut.management.endpoint.loggers"><code>ManagedLoggingSystem</code></a>. To change it, replace it with a bean of your own that implements both
+and is annotated with <code>@Replaces(LogbackLoggingSystem.class)</code>, rather than extending it. This
+constructor ignores <code>logback.configurationFile</code> and is kept for binary compatibility only.
+Passing <code>null</code> no longer defaults to <code>logback.xml</code>: without a location, the refresh
+configures Logback the way Logback's own startup does.</div>
+</div>
+</dd>
 <dt><a href="io/micronaut/logging/impl/LogbackLoggingSystem.html#%3Cinit%3E(java.lang.String,java.lang.String)" class="member-name-link">LogbackLoggingSystem(String, String)</a> - Constructor for class io.micronaut.logging.impl.<a href="io/micronaut/logging/impl/LogbackLoggingSystem.html" title="class in io.micronaut.logging.impl">LogbackLoggingSystem</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/logging/impl/LogbackUtils.html" class="type-name-link" title="class in io.micronaut.logging.impl">LogbackUtils</a> - Class in <a href="io/micronaut/logging/impl/package-summary.html">io.micronaut.logging.impl</a></dt>

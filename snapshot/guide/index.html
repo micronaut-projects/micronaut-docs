@@ -57849,6 +57849,15 @@ public class LoggerExample {
 <p>You can also set a custom Logback XML configuration file to be used via <code>logger.config</code>.
 The file is first checked on the classpath and then on the file system.</p>
 </div>
+<div class="paragraph">
+<p>When any <code>logger.*</code> property is set, the Micronaut framework resets Logback and configures it again at startup and on every refresh event, before it applies the levels. A Logback XML configuration file set in Micronaut configuration wins: <code>logback.configurationFile</code>, unless its value is exactly that of the JVM system property of the same name, or <code>logger.config</code> when <code>logback.configurationFile</code> is not set. The framework configures Logback from that file even when a custom Logback <code>Configurator</code> is registered as a service, and startup fails when the file does not exist or cannot be parsed.</p>
+</div>
+<div class="paragraph">
+<p>Otherwise, Logback is configured again the way Logback configures itself at startup, as described in the <a href="https://logback.qos.ch/manual/configuration.html#auto_configuration">Logback manual</a>: the <code>Configurator</code> services by rank, until one of them returns <code>DO_NOT_INVOKE_NEXT_IF_ANY</code>, then the file set with the <code>logback.configurationFile</code> JVM system property, <code>logback-test.xml</code> or <code>logback.xml</code> on the classpath, then the basic console configuration. Logback resolves the system property as a URL, then on the classpath, then on the file system. When it does not find the file, it goes on to <code>logback-test.xml</code> and <code>logback.xml</code>, and <code>logger.config</code> is not used. When Logback cannot parse the file it finds, it reports the error the way it does at startup, and the application still starts.</p>
+</div>
+<div class="paragraph">
+<p>The framework adds one step to that lookup: a <code>logback.xml</code> file in the working directory is used when there is no <code>Configurator</code> service, the <code>logback.configurationFile</code> JVM system property is not set, and neither <code>logback-test.xml</code> nor <code>logback.xml</code> is on the classpath. Logback itself does not look in the working directory, so until the application context starts, such an application logs with the basic console configuration. The framework reads that file itself, so, as with a file set in Micronaut configuration, startup fails when it cannot be parsed.</p>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_disabling_a_logger_with_properties">Disabling a Logger with Properties</h4>
@@ -69524,6 +69533,40 @@ repositories {
 
 <div class="paragraph">
 <p>This section documents breaking changes between Micronaut versions</p>
+</div>
+<div class="sect2">
+<h3 id="_refreshing_the_logback_configuration_follows_logbacks_own_lookup_5_3">Refreshing the Logback configuration follows Logback&#8217;s own lookup (5.3)</h3>
+<div class="paragraph">
+<p>When any <code>logger.*</code> property is set, the Micronaut framework resets Logback and configures it again. Previously that refresh used the first <code>Configurator</code> service regardless of its rank and of the status it returned, and otherwise the file set with <code>logback.configurationFile</code> or <code>logger.config</code>, or <code>logback.xml</code>. Now, unless a Logback XML configuration file is set in Micronaut configuration, the refresh configures Logback the same way Logback configures itself at startup:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>logback-test.xml</code> takes precedence over <code>logback.xml</code>, and startup no longer fails when there is no <code>logback.xml</code>: Logback falls back to its basic console configuration.</p>
+</li>
+<li>
+<p><code>Configurator</code> services run by rank. A <code>Configurator</code> that returns <code>NEUTRAL</code> or <code>INVOKE_NEXT_IF_ANY</code> is followed by the XML configuration file. A <code>Configurator</code> that must replace the XML configuration should return <code>DO_NOT_INVOKE_NEXT_IF_ANY</code>.</p>
+</li>
+<li>
+<p>The lookup uses the class loader that loaded Logback, as at Logback&#8217;s startup, and no longer the one that loaded the Micronaut framework. That applies to the <code>Configurator</code> services, to <code>logback-test.xml</code> and <code>logback.xml</code>, and to a <code>logback.configurationFile</code> JVM system property that names a classpath resource.</p>
+</li>
+<li>
+<p>Logback resolves the <code>logback.configurationFile</code> JVM system property: as a URL, then on the classpath, then on the file system. Previously it was looked up on the classpath and then on the file system, so a URL such as <code>file:/etc/app/logback.xml</code> failed the startup, and now it works. When the value is not a URL and no such file exists, or it is a directory, startup no longer fails: Logback falls back to <code>logback-test.xml</code>, <code>logback.xml</code> or its basic console configuration, and it does not use <code>logger.config</code>.</p>
+</li>
+<li>
+<p>When Logback cannot read or parse the file it finds, be it the one set with the <code>logback.configurationFile</code> JVM system property, or <code>logback-test.xml</code> or <code>logback.xml</code> on the classpath, startup no longer fails with a <code>LoggingSystemException</code>: Logback reports the error the way it does at startup.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A <code>logback.xml</code> file in the working directory is still used when nothing else selects a configuration, that is, when there is no <code>Configurator</code> service, the <code>logback.configurationFile</code> JVM system property is not set, and neither <code>logback-test.xml</code> nor <code>logback.xml</code> is on the classpath. Previously that file was also used when only <code>logback-test.xml</code> was on the classpath, and now <code>logback-test.xml</code> takes precedence over it. The framework reads that file itself, so startup still fails with a <code>LoggingSystemException</code> when it cannot be parsed, unlike for the files that Logback finds.</p>
+</div>
+<div class="paragraph">
+<p>A file set with <code>logger.config</code>, or with <code>logback.configurationFile</code> in Micronaut configuration unless its value is exactly that of the JVM system property of the same name, now takes precedence over any <code>Configurator</code> service, and startup still fails when it does not exist or cannot be parsed. The logging system of the loggers management endpoint now honors <code>logback.configurationFile</code> as well.</p>
+</div>
+<div class="paragraph">
+<p>That logging system, <code>io.micronaut.management.endpoint.loggers.impl.LogbackLoggingSystem</code>, is created by the Micronaut framework when the loggers endpoint is enabled. Its public constructor, which reads only <code>logger.config</code>, is deprecated for removal, and with <code>null</code> it no longer defaults to <code>logback.xml</code>: the refresh then configures Logback the way Logback configures itself at startup. Do not construct the class: obtain the bean from the application context, for example by injecting <code>LoggingSystem</code> or <code>ManagedLoggingSystem</code>, or replace it with a bean of your own that implements both, annotated with <code>@Replaces(LogbackLoggingSystem.class)</code>, rather than extending it.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_construct_advice_no_longer_wraps_injection_and_postconstruct_5_3">Construct advice no longer wraps injection and <code>@PostConstruct</code> (5.3)</h3>
