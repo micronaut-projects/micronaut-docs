@@ -58956,6 +58956,74 @@ micronaut.python.pool.warn-wait=2s</code></pre>
 <p>A route module is pooled, so it exists once per context. A <code>@Singleton</code> Python bean it injects does not: it is one object in one context, and every call through it runs in that context however many the pool has. While the beans behind a route are singletons, adding contexts divides the traffic without adding throughput — so a small pool is better, and a large one is worse than a small one. Annotate a service with <code>@ContextPooled</code> and the relationship inverts, because contexts then add real concurrency. <code>pyronaut process</code> warns about each pooled type that depends on a singleton Python bean, which is the signal that this applies.</p>
 </div>
 <div class="paragraph">
+<p>That warning names a cost, not a fault, and sometimes the cost is one the application accepts: a bean reached once per request rather than once per row, or one whose body is a Java call anyway, loses little by living in a single context. Name those dependencies to stop reporting them, or set the option to <code>false</code> to stop reporting any:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.python.pooled.ignoreDependencies[0]=MailService
+micronaut.python.pooled.ignoreDependencies[1]=PasswordResetTokens</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  python:
+    pooled:
+      ignoreDependencies:
+        - MailService
+        - PasswordResetTokens</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {python = {pooled = {ignoreDependencies = ["MailService", "PasswordResetTokens"]}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  python {
+    pooled {
+      ignoreDependencies = ["MailService", "PasswordResetTokens"]
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    python {
+      pooled {
+        ignoreDependencies = ["MailService", "PasswordResetTokens"]
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "python": {
+      "pooled": {
+        "ignoreDependencies": ["MailService", "PasswordResetTokens"]
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Pyronaut passes it to the compiler as an annotation processor option, so it takes effect at <code>pyronaut process</code> rather than at runtime; a build that drives <code>javac</code> directly can pass <code>-Amicronaut.python.pooled.ignoreDependencies=MailService,PasswordResetTokens</code> or set a system property of the same name on the compiler JVM. A name matches either the simple or the qualified name of the dependency type. Silence the pairings you have decided about rather than the warning as a whole, so the next one still reaches you.</p>
+</div>
+<div class="paragraph">
 <p>The rest is workload. A request that does little Python work benefits from contexts until they outnumber what the processors can run; one that builds a large response in Python — say a page of entities projected into DTOs — reaches its best at fewer contexts, and past that point extra interpreters compete for cores rather than adding parallelism. Measured on one 12-core machine with the services pooled, a keyed read was still gaining at 12 contexts while a paged read of 20 rows peaked at 6 and had lost a third of its throughput by 12. The default is a compromise between those, not the best value for either.</p>
 </div>
 <div class="paragraph">
