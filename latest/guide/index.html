@@ -899,7 +899,7 @@
         <h1>Micronaut Core</h1>
         <p></p>
         <p>Core components supporting the Micronaut Framework</p>
-        <p><strong>Version:</strong> 5.2.11 </p>
+        <p><strong>Version:</strong> 5.2.13 </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -2124,7 +2124,7 @@ repositories {
 }
 
 micronaut {
-    version = "5.2.11" <i class="conum" data-value="2"></i><b>(2)</b>
+    version = "5.2.13" <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
 </div>
@@ -13878,8 +13878,8 @@ final class AccountService {
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.11"
-    compileOnly "io.micronaut:micronaut-inject-java:5.2.11"
+    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.13"
+    compileOnly "io.micronaut:micronaut-inject-java:5.2.13"
     ...
 }</code></pre>
 </div>
@@ -14301,7 +14301,7 @@ Previously, we recommended using <code>Micronaut.defaultEnvironments("dev")</cod
 | |\/| | |/ __| '__/ _ \| '_ \ / _` | | | | __|
 | |  | | | (__| | | (_) | | | | (_| | |_| | |_
 |_|  |_|_|\___|_|  \___/|_| |_|\__,_|\__,_|\__|
-  Micronaut (5.2.11)
+  Micronaut (5.2.13)
 
 17:07:22.997 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 611ms. Server Running: http://localhost:8080</code></pre>
 </div>
@@ -56615,7 +56615,7 @@ micronaut.python.pool.warn-wait=2s</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p><code>enabled</code> defaults to <code>true</code>. <code>size</code> is the target number of additional GraalPy contexts; a value of <code>0</code> selects the default, which is half the number of available processors, at least <code>2</code> and at most <code>8</code>. Contexts are created lazily and each one consumes memory and requires initialization work. Compiled Python code is shared across contexts where possible. Set <code>warn-wait</code> to a useful threshold, such as <code>2s</code>, to log when requests wait for an available context, and use that signal when tuning <code>size</code>.</p>
+<p><code>enabled</code> defaults to <code>true</code>. <code>size</code> is the target number of additional GraalPy contexts; a value of <code>0</code> selects the default, which is half the number of available processors, at least <code>2</code> and at most <code>8</code>. Contexts are created lazily and each one consumes memory and requires initialization work. Compiled Python code is shared across contexts where possible. <code>warn-wait</code>, <code>2s</code> by default, is how long a request waits for an available context before a warning is logged, and is the signal to use when tuning <code>size</code>; set it to <code>0s</code> to turn the warning off.</p>
 </div>
 <div class="sect3">
 <h4 id="_choosing_a_pool_size">Choosing a pool size</h4>
@@ -56626,21 +56626,21 @@ micronaut.python.pool.warn-wait=2s</code></pre>
 <p>A route module is pooled, so it exists once per context. A <code>@Singleton</code> Python bean it injects does not: it is one object in one context, and every call through it runs in that context however many the pool has. While the beans behind a route are singletons, adding contexts divides the traffic without adding throughput — so a small pool is better, and a large one is worse than a small one. Annotate a service with <code>@ContextPooled</code> and the relationship inverts, because contexts then add real concurrency. <code>pyronaut process</code> warns about each pooled type that depends on a singleton Python bean, which is the signal that this applies.</p>
 </div>
 <div class="paragraph">
-<p>That warning names a cost, not a fault, and sometimes the cost is one the application accepts: a bean reached once per request rather than once per row, or one whose body is a Java call anyway, loses little by living in a single context. Name those dependencies to stop reporting them, or set the option to <code>false</code> to stop reporting any:</p>
+<p>That warning names a cost, not a fault, and sometimes the cost is one the application accepts: a bean reached once per request rather than once per row, or one whose body is a Java call anyway, loses little by living in a single context. Name those dependencies to stop reporting them, or list <code>*</code> to stop reporting any:</p>
 </div>
 <div class="openblock">
 <div class="content">
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.python.pooled.ignoreDependencies[0]=MailService
-micronaut.python.pooled.ignoreDependencies[1]=PasswordResetTokens</code></pre>
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.python.pool.ignoreDependencies[0]=MailService
+micronaut.python.pool.ignoreDependencies[1]=PasswordResetTokens</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
   python:
-    pooled:
+    pool:
       ignoreDependencies:
         - MailService
         - PasswordResetTokens</code></pre>
@@ -56648,14 +56648,14 @@ micronaut.python.pooled.ignoreDependencies[1]=PasswordResetTokens</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {python = {pooled = {ignoreDependencies = ["MailService", "PasswordResetTokens"]}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {python = {pool = {ignoreDependencies = ["MailService", "PasswordResetTokens"]}}}</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
   python {
-    pooled {
+    pool {
       ignoreDependencies = ["MailService", "PasswordResetTokens"]
     }
   }
@@ -56667,7 +56667,7 @@ micronaut.python.pooled.ignoreDependencies[1]=PasswordResetTokens</code></pre>
 <pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
   micronaut {
     python {
-      pooled {
+      pool {
         ignoreDependencies = ["MailService", "PasswordResetTokens"]
       }
     }
@@ -56680,7 +56680,7 @@ micronaut.python.pooled.ignoreDependencies[1]=PasswordResetTokens</code></pre>
 <pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
   "micronaut": {
     "python": {
-      "pooled": {
+      "pool": {
         "ignoreDependencies": ["MailService", "PasswordResetTokens"]
       }
     }
@@ -56691,7 +56691,7 @@ micronaut.python.pooled.ignoreDependencies[1]=PasswordResetTokens</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Pyronaut passes it to the compiler as an annotation processor option, so it takes effect at <code>pyronaut process</code> rather than at runtime; a build that drives <code>javac</code> directly can pass <code>-Amicronaut.python.pooled.ignoreDependencies=MailService,PasswordResetTokens</code> or set a system property of the same name on the compiler JVM. A name matches either the simple or the qualified name of the dependency type. Silence the pairings you have decided about rather than the warning as a whole, so the next one still reaches you.</p>
+<p>Pyronaut passes it to the compiler as an annotation processor option, so it takes effect at <code>pyronaut process</code> rather than at runtime; a build that drives <code>javac</code> directly can pass <code>-Amicronaut.python.pool.ignoreDependencies=MailService,PasswordResetTokens</code> or set a system property of the same name on the compiler JVM. Core 5.2.11 released the option as <code>micronaut.python.pooled.ignoreDependencies</code>; that name is still read, but only the new one is a known property of <code>micronaut.python.pool</code>, so configuration validation accepts it. A name matches either the simple or the qualified name of the dependency type. As an annotation processor option or a system property, the value <code>false</code> also stops reporting any. Silence the pairings you have decided about rather than the warning as a whole, so the next one still reaches you.</p>
 </div>
 <div class="paragraph">
 <p>The rest is workload. A request that does little Python work benefits from contexts until they outnumber what the processors can run; one that builds a large response in Python — say a page of entities projected into DTOs — reaches its best at fewer contexts, and past that point extra interpreters compete for cores rather than adding parallelism. Measured on one 12-core machine with the services pooled, a keyed read was still gaining at 12 contexts while a paged read of 20 rows peaked at 6 and had lost a third of its throughput by 12. The default is a compromise between those, not the best value for either.</p>
@@ -56803,7 +56803,7 @@ micronaut.python.pooled.ignoreDependencies[1]=PasswordResetTokens</code></pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.pool.warn-wait</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The amount of time to wait for a pooled context before a warning is printed.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The amount of time to wait for a pooled context before a warning is printed. Defaults to two seconds; zero or a negative duration turns the warning off.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">2s</p></td>
 </tr>
 <tr>
@@ -56811,6 +56811,12 @@ micronaut.python.pooled.ignoreDependencies[1]=PasswordResetTokens</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The most Netty event loops that get a dedicated asyncio context; {@code 0}, the default, gives every event loop one. Event loops beyond the cap run Python through the shared pool and block while a coroutine runs.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.pool.ignore-dependencies</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.List</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The singleton Python dependencies of pooled types not to warn about, by simple or qualified type name; {@code *} warns about none. Read when the Python sources are processed, not at run time: Pyronaut passes it to the compiler as the {@code micronaut.python.pool.ignoreDependencies} annotation processor option.</p></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
 </table>
