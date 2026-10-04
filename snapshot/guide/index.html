@@ -58984,6 +58984,49 @@ static class MyRoutes extends GroovyRouteBuilder {
 </div>
 </div>
 <div class="sect1">
+<h2 id="_classes_generated_during_compilation">Classes Generated During Compilation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A <code>TypeElementVisitor</code> can generate Groovy source files while a Groovy source set is compiled, for example with Micronaut SourceGen, and the generated classes are compiled in the same compilation. Groovy resolves the names used by the hand-written sources before the visitors run, so the generated classes are resolved in a later step, before <code>@CompileStatic</code> and <code>@TypeChecked</code> code is type checked. A generated class can be referenced from the same compilation, in statically compiled and in dynamic code, where it is used as a value: to call its static methods, to read its static fields, or as a class literal.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@groovy.transform.CompileStatic
+class BookLinks {
+
+    String show(Long id) {
+        BookControllerLinks.show(id) <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>BookControllerLinks</code> is generated for <code>BookController</code> in the same compilation</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The name is found in the package of the source, in its star imports (<code>import com.example.*</code>), or written as a fully qualified name. Two uses are resolved by Groovy before any visitor runs and fail to compile with a class generated in the same compilation:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>using the generated class as a type: a variable, field, parameter or return type, a constructor call (<code>new BookControllerLinks()</code>), a cast, or a single type import (<code>import com.example.BookControllerLinks</code>), which fail with <code>unable to resolve class</code></p>
+</li>
+<li>
+<p>referencing it from a static method or a static field initializer, which fails with <code>Apparent variable &#8230;&#8203; was found in a static scope</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Use such code in another compilation (the tests can use the classes generated for the main source set), or reference the class from an instance method.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_serverless_functions_with_groovy">Serverless Functions with Groovy</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -70049,6 +70092,34 @@ Beans compiled with an earlier version keep the previous order until they are re
 </div>
 <div class="paragraph">
 <p>If an earlier filter continued with a request that cannot be copied this way, for example an <code>HttpRequestWrapper</code>, the parameter is now a mutable wrapper of that request. Previously the method failed with an <code>UnsupportedOperationException</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the_name_condition_of_softserviceloader_load_is_tested_on_every_service_entry_5_3">The name condition of <code>SoftServiceLoader.load</code> is tested on every service entry (5.3)</h3>
+<div class="paragraph">
+<p>The <code>Predicate&lt;String&gt;</code> given to the three-argument <code>load(Class, ClassLoader, Predicate)</code> of <a href="../api/io/micronaut/core/io/service/SoftServiceLoader.html">SoftServiceLoader</a> is documented to be passed the class name of each service. Previously it was only tested on the lines of <code>META-INF/services</code> files, comment included. Since Micronaut 5.3 it is tested on the name of every entry, so a caller that passes a condition can get different results:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Entries under <code>META-INF/micronaut</code>, and the entries of the service table of a native image, are no longer returned when the condition rejects them. Previously the condition was not tested on them.</p>
+</li>
+<li>
+<p>With a static service loader registered for the service type (the internal <code>SoftServiceLoader.StaticServiceLoader</code>, which nothing in Micronaut 5 registers), <code>collectAll()</code> only returns the entries that the condition accepts. Previously it ignored the condition.</p>
+</li>
+<li>
+<p>With such a loader, <code>iterator()</code>, and <code>first()</code>, <code>firstAvailable()</code> and <code>firstOr(..)</code>, which use it, now return the entries that the condition accepts. Previously the condition was tested on <code>java.lang.String</code> instead of the name of each entry, so for most conditions the iterator was empty.</p>
+</li>
+<li>
+<p>For a <code>META-INF/services</code> line with a trailing comment, such as <code>com.example.Foo # comment</code>, the condition is tested on <code>com.example.Foo</code>. Previously it was tested on the whole line.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The name of a <code>META-INF/services</code> entry is now read without the whitespace around it, as <code>java.util.ServiceLoader</code> reads an entry that is padded with spaces or tabs. This also applies without a condition. Previously an indented entry, or one followed by whitespace, was not loaded: <code>collectAll()</code> left it out, and <code>iterator()</code>, <code>first()</code> and <code>firstOr(..)</code> returned it as a definition that is not present, under the name with its whitespace. For a line that has only whitespace, or only whitespace before a comment, they returned a definition that is not present, with a blank name. Now such an entry is returned under its class name, and such a line is skipped.</p>
+</div>
+<div class="paragraph">
+<p>Callers of the <code>load</code> methods without a condition are otherwise not affected.</p>
 </div>
 </div>
 <div class="sect2">
