@@ -8084,7 +8084,7 @@ class Handler {
 <p>Each lookup follows the usual scope and qualifier rules. A newly created prototype belongs to the consumer, including its nested dependents. Core destroys these resources after the consumer&#8217;s destruction callbacks, in reverse acquisition order. Resources acquired during construction are also cleaned up if construction fails. A failed lookup cleans up resources created by that lookup without releasing previous successful acquisitions.</p>
 </div>
 <div class="paragraph">
-<p>Use <code>resolver.getBeanRegistration(type)</code> when you need the dependency&#8217;s registration and bean definition as well as its instance. Overloads accept either <code>Class&lt;T&gt;</code> or <code>Argument&lt;T&gt;</code>, with an optional qualifier. These lookups retain the same ownership as <code>getBean(&#8230;&#8203;)</code>; returning a registration does not transfer ownership to the caller.</p>
+<p>Use <code>resolver.getBeanRegistration(type)</code> when you need the dependency&#8217;s registration and bean definition as well as its instance. Overloads accept either <code>Class&lt;T&gt;</code> or <code>Argument&lt;T&gt;</code>, with an optional qualifier. These lookups retain the same ownership as <code>getBean(&#8230;&#8203;)</code>; returning a registration does not transfer ownership to the caller. For early destruction of an owned dependency, resolve it through a dependency group and use <code>group.destroy(registration)</code>.</p>
 </div>
 <div class="paragraph">
 <p>Singletons and custom-scoped beans remain owned by their scopes. Dynamically resolved singleton dependencies participate in context shutdown ordering, including those reached through a consumer&#8217;s owned prototype interceptors. The resolver does not extend a custom scope&#8217;s lifetime or prevent explicit destruction of a shared bean. Dependency cycles use the same deterministic cycle handling as injected dependencies.</p>
@@ -8094,6 +8094,35 @@ class Handler {
 </div>
 <div class="paragraph">
 <p>New resolver lookups are rejected once destruction of the consumer or context shutdown begins. Existing dependencies remain available to destruction callbacks. A lookup racing destruction releases newly created dependents if it cannot attach them to the consumer. The resolver does not retain the consumer&#8217;s construction path; do not use it to resolve the consumer recursively during construction.</p>
+</div>
+<div class="sect3">
+<h4 id="_explicit_dependency_ownership">Explicit dependency ownership</h4>
+<div class="paragraph">
+<p><code>BeanContext.createBeanRegistration(definition)</code> creates a fresh instance of an exact bean definition,
+regardless of its declared scope, and returns a <code>CreatedBean</code> that retains its dependent instances.
+Close the returned registration to destroy the instance and its dependents. It neither replaces nor removes
+an existing scoped instance of the same definition. To create a contextual target behind a separate proxy,
+pass the target definition.</p>
+</div>
+<div class="paragraph">
+<p><code>BeanContext.createDependencyGroup()</code> creates a caller-owned, <code>AutoCloseable</code> dependency group.
+Its lookups respect scopes, retain newly created dependents, and leave shared beans owned by their scopes.
+Use <code>group.destroy(registration)</code> for early destruction: it removes only a registration owned by that group,
+using registration identity. <code>group.createBeanRegistration(definition)</code> creates a fresh owned instance.
+A group returned by an injected <code>BeanDependencyResolver.createGroup()</code> also belongs to the consumer and is
+closed automatically with it. Independent groups must be closed by their callers.</p>
+</div>
+<div class="paragraph">
+<p>For temporary method arguments, <code>BeanContext.withDependencies(group &#8594; &#8230;&#8203;)</code> releases owned dependencies
+when the synchronous invocation ends, including when it fails. Cleanup attempts every dependent and suppresses
+cleanup failures on the invocation&#8217;s exception. It rejects new groups once shutdown begins.</p>
+</div>
+<div class="paragraph">
+<p>A <code>BeanPreDestroyEventListener</code> that needs temporary dependencies while a bean is being destroyed calls
+<code>event.withDependencies(group &#8594; &#8230;&#8203;)</code>. These lookups are allowed during shutdown, only on the destruction
+thread and until the listener returns; injected resolvers and independent groups still reject new lookups
+once shutdown starts. Do not return an owned dependency from either invocation, since it has already been destroyed.</p>
+</div>
 </div>
 </div>
 </div>

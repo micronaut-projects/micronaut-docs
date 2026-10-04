@@ -59,6 +59,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#getContextConfiguration()" tabindex="0">getContextConfiguration()</a></li>
+<li><a href="#createBeanRegistration(io.micronaut.inject.BeanDefinition)" tabindex="0">createBeanRegistration(BeanDefinition)</a></li>
+<li><a href="#createDependencyGroup()" tabindex="0">createDependencyGroup()</a></li>
+<li><a href="#withDependencies(java.util.function.Function)" tabindex="0">withDependencies(Function)</a></li>
 <li><a href="#getBeansPredicate()" tabindex="0">getBeansPredicate()</a></li>
 <li><a href="#getEventPublisher(java.lang.Class)" tabindex="0">getEventPublisher(Class)</a></li>
 <li><a href="#inject(T)" tabindex="0">inject(T)</a></li>
@@ -201,6 +204,17 @@ the <code>io.micronaut.context.annotation</code> package allow control over conf
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Creates a new instance of the given bean performing dependency injection and returning a new instance.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;<a href="scope/CreatedBean.html" title="interface in io.micronaut.context.scope">CreatedBean</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#createBeanRegistration(io.micronaut.inject.BeanDefinition)" class="member-name-link">createBeanRegistration</a><wbr>(<a href="../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;T&gt;&nbsp;definition)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Creates a fresh instance of the exact definition, bypassing its scope, and retains its complete
+dependency tree in the returned registration.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="BeanDependencyGroup.html" title="interface in io.micronaut.context">BeanDependencyGroup</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#createDependencyGroup()" class="member-name-link">createDependencyGroup</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Creates an independent dependency group.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T&gt;&nbsp;void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#destroyBean(io.micronaut.context.BeanRegistration)" class="member-name-link">destroyBean</a><wbr>(<a href="BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;T&gt;&nbsp;beanRegistration)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
@@ -312,6 +326,11 @@ that bean.</div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Run the <a href="BeanContext.html" title="interface in io.micronaut.context"><code>BeanContext</code></a>.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;R&gt;&nbsp;R</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#withDependencies(java.util.function.Function)" class="member-name-link">withDependencies</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="BeanDependencyGroup.html" title="interface in io.micronaut.context">BeanDependencyGroup</a>, R&gt;&nbsp;action)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Resolves dependencies for a synchronous invocation and always releases them afterwards.</div>
+</div>
 </div>
 </div>
 </div>
@@ -364,6 +383,65 @@ that bean.</div>
 <dd>The <a href="BeanContextConfiguration.html" title="interface in io.micronaut.context"><code>BeanContextConfiguration</code></a></dd>
 <dt>Since:</dt>
 <dd>3.0.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createBeanRegistration(io.micronaut.inject.BeanDefinition)">
+<h3>createBeanRegistration</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="scope/CreatedBean.html" title="interface in io.micronaut.context.scope">CreatedBean</a>&lt;T&gt;</span>&nbsp;<span class="element-name">createBeanRegistration</span><wbr><span class="parameters">(<a href="../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;T&gt;&nbsp;definition)</span></div>
+<div class="block">Creates a fresh instance of the exact definition, bypassing its scope, and retains its complete
+dependency tree in the returned registration. Dependencies still obey their own scope rules.
+For a contextual target behind a proxy, supply the target definition. The caller owns the result.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="createBeanRegistration(io.micronaut.inject.BeanDefinition)-type-param-T"><code>T</code> - The bean type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>definition</code> - The definition to instantiate</dd>
+<dt>Returns:</dt>
+<dd>The created instance and its lifecycle</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createDependencyGroup()">
+<h3>createDependencyGroup</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="BeanDependencyGroup.html" title="interface in io.micronaut.context">BeanDependencyGroup</a></span>&nbsp;<span class="element-name">createDependencyGroup</span>()</div>
+<div class="block">Creates an independent dependency group. The caller must close it; context shutdown does not take ownership.
+New lookups are rejected during shutdown. A destruction listener that needs temporary dependencies uses
+<a href="event/BeanPreDestroyEvent.html#withDependencies(java.util.function.Function)"><code>BeanPreDestroyEvent.withDependencies(Function)</code></a>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The group</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="withDependencies(java.util.function.Function)">
+<h3>withDependencies</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;R&gt;</span>&nbsp;<span class="return-type">R</span>&nbsp;<span class="element-name">withDependencies</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="BeanDependencyGroup.html" title="interface in io.micronaut.context">BeanDependencyGroup</a>, R&gt;&nbsp;action)</span></div>
+<div class="block">Resolves dependencies for a synchronous invocation and always releases them afterwards. Cleanup failures
+are suppressed on an invocation failure. New groups and lookups are rejected once shutdown begins;
+a destruction listener uses <a href="event/BeanPreDestroyEvent.html#withDependencies(java.util.function.Function)"><code>BeanPreDestroyEvent.withDependencies(Function)</code></a>.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="withDependencies(java.util.function.Function)-type-param-R"><code>R</code> - The result type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>action</code> - The invocation</dd>
+<dt>Returns:</dt>
+<dd>The result (which must not retain an owned dependency)</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>
