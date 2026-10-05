@@ -61,10 +61,12 @@ loadScripts(document, 'script');</script>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
 <li><a href="#%3Cinit%3E(io.micronaut.http.body.stream.BaseSharedBuffer)" tabindex="0">AsFlux(BaseSharedBuffer)</a></li>
+<li><a href="#%3Cinit%3E(io.micronaut.http.body.stream.BaseSharedBuffer,boolean)" tabindex="0">AsFlux(BaseSharedBuffer, boolean)</a></li>
 </ol>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
+<li><a href="#isUnbuffered()" tabindex="0">isUnbuffered()</a></li>
 <li><a href="#add(io.micronaut.core.io.buffer.ReadBuffer)" tabindex="0">add(ReadBuffer)</a></li>
 <li><a href="#complete()" tabindex="0">complete()</a></li>
 <li><a href="#error(java.lang.Throwable)" tabindex="0">error(Throwable)</a></li>
@@ -121,6 +123,9 @@ similar methods.</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.http.body.stream.BaseSharedBuffer)" class="member-name-link">AsFlux</a><wbr>(<a href="BaseSharedBuffer.html" title="class in io.micronaut.http.body.stream">BaseSharedBuffer</a>&nbsp;sharedBuffer)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(io.micronaut.http.body.stream.BaseSharedBuffer,boolean)" class="member-name-link">AsFlux</a><wbr>(<a href="BaseSharedBuffer.html" title="class in io.micronaut.http.body.stream">BaseSharedBuffer</a>&nbsp;sharedBuffer,
+ boolean&nbsp;unbuffered)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -153,6 +158,11 @@ similar methods.</div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Signal an upstream error.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isUnbuffered()" class="member-name-link">isUnbuffered</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether this consumer streams the bytes without holding them, e.g.</div>
+</div>
 </div>
 </div>
 </div>
@@ -181,6 +191,26 @@ similar methods.</div>
 </div>
 </section>
 </li>
+<li>
+<section class="detail" id="&lt;init&gt;(io.micronaut.http.body.stream.BaseSharedBuffer,boolean)">
+<h3>AsFlux</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">AsFlux</span><wbr><span class="parameters">(<a href="BaseSharedBuffer.html" title="class in io.micronaut.http.body.stream">BaseSharedBuffer</a>&nbsp;sharedBuffer,
+ boolean&nbsp;unbuffered)</span></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>sharedBuffer</code> - The buffer to read</dd>
+<dd><code>unbuffered</code> - Whether the reader streams the bytes without holding them, e.g. to
+                    decode them piece by piece: it is not charged for the bytes it has
+                    not delivered yet, which the backpressure of the upstream bounds,
+                    and it receives the bytes kept past the buffer limit before it
+                    subscribed, see <a href="BaseSharedBuffer.html#setKeepInitialBytes()"><code>BaseSharedBuffer.setKeepInitialBytes()</code></a></dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -189,6 +219,26 @@ similar methods.</div>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="isUnbuffered()">
+<h3>isUnbuffered</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isUnbuffered</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="BufferConsumer.html#isUnbuffered()">BufferConsumer</a></code></span></div>
+<div class="block">Whether this consumer streams the bytes without holding them, e.g. to decode them piece by
+piece with limits of its own: only the backpressure of the upstream bounds the bytes it has
+not consumed yet. A body does not hold such a consumer to its buffer limit for the bytes
+that arrived before the consumer subscribed, see
+<a href="BaseSharedBuffer.html#setKeepInitialBytes()"><code>BaseSharedBuffer.setKeepInitialBytes()</code></a>.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="BufferConsumer.html#isUnbuffered()">isUnbuffered</a></code>&nbsp;in interface&nbsp;<code><a href="BufferConsumer.html" title="interface in io.micronaut.http.body.stream">BufferConsumer</a></code></dd>
+<dt>Returns:</dt>
+<dd>Whether this consumer streams the bytes without holding them</dd>
+</dl>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="add(io.micronaut.core.io.buffer.ReadBuffer)">
 <h3>add</h3>

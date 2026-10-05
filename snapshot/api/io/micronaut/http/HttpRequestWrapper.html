@@ -600,8 +600,11 @@ the bytes of the requests it wraps are then not its body.
 <p>A wrapper that cannot have replaced the body is never asked for it: a plain
 <a href="HttpRequestWrapper.html" title="class in io.micronaut.http"><code>HttpRequestWrapper</code></a>, a <a href="MutableHttpRequestWrapper.html" title="class in io.micronaut.http"><code>MutableHttpRequestWrapper</code></a> whose body was not set and
 a <a href="BodyPreservingRequestWrapper.html" title="interface in io.micronaut.http"><code>BodyPreservingRequestWrapper</code></a>. Asking a wrapper for its body decodes the body of
-the request it wraps, and a request may decode a new body on each call. Any other wrapper
-replaced the body if its body is not, by identity, the body of the request it wraps.</p></div>
+the request it wraps, and that decoding may consume the bytes of the request, e.g. the input
+stream of a servlet request, or produce a new object on each call. Any other wrapper replaced
+the body if its body is not, by identity, the body of the request it wraps: a subclass is
+asked for its body even when it does not override <code>getBody()</code>, as that is not looked
+up, without reflection.</p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>request</code> - The request</dd>
