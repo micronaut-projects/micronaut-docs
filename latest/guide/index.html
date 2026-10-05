@@ -899,7 +899,7 @@
         <h1>Micronaut Core</h1>
         <p></p>
         <p>Core components supporting the Micronaut Framework</p>
-        <p><strong>Version:</strong> 5.2.13 </p>
+        <p><strong>Version:</strong> 5.2.14 </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -2124,7 +2124,7 @@ repositories {
 }
 
 micronaut {
-    version = "5.2.13" <i class="conum" data-value="2"></i><b>(2)</b>
+    version = "5.2.14" <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
 </div>
@@ -13878,8 +13878,8 @@ final class AccountService {
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.13"
-    compileOnly "io.micronaut:micronaut-inject-java:5.2.13"
+    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.14"
+    compileOnly "io.micronaut:micronaut-inject-java:5.2.14"
     ...
 }</code></pre>
 </div>
@@ -14301,7 +14301,7 @@ Previously, we recommended using <code>Micronaut.defaultEnvironments("dev")</cod
 | |\/| | |/ __| '__/ _ \| '_ \ / _` | | | | __|
 | |  | | | (__| | | (_) | | | | (_| | |_| | |_
 |_|  |_|_|\___|_|  \___/|_| |_|\__,_|\__,_|\__|
-  Micronaut (5.2.13)
+  Micronaut (5.2.14)
 
 17:07:22.997 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 611ms. Server Running: http://localhost:8080</code></pre>
 </div>
@@ -56700,7 +56700,7 @@ micronaut.python.pool.ignoreDependencies[1]=PasswordResetTokens</code></pre>
 <p>So: pool the services the routes reach before tuning <code>size</code>, then measure the endpoints that matter. <code>warn-wait</code> tells you when the pool is the constraint; it cannot tell you when the pool is too large, which shows up only as throughput that falls when you add contexts.</p>
 </div>
 <div class="paragraph">
-<p>When the asyncio bridge is enabled, each Netty event loop that executes Python coroutines additionally owns a dedicated context. Those contexts are created lazily, one per event loop, and are not counted against <code>size</code>. The number of contexts an application can create is therefore the pool <code>size</code> plus the number of Netty event loops that run Python, plus the primary context. Reduce <code>micronaut.netty.event-loops.default.num-threads</code> or disable <code>micronaut.python.asyncio.enabled</code> when that footprint is too large. Alternatively cap the dedicated contexts with <code>micronaut.python.pool.max-event-loop-contexts</code>: the first event loops to run Python get a context each, and the others run Python through the shared pool, which keeps memory bounded at the cost of blocking those event loops while a coroutine runs; the pooled context a coroutine runs on stays leased to it until the coroutine completes, so it is never shared with another caller. Such a coroutine, like one started from a thread with no event loop at all, is driven to completion on the calling thread by a private loop that needs no sockets: its timers, <code>call_soon_threadsafe</code> and executors work, while networking must go through a Netty event loop. A warning names each event loop that is refused a context.</p>
+<p>When the asyncio bridge is enabled, each Netty event loop that executes Python coroutines additionally owns a dedicated context. It runs the coroutines of route modules and <code>@ContextPooled</code> beans. A Python bean that is not pooled, such as a <code>@Singleton</code> controller or service, is not copied into it: the bean&#8217;s <code>async def</code> methods run in the bean&#8217;s own context, on that context&#8217;s asyncio loop for the calling event loop, so state the bean holds is shared by every event loop just as it is shared by every pooled context. A coroutine in an event-loop context that awaits such a bean receives a future of its own loop. Because a singleton&#8217;s coroutines run on the loop of whichever event loop calls them, as they do with the pool disabled, guard state it shares across requests with thread-safe primitives such as <code>threading.Lock</code> rather than with <code>asyncio.Lock</code>, <code>asyncio.Event</code> or <code>asyncio.Queue</code>, which belong to the first loop that uses them. The event-loop contexts are created lazily, one per event loop, and are not counted against <code>size</code>. The number of contexts an application can create is therefore the pool <code>size</code> plus the number of Netty event loops that run Python, plus the primary context. Reduce <code>micronaut.netty.event-loops.default.num-threads</code> or disable <code>micronaut.python.asyncio.enabled</code> when that footprint is too large. Alternatively cap the dedicated contexts with <code>micronaut.python.pool.max-event-loop-contexts</code>: the first event loops to run Python get a context each, and the others run Python through the shared pool, which keeps memory bounded at the cost of blocking those event loops while a coroutine runs; the pooled context a coroutine runs on stays leased to it until the coroutine completes, so it is never shared with another caller. Such a coroutine, like one started from a thread with no event loop at all, is driven to completion on the calling thread by a private loop that needs no sockets: its timers, <code>call_soon_threadsafe</code> and executors work, while networking must go through a Netty event loop. A warning names each event loop that is refused a context.</p>
 </div>
 <div class="paragraph">
 <p>During graceful shutdown the pool keeps serving requests that are still in flight and reports completion once every context is idle. The contexts are closed when the application context is destroyed, after any Python execution still running in them has finished.</p>
@@ -58286,6 +58286,47 @@ class PersonService:
 </div>
 </div>
 <div class="sect2">
+<h3 id="_keyword_and_defaulted_arguments">Keyword and defaulted arguments</h3>
+<div class="paragraph">
+<p>A Python caller calls an advised method of another bean the way it calls any Python method: with keyword arguments and without the arguments that have defaults. The proxy binds the call through the signature of the Python method, so the interceptors see every argument of the method, the omitted ones carrying their Python defaults:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from jakarta.inject import Singleton
+from micronaut.cache.annotation import Cacheable, CacheConfig
+
+
+@Singleton
+@CacheConfig("schedules")
+class ScheduleCache:
+
+    @Cacheable(parameters=["key"])
+    async def schedule(self, key: str, interests: str, progress: ProgressListener | None = None) -&gt; Schedule:
+        ...
+
+
+@Singleton
+class ScheduleClient:
+    def __init__(self, cache: ScheduleCache):
+        self.cache = cache
+
+    async def fetch(self, key: str, interests: str) -&gt; Schedule:
+        return await self.cache.schedule(key, interests)  <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>progress</code> is omitted: the cache interceptor sees it as <code>None</code> and keys the cache by <code>key</code> alone</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A call that does not bind to the signature (a missing required argument, an unknown or repeated keyword argument, a positional-only parameter passed by keyword) raises a <code>TypeError</code> before any interceptor runs, as the plain Python call would. Positional-only parameters (before a <code>/</code>) are parameters of the generated Java method like any other, and their defaults apply when they are omitted. A method declaring <code><strong>args</code>, <code></strong>*kwargs</code> or a keyword-only parameter has no fixed argument layout for the generated Java method, so its arguments reach the proxy as given.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_calls_through_self">Calls through <code>self</code></h3>
 <div class="paragraph">
 <p>In a Java bean the proxy is a subclass of the bean, so <code>this</code> is the proxy and <code>this.greet(&#8230;&#8203;)</code> from another method of the bean runs the interceptors of <code>greet</code>. A Python bean is a plain object behind its proxy; to give <code>self.greet(&#8230;&#8203;)</code> the same behaviour, the runtime installs an attribute per intercepted method on the Python object when the proxy first resolves it. The attribute dispatches through the proxy, so the interceptor chain runs for the nested call, while <code>self</code> stays the bean object: its attributes, its identity and <code>type(self)</code> are unchanged.</p>
@@ -58334,7 +58375,7 @@ class HelloService:
 <p>A method declaring <code><strong>args</code> or <code></strong>*kwargs</code> has no fixed argument layout, and a keyword-only parameter (one after a bare <code>*</code>) has no parameter on the generated Java method, so such methods keep direct <code>self</code> calls: only calls through the proxy are intercepted.</p>
 </li>
 <li>
-<p>An intercepted <code>async def</code> method called through <code>self</code> returns an awaitable, as it does when called on the proxy. The interceptors see a <code>CompletionStage</code>, as they do for a Java bean, and the caller awaits the result. The method body runs as a task of its own: changes it makes to <code>contextvars</code> do not reach the caller, and cancelling the caller cancels the nested call only when the interceptors hand back the stage of the method.</p>
+<p>An intercepted <code>async def</code> method called through <code>self</code> returns an awaitable, as it does when called on the proxy. The interceptors see a <code>CompletionStage</code>, as they do for a Java bean, and the caller awaits the result. The method body runs as a task of its own: changes it makes to <code>contextvars</code> do not reach the caller, and cancelling the caller cancels the nested call only when the interceptors hand back the stage of the method. An exception the method raises reaches the awaiting caller as the same object, so <code>except MyError</code> matches it even though the interceptor chain carried it through a <code>CompletionStage</code>.</p>
 </li>
 <li>
 <p>The bean object must have a <code><em>dict</em></code>; a class that declares <code><em>slots</em></code> keeps direct <code>self</code> calls. The attributes are visible in <code>vars(self)</code> and are not part of the state of the bean: a copy of the bean object keeps dispatching to the original.</p>
@@ -58805,6 +58846,15 @@ async def publisher_message(self) -&gt; str:
 </div>
 </div>
 <div class="paragraph">
+<p>Any <code>CompletionStage</code> or <code>Publisher</code> returned by a Java call is awaitable, not only the values of injected beans: <code>await Mono.just(value)</code> and <code>await Mono.from_(publisher).toFuture()</code> both work.</p>
+</div>
+<div class="paragraph">
+<p>A failed await raises the Java exception itself, as the equivalent blocking call does, so <code>except HttpClientResponseException</code> handles an awaited client call exactly as it handles <code>toBlocking()</code>. As for a blocking Java call, <code>except Exception</code> does not catch a Java exception: catch the Java type, a Java superclass such as <code>java.lang.RuntimeException</code>, or <code>BaseException</code>. The failure stored on the future (<code>future.exception()</code>, or the results of <code>asyncio.gather(&#8230;&#8203;, return_exceptions=True)</code>) is a <code>micronaut_asyncio.MicronautJavaException</code> whose <code>java_exception</code> attribute is the Java exception. Networking failures of the asyncio networking APIs are raised as the <code>OSError</code> subclasses asyncio code expects (see <a href="#asyncioNetworking">[asyncioNetworking]</a>).</p>
+</div>
+<div class="paragraph">
+<p>A Python exception raised by the coroutine behind an awaited value, for example an <code>async def</code> method of a bean with AOP advice such as <code>@Cacheable</code>, is raised as the original exception object rather than as the Java exception that carried it through the interceptor chain, so <code>except MyError</code> matches it.</p>
+</div>
+<div class="paragraph">
 <p>For a <code>Publisher</code>, Micronaut requests one item, completes the await with the first item, and cancels the subscription. If the publisher completes empty, the awaited value is <code>None</code>; if it signals an error, the await fails. Multi-item <code>Flux</code> values are not collected into a list implicitly. Use reactive operators such as <code>collectList()</code> when all emitted items are required, or consume the items one at a time with <code>async for</code> as described in <a href="#asyncioStreaming">[asyncioStreaming]</a>.</p>
 </div>
 <div class="paragraph">
@@ -58944,6 +58994,9 @@ runtime = [
 </div>
 </div>
 </p>
+</div>
+<div class="paragraph">
+<p>Without the module, a coroutine has no Micronaut event loop: a standard Python loop drives it to completion on the calling thread, and <code>run_in_executor(None, &#8230;&#8203;)</code> still uses Micronaut&#8217;s blocking executor. A coroutine started on a Netty event-loop thread in this situation runs on the blocking executor instead, with a warning, since driving it on that thread would block the event loop and every client call that needs it.</p>
 </div>
 <div class="paragraph">
 <p>The module provides the Python-visible event-loop behavior. Its Java runtime classes are framework internals and should not be used directly by applications.</p>
@@ -59281,7 +59334,7 @@ class TickClient(ABC):
 </table>
 </div>
 <div class="paragraph">
-<p>A publisher error is raised from <code><em>anext</em></code> as a <code>MicronautJavaException</code> (or the <code>OSError</code> subclass used for networking failures) whose <code>java_exception</code> attribute is the Java cause. Task cancellation, a timeout and request cancellation while an iteration is pending cancel the subscription. Overlapping <code><em>anext</em></code> calls on one iterator are refused, and a publisher that emits more items than were requested is cancelled and the iteration fails, so memory stays bounded.</p>
+<p>A publisher error is raised from <code><em>anext</em></code> as the Java exception itself (or as the <code>OSError</code> subclass used for networking failures, whose <code>java_exception</code> attribute is the Java cause). Task cancellation, a timeout and request cancellation while an iteration is pending cancel the subscription. Overlapping <code><em>anext</em></code> calls on one iterator are refused, and a publisher that emits more items than were requested is cancelled and the iteration fails, so memory stays bounded.</p>
 </div>
 <div class="paragraph">
 <p>Awaiting a <code>Publisher</code> directly, as described above, keeps its meaning: one item is requested, the await completes with it and the subscription is cancelled. <code>as_async_iterable</code> is the way to consume every item.</p>
