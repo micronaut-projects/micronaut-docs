@@ -58286,6 +58286,47 @@ class PersonService:
 </div>
 </div>
 <div class="sect2">
+<h3 id="_keyword_and_defaulted_arguments">Keyword and defaulted arguments</h3>
+<div class="paragraph">
+<p>A Python caller calls an advised method of another bean the way it calls any Python method: with keyword arguments and without the arguments that have defaults. The proxy binds the call through the signature of the Python method, so the interceptors see every argument of the method, the omitted ones carrying their Python defaults:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from jakarta.inject import Singleton
+from micronaut.cache.annotation import Cacheable, CacheConfig
+
+
+@Singleton
+@CacheConfig("schedules")
+class ScheduleCache:
+
+    @Cacheable(parameters=["key"])
+    async def schedule(self, key: str, interests: str, progress: ProgressListener | None = None) -&gt; Schedule:
+        ...
+
+
+@Singleton
+class ScheduleClient:
+    def __init__(self, cache: ScheduleCache):
+        self.cache = cache
+
+    async def fetch(self, key: str, interests: str) -&gt; Schedule:
+        return await self.cache.schedule(key, interests)  <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>progress</code> is omitted: the cache interceptor sees it as <code>None</code> and keys the cache by <code>key</code> alone</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A call that does not bind to the signature (a missing required argument, an unknown or repeated keyword argument) raises a <code>TypeError</code> before any interceptor runs, as the plain Python call would. A method declaring <code><strong>args</code>, <code></strong>*kwargs</code>, a keyword-only or a positional-only parameter has no fixed argument layout for the generated Java method, so its arguments reach the proxy as given.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_calls_through_self">Calls through <code>self</code></h3>
 <div class="paragraph">
 <p>In a Java bean the proxy is a subclass of the bean, so <code>this</code> is the proxy and <code>this.greet(&#8230;&#8203;)</code> from another method of the bean runs the interceptors of <code>greet</code>. A Python bean is a plain object behind its proxy; to give <code>self.greet(&#8230;&#8203;)</code> the same behaviour, the runtime installs an attribute per intercepted method on the Python object when the proxy first resolves it. The attribute dispatches through the proxy, so the interceptor chain runs for the nested call, while <code>self</code> stays the bean object: its attributes, its identity and <code>type(self)</code> are unchanged.</p>
@@ -58331,7 +58372,7 @@ class HelloService:
 <p>Keyword arguments and omitted defaulted arguments are supported: <code>self.format(value, suffix="!")</code> reaches the interceptors of <code>format</code> with the arguments laid out the way the method declares them.</p>
 </li>
 <li>
-<p>A method declaring <code><strong>args</code> or <code></strong>*kwargs</code> has no fixed argument layout, and a keyword-only parameter (one after a bare <code>*</code>) has no parameter on the generated Java method, so such methods keep direct <code>self</code> calls: only calls through the proxy are intercepted.</p>
+<p>A method declaring <code><strong>args</code> or <code></strong>*kwargs</code> has no fixed argument layout, and a keyword-only parameter (one after a bare <code>*</code>) or a positional-only one (before a <code>/</code>) has no parameter on the generated Java method, so such methods keep direct <code>self</code> calls: only calls through the proxy are intercepted.</p>
 </li>
 <li>
 <p>An intercepted <code>async def</code> method called through <code>self</code> returns an awaitable, as it does when called on the proxy. The interceptors see a <code>CompletionStage</code>, as they do for a Java bean, and the caller awaits the result. The method body runs as a task of its own: changes it makes to <code>contextvars</code> do not reach the caller, and cancelling the caller cancels the nested call only when the interceptors hand back the stage of the method.</p>
