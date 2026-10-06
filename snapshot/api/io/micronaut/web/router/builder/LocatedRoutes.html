@@ -88,7 +88,7 @@ are relative to the prefix of the locator, and their handlers receive the locate
     }
 
     public void routes(LocatedHttpRouteBuilder&lt;Order&gt; items) {
-        items.handle(HttpMethod.GET, "/items/{item}", (request, pathVariables, order) -&gt;
+        items.GET("/items/{item}").handle((request, pathVariables, order) -&gt;
             HttpResponse.ok(order.item(pathVariables.getInt("item"))));
     }
 };
@@ -98,24 +98,26 @@ routes.locate("/orders/{id}", (request, pathVariables) -&gt; orders.find(pathVar
 <p>The router declares the routes of an instance once, when a locator locates the first target
 that the instance routes, and keeps them for as long as the instance is reachable: an instance
 describes the routes of every target of its type, not of one target, which reaches the
-handlers as an argument or through <a href="#locatedTarget(io.micronaut.http.PathVariables)"><code>locatedTarget(PathVariables)</code></a>. Locators that answer
+handlers as an argument or through <a href="#locatedTarget(io.micronaut.http.PathVariables)"><code>locatedTarget(PathVariables)</code></a>. Locators that return
 the same instance share its routes. Declare the routes of a type once and reuse the instance,
 e.g. in a field, rather than creating an instance per target.</p>
 
-<p>A located route inherits the annotations of the groups enclosing its locator route, see
-<a href="RouteSpec.html#annotate(io.micronaut.core.annotation.AnnotationValue)"><code>RouteSpec.annotate(io.micronaut.core.annotation.AnnotationValue)</code></a>, like a route
-declared in those groups, and its own annotations take precedence: e.g. a filter bound to a
-<code>@FilterMatcher</code> annotation of such a group runs for it, and the <code>@Produces</code>,
-<code>@Consumes</code>, <code>@Status</code> and <code>@ExecuteOn</code> of the group apply to it. The routes
-a locator route locates decide which media types the request may have and accept: the
-annotations of the groups of the locator route do so through them, not through the locator
-route. Builder settings of the groups, such as <code>produces(...)</code>, are not
-inherited.</p>
+<p>A located route inherits what a route declared in the groups enclosing its locator route
+has of them, and its own settings, and those of the groups of its <code>LocatedRoutes</code>, take
+precedence: the annotations, see <a href="RouteSpec.html#annotate(io.micronaut.core.annotation.AnnotationValue)"><code>RouteSpec.annotate(io.micronaut.core.annotation.AnnotationValue)</code></a>,
+e.g. a filter bound to a <code>@FilterMatcher</code> annotation of such a group runs for it, and
+the <code>@Produces</code>, <code>@Consumes</code>, <code>@Status</code> and <code>@ExecuteOn</code> of the group
+apply to it; the attributes, see <a href="RouteSpec.html#attribute(java.lang.String,java.lang.Object)"><code>RouteSpec.attribute(String, Object)</code></a>; and the media
+types and the executor, see <a href="RouteSpec.html#produces(io.micronaut.http.MediaType...)"><code>RouteSpec.produces(io.micronaut.http.MediaType...)</code></a> and
+<a href="ExecutionSpec.html#executeOn(java.lang.String)"><code>ExecutionSpec.executeOn(String)</code></a>. The routes a locator route locates decide which media
+types the request may have and accept, with what they inherit, not the locator route.</p>
 
-<p>Error and status routes declared in a group of the builder are local to its routes and
-supported; global ones, declared on the builder itself, and ports are not: they belong to
-the application routes, and declaring them fails the request that located the first target.
-The builder has no server filters, see <a href="HttpRouteBuilder.html#serverFilter(java.lang.String...)"><code>HttpRouteBuilder.serverFilter(String...)</code></a>.</p></div>
+<p>Error and status routes declared in a group of the builder, see
+<a href="LocatedHttpRouteScope.html#group(java.util.function.Consumer)"><code>LocatedHttpRouteScope.group(java.util.function.Consumer)</code></a>, are local to its routes and
+supported; global ones, declared on the builder itself, and ports are not: they belong to the
+application routes, and declaring them fails, when the routes are declared. Routes that fail
+to declare fail every request routed to them, and are declared again for the next one. The
+builder has no server filters, see <a href="HttpRouteBuilder.html#serverFilter(java.lang.String...)"><code>HttpRouteBuilder.serverFilter(String...)</code></a>.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>

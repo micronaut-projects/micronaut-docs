@@ -76,8 +76,6 @@ loadScripts(document, 'script');</script>
 <li><a href="#status(io.micronaut.http.HttpStatus,io.micronaut.web.router.builder.StatusRouteHandler)" tabindex="0">status(HttpStatus, StatusRouteHandler)</a></li>
 <li><a href="#errorAsync(java.lang.Class,io.micronaut.web.router.builder.AsyncErrorRouteHandler)" tabindex="0">errorAsync(Class, AsyncErrorRouteHandler)</a></li>
 <li><a href="#statusAsync(io.micronaut.http.HttpStatus,io.micronaut.web.router.builder.AsyncStatusRouteHandler)" tabindex="0">statusAsync(HttpStatus, AsyncStatusRouteHandler)</a></li>
-<li><a href="#group(java.util.function.Consumer)" tabindex="0">group(Consumer)</a></li>
-<li><a href="#path(java.lang.String,java.util.function.Consumer)" tabindex="0">path(String, Consumer)</a></li>
 <li><a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)" tabindex="0">locate(String, LocatorHandler, Function)</a></li>
 <li><a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,io.micronaut.web.router.builder.LocatedRoutes)" tabindex="0">locate(String, LocatorHandler, LocatedRoutes)</a></li>
 <li><a href="#locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,java.util.function.Function)" tabindex="0">locateAsync(String, AsyncLocatorHandler, Function)</a></li>
@@ -94,7 +92,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Known Subinterfaces:</dt>
-<dd><code><a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">HttpRouteBuilder</a>, <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a>, <a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">LocatedHttpRouteBuilder</a>&lt;T&gt;</code></dd>
+<dd><code><a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">HttpRouteBuilder</a>, <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a>, <a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">LocatedHttpRouteBuilder</a>&lt;T&gt;, <a href="LocatedHttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">LocatedHttpRouteGroup</a>&lt;T&gt;, <a href="LocatedHttpRouteScope.html" title="interface in io.micronaut.web.router.builder">LocatedHttpRouteScope</a>&lt;T&gt;</code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
@@ -103,12 +101,15 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public sealed interface </span><span class="element-name type-name-label">HttpRouteScope</span>
-<span class="permits">permits <a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">HttpRouteBuilder</a>, <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a>, <a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">LocatedHttpRouteBuilder</a>&lt;T&gt; <span class="permits-note">(not exhaustive)</span></span></div>
-<div class="block">The declarations of handler routes, group routes, error routes and status routes that the
-<a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteBuilder</code></a> of an <a href="HttpRoutes.html" title="interface in io.micronaut.web.router.builder"><code>HttpRoutes</code></a> bean, an <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteGroup</code></a> and the
-<a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>LocatedHttpRouteBuilder</code></a> of <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a> have in common. A route is declared in stages, see <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteSpec</code></a>. Only the builder declares
-server filters, see <a href="HttpRouteBuilder.html#serverFilter(java.lang.String...)"><code>HttpRouteBuilder.serverFilter(String...)</code></a>: the filters of a group are
-route filters, which apply to the routes of the group only.</div>
+<span class="permits">permits <a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">HttpRouteBuilder</a>, <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a>, <a href="LocatedHttpRouteScope.html" title="interface in io.micronaut.web.router.builder">LocatedHttpRouteScope</a>&lt;T&gt; <span class="permits-note">(not exhaustive)</span></span></div>
+<div class="block">The declarations of handler routes, locator routes, error routes and status routes that the
+<a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteBuilder</code></a> of an <a href="HttpRoutes.html" title="interface in io.micronaut.web.router.builder"><code>HttpRoutes</code></a> bean, an <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteGroup</code></a>, and the
+<a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>LocatedHttpRouteBuilder</code></a> of <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a> and its groups have in common. A route
+is declared in stages, see <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteSpec</code></a>. The groups of routes are declared on the
+builders and on the groups, see <a href="HttpRouteBuilder.html#group(java.util.function.Consumer)"><code>HttpRouteBuilder.group(Consumer)</code></a> and
+<a href="LocatedHttpRouteScope.html#group(java.util.function.Consumer)"><code>LocatedHttpRouteScope.group(Consumer)</code></a>. Only the builder of an <a href="HttpRoutes.html" title="interface in io.micronaut.web.router.builder"><code>HttpRoutes</code></a> bean
+declares server filters, see <a href="HttpRouteBuilder.html#serverFilter(java.lang.String...)"><code>HttpRouteBuilder.serverFilter(String...)</code></a>: the filters of a
+group are route filters, which apply to the routes of the group only.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -184,64 +185,48 @@ global on the builder, local to the routes of the group in a <a href="HttpRouteG
 <div class="block">Route <code>GET</code> requests to a handler function: a route with no settings, the same as
 <code>GET(uri).handle(handler)</code>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#group(java.util.function.Consumer)" class="member-name-link">group</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a>&gt;&nbsp;routes)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Declare a group of routes, whose filters apply to every route declared in the lambda,
-e.g.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,io.micronaut.web.router.builder.LocatedRoutes)" class="member-name-link">locate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,io.micronaut.web.router.builder.LocatedRoutes)" class="member-name-link">locate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
  <a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder">LocatorHandler</a>&lt;? extends T&gt;&nbsp;locator,
  <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder">LocatedRoutes</a>&lt;T&gt;&nbsp;routes)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Route the requests under a prefix to one set of routes of the targets a locator locates, see
 <a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)"><code>locate(String, LocatorHandler, Function)</code></a>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T&gt;&nbsp;void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)" class="member-name-link">locate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T&gt;&nbsp;void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)" class="member-name-link">locate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
  <a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder">LocatorHandler</a>&lt;? extends T&gt;&nbsp;locator,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;? super T, ? extends <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder">LocatedRoutes</a>&lt;?&gt;&gt;&nbsp;routesOf)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Route the requests under a prefix to the routes of a target located at runtime, like a
 JAX-RS sub-resource locator.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,io.micronaut.web.router.builder.LocatedRoutes)" class="member-name-link">locateAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,io.micronaut.web.router.builder.LocatedRoutes)" class="member-name-link">locateAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
  <a href="AsyncLocatorHandler.html" title="interface in io.micronaut.web.router.builder">AsyncLocatorHandler</a>&lt;? extends T&gt;&nbsp;locator,
  <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder">LocatedRoutes</a>&lt;T&gt;&nbsp;routes)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Route the requests under a prefix to one set of routes of the targets a locator locates
 asynchronously, see <a href="#locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,java.util.function.Function)"><code>locateAsync(String, AsyncLocatorHandler, Function)</code></a>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T&gt;&nbsp;void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,java.util.function.Function)" class="member-name-link">locateAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T&gt;&nbsp;void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,java.util.function.Function)" class="member-name-link">locateAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
  <a href="AsyncLocatorHandler.html" title="interface in io.micronaut.web.router.builder">AsyncLocatorHandler</a>&lt;? extends T&gt;&nbsp;locator,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;? super T, ? extends <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder">LocatedRoutes</a>&lt;?&gt;&gt;&nbsp;routesOf)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Route the requests under a prefix to the routes of a target located asynchronously, e.g.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder">HttpRouteSpec</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#PATCH(java.lang.String)" class="member-name-link">PATCH</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;uri)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder">HttpRouteSpec</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#PATCH(java.lang.String)" class="member-name-link">PATCH</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;uri)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Declare a route of <code>PATCH</code> requests, see <a href="#GET(java.lang.String)"><code>GET(String)</code></a>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#PATCH(java.lang.String,io.micronaut.web.router.builder.RequestHandler)" class="member-name-link">PATCH</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;uri,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#PATCH(java.lang.String,io.micronaut.web.router.builder.RequestHandler)" class="member-name-link">PATCH</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;uri,
  <a href="RequestHandler.html" title="interface in io.micronaut.web.router.builder">RequestHandler</a>&nbsp;handler)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Route <code>PATCH</code> requests to a handler function: the same as
 <code>PATCH(uri).handle(handler)</code>.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#path(java.lang.String,java.util.function.Consumer)" class="member-name-link">path</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefix,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a>&gt;&nbsp;routes)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Declare a group of routes under a prefix: the URI template of every route of the group,
-including the routes of its nested groups, is the prefix followed by
-the URI template of the route, like the URI of a controller method under the URI of the
-controller: <code>path("/api", api -&gt; api.GET("/orders", handler))</code> routes
-<code>GET /api/orders</code>.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder">HttpRouteSpec</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#POST(java.lang.String)" class="member-name-link">POST</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;uri)</code></div>
@@ -736,64 +721,6 @@ the builder, local to the routes of the group in a <a href="HttpRouteGroup.html"
 </section>
 </li>
 <li>
-<section class="detail" id="group(java.util.function.Consumer)">
-<h3>group</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">group</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a>&gt;&nbsp;routes)</span></div>
-<div class="block">Declare a group of routes, whose filters apply to every route declared in the lambda,
-e.g. to filter every route of an <a href="HttpRoutes.html" title="interface in io.micronaut.web.router.builder"><code>HttpRoutes</code></a> bean. The builder of an
-<a href="HttpRoutes.html" title="interface in io.micronaut.web.router.builder"><code>HttpRoutes</code></a> bean has no route filter methods of its own, as it is shared by the beans:
-the group is the scope of the filters, see <a href="HttpRouteBuilder.html#serverFilter(java.lang.String...)"><code>HttpRouteBuilder.serverFilter(String...)</code></a> for a server filter.
-
-<pre><code>routes.group(all -&gt; {
-    all.beforeReplacing((request, propagatedContext) -&gt; {
-        propagatedContext.add(new MdcPropagationContext(Map.of("path", request.getPath())));
-        return null;
-    });
-    all.GET("/orders", ordersHandler);
-    all.GET("/customers", customersHandler);
-});
-</code></pre>
-
-<p>See <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteGroup</code></a> for which routes the filters apply to, and in which order.
-A route declared in the lambda is ended with a terminal, see <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteSpec</code></a>, before
-the lambda returns: otherwise the group fails with an <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a> naming
-the route.</p></div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>routes</code> - Declares the routes and the filters of the group</dd>
-<dt>Since:</dt>
-<dd>5.3.0</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="path(java.lang.String,java.util.function.Consumer)">
-<h3>path</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">path</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefix,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a>&gt;&nbsp;routes)</span></div>
-<div class="block">Declare a group of routes under a prefix: the URI template of every route of the group,
-including the routes of its nested groups, is the prefix followed by
-the URI template of the route, like the URI of a controller method under the URI of the
-controller: <code>path("/api", api -&gt; api.GET("/orders", handler))</code> routes
-<code>GET /api/orders</code>. The prefixes of nested groups add up. The filters of the group apply
-to every route declared in the lambda, see <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteGroup</code></a>.
-
-<p>The prefix is a path: it may have path variables, e.g. <code>/tenants/{tenant}</code>, but no
-query or fragment.</p></div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>prefix</code> - The prefix of the URI templates of the routes of the group</dd>
-<dd><code>routes</code> - Declares the routes and the filters of the group</dd>
-<dt>Since:</dt>
-<dd>5.3.0</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
 <section class="detail" id="locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)">
 <h3>locate</h3>
 <div class="horizontal-scroll">
@@ -824,14 +751,20 @@ controller method.</p>
 <p>When the located routes have no route for the rest of the path, the request is answered
 like a request that no route matches: <code>404</code>, or <code>405</code>, <code>415</code> or
 <code>406</code> if a located route matches the path with another method or media type. No other
-route of the application is tried. The filters of the matched located route apply, and the
-server filters apply to the full path.</p>
+route of the application is tried. The filters of the matched located route apply, after
+the filters of the groups of the locator route, and the server filters apply to the full
+path. A located route inherits the annotations, the attributes, the media types and the
+executor of the groups of the locator route, like a route declared in them, unless it, or a
+group of its <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a>, declares its own, see <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteGroup</code></a>.</p>
 
 <p>The locator runs while the request is matched, see <a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder"><code>LocatorHandler</code></a>, at most once
 per request: matching the request again, e.g. to find the allowed methods of a
 <code>405</code>, reuses the target, or the exception, of the first call. The routes of a
 <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a> instance are declared once, when the first target it routes is
-located, and shared by every locator that answers the instance.
+located, and shared by every locator that returns the instance; routes that fail to
+declare, e.g. a global error route, fail every request routed to them, and are declared
+again for the next one.
+The prefix is a path, without a query or a fragment.
 A request with a custom HTTP method is located like any other: the located routes of that
 method answer it, or those declared with <code>any(...)</code>, and the allowed methods of its
 <code>405</code> are those of the located routes.</p></div>
@@ -896,9 +829,11 @@ for <a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHan
 synchronously or asynchronously. The target is located once per request.
 <a href="../Router.html#findClosest(io.micronaut.http.HttpRequest)"><code>Router.findClosest(HttpRequest)</code></a> of an application with an asynchronous
 locator that has not located its target yet fails: the server matches such a request
-again when the stage completes. The server cancels the stage when the client closes the
-connection before it completes, and a CORS preflight request of the prefix is answered
-once the target is located, with the methods of its routes.</p></div>
+again when the stage completes. A server that tells when the client goes away, e.g. closes
+the connection or resets the HTTP/2 stream, stops waiting for the stage then, without
+cancelling it: a locator may return a stage it shares with other requests, e.g. of a cache.
+A CORS preflight request of the prefix is answered once the target is located, with the
+methods of its routes.</p></div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><span id="locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,java.util.function.Function)-type-param-T"><code>T</code> - The type of the target</span></dd>

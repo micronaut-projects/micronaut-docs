@@ -504,8 +504,9 @@ the form media types: a form handler reads a form.</p>
 
 <p>The media types, and the executor, see <a href="ExecutionSpec.html#executeOn(java.lang.String)"><code>ExecutionSpec.executeOn(String)</code></a>, of a
 group apply to its routes to handlers, including the implicit <code>HEAD</code> routes, the
-routes declared for several methods and the declared routes, not to its locator routes,
-whose located routes declare their own, nor to its error and status routes.</p></div>
+routes declared for several methods and the declared routes, and to the routes its locator
+routes locate, unless they, or a group of their <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a>, declare their own;
+not to its error and status routes.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="RouteSpec.html#consumes(io.micronaut.http.MediaType...)">consumes</a></code>&nbsp;in interface&nbsp;<code><a href="RouteSpec.html" title="interface in io.micronaut.web.router.builder">RouteSpec</a>&lt;<a href="#type-param-T" title="type parameter in LocatedHttpRouteSpec">T</a>&gt;</code></dd>
@@ -667,8 +668,9 @@ e.g. a route filter, a server filter or the handler. They are the attributes of 
 not of the request, see <a href="../RouteAttributes.html" title="class in io.micronaut.web.router"><code>RouteAttributes</code></a> for the route of a
 request.
 
-<p>On a group, the routes of the group, and of its nested groups, have the attribute; the
-attribute of a nested group or of a route with the same name overrides it.</p>
+<p>On a group, the routes of the group, and of its nested groups, have the attribute, and
+so do the routes its locator routes locate; the attribute of a nested group, of a route, or
+of a located route or a group of its <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a>, with the same name overrides it.</p>
 
 <pre><code>routes.path("/admin", admin -&gt; {
     admin.attribute("role", "admin");
@@ -898,8 +900,8 @@ method. On a group, the routes of the group, and of its nested groups, run on it
 <code>@ExecuteOn</code> on a controller, unless they, or a nested group, choose their thread.
 The media types and the executor of a group apply to its routes to handlers, including the
 implicit <code>HEAD</code> routes, the routes declared for several methods and the declared
-routes, not to its locator routes, whose located routes declare their own, nor to its error
-and status routes.</p>
+routes, and to the routes its locator routes locate, unless they, or a group of their
+<a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a>, choose their own; not to its error and status routes.</p>
 
 <p>On a filter, the filter runs on the executor, like a filter method annotated
 <code>@ExecuteOn</code>: use it for a filter that blocks, e.g. on a database. The filter chain
