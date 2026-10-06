@@ -102,7 +102,8 @@ class OrderRoutes implements HttpRoutes {
 <ul>
     <li><a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteBuilder</code></a>: the creators of the routes,
     per HTTP method, by method name, for several methods or any method, and a shortcut per
-    method for a route with no settings; error and status routes; server filters; groups;</li>
+    method for a route with no settings; error and status routes; locator routes, see
+    <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a>; server filters; groups;</li>
     <li><a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteSpec</code></a>: a pending route, its settings
     (media types, executor, annotations, conditions, port, order, attributes) and its filters,
     from <a href="RouteFilterSpec.html" title="interface in io.micronaut.web.router.builder"><code>RouteFilterSpec</code></a>, its body stages and its
@@ -117,7 +118,7 @@ class OrderRoutes implements HttpRoutes {
     <a href="BodyRequestHandler.html" title="interface in io.micronaut.web.router.builder"><code>BodyRequestHandler</code></a>,
     <a href="AsyncRequestHandler.html" title="interface in io.micronaut.web.router.builder"><code>AsyncRequestHandler</code></a>,
     <a href="AsyncBodyRequestHandler.html" title="interface in io.micronaut.web.router.builder"><code>AsyncBodyRequestHandler</code></a>, which reads the
-    <a href="../../../http/body/AsyncRequestBody.html" title="interface in io.micronaut.http.body"><code>AsyncRequestBody</code></a>, the error and status handlers)
+    <a href="../../../http/body/AsyncRequestBody.html" title="interface in io.micronaut.http.body"><code>AsyncRequestBody</code></a>, the error, status and locator handlers)
     and the route filter functions;</li>
     <li><a href="../../../http/PathVariables.html" title="interface in io.micronaut.http"><code>PathVariables</code></a>, the typed path variables of the
     matched route, and <a href="RequestPredicates.html" title="class in io.micronaut.web.router.builder"><code>RequestPredicates</code></a>, conditions
@@ -197,43 +198,49 @@ with <a href="RouteFilterSpec.html#afterAsync(io.micronaut.web.router.builder.As
 <a href="ErrorRouteHandler.html" title="interface in io.micronaut.web.router.builder"><code>ErrorRouteHandler</code></a>, like an <code>@Error(global = true)</code> method returning a
 <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a>.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="AsyncReplacingRouteRequestFilter.html" title="interface in io.micronaut.web.router.builder">AsyncReplacingRouteRequestFilter</a></div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="AsyncLocatorHandler.html" title="interface in io.micronaut.web.router.builder">AsyncLocatorHandler</a>&lt;T&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">Locates the target of the rest of a path later, for
+<a href="HttpRouteScope.html#locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,java.util.function.Function)"><code>HttpRouteScope.locateAsync(String, AsyncLocatorHandler, java.util.function.Function)</code></a>:
+the asynchronous form of <a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder"><code>LocatorHandler</code></a>, e.g.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="AsyncReplacingRouteRequestFilter.html" title="interface in io.micronaut.web.router.builder">AsyncReplacingRouteRequestFilter</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">An asynchronous filter of one route's requests, declared with
 <a href="RouteFilterSpec.html#beforeReplacingAsync(io.micronaut.web.router.builder.AsyncReplacingRouteRequestFilter)"><code>RouteFilterSpec.beforeReplacingAsync(AsyncReplacingRouteRequestFilter)</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="AsyncReplacingRouteResponseFilter.html" title="interface in io.micronaut.web.router.builder">AsyncReplacingRouteResponseFilter</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="AsyncReplacingRouteResponseFilter.html" title="interface in io.micronaut.web.router.builder">AsyncReplacingRouteResponseFilter</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">An asynchronous filter of one route's responses that can replace the response, declared with
 <a href="RouteFilterSpec.html#afterReplacingAsync(io.micronaut.web.router.builder.AsyncReplacingRouteResponseFilter)"><code>RouteFilterSpec.afterReplacingAsync(AsyncReplacingRouteResponseFilter)</code></a>: the
 <a href="ReplacingRouteResponseFilter.html" title="interface in io.micronaut.web.router.builder"><code>ReplacingRouteResponseFilter</code></a> whose result completes later, like a <code>@ResponseFilter</code>
 method returning a <code>CompletionStage</code> of a response.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="AsyncRequestHandler.html" title="interface in io.micronaut.web.router.builder">AsyncRequestHandler</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="AsyncRequestHandler.html" title="interface in io.micronaut.web.router.builder">AsyncRequestHandler</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">A route handler that completes the response later, like a controller method returning a
 <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="AsyncRouteRequestFilter.html" title="interface in io.micronaut.web.router.builder">AsyncRouteRequestFilter</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="AsyncRouteRequestFilter.html" title="interface in io.micronaut.web.router.builder">AsyncRouteRequestFilter</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">An asynchronous filter of one route's requests that changes the request in place, declared with
 <a href="RouteFilterSpec.html#beforeAsync(io.micronaut.web.router.builder.AsyncRouteRequestFilter)"><code>RouteFilterSpec.beforeAsync(AsyncRouteRequestFilter)</code></a>: the filter chain continues with the
 request when the returned stage completes, so the filter must not block: it runs on the thread
 of the filter chain, which can be the event loop.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="AsyncRouteResponseFilter.html" title="interface in io.micronaut.web.router.builder">AsyncRouteResponseFilter</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="AsyncRouteResponseFilter.html" title="interface in io.micronaut.web.router.builder">AsyncRouteResponseFilter</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">An asynchronous filter of one route's responses, declared with
 <a href="RouteFilterSpec.html#afterAsync(io.micronaut.web.router.builder.AsyncRouteResponseFilter)"><code>RouteFilterSpec.afterAsync(AsyncRouteResponseFilter)</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="AsyncStatusRouteHandler.html" title="interface in io.micronaut.web.router.builder">AsyncStatusRouteHandler</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="AsyncStatusRouteHandler.html" title="interface in io.micronaut.web.router.builder">AsyncStatusRouteHandler</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">A handler function for a response status that completes the response later: the asynchronous
 <a href="StatusRouteHandler.html" title="interface in io.micronaut.web.router.builder"><code>StatusRouteHandler</code></a>, like an <code>@Error(status = ..., global = true)</code> method
 returning a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a>.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="BodyRequestHandler.html" title="interface in io.micronaut.web.router.builder">BodyRequestHandler</a>&lt;B extends @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="BodyRequestHandler.html" title="interface in io.micronaut.web.router.builder">BodyRequestHandler</a>&lt;B extends @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">A route handler that receives the body of the request, see the body stages of
 <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteSpec</code></a>: decoded to a type, like a controller method with a <code>@Body</code>
 argument, the body is read and decoded by the message body readers before the handler runs,
@@ -242,44 +249,49 @@ see <a href="HttpRouteSpec.html#body(io.micronaut.core.type.Argument)"><code>Htt
 handler runs, see <a href="HttpRouteSpec.html#form()"><code>HttpRouteSpec.form()</code></a>; or the <a href="../../../http/body/AsyncRequestBody.html" title="interface in io.micronaut.http.body"><code>AsyncRequestBody</code></a>
 the handler reads, see <a href="HttpRouteSpec.html#body()"><code>HttpRouteSpec.body()</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="Cidr.html" title="class in io.micronaut.web.router.builder">Cidr</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="Cidr.html" title="class in io.micronaut.web.router.builder">Cidr</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
 <div class="block">A range of IPv4 or IPv6 addresses in CIDR notation, e.g.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ContextReplacingRouteRequestFilter.html" title="interface in io.micronaut.web.router.builder">ContextReplacingRouteRequestFilter</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ContextReplacingRouteRequestFilter.html" title="interface in io.micronaut.web.router.builder">ContextReplacingRouteRequestFilter</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">A filter of one route's requests that changes the propagated context and can answer or replace
 the request, declared with
 <a href="RouteFilterSpec.html#beforeReplacing(io.micronaut.web.router.builder.ContextReplacingRouteRequestFilter)"><code>RouteFilterSpec.beforeReplacing(ContextReplacingRouteRequestFilter)</code></a>: the <a href="ReplacingRouteRequestFilter.html" title="interface in io.micronaut.web.router.builder"><code>ReplacingRouteRequestFilter</code></a> that
 receives a <a href="../../../core/propagation/MutablePropagatedContext.html" title="interface in io.micronaut.core.propagation"><code>MutablePropagatedContext</code></a>, like a <code>@RequestFilter</code> method with a
 <code>MutablePropagatedContext</code> parameter.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ContextReplacingRouteResponseFilter.html" title="interface in io.micronaut.web.router.builder">ContextReplacingRouteResponseFilter</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ContextReplacingRouteResponseFilter.html" title="interface in io.micronaut.web.router.builder">ContextReplacingRouteResponseFilter</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">A filter of one route's responses that can replace the response and changes the propagated
 context, declared with <a href="RouteFilterSpec.html#afterReplacing(io.micronaut.web.router.builder.ContextReplacingRouteResponseFilter)"><code>RouteFilterSpec.afterReplacing(ContextReplacingRouteResponseFilter)</code></a>:
 the <a href="ReplacingRouteResponseFilter.html" title="interface in io.micronaut.web.router.builder"><code>ReplacingRouteResponseFilter</code></a> that receives a <a href="../../../core/propagation/MutablePropagatedContext.html" title="interface in io.micronaut.core.propagation"><code>MutablePropagatedContext</code></a>, like a
 <code>@ResponseFilter</code> method returning a response with a <code>MutablePropagatedContext</code>
 parameter.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ContextRouteRequestFilter.html" title="interface in io.micronaut.web.router.builder">ContextRouteRequestFilter</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ContextRouteRequestFilter.html" title="interface in io.micronaut.web.router.builder">ContextRouteRequestFilter</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">A filter of one route's requests that changes the request and the propagated context in place,
 declared with <a href="RouteFilterSpec.html#before(io.micronaut.web.router.builder.ContextRouteRequestFilter)"><code>RouteFilterSpec.before(ContextRouteRequestFilter)</code></a>: the
 <a href="RouteRequestFilter.html" title="interface in io.micronaut.web.router.builder"><code>RouteRequestFilter</code></a> that receives a <a href="../../../core/propagation/MutablePropagatedContext.html" title="interface in io.micronaut.core.propagation"><code>MutablePropagatedContext</code></a>, like a
 <code>@RequestFilter</code> method with a <code>MutablePropagatedContext</code> parameter.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ContextRouteResponseFilter.html" title="interface in io.micronaut.web.router.builder">ContextRouteResponseFilter</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ContextRouteResponseFilter.html" title="interface in io.micronaut.web.router.builder">ContextRouteResponseFilter</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">A filter of one route's responses that changes the propagated context, declared with
 <a href="RouteFilterSpec.html#after(io.micronaut.web.router.builder.ContextRouteResponseFilter)"><code>RouteFilterSpec.after(ContextRouteResponseFilter)</code></a>: the <a href="RouteResponseFilter.html" title="interface in io.micronaut.web.router.builder"><code>RouteResponseFilter</code></a> that
 receives a <a href="../../../core/propagation/MutablePropagatedContext.html" title="interface in io.micronaut.core.propagation"><code>MutablePropagatedContext</code></a>, like a <code>@ResponseFilter</code> method with a
 <code>MutablePropagatedContext</code> parameter.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="DefaultHttpRouteBuilder.html" title="class in io.micronaut.web.router.builder">DefaultHttpRouteBuilder</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="DefaultHttpRouteBuilder.html" title="class in io.micronaut.web.router.builder">DefaultHttpRouteBuilder</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">The <a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteBuilder</code></a>: adds the routes to handler functions to a <a href="../RouteAssembly.html" title="class in io.micronaut.web.router"><code>RouteAssembly</code></a>,
 like the legacy route builder adds its routes, without depending on it.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="DefaultLocatedHttpRouteBuilder.html" title="class in io.micronaut.web.router.builder">DefaultLocatedHttpRouteBuilder</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">The builder of the routes of located targets of a type, see <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a>: the handlers that receive the
+target are routed as handlers that read it from their path variables.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="DefaultPathVariables.html" title="class in io.micronaut.web.router.builder">DefaultPathVariables</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
@@ -351,199 +363,275 @@ are the routes of the group, and the filters of the group apply to each of them.
 <div class="col-first odd-row-color class-summary class-summary-tab1"><a href="HttpRouteScope.html" title="interface in io.micronaut.web.router.builder">HttpRouteScope</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">The declarations of handler routes, group routes, error routes and status routes that the
-<a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteBuilder</code></a> of an <a href="HttpRoutes.html" title="interface in io.micronaut.web.router.builder"><code>HttpRoutes</code></a> bean and an <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteGroup</code></a> have in
-common.</div>
+<a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteBuilder</code></a> of an <a href="HttpRoutes.html" title="interface in io.micronaut.web.router.builder"><code>HttpRoutes</code></a> bean, an <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteGroup</code></a> and the
+<a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>LocatedHttpRouteBuilder</code></a> of <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a> have in common.</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab1"><a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder">HttpRouteSpec</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">A pending route to a handler function, declared with a creator of the <a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteBuilder</code></a>,
 e.g.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ReplacingRouteRequestFilter.html" title="interface in io.micronaut.web.router.builder">ReplacingRouteRequestFilter</a></div>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="LocatedAsyncBodyRequestHandler.html" title="interface in io.micronaut.web.router.builder">LocatedAsyncBodyRequestHandler</a>&lt;T, B extends @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</div>
 <div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="block">A route handler of the routes of a located target that receives the target and the body of the
+request, and completes the response later, see <a href="LocatedHttpBodyRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>LocatedHttpBodyRouteSpec</code></a>: otherwise the
+same as an <a href="AsyncBodyRequestHandler.html" title="interface in io.micronaut.web.router.builder"><code>AsyncBodyRequestHandler</code></a>.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="LocatedAsyncLocatorHandler.html" title="interface in io.micronaut.web.router.builder">LocatedAsyncLocatorHandler</a>&lt;T,<wbr>U&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">An asynchronous locator of the routes of a located target that receives the target,
+which owns the locator, see <a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>LocatedHttpRouteBuilder</code></a>: otherwise the same as an
+<a href="AsyncLocatorHandler.html" title="interface in io.micronaut.web.router.builder"><code>AsyncLocatorHandler</code></a>.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="LocatedAsyncRequestHandler.html" title="interface in io.micronaut.web.router.builder">LocatedAsyncRequestHandler</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="block">A route handler of the routes of a located target that receives the target and completes the
+response later, see <a href="LocatedHttpRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>LocatedHttpRouteSpec</code></a>: otherwise the same as an
+<a href="AsyncRequestHandler.html" title="interface in io.micronaut.web.router.builder"><code>AsyncRequestHandler</code></a>.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="LocatedBodyFilterSpec.html" title="interface in io.micronaut.web.router.builder">LocatedBodyFilterSpec</a>&lt;T, B extends @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">A filter just added to a located route after its body stage, see <a href="FilterSpec.html" title="interface in io.micronaut.web.router.builder"><code>FilterSpec</code></a>:
+<a href="LocatedBodyFilterSpec.html#and()"><code>LocatedBodyFilterSpec.and()</code></a> goes back to the located route.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="LocatedBodyRequestHandler.html" title="interface in io.micronaut.web.router.builder">LocatedBodyRequestHandler</a>&lt;T, B extends @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="block">A route handler of the routes of a located target that receives the target and the
+body the body stage of the route declares, see <a href="LocatedHttpBodyRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>LocatedHttpBodyRouteSpec</code></a>: otherwise the same as a
+<a href="BodyRequestHandler.html" title="interface in io.micronaut.web.router.builder"><code>BodyRequestHandler</code></a>.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="LocatedFilterSpec.html" title="interface in io.micronaut.web.router.builder">LocatedFilterSpec</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">A filter just added to a located route, see <a href="FilterSpec.html" title="interface in io.micronaut.web.router.builder"><code>FilterSpec</code></a>: <a href="LocatedFilterSpec.html#and()"><code>LocatedFilterSpec.and()</code></a> goes back to the
+located route.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="LocatedHttpBodyRouteSpec.html" title="interface in io.micronaut.web.router.builder">LocatedHttpBodyRouteSpec</a>&lt;T, B extends @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="block">The pending route of the routes of a located target after a body stage, see
+<a href="LocatedHttpRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>LocatedHttpRouteSpec</code></a>: an <a href="HttpBodyRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>HttpBodyRouteSpec</code></a> whose settings return the located
+route, and whose terminals also take a handler that receives the located target and the body.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">LocatedHttpRouteBuilder</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">The builder of the routes of located targets of a type, see <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a>: besides the
+routes of an <a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteBuilder</code></a>, whose handlers read the target with
+<a href="LocatedRoutes.html#locatedTarget(io.micronaut.http.PathVariables,java.lang.Class)"><code>LocatedRoutes.locatedTarget(PathVariables, Class)</code></a>, it routes to handlers that receive the target as an
+argument, of the type of the routes, <a href="LocatedRoutes.html#targetType()"><code>LocatedRoutes.targetType()</code></a>.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="LocatedHttpRouteSpec.html" title="interface in io.micronaut.web.router.builder">LocatedHttpRouteSpec</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="block">The pending route of the routes of a located target, see <a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>LocatedHttpRouteBuilder</code></a>: an
+<a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteSpec</code></a> whose settings return the located route, and whose terminals also take a
+handler that receives the located target, of the type of the routes,
+see <a href="LocatedRoutes.html#targetType()"><code>LocatedRoutes.targetType()</code></a>.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="LocatedLocatorHandler.html" title="interface in io.micronaut.web.router.builder">LocatedLocatorHandler</a>&lt;T,<wbr>U&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">A locator of the routes of a located target that receives the target, which owns the
+locator, see <a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>LocatedHttpRouteBuilder</code></a>: otherwise the same as a <a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder"><code>LocatorHandler</code></a>.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="LocatedRequestHandler.html" title="interface in io.micronaut.web.router.builder">LocatedRequestHandler</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="block">A route handler of the routes of a located target that receives the target, see
+<a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>LocatedHttpRouteBuilder</code></a>: otherwise the same as a <a href="RequestHandler.html" title="interface in io.micronaut.web.router.builder"><code>RequestHandler</code></a>.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder">LocatedRoutes</a>&lt;T&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">The routes of the targets of a type that a locator locates, see
+<a href="HttpRouteScope.html#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)"><code>HttpRouteScope.locate(String, LocatorHandler, java.util.function.Function)</code></a>: their URIs
+are relative to the prefix of the locator, and their handlers receive the located target.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder">LocatorHandler</a>&lt;T&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="block">Locates the target of the rest of a path, for
+<a href="HttpRouteScope.html#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)"><code>HttpRouteScope.locate(String, LocatorHandler, java.util.function.Function)</code></a>: like a
+JAX-RS sub-resource locator, it returns the object whose routes match the rest of the path.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ReplacingRouteRequestFilter.html" title="interface in io.micronaut.web.router.builder">ReplacingRouteRequestFilter</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">A filter of one route's requests, declared with <a href="RouteFilterSpec.html#beforeReplacing(io.micronaut.web.router.builder.ReplacingRouteRequestFilter)"><code>RouteFilterSpec.beforeReplacing(ReplacingRouteRequestFilter)</code></a>.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ReplacingRouteResponseFilter.html" title="interface in io.micronaut.web.router.builder">ReplacingRouteResponseFilter</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ReplacingRouteResponseFilter.html" title="interface in io.micronaut.web.router.builder">ReplacingRouteResponseFilter</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">A filter of one route's responses that can replace the response, declared with
 <a href="RouteFilterSpec.html#afterReplacing(io.micronaut.web.router.builder.ReplacingRouteResponseFilter)"><code>RouteFilterSpec.afterReplacing(ReplacingRouteResponseFilter)</code></a>: the <a href="RouteResponseFilter.html" title="interface in io.micronaut.web.router.builder"><code>RouteResponseFilter</code></a>
 that returns the response to continue with, like a <code>@ResponseFilter</code> method returning a
 response.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="RequestHandler.html" title="interface in io.micronaut.web.router.builder">RequestHandler</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="RequestHandler.html" title="interface in io.micronaut.web.router.builder">RequestHandler</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">A route handler written as a function of the request and the <a href="../../../http/PathVariables.html" title="interface in io.micronaut.http"><code>PathVariables</code></a> of the
 matched route.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="RequestPredicates.html" title="class in io.micronaut.web.router.builder">RequestPredicates</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="RequestPredicates.html" title="class in io.micronaut.web.router.builder">RequestPredicates</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Shorthands of <a href="RouteCondition.html" title="interface in io.micronaut.web.router.builder"><code>RouteCondition</code></a> for <a href="RouteSpec.html#where(io.micronaut.web.router.builder.RouteCondition)"><code>RouteSpec.where(RouteCondition)</code></a> and
 <a href="RouteSpec.html#where(io.micronaut.web.router.builder.RouteCondition)"><code>RouteSpec.where(RouteCondition)</code></a>: conditions on the headers, query parameters, accepted media
 types, content type and method of a request.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="RouteCondition.html" title="interface in io.micronaut.web.router.builder">RouteCondition</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="RouteCondition.html" title="interface in io.micronaut.web.router.builder">RouteCondition</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">A declarative condition on a request, for <a href="RouteSpec.html#where(io.micronaut.web.router.builder.RouteCondition)"><code>RouteSpec.where(RouteCondition)</code></a>: on its
 headers, query parameters, cookies, method, host, client and peer addresses and the time it arrives, and
 their combinations.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab4"><a href="RouteCondition.AllOf.html" title="class in io.micronaut.web.router.builder">RouteCondition.AllOf</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="RouteCondition.AllOf.html" title="class in io.micronaut.web.router.builder">RouteCondition.AllOf</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
 <div class="block">A request that meets every condition, met by every request if there are none.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="RouteCondition.AnyOf.html" title="class in io.micronaut.web.router.builder">RouteCondition.AnyOf</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="RouteCondition.AnyOf.html" title="class in io.micronaut.web.router.builder">RouteCondition.AnyOf</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
 <div class="block">A request that meets one of the conditions, met by no request if there are none.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab4"><a href="RouteCondition.Cookie.html" title="class in io.micronaut.web.router.builder">RouteCondition.Cookie</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="RouteCondition.Cookie.html" title="class in io.micronaut.web.router.builder">RouteCondition.Cookie</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
 <div class="block">A request with a cookie whose value the matcher matches.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="RouteCondition.Custom.html" title="class in io.micronaut.web.router.builder">RouteCondition.Custom</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="RouteCondition.Custom.html" title="class in io.micronaut.web.router.builder">RouteCondition.Custom</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
 <div class="block">A condition of a lambda.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab4"><a href="RouteCondition.Header.html" title="class in io.micronaut.web.router.builder">RouteCondition.Header</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="RouteCondition.Header.html" title="class in io.micronaut.web.router.builder">RouteCondition.Header</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
 <div class="block">A request with a header whose value the matcher matches, one of its values if the header
 is repeated.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="RouteCondition.Host.html" title="class in io.micronaut.web.router.builder">RouteCondition.Host</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="RouteCondition.Host.html" title="class in io.micronaut.web.router.builder">RouteCondition.Host</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
 <div class="block">A request to a host that the matcher matches, as the server resolves it: with the host
 resolver of the server, which reads a forwarded host only as
 <code>micronaut.server.host-resolution</code> configures it.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab4"><a href="RouteCondition.Method.html" title="class in io.micronaut.web.router.builder">RouteCondition.Method</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="RouteCondition.Method.html" title="class in io.micronaut.web.router.builder">RouteCondition.Method</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
 <div class="block">A request of one of the methods.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="RouteCondition.Not.html" title="class in io.micronaut.web.router.builder">RouteCondition.Not</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="RouteCondition.Not.html" title="class in io.micronaut.web.router.builder">RouteCondition.Not</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
 <div class="block">A request that does not meet the condition.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab4"><a href="RouteCondition.PeerAddress.html" title="class in io.micronaut.web.router.builder">RouteCondition.PeerAddress</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="RouteCondition.PeerAddress.html" title="class in io.micronaut.web.router.builder">RouteCondition.PeerAddress</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
 <div class="block">A request whose connection comes from an address in one of the ranges: the peer of the
 connection, <a href="../../../http/HttpRequest.html#getRemoteAddress()"><code>HttpRequest.getRemoteAddress()</code></a>, never a forwarded address.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="RouteCondition.Query.html" title="class in io.micronaut.web.router.builder">RouteCondition.Query</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="RouteCondition.Query.html" title="class in io.micronaut.web.router.builder">RouteCondition.Query</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
 <div class="block">A request with a query parameter whose decoded value the matcher matches, one of its
 values if the parameter is repeated.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab4"><a href="RouteCondition.RemoteAddress.html" title="class in io.micronaut.web.router.builder">RouteCondition.RemoteAddress</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="RouteCondition.RemoteAddress.html" title="class in io.micronaut.web.router.builder">RouteCondition.RemoteAddress</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
 <div class="block">A request from a client address in one of the ranges, as the server resolves it: with the
 client address resolver of the server, which reads the header that
 <code>micronaut.server.client-address-header</code> names, or else the forwarded headers of
 the request, or else the peer of the connection.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="RouteCondition.TimeWindow.html" title="class in io.micronaut.web.router.builder">RouteCondition.TimeWindow</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="RouteCondition.TimeWindow.html" title="class in io.micronaut.web.router.builder">RouteCondition.TimeWindow</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
 <div class="block">A request that arrives in a period, as the clock of the server tells: the
 <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Clock.html" title="class or interface in java.time" class="external-link"><code>Clock</code></a> bean if there is one, otherwise the system clock.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="RouteConditions.html" title="class in io.micronaut.web.router.builder">RouteConditions</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="RouteConditions.html" title="class in io.micronaut.web.router.builder">RouteConditions</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Normalizes and evaluates <a href="RouteCondition.html" title="interface in io.micronaut.web.router.builder"><code>route conditions</code></a> and <a href="ValueMatcher.html" title="interface in io.micronaut.web.router.builder"><code>value
 matchers</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="RouteConditions.RoutePredicate.html" title="class in io.micronaut.web.router.builder">RouteConditions.RoutePredicate</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="RouteConditions.RoutePredicate.html" title="class in io.micronaut.web.router.builder">RouteConditions.RoutePredicate</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
 <div class="block">The predicate of a route that evaluates its normalized condition with the context of the
 server.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="RouteFilterSpec.html" title="interface in io.micronaut.web.router.builder">RouteFilterSpec</a>&lt;S extends <a href="RouteFilterSpec.html" title="interface in io.micronaut.web.router.builder">RouteFilterSpec</a>&lt;S&gt;&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="RouteFilterSpec.html" title="interface in io.micronaut.web.router.builder">RouteFilterSpec</a>&lt;S extends <a href="RouteFilterSpec.html" title="interface in io.micronaut.web.router.builder">RouteFilterSpec</a>&lt;S&gt;&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Filter methods of handler routes: the filters of one route, see <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteSpec</code></a>, of
 every route of a group, see <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteGroup</code></a>, and of a server filter, see
 <a href="ServerFilterSpec.html" title="interface in io.micronaut.web.router.builder"><code>ServerFilterSpec</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="RouteRequestFilter.html" title="interface in io.micronaut.web.router.builder">RouteRequestFilter</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="RouteRequestFilter.html" title="interface in io.micronaut.web.router.builder">RouteRequestFilter</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">A filter of one route's requests that changes the request in place, declared with
 <a href="RouteFilterSpec.html#before(io.micronaut.web.router.builder.RouteRequestFilter)"><code>RouteFilterSpec.before(RouteRequestFilter)</code></a>, like a <code>@RequestFilter</code> method with a
 <a href="../../../http/MutableHttpRequest.html" title="interface in io.micronaut.http"><code>MutableHttpRequest</code></a> parameter that returns nothing: it runs before the route, after the
 application's filters, and the request continues when it returns.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="RouteResponseFilter.html" title="interface in io.micronaut.web.router.builder">RouteResponseFilter</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="RouteResponseFilter.html" title="interface in io.micronaut.web.router.builder">RouteResponseFilter</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">A filter of one route's responses, declared with <a href="RouteFilterSpec.html#after(io.micronaut.web.router.builder.RouteResponseFilter)"><code>RouteFilterSpec.after(RouteResponseFilter)</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="RouteSettings.html" title="class in io.micronaut.web.router.builder">RouteSettings</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="RouteSettings.html" title="class in io.micronaut.web.router.builder">RouteSettings</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">The settings of a route to a handler, recorded while the route is declared, see
 <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteSpec</code></a>: the route info is built from them when the router takes the route, and a
 declared route, whose route is created when the router first uses it, is created with them.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="RouteSpec.html" title="interface in io.micronaut.web.router.builder">RouteSpec</a>&lt;S extends <a href="RouteSpec.html" title="interface in io.micronaut.web.router.builder">RouteSpec</a>&lt;S&gt;&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="RouteSpec.html" title="interface in io.micronaut.web.router.builder">RouteSpec</a>&lt;S extends <a href="RouteSpec.html" title="interface in io.micronaut.web.router.builder">RouteSpec</a>&lt;S&gt;&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">The settings a handler route, see <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteSpec</code></a>, and a group of routes, see
 <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteGroup</code></a>, share: the media types, the annotations, the attributes, the conditions,
 the order and the port, besides the filters of <a href="RouteFilterSpec.html" title="interface in io.micronaut.web.router.builder"><code>RouteFilterSpec</code></a> and the executor of
 <a href="ExecutionSpec.html" title="interface in io.micronaut.web.router.builder"><code>ExecutionSpec</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ServerFilterSpec.html" title="interface in io.micronaut.web.router.builder">ServerFilterSpec</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ServerFilterSpec.html" title="interface in io.micronaut.web.router.builder">ServerFilterSpec</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">A server filter declared with <a href="HttpRouteBuilder.html#serverFilter(java.lang.String...)"><code>HttpRouteBuilder.serverFilter(String...)</code></a>: the functional form of
 a <code>@ServerFilter</code> bean, whose <code>before</code> and <code>after</code> filters are its
 <code>@RequestFilter</code> and <code>@ResponseFilter</code> methods.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="StatusRouteHandler.html" title="interface in io.micronaut.web.router.builder">StatusRouteHandler</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="StatusRouteHandler.html" title="interface in io.micronaut.web.router.builder">StatusRouteHandler</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">A handler function for a response status: it answers a request whose response has the status
 it is registered for, e.g.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="StatusRouteSpec.html" title="interface in io.micronaut.web.router.builder">StatusRouteSpec</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="StatusRouteSpec.html" title="interface in io.micronaut.web.router.builder">StatusRouteSpec</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">A status route to a handler function, to configure after it was added with the
 <a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteBuilder</code></a>.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="ValueMatcher.html" title="interface in io.micronaut.web.router.builder">ValueMatcher</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ValueMatcher.html" title="interface in io.micronaut.web.router.builder">ValueMatcher</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">A declarative matcher of a value: of a header, a query parameter, a cookie or the host of a
 request, see <a href="RouteCondition.html" title="interface in io.micronaut.web.router.builder"><code>RouteCondition</code></a>, or of a path variable, see
 <a href="RouteSpec.html#constrain(java.lang.String,io.micronaut.web.router.builder.ValueMatcher)"><code>RouteSpec.constrain(String, ValueMatcher)</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="ValueMatcher.AllOf.html" title="class in io.micronaut.web.router.builder">ValueMatcher.AllOf</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="ValueMatcher.AllOf.html" title="class in io.micronaut.web.router.builder">ValueMatcher.AllOf</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
 <div class="block">A value that every matcher matches.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab4"><a href="ValueMatcher.AnyOf.html" title="class in io.micronaut.web.router.builder">ValueMatcher.AnyOf</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="ValueMatcher.AnyOf.html" title="class in io.micronaut.web.router.builder">ValueMatcher.AnyOf</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
 <div class="block">A value that one of the matchers matches.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="ValueMatcher.Contains.html" title="class in io.micronaut.web.router.builder">ValueMatcher.Contains</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="ValueMatcher.Contains.html" title="class in io.micronaut.web.router.builder">ValueMatcher.Contains</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
 <div class="block">A value that contains a part.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab4"><a href="ValueMatcher.EndsWith.html" title="class in io.micronaut.web.router.builder">ValueMatcher.EndsWith</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="ValueMatcher.EndsWith.html" title="class in io.micronaut.web.router.builder">ValueMatcher.EndsWith</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
 <div class="block">A value that ends with a suffix.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="ValueMatcher.Equals.html" title="class in io.micronaut.web.router.builder">ValueMatcher.Equals</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="ValueMatcher.Equals.html" title="class in io.micronaut.web.router.builder">ValueMatcher.Equals</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
 <div class="block">A value equal to another.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab4"><a href="ValueMatcher.Not.html" title="class in io.micronaut.web.router.builder">ValueMatcher.Not</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="ValueMatcher.Not.html" title="class in io.micronaut.web.router.builder">ValueMatcher.Not</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
 <div class="block">A value another matcher does not match.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="ValueMatcher.OneOf.html" title="class in io.micronaut.web.router.builder">ValueMatcher.OneOf</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="ValueMatcher.OneOf.html" title="class in io.micronaut.web.router.builder">ValueMatcher.OneOf</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
 <div class="block">A value equal to one of the values.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab4"><a href="ValueMatcher.Present.html" title="class in io.micronaut.web.router.builder">ValueMatcher.Present</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="ValueMatcher.Present.html" title="class in io.micronaut.web.router.builder">ValueMatcher.Present</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
 <div class="block">A value that is present.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="ValueMatcher.Regex.html" title="class in io.micronaut.web.router.builder">ValueMatcher.Regex</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="col-first even-row-color class-summary class-summary-tab4"><a href="ValueMatcher.Regex.html" title="class in io.micronaut.web.router.builder">ValueMatcher.Regex</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
 <div class="block">A value that a pattern matches as a whole.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab4"><a href="ValueMatcher.StartsWith.html" title="class in io.micronaut.web.router.builder">ValueMatcher.StartsWith</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="col-first odd-row-color class-summary class-summary-tab4"><a href="ValueMatcher.StartsWith.html" title="class in io.micronaut.web.router.builder">ValueMatcher.StartsWith</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
 <div class="block">A value that starts with a prefix.</div>
 </div>
 </div>

@@ -59,6 +59,7 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#findErrorRoute(io.micronaut.http.HttpRequest,io.micronaut.web.router.RouteInfo,java.lang.Throwable)" tabindex="0">findErrorRoute(HttpRequest, RouteInfo, Throwable)</a></li>
 <li><a href="#findStatusRoute(io.micronaut.http.HttpRequest,io.micronaut.web.router.RouteInfo,int)" tabindex="0">findStatusRoute(HttpRequest, RouteInfo, int)</a></li>
+<li><a href="#findStatusRoute(io.micronaut.http.HttpRequest,io.micronaut.web.router.RouteInfo,int,java.lang.Throwable)" tabindex="0">findStatusRoute(HttpRequest, RouteInfo, int, Throwable)</a></li>
 </ol>
 </li>
 </ol>
@@ -82,7 +83,8 @@ loadScripts(document, 'script');</script>
 the non-global <code>@Error</code> methods of a controller are local to its routes. The error route
 of a request is looked up in the innermost group of its route first, then in the groups around
 it, and for a route resolved by a <code>DynamicRouteTarget</code>, then in the error scopes of the
-resolution. Within a group, the error route of the closest exception type answers.
+resolution. The error of a route locator that failed, before any route matched, is looked up in
+the error scopes of its locator routes. Within a group, the error route of the closest exception type answers.
 The server looks the local error routes of the declaring type up before, and the global error
 routes after them.</div>
 <dl class="notes">
@@ -119,6 +121,15 @@ routes after them.</div>
  int&nbsp;status)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">The status route of the groups of the route of a request.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;R&gt;&nbsp;@Nullable <a href="RouteMatch.html" title="interface in io.micronaut.web.router">RouteMatch</a><wbr>&lt;R&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#findStatusRoute(io.micronaut.http.HttpRequest,io.micronaut.web.router.RouteInfo,int,java.lang.Throwable)" class="member-name-link">findStatusRoute</a><wbr>(<a href="../../http/HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
+ @Nullable <a href="RouteInfo.html" title="interface in io.micronaut.web.router">RouteInfo</a>&lt;?&gt;&nbsp;routeInfo,
+ int&nbsp;status,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;error)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">The status route of the groups of the route of a request, or, when no route matched, of the
+locator routes whose locator failed with the error.</div>
 </div>
 </div>
 </div>
@@ -173,6 +184,30 @@ routes after them.</div>
 <dd><code>request</code> - The request, with the route it matched</dd>
 <dd><code>routeInfo</code> - The route that answered the status, or <code>null</code></dd>
 <dd><code>status</code> - The status code</dd>
+<dt>Returns:</dt>
+<dd>The match of the status route, or <code>null</code> if no group of the route handles the status</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="findStatusRoute(io.micronaut.http.HttpRequest,io.micronaut.web.router.RouteInfo,int,java.lang.Throwable)">
+<h3>findStatusRoute</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;R&gt;</span>&nbsp;<span class="return-type">@Nullable <a href="RouteMatch.html" title="interface in io.micronaut.web.router">RouteMatch</a>&lt;R&gt;</span>&nbsp;<span class="element-name">findStatusRoute</span><wbr><span class="parameters">(<a href="../../http/HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
+ @Nullable <a href="RouteInfo.html" title="interface in io.micronaut.web.router">RouteInfo</a>&lt;?&gt;&nbsp;routeInfo,
+ int&nbsp;status,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;error)</span></div>
+<div class="block">The status route of the groups of the route of a request, or, when no route matched, of the
+locator routes whose locator failed with the error.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="findStatusRoute(io.micronaut.http.HttpRequest,io.micronaut.web.router.RouteInfo,int,java.lang.Throwable)-type-param-R"><code>R</code> - The result type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>request</code> - The request, with the route it matched</dd>
+<dd><code>routeInfo</code> - The route that answered the status, or <code>null</code></dd>
+<dd><code>status</code> - The status code</dd>
+<dd><code>error</code> - The error that has the status, or <code>null</code></dd>
 <dt>Returns:</dt>
 <dd>The match of the status route, or <code>null</code> if no group of the route handles the status</dd>
 </dl>

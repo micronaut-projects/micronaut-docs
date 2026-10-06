@@ -78,6 +78,10 @@ loadScripts(document, 'script');</script>
 <li><a href="#statusAsync(io.micronaut.http.HttpStatus,io.micronaut.web.router.builder.AsyncStatusRouteHandler)" tabindex="0">statusAsync(HttpStatus, AsyncStatusRouteHandler)</a></li>
 <li><a href="#group(java.util.function.Consumer)" tabindex="0">group(Consumer)</a></li>
 <li><a href="#path(java.lang.String,java.util.function.Consumer)" tabindex="0">path(String, Consumer)</a></li>
+<li><a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)" tabindex="0">locate(String, LocatorHandler, Function)</a></li>
+<li><a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,io.micronaut.web.router.builder.LocatedRoutes)" tabindex="0">locate(String, LocatorHandler, LocatedRoutes)</a></li>
+<li><a href="#locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,java.util.function.Function)" tabindex="0">locateAsync(String, AsyncLocatorHandler, Function)</a></li>
+<li><a href="#locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,io.micronaut.web.router.builder.LocatedRoutes)" tabindex="0">locateAsync(String, AsyncLocatorHandler, LocatedRoutes)</a></li>
 </ol>
 </li>
 </ol>
@@ -90,19 +94,19 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Known Subinterfaces:</dt>
-<dd><code><a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">HttpRouteBuilder</a>, <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a></code></dd>
+<dd><code><a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">HttpRouteBuilder</a>, <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a>, <a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">LocatedHttpRouteBuilder</a>&lt;T&gt;</code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="DefaultHttpRouteBuilder.html" title="class in io.micronaut.web.router.builder">DefaultHttpRouteBuilder</a></code></dd>
+<dd><code><a href="DefaultHttpRouteBuilder.html" title="class in io.micronaut.web.router.builder">DefaultHttpRouteBuilder</a>, <a href="DefaultLocatedHttpRouteBuilder.html" title="class in io.micronaut.web.router.builder">DefaultLocatedHttpRouteBuilder</a></code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public sealed interface </span><span class="element-name type-name-label">HttpRouteScope</span>
-<span class="permits">permits <a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">HttpRouteBuilder</a>, <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a> <span class="permits-note">(not exhaustive)</span></span></div>
+<span class="permits">permits <a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">HttpRouteBuilder</a>, <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a>, <a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">LocatedHttpRouteBuilder</a>&lt;T&gt; <span class="permits-note">(not exhaustive)</span></span></div>
 <div class="block">The declarations of handler routes, group routes, error routes and status routes that the
-<a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteBuilder</code></a> of an <a href="HttpRoutes.html" title="interface in io.micronaut.web.router.builder"><code>HttpRoutes</code></a> bean and an <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteGroup</code></a> have in
-common. A route is declared in stages, see <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteSpec</code></a>. Only the builder declares
+<a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteBuilder</code></a> of an <a href="HttpRoutes.html" title="interface in io.micronaut.web.router.builder"><code>HttpRoutes</code></a> bean, an <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteGroup</code></a> and the
+<a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>LocatedHttpRouteBuilder</code></a> of <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a> have in common. A route is declared in stages, see <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteSpec</code></a>. Only the builder declares
 server filters, see <a href="HttpRouteBuilder.html#serverFilter(java.lang.String...)"><code>HttpRouteBuilder.serverFilter(String...)</code></a>: the filters of a group are
 route filters, which apply to the routes of the group only.</div>
 <dl class="notes">
@@ -185,6 +189,37 @@ global on the builder, local to the routes of the group in a <a href="HttpRouteG
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Declare a group of routes, whose filters apply to every route declared in the lambda,
 e.g.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,io.micronaut.web.router.builder.LocatedRoutes)" class="member-name-link">locate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
+ <a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder">LocatorHandler</a>&lt;? extends T&gt;&nbsp;locator,
+ <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder">LocatedRoutes</a>&lt;T&gt;&nbsp;routes)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Route the requests under a prefix to one set of routes of the targets a locator locates, see
+<a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)"><code>locate(String, LocatorHandler, Function)</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T&gt;&nbsp;void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)" class="member-name-link">locate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
+ <a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder">LocatorHandler</a>&lt;? extends T&gt;&nbsp;locator,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;? super T, ? extends <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder">LocatedRoutes</a>&lt;?&gt;&gt;&nbsp;routesOf)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Route the requests under a prefix to the routes of a target located at runtime, like a
+JAX-RS sub-resource locator.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,io.micronaut.web.router.builder.LocatedRoutes)" class="member-name-link">locateAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
+ <a href="AsyncLocatorHandler.html" title="interface in io.micronaut.web.router.builder">AsyncLocatorHandler</a>&lt;? extends T&gt;&nbsp;locator,
+ <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder">LocatedRoutes</a>&lt;T&gt;&nbsp;routes)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Route the requests under a prefix to one set of routes of the targets a locator locates
+asynchronously, see <a href="#locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,java.util.function.Function)"><code>locateAsync(String, AsyncLocatorHandler, Function)</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T&gt;&nbsp;void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,java.util.function.Function)" class="member-name-link">locateAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
+ <a href="AsyncLocatorHandler.html" title="interface in io.micronaut.web.router.builder">AsyncLocatorHandler</a>&lt;? extends T&gt;&nbsp;locator,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;? super T, ? extends <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder">LocatedRoutes</a>&lt;?&gt;&gt;&nbsp;routesOf)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Route the requests under a prefix to the routes of a target located asynchronously, e.g.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder">HttpRouteSpec</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#PATCH(java.lang.String)" class="member-name-link">PATCH</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;uri)</code></div>
@@ -752,6 +787,147 @@ query or fragment.</p></div>
 <dt>Parameters:</dt>
 <dd><code>prefix</code> - The prefix of the URI templates of the routes of the group</dd>
 <dd><code>routes</code> - Declares the routes and the filters of the group</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)">
+<h3>locate</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">locate</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
+ <a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder">LocatorHandler</a>&lt;? extends T&gt;&nbsp;locator,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;? super T, ? extends <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder">LocatedRoutes</a>&lt;?&gt;&gt;&nbsp;routesOf)</span></div>
+<div class="block">Route the requests under a prefix to the routes of a target located at runtime, like a
+JAX-RS sub-resource locator. The prefix, e.g. <code>/orders/{id}</code>, is matched for every
+standard HTTP method, followed by the rest of the path, which is empty or starts with a
+slash. When the router selects the locator route, it runs the locator, and matches the rest
+of the path, e.g. <code>/items/3</code> of <code>/orders/5/items/3</code>, with the
+<a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a> of the target: the request is handled by the route they declare, as if
+they were the application routes, with the path variables of the prefix and of the route,
+and with the target, see <a href="LocatedRoutes.html#locatedTarget(io.micronaut.http.PathVariables)"><code>LocatedRoutes.locatedTarget(PathVariables)</code></a>. A locator route of the
+located routes locates again, from the rest of the path.
+
+<pre><code>routes.locate("/orders/{id}",
+    (request, pathVariables) -&gt; orders.find(pathVariables.getLong("id")),
+    order -&gt; order.isArchived() ? archivedOrderRoutes : orderRoutes);
+</code></pre>
+
+<p>The type of the target is the type the locator returns: the function receives it, e.g.
+to choose the routes of a subtype. The handlers of the located routes receive the target of
+the type of the routes, see <a href="LocatedRoutes.html#targetType()"><code>LocatedRoutes.targetType()</code></a>; a located target that is not
+an instance of that type fails the request, answered by the error routes like a failed
+controller method.</p>
+
+<p>When the located routes have no route for the rest of the path, the request is answered
+like a request that no route matches: <code>404</code>, or <code>405</code>, <code>415</code> or
+<code>406</code> if a located route matches the path with another method or media type. No other
+route of the application is tried. The filters of the matched located route apply, and the
+server filters apply to the full path.</p>
+
+<p>The locator runs while the request is matched, see <a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder"><code>LocatorHandler</code></a>, at most once
+per request: matching the request again, e.g. to find the allowed methods of a
+<code>405</code>, reuses the target, or the exception, of the first call. The routes of a
+<a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder"><code>LocatedRoutes</code></a> instance are declared once, when the first target it routes is
+located, and shared by every locator that answers the instance.
+A request with a custom HTTP method is located like any other: the located routes of that
+method answer it, or those declared with <code>any(...)</code>, and the allowed methods of its
+<code>405</code> are those of the located routes.</p></div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)-type-param-T"><code>T</code> - The type of the target</span></dd>
+<dt>Parameters:</dt>
+<dd><code>prefixUri</code> - The URI template of the prefix</dd>
+<dd><code>locator</code> - Locates the target, or answers <code>null</code> for <code>404</code></dd>
+<dd><code>routesOf</code> - The routes of a located target</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,io.micronaut.web.router.builder.LocatedRoutes)">
+<h3>locate</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">locate</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
+ <a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder">LocatorHandler</a>&lt;? extends T&gt;&nbsp;locator,
+ <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder">LocatedRoutes</a>&lt;T&gt;&nbsp;routes)</span></div>
+<div class="block">Route the requests under a prefix to one set of routes of the targets a locator locates, see
+<a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)"><code>locate(String, LocatorHandler, Function)</code></a>.
+
+<pre><code>routes.locate("/orders/{id}", (request, pathVariables) -&gt; orders.find(pathVariables.getLong("id")), orderRoutes);
+</code></pre></div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,io.micronaut.web.router.builder.LocatedRoutes)-type-param-T"><code>T</code> - The type of the target</span></dd>
+<dt>Parameters:</dt>
+<dd><code>prefixUri</code> - The URI template of the prefix</dd>
+<dd><code>locator</code> - Locates the target, or answers <code>null</code> for <code>404</code></dd>
+<dd><code>routes</code> - The routes of every located target</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,java.util.function.Function)">
+<h3>locateAsync</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">locateAsync</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
+ <a href="AsyncLocatorHandler.html" title="interface in io.micronaut.web.router.builder">AsyncLocatorHandler</a>&lt;? extends T&gt;&nbsp;locator,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;? super T, ? extends <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder">LocatedRoutes</a>&lt;?&gt;&gt;&nbsp;routesOf)</span></div>
+<div class="block">Route the requests under a prefix to the routes of a target located asynchronously, e.g.
+loaded from a database: the same as <a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)"><code>locate(String, LocatorHandler, Function)</code></a>, but
+the locator returns a stage of the target, and the router matches the rest of the path with
+the routes of the target when the stage completes, without blocking the thread that matches
+the request. See <a href="AsyncLocatorHandler.html" title="interface in io.micronaut.web.router.builder"><code>AsyncLocatorHandler</code></a>.
+
+<pre><code>routes.locateAsync("/orders/{id}",
+    (request, pathVariables) -&gt; orders.findAsync(pathVariables.getLong("id")), // completes with null: 404
+    order -&gt; orderRoutes);
+</code></pre>
+
+<p>The filters of the located route, the error routes and the server filters apply like
+for <a href="#locate(java.lang.String,io.micronaut.web.router.builder.LocatorHandler,java.util.function.Function)"><code>locate(String, LocatorHandler, Function)</code></a>; the located routes may locate again,
+synchronously or asynchronously. The target is located once per request.
+<a href="../Router.html#findClosest(io.micronaut.http.HttpRequest)"><code>Router.findClosest(HttpRequest)</code></a> of an application with an asynchronous
+locator that has not located its target yet fails: the server matches such a request
+again when the stage completes. The server cancels the stage when the client closes the
+connection before it completes, and a CORS preflight request of the prefix is answered
+once the target is located, with the methods of its routes.</p></div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,java.util.function.Function)-type-param-T"><code>T</code> - The type of the target</span></dd>
+<dt>Parameters:</dt>
+<dd><code>prefixUri</code> - The URI template of the prefix</dd>
+<dd><code>locator</code> - Locates the target later, or completes with <code>null</code> for <code>404</code></dd>
+<dd><code>routesOf</code> - The routes of a located target</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,io.micronaut.web.router.builder.LocatedRoutes)">
+<h3>locateAsync</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">locateAsync</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefixUri,
+ <a href="AsyncLocatorHandler.html" title="interface in io.micronaut.web.router.builder">AsyncLocatorHandler</a>&lt;? extends T&gt;&nbsp;locator,
+ <a href="LocatedRoutes.html" title="interface in io.micronaut.web.router.builder">LocatedRoutes</a>&lt;T&gt;&nbsp;routes)</span></div>
+<div class="block">Route the requests under a prefix to one set of routes of the targets a locator locates
+asynchronously, see <a href="#locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,java.util.function.Function)"><code>locateAsync(String, AsyncLocatorHandler, Function)</code></a>.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="locateAsync(java.lang.String,io.micronaut.web.router.builder.AsyncLocatorHandler,io.micronaut.web.router.builder.LocatedRoutes)-type-param-T"><code>T</code> - The type of the target</span></dd>
+<dt>Parameters:</dt>
+<dd><code>prefixUri</code> - The URI template of the prefix</dd>
+<dd><code>locator</code> - Locates the target later, or completes with <code>null</code> for <code>404</code></dd>
+<dd><code>routes</code> - The routes of every located target</dd>
 <dt>Since:</dt>
 <dd>5.3.0</dd>
 </dl>

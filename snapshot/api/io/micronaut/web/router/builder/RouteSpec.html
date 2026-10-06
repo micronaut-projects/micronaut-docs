@@ -98,7 +98,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Known Subinterfaces:</dt>
-<dd><code><a href="HttpBodyRouteSpec.html" title="interface in io.micronaut.web.router.builder">HttpBodyRouteSpec</a>&lt;B&gt;, <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a>, <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder">HttpRouteSpec</a></code></dd>
+<dd><code><a href="HttpBodyRouteSpec.html" title="interface in io.micronaut.web.router.builder">HttpBodyRouteSpec</a>&lt;B&gt;, <a href="HttpRouteGroup.html" title="interface in io.micronaut.web.router.builder">HttpRouteGroup</a>, <a href="HttpRouteSpec.html" title="interface in io.micronaut.web.router.builder">HttpRouteSpec</a>, <a href="LocatedHttpBodyRouteSpec.html" title="interface in io.micronaut.web.router.builder">LocatedHttpBodyRouteSpec</a>&lt;T,<wbr>B&gt;, <a href="LocatedHttpRouteSpec.html" title="interface in io.micronaut.web.router.builder">LocatedHttpRouteSpec</a>&lt;T&gt;</code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
@@ -328,8 +328,8 @@ the form media types: a form handler reads a form.</p>
 
 <p>The media types, and the executor, see <a href="ExecutionSpec.html#executeOn(java.lang.String)"><code>ExecutionSpec.executeOn(String)</code></a>, of a
 group apply to its routes to handlers, including the implicit <code>HEAD</code> routes, the
-routes declared for several methods and the declared routes, not to its error and status
-routes.</p></div>
+routes declared for several methods and the declared routes, not to its locator routes,
+whose located routes declare their own, nor to its error and status routes.</p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>mediaTypes</code> - The media types</dd>
@@ -597,9 +597,10 @@ specific route answers it, and the two routes are equally specific, so it is ans
 cookies, method, host, client address and time of the request, and
 <a href="RequestPredicates.html" title="class in io.micronaut.web.router.builder"><code>RequestPredicates</code></a> on its media types too.</p>
 
-<p>On a group, the condition applies to the routes of the group, including the routes of
-its nested groups: a route matches a request that meets the conditions of its groups and
-its own, which must all be met, as one <a href="RouteCondition.html#all(io.micronaut.web.router.builder.RouteCondition...)"><code>all</code></a> condition. Several
+<p>On a group, the condition applies to the routes of the group, including its locator
+routes and the routes of its nested groups: a route matches a request that meets the
+conditions of its groups and its own, which must all be met, as one
+<a href="RouteCondition.html#all(io.micronaut.web.router.builder.RouteCondition...)"><code>all</code></a> condition. Several
 conditions of a route or a group must all be met too. The router evaluates them cheapest
 first, the <a href="RouteCondition.html#custom(java.util.function.Predicate)"><code>custom</code></a> conditions last, in the order they were
 declared, outer group first.</p></div>
@@ -861,8 +862,9 @@ default ports of the server only, once a route of the application has a port.
     .handle((request, pathVariables) -&gt; HttpResponse.ok(metrics.scrape()));
 </code></pre>
 
-<p>On a group, the routes of the group, including the routes of its nested groups, inherit
-the port; a nested group or a route with its own port overrides it.</p></div>
+<p>On a group, the routes of the group, including its locator routes and the routes of its
+nested groups, inherit the port; a nested group or a route with its own port overrides it.
+Located routes cannot open a port: their routes cannot have one.</p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>port</code> - The port, between <code>1</code> and <code>65535</code>: unlike

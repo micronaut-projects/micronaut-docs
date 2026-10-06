@@ -477,7 +477,9 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesErrors"><a href="#functionalRoutesErrors"><strong>6.31.9</strong><span>Error and Status Routes</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesLimitations"><a href="#functionalRoutesLimitations"><strong>6.31.10</strong><span>Limitations</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesLocators"><a href="#functionalRoutesLocators"><strong>6.31.10</strong><span>Locator Routes</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesLimitations"><a href="#functionalRoutesLimitations"><strong>6.31.11</strong><span>Limitations</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-sessions"><a href="#sessions"><strong>6.32</strong><span>HTTP Sessions</span></a></div>
         
@@ -40847,7 +40849,7 @@ class HelloRoutes implements HttpRoutes {
 </ul>
 </div>
 <div class="paragraph">
-<p>Functional routes add what is natural to declare in code: groups of routes with a common path prefix and common filters, filters on a single route, request conditions and error routes local to a group.</p>
+<p>Functional routes add what is natural to declare in code: groups of routes with a common path prefix and common filters, filters on a single route, request conditions, error routes local to a group, and routes to targets located at runtime.</p>
 </div>
 <div class="paragraph">
 <p>Every <code>HttpRoutes</code> bean adds its routes next to the controllers, under <code>micronaut.server.context-path</code> if one is configured. Declare an <code>HttpRoutes</code> bean as a class, as above, or return a lambda from a factory method, as in the next section. The order of the <code>HttpRoutes</code> beans only orders the beans: it never decides which route answers a request.</p>
@@ -41708,6 +41710,9 @@ class BodyRoutes implements HttpRoutes {
 <div class="paragraph">
 <p>An error route receives the request without its <code>AsyncRequestBody</code>: the error can happen after the body was read, or while it was read.</p>
 </div>
+<div class="paragraph">
+<p>In the <a href="../api/io/micronaut/web/router/builder/LocatedRoutes.html">LocatedRoutes</a> of a <a href="#functionalRoutesLocators">located target</a>, the handlers of the body stages also take the target: <code>(request, pathVariables, target, body) &#8594; &#8230;&#8203;</code>, a <a href="../api/io/micronaut/web/router/builder/LocatedBodyRequestHandler.html">LocatedBodyRequestHandler</a> or a <a href="../api/io/micronaut/web/router/builder/LocatedAsyncBodyRequestHandler.html">LocatedAsyncBodyRequestHandler</a>. Without a body stage, a <a href="../api/io/micronaut/web/router/builder/LocatedAsyncRequestHandler.html">LocatedAsyncRequestHandler</a>, <code>(request, pathVariables, target) &#8594; &#8230;&#8203;</code>, does not read the body, like an <code>AsyncRequestHandler</code>.</p>
+</div>
 
 <h2 id="functionalRoutesForms"><a class="anchor" href="#functionalRoutesForms"></a>6.31.4 Forms and File Uploads</h2>
 
@@ -42159,7 +42164,7 @@ routes.path("/api", api_routes)</code></pre>
 </tr>
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>A route at <code>/</code> is at the prefix of the group, <code>GET /api</code>, like a controller method mapped without a URI, e.g. <code>@Get</code>, is at the URI of its controller. Outside of a group, it is at <code>/</code>, under the context path.</td>
+<td>A route at <code>/</code> is at the prefix of the group, <code>GET /api</code>, like a controller method mapped without a URI, e.g. <code>@Get</code>, is at the URI of its controller. Outside of a group, it is at <code>/</code>, under the context path, and at the prefix of the locator in the routes of a <a href="#functionalRoutesLocators">located target</a>.</td>
 </tr>
 </table>
 </div>
@@ -42284,13 +42289,13 @@ routes.path("/notes", notes_routes)</code></pre>
 <div class="ulist">
 <ul>
 <li>
-<p>A filter of a group applies to every route declared in the lambda of the group, wherever it is declared in the lambda: before the routes, after them or in between. This includes the implicit <code>HEAD</code> routes and the routes declared for several methods.</p>
+<p>A filter of a group applies to every route declared in the lambda of the group, wherever it is declared in the lambda: before the routes, after them or in between. This includes the implicit <code>HEAD</code> routes, the routes declared for several methods and the routes located by a <a href="#functionalRoutesLocators">locator route</a> of the group.</p>
 </li>
 <li>
 <p>The filters of a group, the <code>before</code> and <code>after</code> families, run only when a route of the group matched the request: as with the filter methods of a controller, route filters need a matched route. A request under the prefix of the group that no route answers (<code>404</code>), or that a route would answer with another method or media type (<code>405</code>, <code>415</code>, <code>406</code>), does not run them. The server filters see those responses: the <code>@ServerFilter</code> beans and the filters declared with <code>routes.filter(patterns&#8230;&#8203;)</code>, pre-matching ones (<code>routes.filter(patterns&#8230;&#8203;).preMatching()</code>) included. Use a <a href="#functionalRoutesFilters">server filter</a> to filter every request under a path.</p>
 </li>
 <li>
-<p>The media types and the executor of a group apply to every route to a handler declared in the lambda of the group and of its nested groups, wherever they are declared in the lambda, like its filters: the implicit <code>HEAD</code> routes, the routes declared for several methods or by the name of their method, and the routes at the prefix of the group. A route, or a nested group, with its own value replaces the value of the group. A form route, declared with the body stage <code>form()</code>, consumes the form media types whatever the group consumes, since its handler reads a form, but produces what the group produces. The media types and the executor of a group do not apply to its error and status routes.</p>
+<p>The media types and the executor of a group apply to every route to a handler declared in the lambda of the group and of its nested groups, wherever they are declared in the lambda, like its filters: the implicit <code>HEAD</code> routes, the routes declared for several methods or by the name of their method, and the routes at the prefix of the group. A route, or a nested group, with its own value replaces the value of the group. A form route, declared with the body stage <code>form()</code>, consumes the form media types whatever the group consumes, since its handler reads a form, but produces what the group produces. The media types and the executor of a group do not apply to its error and status routes, nor to its locator routes: the located routes have their own, declared in their <code>LocatedRoutes</code>, e.g. on a group.</p>
 </li>
 <li>
 <p>The group is closed when its lambda returns: declaring a route, a filter or a setting on it afterwards throws an <code>IllegalStateException</code>. A route declared in the lambda is ended with a terminal before the lambda returns: the group fails with an <code>IllegalStateException</code> naming a route that was not.</p>
@@ -43631,7 +43636,7 @@ class ErrorRoutes implements HttpRoutes {
 <p>in the local error routes of the bean class, when the route <a href="#functionalRoutesAnnotations">implements</a> a bean method;</p>
 </li>
 <li>
-<p>in the innermost group of the route, then in the groups around it;</p>
+<p>in the innermost group of the route, then in the groups around it, then in the groups of the locator routes that located it;</p>
 </li>
 <li>
 <p>among the global error routes, functional ones and <code>@Error(global = true)</code> methods.</p>
@@ -43645,7 +43650,376 @@ class ErrorRoutes implements HttpRoutes {
 <p>The response filters of the route and of its groups filter the response of the error route. An error route receives the request as an <code>HttpRequest</code>, and it runs with the propagated context of the filters. An error route that fails is answered with the default error response.</p>
 </div>
 
-<h2 id="functionalRoutesLimitations"><a class="anchor" href="#functionalRoutesLimitations"></a>6.31.10 Limitations</h2>
+<h2 id="functionalRoutesLocators"><a class="anchor" href="#functionalRoutesLocators"></a>6.31.10 Locator Routes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/functionalRoutes/functionalRoutesLocators.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A locator route routes the requests under a prefix to the routes of a target located at runtime, like a JAX-RS sub-resource locator. The routes of the target are declared by an <a href="../api/io/micronaut/web/router/builder/LocatedRoutes.html">LocatedRoutes</a>, whose URIs are relative to the prefix and whose handlers receive the located target.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Locator routes</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.type.Argument;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.web.router.builder.HttpRouteBuilder;
+import io.micronaut.web.router.builder.HttpRoutes;
+import io.micronaut.web.router.builder.LocatedHttpRouteBuilder;
+import io.micronaut.web.router.builder.LocatedRoutes;
+import jakarta.inject.Singleton;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+@Singleton
+public class LocatorRoutes implements HttpRoutes {
+
+    /**
+     * A located target.
+     *
+     * @param name  The name of the shop
+     * @param items The items of the shop
+     */
+    public record Shop(String name, List&lt;String&gt; items) {
+    }
+
+    private static final Map&lt;String, Shop&gt; SHOPS = Map.of(
+        "north", new Shop("north", List.of("tea", "coffee")),
+        "south", new Shop("south", List.of("juice")));
+
+    private final ShopRoutes shopRoutes = new ShopRoutes(); // <b class="conum">(1)</b>
+
+    @Override
+    public void routes(HttpRouteBuilder routes) {
+        routes.locate("/shops/{shop}", (request, pathVariables) -&gt; // <b class="conum">(2)</b>
+            SHOPS.get(pathVariables.getString("shop")), shopRoutes);
+
+        routes.locateAsync("/remote-shops/{shop}", (request, pathVariables) -&gt; // <b class="conum">(3)</b>
+            CompletableFuture.supplyAsync(() -&gt; SHOPS.get(pathVariables.getString("shop"))), shopRoutes);
+
+        routes.locate("/archived-shops/{shop}", (request, pathVariables) -&gt; // <b class="conum">(4)</b>
+            SHOPS.get(pathVariables.getString("shop")), shop -&gt; shop.items().size() &gt; 1 ? shopRoutes : SmallShopRoutes.INSTANCE);
+    }
+
+    /**
+     * The routes of a located shop.
+     */
+    static final class ShopRoutes implements LocatedRoutes&lt;Shop&gt; {
+
+        @Override
+        public Argument&lt;Shop&gt; targetType() { // <b class="conum">(5)</b>
+            return Argument.of(Shop.class);
+        }
+
+        @Override
+        public void routes(LocatedHttpRouteBuilder&lt;Shop&gt; shop) { // <b class="conum">(6)</b>
+            shop.GET("/").handle((request, pathVariables, located) -&gt; HttpResponse.ok(located.name()));
+            shop.GET("/items/{index}").handle((request, pathVariables, located) -&gt;
+                HttpResponse.ok(located.items().get(pathVariables.getInt("index"))));
+        }
+    }
+
+    /**
+     * The routes of a shop with a single item.
+     */
+    enum SmallShopRoutes implements LocatedRoutes&lt;Shop&gt; {
+        INSTANCE;
+
+        @Override
+        public Argument&lt;Shop&gt; targetType() {
+            return Argument.of(Shop.class);
+        }
+
+        @Override
+        public void routes(LocatedHttpRouteBuilder&lt;Shop&gt; shop) {
+            shop.GET("/item", (request, pathVariables) -&gt;
+                HttpResponse.ok(LocatedRoutes.locatedTarget(pathVariables, Shop.class).items().get(0))); // <b class="conum">(7)</b>
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Locator routes</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from dataclasses import dataclass
+
+import java
+from jakarta.inject import Singleton
+from micronaut.core.type import Argument
+from micronaut.http import HttpResponse
+from micronaut.web.router.builder import HttpRouteBuilder, HttpRoutes, LocatedHttpRouteBuilder, LocatedRoutes
+
+CompletableFuture = java.type("java.util.concurrent.CompletableFuture")
+
+@dataclass
+class Shop:
+    """A located target."""
+
+    name: str
+    items: list[str]
+
+
+SHOPS = {
+    "north": Shop("north", ["tea", "coffee"]),
+    "south": Shop("south", ["juice"]),
+}
+
+
+@Singleton
+class LocatorRoutes(HttpRoutes):
+
+    def __init__(self):
+        self.shop_routes = ShopRoutes()  # <b class="conum">(1)</b>
+
+    def routes(self, routes: HttpRouteBuilder) -&gt; None:
+        routes.locate("/shops/{shop}", lambda request, path_variables:  # <b class="conum">(2)</b>
+                      SHOPS.get(path_variables.getString("shop")), self.shop_routes)
+        routes.locateAsync("/remote-shops/{shop}", lambda request, path_variables:  # <b class="conum">(3)</b>
+                           CompletableFuture.supplyAsync(lambda: SHOPS.get(path_variables.getString("shop"))), self.shop_routes)
+        routes.locate("/archived-shops/{shop}", lambda request, path_variables:  # <b class="conum">(4)</b>
+                      SHOPS.get(path_variables.getString("shop")),
+                      lambda shop: self.shop_routes if len(shop.items) &gt; 1 else SMALL_SHOP_ROUTES)
+
+
+class ShopRoutes(LocatedRoutes[Shop]):
+    """The routes of a located shop."""
+
+    def targetType(self) -&gt; Argument:  # <b class="conum">(5)</b>
+        return Argument.of(Shop)
+
+    def routes(self, shop: LocatedHttpRouteBuilder) -&gt; None:  # <b class="conum">(6)</b>
+        shop.GET("/").handle(lambda request, path_variables, located: HttpResponse.ok(located.name))
+        shop.GET("/items/{index}").handle(lambda request, path_variables, located:
+                    HttpResponse.ok(located.items[path_variables.getInt("index")]))
+
+
+class SmallShopRoutes(LocatedRoutes[Shop]):
+    """The routes of a shop with a single item."""
+
+    def targetType(self) -&gt; Argument:
+        return Argument.of(Shop)
+
+    def routes(self, shop: LocatedHttpRouteBuilder) -&gt; None:
+        shop.GET("/item", lambda request, path_variables:
+                 HttpResponse.ok(LocatedRoutes.locatedTarget(path_variables, Shop).items[0]))  # <b class="conum">(7)</b>
+
+
+SMALL_SHOP_ROUTES = SmallShopRoutes()</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Locator routes</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.annotation.Requires
+import io.micronaut.core.type.Argument
+import io.micronaut.http.HttpResponse
+import io.micronaut.web.router.builder.HttpRouteBuilder
+import io.micronaut.web.router.builder.HttpRoutes
+import io.micronaut.web.router.builder.LocatedHttpRouteBuilder
+import io.micronaut.web.router.builder.LocatedRoutes
+import jakarta.inject.Singleton
+import java.util.concurrent.CompletableFuture
+
+@Singleton
+class LocatorRoutes : HttpRoutes {
+
+    /**
+     * A located target.
+     *
+     * @param name  The name of the shop
+     * @param items The items of the shop
+     */
+    data class Shop(val name: String, val items: List&lt;String&gt;)
+
+    private val shopRoutes = ShopRoutes() // <b class="conum">(1)</b>
+
+    override fun routes(routes: HttpRouteBuilder) {
+        routes.locate("/shops/{shop}", { request, pathVariables -&gt; // <b class="conum">(2)</b>
+            SHOPS[pathVariables.getString("shop")]
+        }, shopRoutes)
+        routes.locateAsync("/remote-shops/{shop}", { request, pathVariables -&gt; // <b class="conum">(3)</b>
+            CompletableFuture.supplyAsync { SHOPS[pathVariables.getString("shop")] }
+        }, shopRoutes)
+        routes.locate("/archived-shops/{shop}", { request, pathVariables -&gt; // <b class="conum">(4)</b>
+            SHOPS[pathVariables.getString("shop")]
+        }, { shop: Shop -&gt; if (shop.items.size &gt; 1) shopRoutes else SmallShopRoutes.INSTANCE })
+    }
+
+    /**
+     * The routes of a located shop.
+     */
+    class ShopRoutes : LocatedRoutes&lt;Shop&gt; {
+        override fun targetType(): Argument&lt;Shop&gt; = Argument.of(Shop::class.java) // <b class="conum">(5)</b>
+
+        override fun routes(shop: LocatedHttpRouteBuilder&lt;Shop&gt;) { // <b class="conum">(6)</b>
+            shop.GET("/").handle { request, pathVariables, located -&gt; HttpResponse.ok(located.name) }
+            shop.GET("/items/{index}").handle { request, pathVariables, located -&gt;
+                HttpResponse.ok(located.items[pathVariables.getInt("index")])
+            }
+        }
+    }
+
+    /**
+     * The routes of a shop with a single item.
+     */
+    enum class SmallShopRoutes : LocatedRoutes&lt;Shop&gt; {
+        INSTANCE;
+
+        override fun targetType(): Argument&lt;Shop&gt; = Argument.of(Shop::class.java)
+
+        override fun routes(shop: LocatedHttpRouteBuilder&lt;Shop&gt;) {
+            shop.GET("/item") { request, pathVariables -&gt;
+                HttpResponse.ok(LocatedRoutes.locatedTarget(pathVariables, Shop::class.java).items[0]) // <b class="conum">(7)</b>
+            }
+        }
+    }
+
+    companion object {
+        private val SHOPS = mapOf(
+            "north" to Shop("north", listOf("tea", "coffee")),
+            "south" to Shop("south", listOf("juice")))
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Locator routes</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.annotation.Requires
+import io.micronaut.core.type.Argument
+import io.micronaut.http.HttpResponse
+import io.micronaut.web.router.builder.HttpRouteBuilder
+import io.micronaut.web.router.builder.HttpRoutes
+import io.micronaut.web.router.builder.LocatedHttpRouteBuilder
+import io.micronaut.web.router.builder.LocatedRoutes
+import jakarta.inject.Singleton
+
+import java.util.concurrent.CompletableFuture
+
+@Singleton
+class LocatorRoutes implements HttpRoutes {
+
+    /**
+     * A located target.
+     *
+     * @param name  The name of the shop
+     * @param items The items of the shop
+     */
+    static record Shop(String name, List&lt;String&gt; items) {
+    }
+
+    private static final Map&lt;String, Shop&gt; SHOPS = [
+        north: new Shop("north", ["tea", "coffee"]),
+        south: new Shop("south", ["juice"])]
+
+    private final ShopRoutes shopRoutes = new ShopRoutes() // <b class="conum">(1)</b>
+
+    @Override
+    void routes(HttpRouteBuilder routes) {
+        routes.locate("/shops/{shop}", { request, pathVariables -&gt; // <b class="conum">(2)</b>
+            SHOPS.get(pathVariables.getString("shop"))
+        }, shopRoutes)
+        routes.locateAsync("/remote-shops/{shop}", { request, pathVariables -&gt; // <b class="conum">(3)</b>
+            CompletableFuture.supplyAsync { SHOPS.get(pathVariables.getString("shop")) }
+        }, shopRoutes)
+        routes.locate("/archived-shops/{shop}", { request, pathVariables -&gt; // <b class="conum">(4)</b>
+            SHOPS.get(pathVariables.getString("shop"))
+        }, { Shop shop -&gt; shop.items().size() &gt; 1 ? shopRoutes : SmallShopRoutes.INSTANCE })
+    }
+
+    /**
+     * The routes of a located shop.
+     */
+    static final class ShopRoutes implements LocatedRoutes&lt;Shop&gt; {
+        @Override
+        Argument&lt;Shop&gt; targetType() { // <b class="conum">(5)</b>
+            return Argument.of(Shop)
+        }
+
+        @Override
+        void routes(LocatedHttpRouteBuilder&lt;Shop&gt; shop) { // <b class="conum">(6)</b>
+            shop.GET("/").handle { request, pathVariables, Shop located -&gt; HttpResponse.ok(located.name()) }
+            shop.GET("/items/{index}").handle { request, pathVariables, Shop located -&gt;
+                HttpResponse.ok(located.items().get(pathVariables.getInt("index")))
+            }
+        }
+    }
+
+    /**
+     * The routes of a shop with a single item.
+     */
+    static enum SmallShopRoutes implements LocatedRoutes&lt;Shop&gt; {
+        INSTANCE
+
+        @Override
+        Argument&lt;Shop&gt; targetType() {
+            return Argument.of(Shop)
+        }
+
+        @Override
+        void routes(LocatedHttpRouteBuilder&lt;Shop&gt; shop) {
+            shop.GET("/item") { request, pathVariables -&gt;
+                HttpResponse.ok(LocatedRoutes.locatedTarget(pathVariables, Shop).items().get(0)) // <b class="conum">(7)</b>
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>One <code>LocatedRoutes</code> instance for the routes of every located shop, kept in a field: the router declares its routes once, when the first shop is located, and every locator route that answers the same instance shares them.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>locate(prefix, locator, routes)</code>: the locator finds the target of the request, here from a path variable of the prefix. <code>GET /shops/north/items/1</code> is answered by the route <code>/items/{index}</code> of the located routes, with the path variables of the prefix and of the route.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><code>locateAsync</code> takes a locator that returns a <code>CompletionStage</code> of the target, e.g. loaded from a database: the request is matched with the located routes when the stage completes, without blocking the thread that matched it.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><code>locate(prefix, locator, routesOf)</code>: a function selects the <code>LocatedRoutes</code> of each target, e.g. by its type or its state.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><code>targetType()</code> is the type of the located targets: the handlers receive the target of that type, and a located target of another type fails the request.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td><code>routes(&#8230;&#8203;)</code> declares the routes of a located shop on a <a href="../api/io/micronaut/web/router/builder/LocatedHttpRouteBuilder.html">LocatedHttpRouteBuilder</a>, relative to the prefix. Its creators return a <a href="../api/io/micronaut/web/router/builder/LocatedHttpRouteSpec.html">LocatedHttpRouteSpec</a>, whose terminals, and those of its body stages, also take a handler that receives the target, e.g. <code>(request, pathVariables, shop) &#8594; &#8230;&#8203;</code>. A route at <code>/</code> is at the prefix itself.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>The handlers that do not take the target as an argument, e.g. the shortcuts such as <code>GET(uri, handler)</code>, read it from their path variables with <code>LocatedRoutes.locatedTarget(pathVariables, type)</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A locator that answers <code>null</code>, or a stage that completes with <code>null</code>, is a <code>404</code>. A locator that throws, or a failed stage, is handled by the error routes, those of the groups of the locator route first. When the located routes have no route for the rest of the path, the request is answered like a request that no route matches: <code>404</code>, or <code>405</code>, <code>415</code> or <code>406</code> if a located route matches the path with another method or media type. No other route of the application is tried.</p>
+</div>
+<div class="paragraph">
+<p>The filters of the matched located route apply, after the filters of the groups of the locator route, and the server filters apply to the full path. A located route inherits the annotations of the groups enclosing its locator route, given with <code>annotate(&#8230;&#8203;)</code>, as a route declared in those groups does, and its own annotations take precedence: a filter bound to a <code>@FilterMatcher</code> annotation of such a group runs for it, and the <code>@Produces</code>, <code>@Consumes</code>, <code>@Status</code> and <code>@ExecuteOn</code> of the group apply to it, including when the request is matched by its media types. Located routes may declare locator routes of their own, which locate again from the rest of the path, and error routes in their groups. They cannot declare global error or status routes or ports, and have no <code>serverFilter</code>: those belong to the application routes, and declaring a global error or status route or a port fails the request that located the first target.</p>
+</div>
+<div class="paragraph">
+<p>A synchronous locator runs while the request is matched, on the event loop, and must not block. The target is located once per request and kept for the rest of the request: a locator, synchronous or asynchronous, runs at most once per request, also when the request is answered with a <code>405</code> whose allowed methods are those of the located routes. A request with a custom HTTP method, such as <code>PROPFIND</code>, is located like any other: it is answered by the located route of that method, or by a located route declared with <code>any(&#8230;&#8203;)</code>, and otherwise with a <code>405</code> whose allowed methods are those of the located routes. The constraints of a located route see the path variables of the prefixes, as its handler does.</p>
+</div>
+<div class="paragraph">
+<p>The server waits for the stage of an asynchronous locator without blocking, and cancels it when the client closes the connection before it completes. A CORS preflight request for a path under the prefix of an asynchronous locator is answered once the locator has located its target, with the methods of its located routes.</p>
+</div>
+
+<h2 id="functionalRoutesLimitations"><a class="anchor" href="#functionalRoutesLimitations"></a>6.31.11 Limitations</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/functionalRoutes/functionalRoutesLimitations.adoc"'>
