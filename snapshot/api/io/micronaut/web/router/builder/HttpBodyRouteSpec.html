@@ -61,6 +61,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#responseType(java.lang.Class)" tabindex="0">responseType(Class)</a></li>
 <li><a href="#handle(io.micronaut.web.router.builder.BodyRequestHandler)" tabindex="0">handle(BodyRequestHandler)</a></li>
 <li><a href="#handleAsync(io.micronaut.web.router.builder.AsyncBodyRequestHandler)" tabindex="0">handleAsync(AsyncBodyRequestHandler)</a></li>
+<li><a href="#sse(io.micronaut.web.router.builder.SseBodyHandler)" tabindex="0">sse(SseBodyHandler)</a></li>
 </ol>
 </li>
 </ol>
@@ -140,6 +141,13 @@ later.</div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#responseType(java.lang.Class)" class="member-name-link">responseType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;responseType)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Declare the type of the body of the responses as a class: <code>responseType(Argument.of(responseType))</code>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#sse(io.micronaut.web.router.builder.SseBodyHandler)" class="member-name-link">sse</a><wbr>(<a href="SseBodyHandler.html" title="interface in io.micronaut.web.router.builder">SseBodyHandler</a>&lt;<a href="#type-param-B" title="type parameter in HttpBodyRouteSpec">B</a>&gt;&nbsp;handler)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">End the route with a server-sent events handler that receives the body: the response is a
+<code>text/event-stream</code> of the events the handler pushes, see
+<a href="HttpRouteSpec.html#sse(io.micronaut.web.router.builder.SseHandler)"><code>HttpRouteSpec.sse(SseHandler)</code></a>.</div>
 </div>
 </div>
 </div>
@@ -224,6 +232,40 @@ later. The executor is selected like for a controller method returning a
 <dd><code>handler</code> - The handler</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if the route was already ended</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="sse(io.micronaut.web.router.builder.SseBodyHandler)">
+<h3>sse</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">sse</span><wbr><span class="parameters">(<a href="SseBodyHandler.html" title="interface in io.micronaut.web.router.builder">SseBodyHandler</a>&lt;<a href="#type-param-B" title="type parameter in HttpBodyRouteSpec">B</a>&gt;&nbsp;handler)</span></div>
+<div class="block">End the route with a server-sent events handler that receives the body: the response is a
+<code>text/event-stream</code> of the events the handler pushes, see
+<a href="HttpRouteSpec.html#sse(io.micronaut.web.router.builder.SseHandler)"><code>HttpRouteSpec.sse(SseHandler)</code></a>. What the body stage bound, e.g. an
+<a href="../../../http/body/AsyncRequestBody.html" title="interface in io.micronaut.http.body"><code>AsyncRequestBody</code></a> the handler reads while it sends events, is
+released when the stream ends.
+
+<pre><code>routes.POST("/completions").body(Prompt.class).executeOn(TaskExecutors.BLOCKING).sse((request, pathVariables, prompt, events) -&gt; {
+    for (String token : model.generate(prompt)) {
+        events.sendAndAwait(token);
+    }
+});
+</code></pre></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>handler</code> - The handler</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if the route was already ended, or declared media types without <code>text/event-stream</code> with <code>produces</code></dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="SseBodyHandler.html" title="interface in io.micronaut.web.router.builder"><code>SseBodyHandler</code></a></li>
+</ul>
+</dd>
 </dl>
 </div>
 </section>

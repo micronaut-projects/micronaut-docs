@@ -68,6 +68,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#respond(io.micronaut.http.HttpResponse)" tabindex="0">respond(HttpResponse)</a></li>
 <li><a href="#respond(java.util.function.Supplier)" tabindex="0">respond(Supplier)</a></li>
 <li><a href="#respond(java.util.function.Function)" tabindex="0">respond(Function)</a></li>
+<li><a href="#sse(io.micronaut.web.router.builder.SseHandler)" tabindex="0">sse(SseHandler)</a></li>
 </ol>
 </li>
 </ol>
@@ -115,8 +116,8 @@ routes.GET("/old").respond(HttpResponse.permanentRedirect(URI.create("/new")));
     <li><b>Body stages.</b> <a href="#body(io.micronaut.core.type.Argument)"><code>body(Argument)</code></a>, <a href="#body()"><code>body()</code></a> and <a href="#form()"><code>form()</code></a> declare
     the body the handler receives: the pending route becomes an <a href="HttpBodyRouteSpec.html" title="interface in io.micronaut.web.router.builder"><code>HttpBodyRouteSpec</code></a>, whose
     terminals take a handler of that body.</li>
-    <li><b>Terminals.</b> <a href="#handle(io.micronaut.web.router.builder.RequestHandler)"><code>handle(RequestHandler)</code></a>, <a href="#handleAsync(io.micronaut.web.router.builder.AsyncRequestHandler)"><code>handleAsync(AsyncRequestHandler)</code></a>
-    and the <code>respond</code> methods add the route, with the settings given before. A route is
+    <li><b>Terminals.</b> <a href="#handle(io.micronaut.web.router.builder.RequestHandler)"><code>handle(RequestHandler)</code></a>, <a href="#handleAsync(io.micronaut.web.router.builder.AsyncRequestHandler)"><code>handleAsync(AsyncRequestHandler)</code></a>,
+    <a href="#sse(io.micronaut.web.router.builder.SseHandler)"><code>sse(SseHandler)</code></a> and the <code>respond</code> methods add the route, with the settings given before. A route is
     ended with exactly one terminal: a second one, or a setting after the terminal, fails with an
     <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a>. A pending route with no terminal fails the startup, see
     <a href="HttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder"><code>HttpRouteBuilder</code></a>.</li>
@@ -212,6 +213,13 @@ body, e.g.</div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Declare the type of the body of the responses as a class: <code>responseType(Argument.of(responseType))</code>,
 see <a href="#responseType(io.micronaut.core.type.Argument)"><code>responseType(Argument)</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#sse(io.micronaut.web.router.builder.SseHandler)" class="member-name-link">sse</a><wbr>(<a href="SseHandler.html" title="interface in io.micronaut.web.router.builder">SseHandler</a>&nbsp;handler)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">End the route with a server-sent events handler: the response is a
+<code>text/event-stream</code> of the events the handler pushes to its
+<a href="../../../http/sse/SseEmitter.html" title="interface in io.micronaut.http.sse"><code>SseEmitter</code></a>.</div>
 </div>
 </div>
 </div>
@@ -488,6 +496,42 @@ event loop when neither has one: then it must not block.</p></div>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if the route was already ended</dd>
 <dt>Since:</dt>
 <dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="sse(io.micronaut.web.router.builder.SseHandler)">
+<h3>sse</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">sse</span><wbr><span class="parameters">(<a href="SseHandler.html" title="interface in io.micronaut.web.router.builder">SseHandler</a>&nbsp;handler)</span></div>
+<div class="block">End the route with a server-sent events handler: the response is a
+<code>text/event-stream</code> of the events the handler pushes to its
+<a href="../../../http/sse/SseEmitter.html" title="interface in io.micronaut.http.sse"><code>SseEmitter</code></a>. The route produces <code>text/event-stream</code>, not
+the media types its group produces. A route whose handler may answer with another response,
+see <a href="../../../http/sse/SseEmitter.html#respond(io.micronaut.http.HttpResponse)"><code>SseEmitter.respond(HttpResponse)</code></a>, declares the types of both, e.g.
+<code>produces(MediaType.TEXT_EVENT_STREAM_TYPE, MediaType.APPLICATION_JSON_TYPE)</code>. The handler does not read the body of the request, like
+a <a href="RequestHandler.html" title="interface in io.micronaut.web.router.builder"><code>RequestHandler</code></a>: a handler that does declares a body stage first, e.g.
+<code>body(Prompt.class).sse(...)</code>, see <a href="HttpBodyRouteSpec.html#sse(io.micronaut.web.router.builder.SseBodyHandler)"><code>HttpBodyRouteSpec.sse(SseBodyHandler)</code></a>.
+
+<pre><code>routes.GET("/ticks").sse((request, pathVariables, events) -&gt; {
+    Subscription subscription = ticker.onTick(tick -&gt; events.send(Event.of(tick).id(String.valueOf(tick.sequence()))));
+    events.keepOpen().heartbeat(Duration.ofSeconds(15)).onClose(error -&gt; subscription.cancel());
+});
+</code></pre></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>handler</code> - The handler</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if the route was already ended, or declared media types without <code>text/event-stream</code> with <code>produces</code></dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="SseHandler.html" title="interface in io.micronaut.web.router.builder"><code>SseHandler</code></a></li>
+</ul>
+</dd>
 </dl>
 </div>
 </section>
