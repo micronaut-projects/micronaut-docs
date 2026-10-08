@@ -59,7 +59,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
-<li><a href="#%3Cinit%3E(io.netty.contrib.multipart.PostBodyDecoder,io.netty.channel.Channel,io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.http.body.ByteBody)" tabindex="0">FormDemuxer(PostBodyDecoder, Channel, BodySizeLimits, BodySizeLimits, ByteBody)</a></li>
+<li><a href="#%3Cinit%3E(io.netty.contrib.multipart.PostBodyDecoder,java.lang.String,java.nio.charset.Charset,io.netty.channel.Channel,io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.http.body.ByteBody)" tabindex="0">FormDemuxer(PostBodyDecoder, String, Charset, Channel, BodySizeLimits, BodySizeLimits, ByteBody)</a></li>
 </ol>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
@@ -120,7 +120,9 @@ implements <a href="../../../body/stream/BufferConsumer.html" title="interface i
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.netty.contrib.multipart.PostBodyDecoder,io.netty.channel.Channel,io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.http.body.ByteBody)" class="member-name-link">FormDemuxer</a><wbr>(io.netty.contrib.multipart.PostBodyDecoder&nbsp;decoder,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.netty.contrib.multipart.PostBodyDecoder,java.lang.String,java.nio.charset.Charset,io.netty.channel.Channel,io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.http.body.ByteBody)" class="member-name-link">FormDemuxer</a><wbr>(io.netty.contrib.multipart.PostBodyDecoder&nbsp;decoder,
+ <a href="../../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;multipartBoundary,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/charset/Charset.html" title="class or interface in java.nio.charset" class="external-link">Charset</a>&nbsp;charset,
  io.netty.channel.Channel&nbsp;channel,
  <a href="../../../body/stream/BodySizeLimits.html" title="class in io.micronaut.http.body.stream">BodySizeLimits</a>&nbsp;fieldLimits,
  <a href="../../../body/stream/BodySizeLimits.html" title="class in io.micronaut.http.body.stream">BodySizeLimits</a>&nbsp;totalLimits,
@@ -184,14 +186,30 @@ implements <a href="../../../body/stream/BufferConsumer.html" title="interface i
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(io.netty.contrib.multipart.PostBodyDecoder,io.netty.channel.Channel,io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.http.body.ByteBody)">
+<section class="detail" id="&lt;init&gt;(io.netty.contrib.multipart.PostBodyDecoder,java.lang.String,java.nio.charset.Charset,io.netty.channel.Channel,io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.http.body.ByteBody)">
 <h3>FormDemuxer</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">FormDemuxer</span><wbr><span class="parameters">(io.netty.contrib.multipart.PostBodyDecoder&nbsp;decoder,
+ <a href="../../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a>
+ <a href="../../../../core/annotation/Nullable.html" title="annotation interface in io.micronaut.core.annotation">@Nullable</a> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;multipartBoundary,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/charset/Charset.html" title="class or interface in java.nio.charset" class="external-link">Charset</a>&nbsp;charset,
  io.netty.channel.Channel&nbsp;channel,
  <a href="../../../body/stream/BodySizeLimits.html" title="class in io.micronaut.http.body.stream">BodySizeLimits</a>&nbsp;fieldLimits,
  <a href="../../../body/stream/BodySizeLimits.html" title="class in io.micronaut.http.body.stream">BodySizeLimits</a>&nbsp;totalLimits,
  <a href="../../../body/ByteBody.html" title="interface in io.micronaut.http.body">ByteBody</a>&nbsp;byteBody)</span></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>decoder</code> - The decoder</dd>
+<dd><code>multipartBoundary</code> - The boundary of a multipart body, whose close delimiter must end
+                         the body: a body that ends before it, e.g. a truncated upload, fails
+                         like a malformed body. <code>null</code> for a body without one, e.g.
+                         URL-encoded data</dd>
+<dd><code>charset</code> - The charset of the decoder, which it encodes the boundary with</dd>
+<dd><code>channel</code> - The channel</dd>
+<dd><code>fieldLimits</code> - The limits of a field</dd>
+<dd><code>totalLimits</code> - The limits of the form</dd>
+<dd><code>byteBody</code> - The body</dd>
+</dl>
 </div>
 </section>
 </li>
