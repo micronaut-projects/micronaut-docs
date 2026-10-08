@@ -86,8 +86,8 @@ and ends the stream itself, or lets it end when the client disconnects.</p>
 
 <p>The handler runs like the handler of an asynchronous route: on the event loop unless the
 route <a href="ExecutionSpec.html#executeOn(java.lang.String)"><code>executes on</code></a> an executor. On an executor it may
-block, and pace itself with <a href="../../../http/sse/SseEmitter.html#sendAndAwait(io.micronaut.http.sse.Event)"><code>SseEmitter.sendAndAwait(Event)</code></a>: the response is sent while it
-still runs. A <code>HEAD</code> request runs the handler too, and sends the headers of the stream
+block, and pace itself by waiting for the stage of each <a href="../../../http/sse/SseEmitter.html#send(java.lang.Object)"><code>send</code></a>,
+e.g. with <code>join()</code>: the response is sent while it still runs. A <code>HEAD</code> request runs the handler too, and sends the headers of the stream
 without its events.</p>
 
 <pre><code>// event driven: keep the stream open, and let it end with the connection
@@ -103,7 +103,7 @@ routes.GET("/prices").sse((request, pathVariables, events) -&gt; {
 // blocking, on virtual threads: the stream ends when the handler returns
 routes.GET("/jobs/{id}/log").executeOn(TaskExecutors.VIRTUAL).sse((request, pathVariables, events) -&gt; {
     for (LogLine line : jobs.tail(pathVariables.getString("id"), events.lastEventId())) {
-        events.sendAndAwait(Event.of(line.text()).id(line.offset()));
+        events.send(Event.of(line.text()).id(line.offset())).toCompletableFuture().join();
     }
 });
 </code></pre></div>

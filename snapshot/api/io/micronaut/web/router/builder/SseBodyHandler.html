@@ -89,7 +89,7 @@ stage bound is released when the stream ends, not when the response is sent.
 
 <pre><code>routes.POST("/completions").body(Prompt.class).executeOn(TaskExecutors.BLOCKING).sse((request, pathVariables, prompt, events) -&gt; {
     for (String token : model.generate(prompt)) {
-        events.sendAndAwait(token);
+        events.send(token).toCompletableFuture().join();
     }
 });
 </code></pre></div>

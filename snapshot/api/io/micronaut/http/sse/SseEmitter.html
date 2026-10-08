@@ -67,8 +67,6 @@ loadScripts(document, 'script');</script>
 <li><a href="#send(io.micronaut.http.sse.Event)" tabindex="0">send(Event)</a></li>
 <li><a href="#send(java.lang.Object)" tabindex="0">send(Object)</a></li>
 <li><a href="#comment(java.lang.String)" tabindex="0">comment(String)</a></li>
-<li><a href="#sendAndAwait(io.micronaut.http.sse.Event)" tabindex="0">sendAndAwait(Event)</a></li>
-<li><a href="#sendAndAwait(java.lang.Object)" tabindex="0">sendAndAwait(Object)</a></li>
 <li><a href="#isWritable()" tabindex="0">isWritable()</a></li>
 <li><a href="#isOpen()" tabindex="0">isOpen()</a></li>
 <li><a href="#lastEventId()" tabindex="0">lastEventId()</a></li>
@@ -123,8 +121,10 @@ or a heartbeat first.</p>
 because the client reads slower than the events are sent. The stage returned by
 <a href="#send(io.micronaut.http.sse.Event)"><code>send(Event)</code></a> completes once the bytes of the event, together with the bytes queued
 before it, are below the <a href="#highWaterMark(int)"><code>high-water mark</code></a>: immediately if the client
-keeps up, otherwise once the connection took enough of the queue. Waiting for the stage (or
-using <a href="#sendAndAwait(io.micronaut.http.sse.Event)"><code>sendAndAwait(Event)</code></a>) paces the sender to the client. <a href="#isWritable()"><code>isWritable()</code></a> tells
+keeps up, otherwise once the connection took enough of the queue. Waiting for the stage before
+the next send paces the sender to the client: a handler that sends from a loop continues in the
+stage, or, on a virtual thread or a thread of a blocking executor, waits for it, e.g. with
+<code>send(event).toCompletableFuture().join()</code>. <a href="#isWritable()"><code>isWritable()</code></a> tells
 whether a send would complete immediately, for senders that would rather drop events than wait,
 such as a broadcast to many clients.</p>
 <p>The queue is bounded: a send while sixteen times the high-water mark are already queued fails
@@ -245,18 +245,6 @@ or heartbeat: e.g.</div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Send an event with the given data.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#sendAndAwait(io.micronaut.http.sse.Event)" class="member-name-link">sendAndAwait</a><wbr>(<a href="Event.html" title="interface in io.micronaut.http.sse">Event</a>&lt;?&gt;&nbsp;event)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Send an event, and wait until its stage completes: pacing a sender on a virtual thread or on
-a thread of a blocking executor to the client.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#sendAndAwait(java.lang.Object)" class="member-name-link">sendAndAwait</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;data)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Send an event with the given data, and wait until its stage completes, see
-<a href="#sendAndAwait(io.micronaut.http.sse.Event)"><code>sendAndAwait(Event)</code></a>.</div>
-</div>
 </div>
 </div>
 </div>
@@ -276,8 +264,8 @@ a thread of a blocking executor to the client.</div>
 <h3>send</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">send</span><wbr><span class="parameters">(<a href="Event.html" title="interface in io.micronaut.http.sse">Event</a>&lt;?&gt;&nbsp;event)</span></div>
-<div class="block">Send an event. The send does not wait: wait for the returned stage (or use
-<a href="#sendAndAwait(io.micronaut.http.sse.Event)"><code>sendAndAwait(Event)</code></a>) to pace the sender to the client. Sends that do not wait queue
+<div class="block">Send an event. The send does not wait: wait for the returned stage before the next send to
+pace the sender to the client. Sends that do not wait queue
 the events of a slow client until the queue overflows and the stream fails, see the class
 documentation.</div>
 <dl class="notes">
@@ -317,45 +305,6 @@ overflowed, or the event could not be encoded (the stream stays open)</dd>
 <dd><code>comment</code> - The comment, may span several lines</dd>
 <dt>Returns:</dt>
 <dd>Completes like <a href="#send(io.micronaut.http.sse.Event)"><code>send(Event)</code></a></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="sendAndAwait(io.micronaut.http.sse.Event)">
-<h3>sendAndAwait</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">sendAndAwait</span><wbr><span class="parameters">(<a href="Event.html" title="interface in io.micronaut.http.sse">Event</a>&lt;?&gt;&nbsp;event)</span>
-           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></span></div>
-<div class="block">Send an event, and wait until its stage completes: pacing a sender on a virtual thread or on
-a thread of a blocking executor to the client.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>event</code> - The event</dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - if the thread was interrupted while waiting: the event
-                                       may still be sent</dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if called on an event loop thread, which must not
-                                       block, or if the stream was completed or failed</dd>
-<dd><code><a href="../exceptions/ConnectionClosedException.html" title="class in io.micronaut.http.exceptions">ConnectionClosedException</a></code> - if the client disconnected</dd>
-<dd><code><a href="../exceptions/StreamOverflowException.html" title="class in io.micronaut.http.exceptions">StreamOverflowException</a></code> - if the queue overflowed</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="sendAndAwait(java.lang.Object)">
-<h3>sendAndAwait</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">sendAndAwait</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;data)</span>
-                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></span></div>
-<div class="block">Send an event with the given data, and wait until its stage completes, see
-<a href="#sendAndAwait(io.micronaut.http.sse.Event)"><code>sendAndAwait(Event)</code></a>.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>data</code> - The data of the event, or an <a href="Event.html" title="interface in io.micronaut.http.sse"><code>Event</code></a></dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - if the thread was interrupted while waiting</dd>
 </dl>
 </div>
 </section>

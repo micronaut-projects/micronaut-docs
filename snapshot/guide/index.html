@@ -42019,7 +42019,7 @@ public class StreamRoutes implements HttpRoutes {
     public void routes(HttpRouteBuilder routes) {
         routes.GET("/countdown/{from}").executeOn(TaskExecutors.BLOCKING).sse((request, pathVariables, events) -&gt; { // <b class="conum">(1)</b>
             for (int i = pathVariables.getInt("from"); i &gt; 0; i--) {
-                events.sendAndAwait(Event.of(i).id(String.valueOf(i))); // <b class="conum">(2)</b>
+                events.send(Event.of(i).id(String.valueOf(i))).toCompletableFuture().join(); // <b class="conum">(2)</b>
             }
         });
         routes.GET("/ticks").sse((request, pathVariables, events) -&gt; {
@@ -42114,7 +42114,7 @@ class StreamRoutes(HttpRoutes):
     def routes(self, routes: HttpRouteBuilder) -&gt; None:
         def countdown(request, path_variables, events):
             for i in range(path_variables.getInt("from"), 0, -1):
-                events.sendAndAwait(Event.of(i).id(str(i)))  # <b class="conum">(2)</b>
+                events.send(Event.of(i).id(str(i))).toCompletableFuture().join()  # <b class="conum">(2)</b>
 
         routes.GET("/countdown/{from}").executeOn(TaskExecutors.BLOCKING).sse(countdown)  # <b class="conum">(1)</b>
 
@@ -42215,7 +42215,7 @@ class StreamRoutes(@Named(TaskExecutors.SCHEDULED) private val scheduler: TaskSc
     override fun routes(routes: HttpRouteBuilder) {
         routes.GET("/countdown/{from}").executeOn(TaskExecutors.BLOCKING).sse { request, pathVariables, events -&gt; // <b class="conum">(1)</b>
             for (i in pathVariables.getInt("from") downTo 1) {
-                events.sendAndAwait(Event.of(i).id(i.toString())) // <b class="conum">(2)</b>
+                events.send(Event.of(i).id(i.toString())).toCompletableFuture().join() // <b class="conum">(2)</b>
             }
         }
         routes.GET("/ticks").sse { request, pathVariables, events -&gt;
@@ -42316,7 +42316,7 @@ class StreamRoutes implements HttpRoutes {
     void routes(HttpRouteBuilder routes) {
         routes.GET("/countdown/{from}").executeOn(TaskExecutors.BLOCKING).sse { request, pathVariables, events -&gt; // <b class="conum">(1)</b>
             for (int i = pathVariables.getInt("from"); i &gt; 0; i--) {
-                events.sendAndAwait(Event.of(i).id(String.valueOf(i))) // <b class="conum">(2)</b>
+                events.send(Event.of(i).id(String.valueOf(i))).toCompletableFuture().join() // <b class="conum">(2)</b>
             }
         }
         routes.GET("/ticks").sse { request, pathVariables, events -&gt;
@@ -42392,7 +42392,7 @@ class StreamRoutes implements HttpRoutes {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td><code>sendAndAwait</code> waits until the client took the event, give or take the high-water mark, so a slow client paces the sender instead of filling the memory. On an event loop, <code>send</code> returns a stage that completes then.</td>
+<td><code>send</code> returns a stage that completes once the client took the event, give or take the high-water mark. Waiting for it before the next send, here with <code>join()</code> on the thread of the blocking executor the handler runs on, paces the sender to a slow client instead of filling the memory. On an event loop, continue in the stage instead of waiting for it.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
