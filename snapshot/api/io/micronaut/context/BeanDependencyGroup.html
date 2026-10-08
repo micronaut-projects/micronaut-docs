@@ -82,7 +82,13 @@ extends <a href="BeanDependencyResolver.html" title="interface in io.micronaut.c
 <div class="block">An explicitly owned group of dependencies. Close the group to destroy its owned beans, in reverse creation
 order. Shared beans stay in their scopes. Closing is idempotent and attempts every dependent destruction.
 Use <a href="BeanContext.html#createDependencyGroup()"><code>BeanContext.createDependencyGroup()</code></a> for independent ownership or
-<a href="BeanDependencyResolver.html#createGroup()"><code>BeanDependencyResolver.createGroup()</code></a> to attach the group to a managed consumer.</div>
+<a href="BeanDependencyResolver.html#createGroup()"><code>BeanDependencyResolver.createGroup()</code></a> to attach the group to a managed consumer.
+
+<p>A group follows the lookup rules of <a href="BeanDependencyResolver.html" title="interface in io.micronaut.context"><code>BeanDependencyResolver</code></a>: a group created before context shutdown
+remains usable by the <a href="event/ShutdownEvent.html" title="class in io.micronaut.context.event"><code>ShutdownEvent</code></a> listeners and destruction callbacks that
+run on the thread performing the shutdown. What such a lookup creates is destroyed before the shutdown
+completes, even when the group is independent and never closed; what the group held before shutdown remains
+the caller's to release.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>

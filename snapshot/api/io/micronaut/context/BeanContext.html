@@ -401,7 +401,8 @@ that bean.</div>
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="scope/CreatedBean.html" title="interface in io.micronaut.context.scope">CreatedBean</a>&lt;T&gt;</span>&nbsp;<span class="element-name">createBeanRegistration</span><wbr><span class="parameters">(<a href="../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;T&gt;&nbsp;definition)</span></div>
 <div class="block">Creates a fresh instance of the exact definition, bypassing its scope, and retains its complete
 dependency tree in the returned registration. Dependencies still obey their own scope rules.
-For a contextual target behind a proxy, supply the target definition. The caller owns the result.</div>
+For a contextual target behind a proxy, supply the target definition. The caller owns the result.
+The same shutdown rule as <a href="#createDependencyGroup()"><code>createDependencyGroup()</code></a> applies.</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><span id="createBeanRegistration(io.micronaut.inject.BeanDefinition)-type-param-T"><code>T</code> - The bean type</span></dd>
@@ -421,8 +422,13 @@ For a contextual target behind a proxy, supply the target definition. The caller
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="BeanDependencyGroup.html" title="interface in io.micronaut.context">BeanDependencyGroup</a></span>&nbsp;<span class="element-name">createDependencyGroup</span>()</div>
 <div class="block">Creates an independent dependency group. The caller must close it; context shutdown does not take ownership.
-New lookups are rejected during shutdown. A destruction listener that needs temporary dependencies uses
-<a href="event/BeanPreDestroyEvent.html#withDependencies(java.util.function.Function)"><code>BeanPreDestroyEvent.withDependencies(Function)</code></a>.</div>
+
+<p>Once shutdown begins, a group can only be created by a <a href="event/ShutdownEvent.html" title="class in io.micronaut.context.event"><code>ShutdownEvent</code></a>
+listener, on the thread publishing the event. Lookups through it, and through groups created earlier, are only
+accepted on the thread performing the shutdown, and what they create is destroyed before the shutdown completes.
+A destruction listener that needs temporary dependencies uses
+<a href="event/BeanPreDestroyEvent.html#withDependencies(java.util.function.Function)"><code>BeanPreDestroyEvent.withDependencies(Function)</code></a>. Groups are also rejected
+before the context is configured.</p></div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The group</dd>
@@ -438,7 +444,8 @@ New lookups are rejected during shutdown. A destruction listener that needs temp
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;R&gt;</span>&nbsp;<span class="return-type">R</span>&nbsp;<span class="element-name">withDependencies</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="BeanDependencyGroup.html" title="interface in io.micronaut.context">BeanDependencyGroup</a>, R&gt;&nbsp;action)</span></div>
 <div class="block">Resolves dependencies for a synchronous invocation and always releases them afterwards. Cleanup failures
-are suppressed on an invocation failure. New groups and lookups are rejected once shutdown begins;
+are suppressed on an invocation failure. Once shutdown begins, it is only available to a
+<a href="event/ShutdownEvent.html" title="class in io.micronaut.context.event"><code>ShutdownEvent</code></a> listener, see <a href="#createDependencyGroup()"><code>createDependencyGroup()</code></a>;
 a destruction listener uses <a href="event/BeanPreDestroyEvent.html#withDependencies(java.util.function.Function)"><code>BeanPreDestroyEvent.withDependencies(Function)</code></a>.</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>

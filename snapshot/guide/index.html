@@ -8125,7 +8125,7 @@ class Handler {
 <p>The resolver can be used during construction and retained for later use. It must be injected into a managed consumer; it is unavailable through a standalone context lookup. As with other dependent resources, callers obtaining standalone prototypes should retain and close their <a href="../api/io/micronaut/context/BeanRegistration.html">BeanRegistration</a>. Ordinary <a href="../api/io/micronaut/context/BeanContext.html">BeanContext</a> and <a href="../api/io/micronaut/context/BeanProvider.html">BeanProvider</a> lookups keep their existing lifecycle behavior.</p>
 </div>
 <div class="paragraph">
-<p>New resolver lookups are rejected once destruction of the consumer or context shutdown begins. Existing dependencies remain available to destruction callbacks. A lookup racing destruction releases newly created dependents if it cannot attach them to the consumer. The resolver does not retain the consumer&#8217;s construction path; do not use it to resolve the consumer recursively during construction.</p>
+<p>Once destruction of the consumer begins, only its own destruction callbacks, such as a <code>@PreDestroy</code> method, can still look up, on the destroying thread and until they return; what they create is destroyed with the consumer, after the callbacks. Once context shutdown begins, lookups are only accepted on the thread running the shutdown, on behalf of a <a href="../api/io/micronaut/context/event/ShutdownEvent.html">ShutdownEvent</a> listener or a destruction callback, and what they create is destroyed before the shutdown completes. Other lookups are rejected. A lookup racing destruction releases newly created dependents if it cannot attach them to the consumer. The resolver does not retain the consumer&#8217;s construction path; do not use it to resolve the consumer recursively during construction.</p>
 </div>
 <div class="sect3">
 <h4 id="_explicit_dependency_ownership">Explicit dependency ownership</h4>
@@ -8147,13 +8147,19 @@ closed automatically with it. Independent groups must be closed by their callers
 <div class="paragraph">
 <p>For temporary method arguments, <code>BeanContext.withDependencies(group &#8594; &#8230;&#8203;)</code> releases owned dependencies
 when the synchronous invocation ends, including when it fails. Cleanup attempts every dependent and suppresses
-cleanup failures on the invocation&#8217;s exception. It rejects new groups once shutdown begins.</p>
+cleanup failures on the invocation&#8217;s exception.</p>
+</div>
+<div class="paragraph">
+<p>Once shutdown begins, new groups and fresh registrations can only be created by a <code>ShutdownEvent</code> listener, on the
+thread publishing the event. Groups created earlier, independent or owned by a consumer, stay usable by the listeners
+and destruction callbacks running on the shutdown thread. Whatever a group creates during shutdown is destroyed before
+the shutdown completes, even if the group is never closed; what it held before remains the caller&#8217;s to release.</p>
 </div>
 <div class="paragraph">
 <p>A <code>BeanPreDestroyEventListener</code> that needs temporary dependencies while a bean is being destroyed calls
 <code>event.withDependencies(group &#8594; &#8230;&#8203;)</code>. These lookups are allowed during shutdown, only on the destruction
-thread and until the listener returns; injected resolvers and independent groups still reject new lookups
-once shutdown starts. Do not return an owned dependency from either invocation, since it has already been destroyed.</p>
+thread and until the listener returns; <code>BeanContext.withDependencies</code> itself is not available to a destruction
+listener during shutdown. Do not return an owned dependency from either invocation, since it has already been destroyed.</p>
 </div>
 </div>
 </div>
@@ -22758,8 +22764,10 @@ target was created. During context shutdown, a singleton target or a singleton o
 before those shared interceptors. Failed selections clean up newly created dependents, and a selection racing target
 destruction cannot attach new interceptors to the destroyed target. Custom-scoped interceptors remain owned by their
 scope.
-New selections are rejected once context shutdown begins; selections already cached on a target remain available
-to destruction callbacks until that target is destroyed.</p>
+Once context shutdown begins, new selections are only made on the thread running the shutdown, on behalf of a shutdown
+event listener or a destruction callback, including the destruction callbacks of the target itself; the interceptors
+they create are destroyed with the target. Selections already cached on a target remain available to destruction
+callbacks until that target is destroyed.</p>
 </div>
 <div class="paragraph">
 <p>An interceptor that resolves additional beans dynamically can inject <a href="../api/io/micronaut/context/BeanDependencyResolver.html">BeanDependencyResolver</a> to give

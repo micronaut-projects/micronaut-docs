@@ -3632,7 +3632,8 @@ the creation of other beans preferably with a high priority <a href="annotation/
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="BeanContext.html#createBeanRegistration(io.micronaut.inject.BeanDefinition)">BeanContext</a></code></span></div>
 <div class="block">Creates a fresh instance of the exact definition, bypassing its scope, and retains its complete
 dependency tree in the returned registration. Dependencies still obey their own scope rules.
-For a contextual target behind a proxy, supply the target definition. The caller owns the result.</div>
+For a contextual target behind a proxy, supply the target definition. The caller owns the result.
+The same shutdown rule as <a href="BeanContext.html#createDependencyGroup()"><code>BeanContext.createDependencyGroup()</code></a> applies.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="BeanContext.html#createBeanRegistration(io.micronaut.inject.BeanDefinition)">createBeanRegistration</a></code>&nbsp;in interface&nbsp;<code><a href="BeanContext.html" title="interface in io.micronaut.context">BeanContext</a></code></dd>
@@ -3653,8 +3654,13 @@ For a contextual target behind a proxy, supply the target definition. The caller
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="BeanDependencyGroup.html" title="interface in io.micronaut.context">BeanDependencyGroup</a></span>&nbsp;<span class="element-name">createDependencyGroup</span>()</div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="BeanContext.html#createDependencyGroup()">BeanContext</a></code></span></div>
 <div class="block">Creates an independent dependency group. The caller must close it; context shutdown does not take ownership.
-New lookups are rejected during shutdown. A destruction listener that needs temporary dependencies uses
-<a href="event/BeanPreDestroyEvent.html#withDependencies(java.util.function.Function)"><code>BeanPreDestroyEvent.withDependencies(Function)</code></a>.</div>
+
+<p>Once shutdown begins, a group can only be created by a <a href="event/ShutdownEvent.html" title="class in io.micronaut.context.event"><code>ShutdownEvent</code></a>
+listener, on the thread publishing the event. Lookups through it, and through groups created earlier, are only
+accepted on the thread performing the shutdown, and what they create is destroyed before the shutdown completes.
+A destruction listener that needs temporary dependencies uses
+<a href="event/BeanPreDestroyEvent.html#withDependencies(java.util.function.Function)"><code>BeanPreDestroyEvent.withDependencies(Function)</code></a>. Groups are also rejected
+before the context is configured.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="BeanContext.html#createDependencyGroup()">createDependencyGroup</a></code>&nbsp;in interface&nbsp;<code><a href="BeanContext.html" title="interface in io.micronaut.context">BeanContext</a></code></dd>
