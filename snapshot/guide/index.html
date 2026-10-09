@@ -57165,6 +57165,217 @@ def testClientAnnotationStreaming(self):
 </div>
 </div>
 <div class="sect2">
+<h3 id="_streaming_without_reactive_streams">Streaming without Reactive Streams</h3>
+<div class="paragraph">
+<p>A declarative client method can also return a <code>CompletionStage</code> of <a href="../api/io/micronaut/http/body/BodyElements.html">BodyElements</a>, a cursor that reads the elements one at a time, instead of a <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html">Publisher</a>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">AsyncHeadlineClient.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.annotation.Get;
+import io.micronaut.http.body.BodyElements;
+import io.micronaut.http.client.annotation.Client;
+
+import java.util.concurrent.CompletionStage;
+
+import static io.micronaut.http.MediaType.APPLICATION_JSON_STREAM;
+
+@Client("/streaming")
+public interface AsyncHeadlineClient {
+
+    @Get(value = "/headlines", processes = APPLICATION_JSON_STREAM)
+    CompletionStage&lt;BodyElements&lt;Headline&gt;&gt; streamHeadlines(); // <b class="conum">(1)</b>
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">AsyncHeadlineClient.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from micronaut.http import MediaType
+from micronaut.http.annotation import Get
+from micronaut.http.body import BodyElements
+from micronaut.http.client.annotation import Client
+
+from .Headline import Headline
+
+@Client("/streaming")
+class AsyncHeadlineClient(ABC):
+
+    @Get(value="/headlines", processes=MediaType.APPLICATION_JSON_STREAM)
+    @abstractmethod
+    def streamHeadlines(self) -&gt; CompletionStage[BodyElements[Headline]]:  # <b class="conum">(1)</b>
+        ...</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">AsyncHeadlineClient.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.MediaType.APPLICATION_JSON_STREAM
+import io.micronaut.http.annotation.Get
+import io.micronaut.http.body.BodyElements
+import io.micronaut.http.client.annotation.Client
+import java.util.concurrent.CompletionStage
+
+@Client("/streaming")
+interface AsyncHeadlineClient {
+
+    @Get(value = "/headlines", processes = [APPLICATION_JSON_STREAM])
+    fun streamHeadlines(): CompletionStage&lt;BodyElements&lt;Headline&gt;&gt; // <b class="conum">(1)</b>
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">AsyncHeadlineClient.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.annotation.Get
+import io.micronaut.http.body.BodyElements
+import io.micronaut.http.client.annotation.Client
+
+import java.util.concurrent.CompletionStage
+
+import static io.micronaut.http.MediaType.APPLICATION_JSON_STREAM
+
+@Client("/streaming")
+interface AsyncHeadlineClient {
+
+    @Get(value = "/headlines", processes = APPLICATION_JSON_STREAM)
+    CompletionStage&lt;BodyElements&lt;Headline&gt;&gt; streamHeadlines() // <b class="conum">(1)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The stage completes once the response arrived, and the headlines are read as they are asked for</td>
+</tr>
+</table>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Reading the headlines</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">BodyElements&lt;Headline&gt; headlines = headlineClient.streamHeadlines() // <b class="conum">(1)</b>
+    .toCompletableFuture().get(10, TimeUnit.SECONDS);
+Optional&lt;Headline&gt; first = headlines.next() // <b class="conum">(2)</b>
+    .toCompletableFuture().get(10, TimeUnit.SECONDS);
+headlines.close(); // <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Reading the headlines</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">async def firstHeadline(self) -&gt; str:
+    headlines = await self.headlineClient.streamHeadlines()  # <b class="conum">(1)</b>
+    try:
+        first = await headlines.next()  # <b class="conum">(2)</b>
+        return first.orElseThrow().text
+    finally:
+        headlines.close()  # <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Reading the headlines</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val headlines = headlineClient.streamHeadlines() // <b class="conum">(1)</b>
+    .toCompletableFuture().get(10, TimeUnit.SECONDS)
+val first = headlines.next() // <b class="conum">(2)</b>
+    .toCompletableFuture().get(10, TimeUnit.SECONDS)
+headlines.close() // <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Reading the headlines</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">BodyElements&lt;Headline&gt; headlines = headlineClient.streamHeadlines() // <b class="conum">(1)</b>
+    .toCompletableFuture().get(10, TimeUnit.SECONDS)
+Optional&lt;Headline&gt; first = headlines.next() // <b class="conum">(2)</b>
+    .toCompletableFuture().get(10, TimeUnit.SECONDS)
+headlines.close() // <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The test waits for the response</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>next()</code> reads the next headline from the connection</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Closing discards the rest of the stream, and releases the connection</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The elements are read like the items of a streaming publisher: the events of a <code>text/event-stream</code> response (<code>BodyElements&lt;Event&lt;T&gt;&gt;</code>, or <code>BodyElements&lt;T&gt;</code> for their data), the elements of a JSON stream or a JSON array, or the pieces of any other body (<code>BodyElements&lt;ByteBuffer&lt;?&gt;&gt;</code>). Declare <code>CompletionStage&lt;HttpResponse&lt;BodyElements&lt;T&gt;&gt;&gt;</code> to read the status and the headers of an event stream or of the pieces of a body as well. A Kotlin <code>suspend</code> method that returns <code>BodyElements&lt;T&gt;</code> works the same way.</p>
+</div>
+<div class="paragraph">
+<p>The same is available without a declarative client through the <a href="../api/io/micronaut/http/client/AsyncStreamingHttpClient.html">AsyncStreamingHttpClient</a>, which <code>toAsyncStreaming()</code> returns for a <a href="../api/io/micronaut/http/client/StreamingHttpClient.html">StreamingHttpClient</a>, and which can be injected with <a href="../api/io/micronaut/http/client/annotation/Client.html">@Client</a>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">AsyncStreamingHttpClient</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">CompletionStage&lt;Optional&lt;Headline&gt;&gt; first = client.jsonStream(HttpRequest.GET("/streaming/headlines"), Headline.class) // <b class="conum">(1)</b>
+    .thenCompose(headlines -&gt; headlines.next() // <b class="conum">(2)</b>
+        .whenComplete((headline, error) -&gt; headlines.close())); // <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">AsyncStreamingHttpClient</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">async def firstStreamingHeadline(self) -&gt; str:
+    headlines = await self.client.jsonStream(HttpRequest.GET("/streaming/headlines"), HeadlineClass)  # <b class="conum">(1)</b>
+    try:
+        first = await headlines.next()  # <b class="conum">(2)</b>
+        return first.orElseThrow().text
+    finally:
+        headlines.close()  # <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">AsyncStreamingHttpClient</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val first: CompletionStage&lt;Optional&lt;Headline&gt;&gt; = client.jsonStream(HttpRequest.GET&lt;Any&gt;("/streaming/headlines"), Headline::class.java) // <b class="conum">(1)</b>
+    .thenCompose { headlines -&gt;
+        headlines.next() // <b class="conum">(2)</b>
+            .whenComplete { _, _ -&gt; headlines.close() } // <b class="conum">(3)</b>
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">AsyncStreamingHttpClient</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">CompletionStage&lt;Optional&lt;Headline&gt;&gt; first = client.jsonStream(HttpRequest.GET("/streaming/headlines"), Headline) // <b class="conum">(1)</b>
+    .thenCompose { headlines -&gt;
+        headlines.next() // <b class="conum">(2)</b>
+            .whenComplete { headline, error -&gt; headlines.close() } // <b class="conum">(3)</b>
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>jsonStream</code> completes with the elements once the response arrived, and <code>exchangeJsonStream</code> with the response whose body is the elements. <code>dataStream</code> and <code>exchangeStream</code> read the pieces of the body as they arrive, as heap buffers</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>next()</code> reads one element, <code>forEach</code> reads them all, one after the other</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Close the elements of a stream that is not read to the end, to release the connection</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>When the response has an error status, the stage fails with an <a href="../api/io/micronaut/http/client/exceptions/HttpClientResponseException.html">HttpClientResponseException</a> whose response carries the error body. The stages complete on an I/O thread: do not block in them.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_streaming_clients_and_read_timeout">Streaming Clients and Read Timeout</h3>
 <div class="paragraph">
 <p>When streaming responses from servers, the underlying HTTP client will not apply the default <code>readTimeout</code> setting (which defaults to 10 seconds) of the <a href="../api/io/micronaut/http/client/HttpClientConfiguration.html">HttpClientConfiguration</a> since the delay between reads for streaming responses may differ from normal reads.</p>
@@ -57441,6 +57652,124 @@ Flux&lt;String&gt; messages = Flux.from(sseClient.exchangeEventStream(request, A
 </div>
 <div class="paragraph">
 <p>When the response has an error status, the publisher fails with an <a href="../api/io/micronaut/http/client/exceptions/HttpClientResponseException.html">HttpClientResponseException</a> whose response carries the error body, decoded into the given error type, instead of completing empty.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_reading_events_asynchronously">Reading Events Asynchronously</h4>
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/http/client/AsyncStreamingHttpClient.html">AsyncStreamingHttpClient</a> reads the same responses with a <code>CompletionStage</code> instead of a <code>Publisher</code>, and without Reactor on the Netty client. Obtain it from a <a href="../api/io/micronaut/http/client/StreamingHttpClient.html">StreamingHttpClient</a> with <code>toAsyncStreaming()</code>, or inject it with <a href="../api/io/micronaut/http/client/annotation/Client.html">@Client</a>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Async Event Stream</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">AsyncStreamingHttpClient client = httpClient.toAsyncStreaming(); // <b class="conum">(1)</b>
+MutableHttpRequest&lt;String&gt; request = HttpRequest.POST("/mcp", "{\"method\":\"ping\"}")
+    .contentType(MediaType.APPLICATION_JSON_TYPE)
+    .accept(MediaType.APPLICATION_JSON_TYPE, MediaType.TEXT_EVENT_STREAM_TYPE);
+List&lt;String&gt; messages = new CopyOnWriteArrayList&lt;&gt;();
+
+CompletionStage&lt;String&gt; sessionId = client.exchangeEventStream(request, String.class) // <b class="conum">(2)</b>
+    .thenCompose(response -&gt; response.body() // <b class="conum">(3)</b>
+        .forEach(event -&gt; { // <b class="conum">(4)</b>
+            messages.add(event.getData());
+            return CompletableFuture.completedStage(null);
+        })
+        .thenApply(done -&gt; response.getHeaders().get("Mcp-Session-Id"))); // <b class="conum">(5)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Async Event Stream</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">async def readEvents(self) -&gt; str:
+    client = self.httpClient.toAsyncStreaming()  # <b class="conum">(1)</b>
+    request = HttpRequest.POST("/mcp", '{"method":"ping"}') \
+        .contentType(MediaType.APPLICATION_JSON_TYPE) \
+        .accept(MediaType.APPLICATION_JSON_TYPE, MediaType.TEXT_EVENT_STREAM_TYPE)
+    response = await client.exchangeEventStream(request, String)  # <b class="conum">(2)</b>
+    elements = response.body()  # <b class="conum">(3)</b>
+
+    async def events():
+        try:
+            while True:
+                event = await elements.next()
+                if event.isEmpty():
+                    break
+                yield event.get()
+        finally:
+            elements.close()
+
+    messages = []
+    async for event in events():  # <b class="conum">(4)</b>
+        messages.append(event.getData())
+    session_id = response.getHeaders().get("Mcp-Session-Id")  # <b class="conum">(5)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Async Event Stream</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val client: AsyncStreamingHttpClient = httpClient.toAsyncStreaming() // <b class="conum">(1)</b>
+val request = HttpRequest.POST("/mcp", """{"method":"ping"}""")
+    .contentType(MediaType.APPLICATION_JSON_TYPE)
+    .accept(MediaType.APPLICATION_JSON_TYPE, MediaType.TEXT_EVENT_STREAM_TYPE)
+val messages = CopyOnWriteArrayList&lt;String&gt;()
+
+val sessionId: CompletionStage&lt;String?&gt; = client.exchangeEventStream(request, String::class.java) // <b class="conum">(2)</b>
+    .thenCompose { response -&gt;
+        response.body()!! // <b class="conum">(3)</b>
+            .forEach { event -&gt; // <b class="conum">(4)</b>
+                messages.add(event.data)
+                CompletableFuture.completedStage(null)
+            }
+            .thenApply { response.headers.get("Mcp-Session-Id") } // <b class="conum">(5)</b>
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Async Event Stream</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">AsyncStreamingHttpClient client = httpClient.toAsyncStreaming() // <b class="conum">(1)</b>
+MutableHttpRequest&lt;String&gt; request = HttpRequest.POST("/mcp", '{"method":"ping"}')
+    .contentType(MediaType.APPLICATION_JSON_TYPE)
+    .accept(MediaType.APPLICATION_JSON_TYPE, MediaType.TEXT_EVENT_STREAM_TYPE)
+List&lt;String&gt; messages = new CopyOnWriteArrayList&lt;&gt;()
+
+CompletionStage&lt;String&gt; sessionId = client.exchangeEventStream(request, String) // <b class="conum">(2)</b>
+    .thenCompose { response -&gt;
+        response.body() // <b class="conum">(3)</b>
+            .forEach { event -&gt; // <b class="conum">(4)</b>
+                messages.add(event.data)
+                CompletableFuture.completedStage(null)
+            }
+            .thenApply { done -&gt; response.headers.get("Mcp-Session-Id") } // <b class="conum">(5)</b>
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The async view shares the client: closing it closes the client</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>exchangeEventStream</code> completes with the response once its status and headers arrived, and fails with an <a href="../api/io/micronaut/http/client/exceptions/HttpClientResponseException.html">HttpClientResponseException</a> for an error status. The <code>Accept</code> header and the decoding of the body follow the reactive <code>exchangeEventStream</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The body of the response is a <a href="../api/io/micronaut/http/body/BodyElements.html">BodyElements</a> cursor over the events: the next event is read from the connection when it is asked for. A single body is one event, and a response without a body has no event</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><code>forEach</code> reads the next event when the stage returned for the previous one completed. <code>next()</code> reads one event at a time. The Python example adapts these reads to an async generator and consumes it with <code>async for</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The status and the headers of the response are available while the events are read</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The connection stays reserved until the events were read to the end or the <a href="../api/io/micronaut/http/body/BodyElements.html">BodyElements</a> was closed, so close the events of a stream that you do not read to the end. The stages complete on an I/O thread: do not block in them. <code>eventStream</code> sets <code>Accept: text/event-stream</code> and completes with the events only.</p>
 </div>
 </div>
 </div>

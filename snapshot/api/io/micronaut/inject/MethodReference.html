@@ -60,6 +60,7 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#getArguments()" tabindex="0">getArguments()</a></li>
 <li><a href="#getTargetMethod()" tabindex="0">getTargetMethod()</a></li>
+<li><a href="#hasTargetMethod()" tabindex="0">hasTargetMethod()</a></li>
 <li><a href="#getReturnType()" tabindex="0">getReturnType()</a></li>
 <li><a href="#getDeclaringType()" tabindex="0">getDeclaringType()</a></li>
 <li><a href="#getMethodName()" tabindex="0">getMethodName()</a></li>
@@ -154,7 +155,14 @@ extends <a href="../core/annotation/AnnotationMetadataDelegate.html" title="inte
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link">Method</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTargetMethod()" class="member-name-link">getTargetMethod</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">The <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link"><code>Method</code></a> this reference stands for.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#hasTargetMethod()" class="member-name-link">hasTargetMethod</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Whether this reference stands for a Java <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link"><code>Method</code></a> that <a href="#getTargetMethod()"><code>getTargetMethod()</code></a> returns.</div>
+</div>
 </div>
 </div>
 </div>
@@ -198,9 +206,39 @@ extends <a href="../core/annotation/AnnotationMetadataDelegate.html" title="inte
 <h3>getTargetMethod</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link">Method</a></span>&nbsp;<span class="element-name">getTargetMethod</span>()</div>
+<div class="block">The <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link"><code>Method</code></a> this reference stands for.
+
+<p>A reference for which <a href="#hasTargetMethod()"><code>hasTargetMethod()</code></a> is <code>false</code> stands for no Java method: this returns
+<code>null</code> for it despite the declaration, or throws <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link"><code>UnsupportedOperationException</code></a>. Code that may be
+handed such a reference, an interceptor of a lifecycle event among them, asks <a href="#hasTargetMethod()"><code>hasTargetMethod()</code></a>
+first.</p></div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The target method</dd>
+<dd>The target method, or <code>null</code> when <a href="#hasTargetMethod()"><code>hasTargetMethod()</code></a> is <code>false</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="hasTargetMethod()">
+<h3>hasTargetMethod</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasTargetMethod</span>()</div>
+<div class="block">Whether this reference stands for a Java <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link"><code>Method</code></a> that <a href="#getTargetMethod()"><code>getTargetMethod()</code></a> returns.
+
+<p>A reference that stands for no Java method answers <code>false</code>, and <a href="#getTargetMethod()"><code>getTargetMethod()</code></a> then
+returns <code>null</code> or throws <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link"><code>UnsupportedOperationException</code></a>. The method invoked for a
+<code>POST_CONSTRUCT</code> or <code>PRE_DESTROY</code> interception of a bean that binds the event without declaring a
+callback of that kind is one, as is a route to a handler function. A reference that wraps another answers
+what the wrapped one answers.</p>
+
+<p>It answers without looking the method up, so a method that should exist but cannot be found reflectively
+answers <code>true</code> and fails as <a href="#getTargetMethod()"><code>getTargetMethod()</code></a> does.</p></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether there is a target method</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>

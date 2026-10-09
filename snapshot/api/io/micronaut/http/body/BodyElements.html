@@ -57,13 +57,18 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#reading-a-request-body-heading" tabindex="0">Reading a request body</a></li>
 <li><a href="#writing-a-response-body-heading" tabindex="0">Writing a response body</a></li>
+<li><a href="#reading-a-response-body-heading" tabindex="0">Reading a response body</a></li>
 <li><a href="#the-rules-heading" tabindex="0">The rules</a></li>
 </ol>
 </li>
+<li><a href="#nested-class-summary" tabindex="0">Nested Class Summary</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#next()" tabindex="0">next()</a></li>
+<li><a href="#poll()" tabindex="0">poll()</a></li>
+<li><a href="#state()" tabindex="0">state()</a></li>
+<li><a href="#failure()" tabindex="0">failure()</a></li>
 <li><a href="#forEach(java.util.function.Function)" tabindex="0">forEach(Function)</a></li>
 <li><a href="#closeAsync()" tabindex="0">closeAsync()</a></li>
 <li><a href="#close()" tabindex="0">close()</a></li>
@@ -89,7 +94,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="stream/ReleasingBodyElements.html" title="class in io.micronaut.http.body.stream">ReleasingBodyElements</a></code></dd>
+<dd><code><a href="../client/ByteBodyElements.html" title="class in io.micronaut.http.client">ByteBodyElements</a>, <a href="../client/MappedBodyElements.html" title="class in io.micronaut.http.client">MappedBodyElements</a>, <a href="stream/PulledBodyElements.html" title="class in io.micronaut.http.body.stream">PulledBodyElements</a>, <a href="stream/ReleasingBodyElements.html" title="class in io.micronaut.http.body.stream">ReleasingBodyElements</a>, <a href="../client/SubscriberBodyElements.html" title="class in io.micronaut.http.client">SubscriberBodyElements</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>Functional Interface:</dt>
@@ -144,22 +149,40 @@ the client disconnects, when the body is not written (a <code>HEAD</code> reques
 replaces the response or its body. A filter that replaces them with other elements hands them
 over: the new elements are closed instead, and close these if they wrap them.</p>
 
+<h2 id="reading-a-response-body-heading">Reading a response body</h2>
+<p>The streaming exchanges of <code>AsyncStreamingHttpClient</code> read the body of a response as
+elements: its pieces, its server-sent events, or the elements of a JSON stream or array. The
+connection stays reserved until the elements were read to the end or closed.</p>
+
 <h2 id="the-rules-heading">The rules</h2>
-<p>One operation at a time: an operation started while another one is in progress throws an
-<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a>, at once, instead of returning a stage. The end of the body and
-closing are different: at the end of the body, <a href="#next()"><code>next()</code></a> completes with an empty
-optional and <a href="#forEach(java.util.function.Function)"><code>forEach(Function)</code></a> completes normally, while closing during an operation completes
-that operation with a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CancellationException.html" title="class or interface in java.util.concurrent" class="external-link"><code>CancellationException</code></a>, and an operation
-started after closing throws an <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a>. An element that the elements of
-<a href="#of(java.util.function.Supplier)"><code>of(Supplier)</code></a> produce after they were closed is not delivered: it is closed if it is
-<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link"><code>AutoCloseable</code></a>, e.g. a <a href="CloseableByteBody.html" title="interface in io.micronaut.http.body"><code>CloseableByteBody</code></a>. The elements of a request body
-are closed when the method that read them completed, see <a href="AsyncRequestBody.html" title="interface in io.micronaut.http.body"><code>AsyncRequestBody</code></a>, unless they
-are the body of its response; closing them discards the rest of the body.</p>
+<p>One operation at a time: an operation (<a href="#next()"><code>next()</code></a>, <a href="#poll()"><code>poll()</code></a> or
+<a href="#forEach(java.util.function.Function)"><code>forEach(Function)</code></a>) started while another one is in progress throws an
+<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a>, at once, instead of returning a stage. This includes an
+operation started by the consumer of <a href="#forEach(java.util.function.Function)"><code>forEach(Function)</code></a>, or by a continuation of the stage of
+<a href="#next()"><code>next()</code></a> that runs before that stage completed. A continuation of a completed stage may
+start the next operation. <a href="#state()"><code>state()</code></a> and <a href="#failure()"><code>failure()</code></a> are not operations: they can
+be called at any time.</p>
+
+<p>The end of the body and closing are different: at the end of the body, <a href="#next()"><code>next()</code></a>
+completes with an empty optional and <a href="#forEach(java.util.function.Function)"><code>forEach(Function)</code></a> completes normally, and they do so again
+when they are called again; after a failure to read the body, they fail again with the same
+failure. Closing during an operation completes that operation with a
+<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CancellationException.html" title="class or interface in java.util.concurrent" class="external-link"><code>CancellationException</code></a>, and an operation started after closing
+throws an <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link"><code>IllegalStateException</code></a>. When <a href="#forEach(java.util.function.Function)"><code>forEach(Function)</code></a> fails, because reading the body
+or a consumer failed, the elements are closed. The elements of a request body are closed when
+the method that read them completed, see <a href="AsyncRequestBody.html" title="interface in io.micronaut.http.body"><code>AsyncRequestBody</code></a>, unless they are the body of
+its response; closing them discards the rest of the body.</p>
+
+<p>An element is handed over to the caller that reads it: an element that holds resources,
+e.g. a reference counted buffer or a <a href="CloseableByteBody.html" title="interface in io.micronaut.http.body"><code>CloseableByteBody</code></a>, is released by that caller.
+An element that the elements of the framework or of <a href="#of(java.util.function.Supplier)"><code>of(Supplier)</code></a> produce after they were closed
+is not delivered: it is released (<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link"><code>AutoCloseable</code></a> or reference counted) by the elements.</p>
 
 <p>The instances of the framework, and those of <a href="#of(java.util.function.Supplier)"><code>of(Supplier)</code></a>, enforce the rules; a lambda does
 not, and is only ever called by one caller at a time when the server writes it. The stages of
-the instances of the framework complete on a thread chosen by the server, usually an I/O thread:
-a consumer must not block.</p></div>
+the instances of the framework complete on a thread chosen by the server or the client, usually
+an I/O thread, without the <code>PropagatedContext</code> of the caller: a consumer must not block,
+and restores the context it needs itself.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -170,6 +193,23 @@ a consumer must not block.</p></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li>
+<section class="nested-class-summary" id="nested-class-summary">
+<h2>Nested Class Summary</h2>
+<div class="caption"><span>Nested Classes</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Interface</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static enum&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="BodyElements.State.html" class="type-name-link" title="enum class in io.micronaut.http.body">BodyElements.State</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">The state of <a href="BodyElements.html" title="interface in io.micronaut.http.body"><code>BodyElements</code></a>.</div>
+</div>
+</div>
+</section>
+</li>
 <!-- ========== METHOD SUMMARY =========== -->
 <li>
 <section class="method-summary" id="method-summary">
@@ -191,26 +231,43 @@ a consumer must not block.</p></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Close the elements, e.g.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#forEach(java.util.function.Function)" class="member-name-link">forEach</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;? super <a href="#type-param-T" title="type parameter in BodyElements">T</a>, ? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;?&gt;&gt;&nbsp;consumer)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#failure()" class="member-name-link">failure</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">The failure of the elements, once they are <a href="BodyElements.State.html#FAILED"><code>failed</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#forEach(java.util.function.Function)" class="member-name-link">forEach</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;? super <a href="#type-param-T" title="type parameter in BodyElements">T</a>, ? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;?&gt;&gt;&nbsp;consumer)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Consume the remaining elements in order.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="#type-param-T" title="type parameter in BodyElements">T</a>&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#next()" class="member-name-link">next</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="#type-param-T" title="type parameter in BodyElements">T</a>&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#next()" class="member-name-link">next</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Read the next element.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static &lt;T&gt;&nbsp;<a href="BodyElements.html" title="interface in io.micronaut.http.body">BodyElements</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#of(java.util.function.Supplier)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;&gt;&gt;&nbsp;next)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static &lt;T&gt;&nbsp;<a href="BodyElements.html" title="interface in io.micronaut.http.body">BodyElements</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#of(java.util.function.Supplier)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;&gt;&gt;&nbsp;next)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
 <div class="block">The elements a function produces, e.g.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static &lt;T&gt;&nbsp;<a href="BodyElements.html" title="interface in io.micronaut.http.body">BodyElements</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#of(java.util.function.Supplier,java.lang.Runnable)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;&gt;&gt;&nbsp;next,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static &lt;T&gt;&nbsp;<a href="BodyElements.html" title="interface in io.micronaut.http.body">BodyElements</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#of(java.util.function.Supplier,java.lang.Runnable)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;&gt;&gt;&nbsp;next,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;close)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1">
 <div class="block">The elements a function produces, with the resources a callback releases once, e.g.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default @Nullable <a href="#type-param-T" title="type parameter in BodyElements">T</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#poll()" class="member-name-link">poll</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Take the next element if it is available at once, without waiting: an element that the
+elements already received, e.g.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="BodyElements.State.html" title="enum class in io.micronaut.http.body">BodyElements.State</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#state()" class="member-name-link">state</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">The state of the elements: whether <a href="#poll()"><code>poll()</code></a> returns an element, <a href="#next()"><code>next()</code></a> has
+to wait for one, or the elements ended.</div>
 </div>
 </div>
 </div>
@@ -231,7 +288,8 @@ a consumer must not block.</p></div>
 <h3>next</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="#type-param-T" title="type parameter in BodyElements">T</a>&gt;&gt;</span>&nbsp;<span class="element-name">next</span>()</div>
-<div class="block">Read the next element.</div>
+<div class="block">Read the next element. When an element is available at once, the instances of the framework
+return a completed stage.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Completes with the element, with an empty optional at the end of the body, or
@@ -243,14 +301,68 @@ exceptionally when reading or decoding the body fails</dd>
 </section>
 </li>
 <li>
+<section class="detail" id="poll()">
+<h3>poll</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">@Nullable <a href="#type-param-T" title="type parameter in BodyElements">T</a></span>&nbsp;<span class="element-name">poll</span>()</div>
+<div class="block">Take the next element if it is available at once, without waiting: an element that the
+elements already received, e.g. the next one of a piece of the body that completed several
+elements. Never starts reading the body and never blocks; <a href="#next()"><code>next()</code></a> reads it.
+
+<p>The default implementation returns <code>null</code>: only <a href="#next()"><code>next()</code></a> reads the
+elements.</p></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The element, or <code>null</code> if no element is available at once: none was received
+yet, at the end of the body, after a failure, see <a href="#state()"><code>state()</code></a></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if another operation is in progress, or the elements were closed</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="state()">
+<h3>state</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="BodyElements.State.html" title="enum class in io.micronaut.http.body">BodyElements.State</a></span>&nbsp;<span class="element-name">state</span>()</div>
+<div class="block">The state of the elements: whether <a href="#poll()"><code>poll()</code></a> returns an element, <a href="#next()"><code>next()</code></a> has
+to wait for one, or the elements ended. Not an operation: it can be called at any time.
+
+<p>The default implementation returns <a href="BodyElements.State.html#PENDING"><code>BodyElements.State.PENDING</code></a>: whether an element is
+available is only known by reading it.</p></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The state</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="failure()">
+<h3>failure</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a></span>&nbsp;<span class="element-name">failure</span>()</div>
+<div class="block">The failure of the elements, once they are <a href="BodyElements.State.html#FAILED"><code>failed</code></a>.
+
+<p>The default implementation returns <code>null</code>.</p></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The failure to read the body, a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CancellationException.html" title="class or interface in java.util.concurrent" class="external-link"><code>CancellationException</code></a>
+after closing, or <code>null</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="forEach(java.util.function.Function)">
 <h3>forEach</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">forEach</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;? super <a href="#type-param-T" title="type parameter in BodyElements">T</a>, ? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;?&gt;&gt;&nbsp;consumer)</span></div>
 <div class="block">Consume the remaining elements in order. The next element is read when the stage returned
-for the previous one completes. Elements that are available at once are consumed in a loop,
-so many of them do not deepen the stack. A failure of a consumer does not close the
-elements.</div>
+for the previous one completes. Elements that are available at once (<a href="#poll()"><code>poll()</code></a>) are
+consumed in a loop, so many of them do not deepen the stack. When reading the body or a
+consumer fails, the elements are closed.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>consumer</code> - Consumes an element, completing when it is done with it</dd>

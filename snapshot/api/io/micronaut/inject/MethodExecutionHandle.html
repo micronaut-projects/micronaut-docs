@@ -58,6 +58,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
+<li><a href="#hasTargetMethod()" tabindex="0">hasTargetMethod()</a></li>
 <li><a href="#getExecutableMethod()" tabindex="0">getExecutableMethod()</a></li>
 </ol>
 </li>
@@ -118,7 +119,7 @@ extends <a href="ExecutionHandle.html" title="interface in io.micronaut.inject">
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -128,6 +129,11 @@ extends <a href="ExecutionHandle.html" title="interface in io.micronaut.inject">
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getExecutableMethod()" class="member-name-link">getExecutableMethod</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">The underlying <a href="ExecutableMethod.html" title="interface in io.micronaut.inject"><code>ExecutableMethod</code></a> reference.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#hasTargetMethod()" class="member-name-link">hasTargetMethod</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Whether this reference stands for a Java <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link"><code>Method</code></a> that <a href="MethodReference.html#getTargetMethod()"><code>MethodReference.getTargetMethod()</code></a> returns.</div>
 </div>
 </div>
 </div>
@@ -161,6 +167,31 @@ extends <a href="ExecutionHandle.html" title="interface in io.micronaut.inject">
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="hasTargetMethod()">
+<h3>hasTargetMethod</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasTargetMethod</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="MethodReference.html#hasTargetMethod()">MethodReference</a></code></span></div>
+<div class="block">Whether this reference stands for a Java <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link"><code>Method</code></a> that <a href="MethodReference.html#getTargetMethod()"><code>MethodReference.getTargetMethod()</code></a> returns.
+
+<p>A reference that stands for no Java method answers <code>false</code>, and <a href="MethodReference.html#getTargetMethod()"><code>MethodReference.getTargetMethod()</code></a> then
+returns <code>null</code> or throws <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link"><code>UnsupportedOperationException</code></a>. The method invoked for a
+<code>POST_CONSTRUCT</code> or <code>PRE_DESTROY</code> interception of a bean that binds the event without declaring a
+callback of that kind is one, as is a route to a handler function. A reference that wraps another answers
+what the wrapped one answers.</p>
+
+<p>It answers without looking the method up, so a method that should exist but cannot be found reflectively
+answers <code>true</code> and fails as <a href="MethodReference.html#getTargetMethod()"><code>MethodReference.getTargetMethod()</code></a> does.</p></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="MethodReference.html#hasTargetMethod()">hasTargetMethod</a></code>&nbsp;in interface&nbsp;<code><a href="MethodReference.html" title="interface in io.micronaut.inject">MethodReference</a>&lt;<a href="#type-param-T" title="type parameter in MethodExecutionHandle">T</a>,<wbr><a href="#type-param-R" title="type parameter in MethodExecutionHandle">R</a>&gt;</code></dd>
+<dt>Returns:</dt>
+<dd>Whether there is a target method</dd>
+</dl>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="getExecutableMethod()">
 <h3>getExecutableMethod</h3>
