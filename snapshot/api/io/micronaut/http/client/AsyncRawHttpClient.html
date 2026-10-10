@@ -99,7 +99,9 @@ The stage returned by <code>exchange</code> is a <a href="https://docs.oracle.co
 <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletableFuture.html#cancel(boolean)" title="class or interface in java.util.concurrent" class="external-link"><code>Cancelling</code></a> it before the response arrives cancels
 the exchange, like cancelling the subscription to the publisher of a <a href="RawHttpClient.html" title="interface in io.micronaut.http.client"><code>RawHttpClient</code></a>
 exchange: the request is aborted and its body is released, and a response that arrives
-anyway is closed. Cancelling a stage that is <i>derived</i> from it (e.g. with
+anyway is closed. Completing the original future exceptionally, including with
+<code>orTimeout</code>, also aborts outstanding work. Cancellation is a best-effort hint.
+Cancelling or timing out a stage that is <i>derived</i> from it (e.g. with
 <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html#thenApply(java.util.function.Function)" title="class or interface in java.util.concurrent" class="external-link"><code>CompletionStage.thenApply(Function)</code></a>) only fails the derived stage, it does not cancel the
 exchange. Once the stage has completed with the response, cancelling it has no effect: close
 the <a href="../ByteBodyHttpResponse.html" title="interface in io.micronaut.http"><code>ByteBodyHttpResponse</code></a> to release its body.

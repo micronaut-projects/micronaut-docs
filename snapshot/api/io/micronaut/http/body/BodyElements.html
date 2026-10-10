@@ -74,6 +74,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#close()" tabindex="0">close()</a></li>
 <li><a href="#of(java.util.function.Supplier)" tabindex="0">of(Supplier)</a></li>
 <li><a href="#of(java.util.function.Supplier,java.lang.Runnable)" tabindex="0">of(Supplier, Runnable)</a></li>
+<li><a href="#ofAsync(java.util.function.Supplier,java.util.function.Supplier)" tabindex="0">ofAsync(Supplier, Supplier)</a></li>
 </ol>
 </li>
 </ol>
@@ -257,15 +258,21 @@ and restores the context it needs itself.</p></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1">
 <div class="block">The elements a function produces, with the resources a callback releases once, e.g.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default @Nullable <a href="#type-param-T" title="type parameter in BodyElements">T</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#poll()" class="member-name-link">poll</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static &lt;T&gt;&nbsp;<a href="BodyElements.html" title="interface in io.micronaut.http.body">BodyElements</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#ofAsync(java.util.function.Supplier,java.util.function.Supplier)" class="member-name-link">ofAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;&gt;&gt;&nbsp;next,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;&gt;&nbsp;close)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
+<div class="block">The elements a function produces, with asynchronous resource cleanup, e.g.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default @Nullable <a href="#type-param-T" title="type parameter in BodyElements">T</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#poll()" class="member-name-link">poll</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Take the next element if it is available at once, without waiting: an element that the
 elements already received, e.g.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="BodyElements.State.html" title="enum class in io.micronaut.http.body">BodyElements.State</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#state()" class="member-name-link">state</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="BodyElements.State.html" title="enum class in io.micronaut.http.body">BodyElements.State</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#state()" class="member-name-link">state</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">The state of the elements: whether <a href="#poll()"><code>poll()</code></a> returns an element, <a href="#next()"><code>next()</code></a> has
 to wait for one, or the elements ended.</div>
 </div>
@@ -439,6 +446,31 @@ documentation.</div>
 <dd><code>close</code> - Releases the resources, see <a href="#close()"><code>close()</code></a></dd>
 <dt>Returns:</dt>
 <dd>The elements</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="ofAsync(java.util.function.Supplier,java.util.function.Supplier)">
+<h3>ofAsync</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="BodyElements.html" title="interface in io.micronaut.http.body">BodyElements</a>&lt;T&gt;</span>&nbsp;<span class="element-name">ofAsync</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;&gt;&gt;&nbsp;next,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;&gt;&nbsp;close)</span></div>
+<div class="block">The elements a function produces, with asynchronous resource cleanup, e.g. a database
+cursor whose close operation returns a stage. Cleanup starts once when the elements are
+closed. <a href="#closeAsync()"><code>closeAsync()</code></a> waits for its completion and reports its failure;
+<a href="#close()"><code>close()</code></a> starts it without waiting. Cancelling a future obtained from the cleanup
+stage does not cancel cleanup. Finishing a read does not itself close these elements.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="ofAsync(java.util.function.Supplier,java.util.function.Supplier)-type-param-T"><code>T</code> - The type of an element</span></dd>
+<dt>Parameters:</dt>
+<dd><code>next</code> - Produces the next element, see <a href="#next()"><code>next()</code></a></dd>
+<dd><code>close</code> - Starts resource cleanup and returns its completion stage</dd>
+<dt>Returns:</dt>
+<dd>The elements</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>

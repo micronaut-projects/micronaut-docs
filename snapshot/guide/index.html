@@ -39637,6 +39637,12 @@ The call to <code>FilterContinuation.proceed</code> is blocking by default, so i
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>A continuation can also return <code>CompletionStage&lt;HttpResponse&lt;?&gt;&gt;</code> or <code>CompletableFuture&lt;HttpResponse&lt;?&gt;&gt;</code>. Its <code>proceed()</code> starts downstream work immediately and returns without blocking. The filter must return the response stage and may call <code>proceed()</code> only once. Stage callbacks run with the propagated downstream context and must not block an event loop.</p>
+</div>
+<div class="paragraph">
+<p>Cancelling the continuation future, a future derived from it, or the filter chain sends a cancellation hint downstream. External exceptional completion, including <code>orTimeout</code>, of the original or derived continuation future also sends this hint. Propagation through derived futures is specific to filter continuations: ordinary dependent client stages do not abort their source operation. This hint does not release a response body already handed to a caller; its owner must close it.</p>
+</div>
 
 <h2 id="order"><a class="anchor" href="#order"></a>6.29.2.5 Filter Order</h2>
 
@@ -42602,6 +42608,9 @@ routes.GET("/coroutine/numbers") { _, _ -&gt;
 <td><code>Flow.asBodyElements()</code> streams a <code>Flow</code> as a <a href="../api/io/micronaut/http/body/BodyElements.html">BodyElements</a> body: the flow is collected one element at a time as the client keeps up, and cancelled when the response ends or the client disconnects.</td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>For a cursor whose cleanup is asynchronous, use <code>BodyElements.ofAsync(cursor::nextAsync, cursor::closeAsync)</code>. The cleanup supplier starts once. <code>close()</code> initiates cleanup without waiting; <code>closeAsync()</code> completes when cleanup finishes and reports cleanup failures. Cancelling a future obtained from the cleanup stage cancels only that wait, so cleanup continues and another caller can still await it. Reading the final empty element does not itself close a supplier-backed cursor: its owner must close it. When returned as a response body, the server initiates cleanup when the response ends or is abandoned.</p>
 </div>
 
 <h2 id="functionalRoutesGroups"><a class="anchor" href="#functionalRoutesGroups"></a>6.31.6 Route Groups and Path Prefixes</h2>
@@ -52504,6 +52513,15 @@ See the guide for <a href="https://guides.micronaut.io/latest/micronaut-http-cli
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>The <a href="../api/io/micronaut/http/client/AsyncHttpClient.html">AsyncHttpClient</a> exposes <code>CompletionStage</code> results for full responses and their converted bodies. Micronaut&#8217;s clients treat the future returned by <code>exchange</code> or <code>retrieve</code> as owning the request. Before that future completes, cancelling it or completing it exceptionally, including with <code>orTimeout</code>, aborts outstanding work. Cancellation is a best-effort hint: it cannot undo an action the remote server already performed.</p>
+</div>
+<div class="paragraph">
+<p>A dependent stage created with <code>thenApply</code>, <code>thenCompose</code>, or another standard stage method does not own the request. Cancelling or timing out only that stage leaves the original request running. Keep the original future and apply a deadline to it when the deadline should abort the request. Do not block on these futures on a client event loop.</p>
+</div>
+<div class="paragraph">
+<p>This ownership rule applies to client operations, not shared discovery or load-balancer SPI stages. A caller must not cancel or externally complete a shared SPI stage, since other callers may depend on it. Apply a caller-specific timeout to a dependent stage instead.</p>
+</div>
 
 <h2 id="clientBasics"><a class="anchor" href="#clientBasics"></a>7.3.1 Sending your first HTTP request</h2>
 
@@ -55566,6 +55584,12 @@ class RawRetry {
 <td>Send the body to the fallback server, which now owns it</td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>The future returned by <code>AsyncRawHttpClient.exchange</code> owns the pending exchange. Cancelling it or completing it exceptionally (including <code>orTimeout</code>) aborts outstanding work and releases the request body. A response arriving after cancellation or timeout is closed. Cancelling or timing out a dependent stage leaves the original exchange running.</p>
+</div>
+<div class="paragraph">
+<p>Once the response has arrived, the caller owns its body. Close the <a href="../api/io/micronaut/http/ByteBodyHttpResponse.html">ByteBodyHttpResponse</a> when finished, including when abandoning it after a later processing timeout. Cancelling an already completed exchange future does not release an active response body.</p>
 </div>
 
 <h2 id="clientAnnotation"><a class="anchor" href="#clientAnnotation"></a>7.6 Declarative HTTP Clients with @Client</h2>

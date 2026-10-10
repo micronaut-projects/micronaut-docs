@@ -95,7 +95,14 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">AsyncHttpClient</span><span class="extends-implements">
 extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a>, <a href="../../context/LifeCycle.html" title="interface in io.micronaut.context">LifeCycle</a>&lt;<a href="AsyncHttpClient.html" title="interface in io.micronaut.http.client">AsyncHttpClient</a>&gt;</span></div>
 <div class="block">An HTTP client API that exposes asynchronous operations backed by the Java <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Future.html" title="class or interface in java.util.concurrent" class="external-link"><code>Future</code></a>
-contract instead of Reactive Streams.</div>
+contract instead of Reactive Streams.
+<p>The futures returned by Micronaut clients own their request operation. Cancelling the
+original future, or completing it exceptionally (including <code>orTimeout</code>), aborts
+outstanding work. This also applies to the future returned by <code>retrieve</code>.
+Cancelling or timing out a dependent stage created with <code>thenApply</code>, for example,
+does not abort the original request. Cancellation is a best-effort hint and cannot undo
+work already performed by the remote server. Do not block client event loop threads
+while waiting for a result.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.0</dd>
