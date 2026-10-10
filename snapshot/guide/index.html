@@ -46006,6 +46006,33 @@ For illustration purposes we use <code>blockFirst()</code> to obtain the client.
 </tr>
 </table>
 </div>
+<div class="sect3">
+<h4 id="_connecting_without_reactor">Connecting without Reactor</h4>
+<div class="paragraph">
+<p><a href="../api/io/micronaut/websocket/AsyncWebSocketClient.html">AsyncWebSocketClient</a> is the counterpart of <a href="../api/io/micronaut/websocket/WebSocketClient.html">WebSocketClient</a> whose <code>connect</code> methods return a <code>CompletionStage</code> that completes with the connected client endpoint. Inject it like a <code>WebSocketClient</code>, or obtain it from one with <code>toAsyncWebSocket()</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Inject
+@Client("http://localhost:8080")
+AsyncWebSocketClient webSocketClient;
+
+webSocketClient.connect(ChatClientWebSocket.class, "/chat/football/fred")
+    .thenAccept(chatClient -&gt; chatClient.sendAsync("Hello World!"));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each call connects once. Cancelling the future of the stage before the connection is established, or completing it otherwise, for example with <code>orTimeout</code>, aborts the connect; an endpoint that connects after that is closed. The stage may complete on an event loop thread, so its continuations must not block. They run with the propagated context of the caller of <code>connect</code>.</p>
+</div>
+<div class="paragraph">
+<p>Cancelling or timing out a dependent stage created with <code>thenApply</code>, <code>thenCompose</code>, or another standard stage method leaves the original connect running. Keep the original future and apply a deadline to it when the deadline should abort the connect. Cancellation is a best-effort hint. Once connected, close the endpoint or its <a href="../api/io/micronaut/websocket/WebSocketSession.html">WebSocketSession</a> when finished, including when abandoning the session after a later processing timeout. Cancelling the completed connect future does not close an active session.</p>
+</div>
+<div class="paragraph">
+<p>With the <code>AsyncWebSocketClient</code> of the Netty client, a <code>CompletionStage</code> returned by an <code>@OnOpen</code> or <code>@OnMessage</code> method of the endpoint is awaited like a returned <code>Publisher</code>: the stage of <code>connect</code> completes once the stage of <code>@OnOpen</code> completed, and a failed stage reaches the <code>@OnError</code> method. The messages are still handled as they are read: the next message does not wait for the stage of the previous one. The stage of an <code>@OnClose</code> or <code>@OnError</code> method does not hold the close back. The reactive <code>WebSocketClient</code> treats such a stage as a plain value, as before.</p>
+</div>
+<div class="paragraph">
+<p>The injected client, and the one returned by <code>toAsyncWebSocket()</code>, are views of the underlying HTTP client: closing them closes that client, which is shared with the other injection points of the same client. Outside of an application use <code>AsyncWebSocketClient.create(uri)</code>, and close the client once done.</p>
+</div>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -46026,6 +46053,7 @@ For illustration purposes we use <code>blockFirst()</code> to obtain the client.
 </td>
 </tr>
 </table>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_handshake_timeout_and_load_balancing">Handshake timeout and load balancing</h4>

@@ -78,6 +78,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#exceptionCaught(io.netty.channel.ChannelHandlerContext,java.lang.Throwable)" tabindex="0">exceptionCaught(ChannelHandlerContext, Throwable)</a></li>
 <li><a href="#getHandshakeCompletedFlow()" tabindex="0">getHandshakeCompletedFlow()</a></li>
 <li><a href="#getClientEndpoint()" tabindex="0">getClientEndpoint()</a></li>
+<li><a href="#awaitCompletionStages()" tabindex="0">awaitCompletionStages()</a></li>
+<li><a href="#awaitsCompletionStages()" tabindex="0">awaitsCompletionStages()</a></li>
 <li><a href="#closeUnclaimed()" tabindex="0">closeUnclaimed()</a></li>
 <li><a href="#handleCloseReason(io.netty.channel.ChannelHandlerContext,io.micronaut.websocket.CloseReason,boolean)" tabindex="0">handleCloseReason(ChannelHandlerContext, CloseReason, boolean)</a></li>
 <li><a href="#connectFailed(java.lang.Throwable)" tabindex="0">connectFailed(Throwable)</a></li>
@@ -188,6 +190,19 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitCompletionStages()" class="member-name-link">awaitCompletionStages</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Await the <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> the open and message handlers of the
+endpoint return, like a publisher: the connect completes once the stage of the open handler
+completed, and a failed stage reaches the error handler.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitsCompletionStages()" class="member-name-link">awaitsCompletionStages</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> a handler returns is awaited like a publisher: the open
+or message handler is done, and fails, with its stage.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#channelActive(io.netty.channel.ChannelHandlerContext)" class="member-name-link">channelActive</a><wbr>(io.netty.channel.ChannelHandlerContext&nbsp;ctx)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -535,6 +550,40 @@ open method has been called, or with the error that prevented that.</div>
 <dd>The client endpoint</dd>
 <dt>Since:</dt>
 <dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="awaitCompletionStages()">
+<h3>awaitCompletionStages</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">awaitCompletionStages</span>()</div>
+<div class="block">Await the <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> the open and message handlers of the
+endpoint return, like a publisher: the connect completes once the stage of the open handler
+completed, and a failed stage reaches the error handler. Used by the connections of an
+<a href="../../../../websocket/AsyncWebSocketClient.html" title="interface in io.micronaut.websocket"><code>AsyncWebSocketClient</code></a>; call it before the handler is added.</div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="awaitsCompletionStages()">
+<h3>awaitsCompletionStages</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">awaitsCompletionStages</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../../../netty/websocket/AbstractNettyWebSocketHandler.html#awaitsCompletionStages()">AbstractNettyWebSocketHandler</a></code></span></div>
+<div class="block">Whether the <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link"><code>CompletionStage</code></a> a handler returns is awaited like a publisher: the open
+or message handler is done, and fails, with its stage. Otherwise the stage is a value of the
+handler, as before 5.3.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="../../../netty/websocket/AbstractNettyWebSocketHandler.html#awaitsCompletionStages()">awaitsCompletionStages</a></code>&nbsp;in class&nbsp;<code><a href="../../../netty/websocket/AbstractNettyWebSocketHandler.html" title="class in io.micronaut.http.netty.websocket">AbstractNettyWebSocketHandler</a></code></dd>
+<dt>Returns:</dt>
+<dd>Whether the stages of the handlers are awaited. <code>false</code> by default</dd>
 </dl>
 </div>
 </section>
