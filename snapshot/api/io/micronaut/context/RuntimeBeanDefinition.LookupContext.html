@@ -65,6 +65,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#findBean(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)" tabindex="0">findBean(Argument, Qualifier)</a></li>
 <li><a href="#getBeansOfType(io.micronaut.core.type.Argument)" tabindex="0">getBeansOfType(Argument)</a></li>
 <li><a href="#getBeansOfType(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)" tabindex="0">getBeansOfType(Argument, Qualifier)</a></li>
+<li><a href="#getDependencies()" tabindex="0">getDependencies()</a></li>
 </ol>
 </li>
 </ol>
@@ -155,6 +156,11 @@ resolved from a <a href="RuntimeBeanDefinition.DisposalContext.html" title="inte
  @Nullable <a href="Qualifier.html" title="interface in io.micronaut.context">Qualifier</a>&lt;V&gt;&nbsp;qualifier)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Looks up all the beans of the given type and qualifier.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="BeanDependencyResolver.html" title="interface in io.micronaut.context">BeanDependencyResolver</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getDependencies()" class="member-name-link">getDependencies</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">A resolver of dependencies owned by the bean this context creates or disposes of.</div>
 </div>
 </div>
 </div>
@@ -290,6 +296,38 @@ resolved from a <a href="RuntimeBeanDefinition.DisposalContext.html" title="inte
 <dd><code>qualifier</code> - The qualifier, or <code>null</code> for none</dd>
 <dt>Returns:</dt>
 <dd>The beans, empty if there are none</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getDependencies()">
+<h3>getDependencies</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="BeanDependencyResolver.html" title="interface in io.micronaut.context">BeanDependencyResolver</a></span>&nbsp;<span class="element-name">getDependencies</span>()</div>
+<div class="block">A resolver of dependencies owned by the bean this context creates or disposes of.
+
+<p>Unlike the lookups of this context, the resolver exposes what it resolves as
+<a href="BeanRegistration.html" title="class in io.micronaut.context"><code>registrations</code></a>, resolves an exact <a href="../inject/BeanDefinition.html" title="interface in io.micronaut.inject"><code>BeanDefinition</code></a>,
+and destroys a dependent it created on request with <a href="BeanDependencyResolver.html#destroy(io.micronaut.context.BeanRegistration)"><code>BeanDependencyResolver.destroy(BeanRegistration)</code></a>.
+A dependent it creates and that is not destroyed earlier lives as long as a dependent resolved by a lookup
+of this context: the one of a <a href="RuntimeBeanDefinition.CreationContext.html" title="interface in io.micronaut.context"><code>RuntimeBeanDefinition.CreationContext</code></a> is destroyed with the created bean, and the one of a
+<a href="RuntimeBeanDefinition.DisposalContext.html" title="interface in io.micronaut.context"><code>RuntimeBeanDefinition.DisposalContext</code></a> when the disposer returns. A singleton or custom-scoped bean remains owned by its
+scope.</p>
+
+<p>The resolver of a <a href="RuntimeBeanDefinition.CreationContext.html" title="interface in io.micronaut.context"><code>RuntimeBeanDefinition.CreationContext</code></a> can be retained by the created bean and used after the
+creation, until the destruction of the bean begins. It does not share the resolution path of the creation,
+so it must not be used to resolve the bean being created. A bean obtained from
+<a href="BeanContext.html#createBean(java.lang.Class)"><code>BeanContext.createBean(Class)</code></a> has no owner that is destroyed, so neither are the dependents its
+resolver creates.</p></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The resolver</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link">UnsupportedOperationException</a></code> - If the bean is not created through a context that tracks the
+                                      dependents of a bean</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>

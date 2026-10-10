@@ -46018,6 +46018,15 @@ For illustration purposes we use <code>blockFirst()</code> to obtain the client.
 </tr>
 </table>
 </div>
+<div class="sect3">
+<h4 id="_handshake_timeout_and_load_balancing">Handshake timeout and load balancing</h4>
+<div class="paragraph">
+<p>By default a connect waits for the response to its upgrade request without a limit. Set <code>handshake-timeout</code> (<code>micronaut.http.client.handshake-timeout</code>, or the <code>handshake-timeout</code> of a service client) to fail a connect whose server does not answer the upgrade in time with a <a href="../api/io/micronaut/http/client/exceptions/ReadTimeoutException.html">ReadTimeoutException</a>; the connection is then closed. Cancelling the subscription to <code>connect</code> before the endpoint is emitted closes the connection.</p>
+</div>
+<div class="paragraph">
+<p>The outcome of the handshake is reported to the load balancer that selected the instance, like the outcome of an HTTP exchange: a success once the instance responded to the upgrade with a status below 500, a server error for a status of 500 or above, a connect failure when the connection could not be opened, a timeout of <code>handshake-timeout</code>, and a reset when the instance closed the connection before it responded. A cancelled connect only releases the selection.</p>
+</div>
+</div>
 
 <h2 id="http2Server"><a class="anchor" href="#http2Server"></a>6.35 HTTP/2 Support</h2>
 
