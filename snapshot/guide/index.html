@@ -56636,6 +56636,68 @@ micronaut.python.pool.warn-wait=2s</code></pre>
 <div class="paragraph">
 <p><code>enabled</code> defaults to <code>true</code>. <code>size</code> is the target number of additional GraalPy contexts; a value of <code>0</code> selects the default, which is half the number of available processors, at least <code>2</code> and at most <code>8</code>. Contexts are created lazily and each one consumes memory and requires initialization work. Compiled Python code is shared across contexts where possible. <code>warn-wait</code>, <code>2s</code> by default, is how long a request waits for an available context before a warning is logged, and is the signal to use when tuning <code>size</code>; set it to <code>0s</code> to turn the warning off.</p>
 </div>
+<div class="paragraph">
+<p>Preparing a pooled context is most of the cost of the first request an application serves: it initializes a GraalPy interpreter and imports the runtime module that every Python call goes through, which in turn imports <code>asyncio</code> and other modules that are slow to load. <code>prestart</code> moves that work off the request path: once the application has started, a background thread creates and warms up that many pooled contexts, so the first requests find one ready. It defaults to <code>1</code>, which removes the wait from the first request without filling a pool that an idle application may never need, and to <code>0</code> in the <code>test</code> environment, where many short-lived application contexts would each build a context that their tests compete with for processors. Set it to <code>0</code> to create every context on demand, or up to <code>size</code> to have the whole pool ready before load arrives. A request that arrives while a context is being pre-started waits for that context rather than building a second one, and an application that stops meanwhile closes the context once it is built.</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.python.pool.prestart=2</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  python:
+    pool:
+      prestart: 2</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {python = {pool = {prestart = 2}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  python {
+    pool {
+      prestart = 2
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    python {
+      pool {
+        prestart = 2
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "python": {
+      "pool": {
+        "prestart": 2
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_choosing_a_pool_size">Choosing a pool size</h4>
 <div class="paragraph">
@@ -56835,6 +56897,12 @@ micronaut.python.pool.ignoreDependencies[1]=PasswordResetTokens</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.pool.ignore-dependencies</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.util.List</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The singleton Python dependencies of pooled types not to warn about, by simple or qualified type name; {@code *} warns about none. Read when the Python sources are processed, not at run time: Pyronaut passes it to the compiler as the {@code micronaut.python.pool.ignoreDependencies} annotation processor option.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.pool.prestart</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The number of pooled contexts to create on a background thread once the application has started, so that the first requests find a context ready instead of waiting for one to initialize. Defaults to {@code 1}, or to {@code 0} in the {@code test} environment; {@code 0} turns it off. At most {@code size} contexts are created.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
