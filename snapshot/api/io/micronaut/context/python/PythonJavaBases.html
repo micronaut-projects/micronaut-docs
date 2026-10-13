@@ -100,9 +100,10 @@ instance of it. At run time the Java base is replaced in the Python class by a P
 (created by <a href="#baseClass(java.lang.Class)"><code>baseClass(Class)</code></a>) that records the arguments of <code>super().__init__(...)</code> and
 defines a Python method for every accessible instance method of the Java base. Those methods
 reach the base implementation through the Java instance bound to the Python object
-(<a href="#bind(org.graalvm.polyglot.Value,io.micronaut.context.python.ValueCoercible)"><code>bind(Value, ValueCoercible)</code></a>), which the generated constructors create from the recorded arguments. A Python
-object created in Python code gets its Java instance the first time an inherited method is
-called.</div>
+(<a href="#bind(org.graalvm.polyglot.Value,io.micronaut.context.python.ValueCoercible)"><code>bind(Value, ValueCoercible)</code></a>), which the generated constructors create from the recorded arguments; when the
+Java super constructor takes no argument, they create it before <code>__init__</code> runs, so the
+inherited methods <code>__init__</code> calls reach it. A Python object created in Python code gets
+its Java instance the first time an inherited method is called.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.2.0</dd>
