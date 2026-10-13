@@ -95,7 +95,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="../client/ByteBodyElements.html" title="class in io.micronaut.http.client">ByteBodyElements</a>, <a href="../client/MappedBodyElements.html" title="class in io.micronaut.http.client">MappedBodyElements</a>, <a href="stream/PulledBodyElements.html" title="class in io.micronaut.http.body.stream">PulledBodyElements</a>, <a href="stream/ReleasingBodyElements.html" title="class in io.micronaut.http.body.stream">ReleasingBodyElements</a>, <a href="../client/SubscriberBodyElements.html" title="class in io.micronaut.http.client">SubscriberBodyElements</a></code></dd>
+<dd><code><a href="stream/ByteBodyElements.html" title="class in io.micronaut.http.body.stream">ByteBodyElements</a>, <a href="../client/MappedBodyElements.html" title="class in io.micronaut.http.client">MappedBodyElements</a>, <a href="stream/PulledBodyElements.html" title="class in io.micronaut.http.body.stream">PulledBodyElements</a>, <a href="stream/ReleasingBodyElements.html" title="class in io.micronaut.http.body.stream">ReleasingBodyElements</a>, <a href="../client/SubscriberBodyElements.html" title="class in io.micronaut.http.client">SubscriberBodyElements</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>Functional Interface:</dt>
@@ -110,9 +110,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/ja
 
 <h2 id="reading-a-request-body-heading">Reading a request body</h2>
 <p><a href="AsyncRequestBody.html#elements(java.lang.Class)"><code>AsyncRequestBody.elements(Class)</code></a> reads a JSON array or a JSON stream as elements, decoded
-as they are asked for. Nothing is read ahead of the caller: the next element is received and
-decoded when <a href="#next()"><code>next()</code></a> is called, or when the stage the <a href="#forEach(java.util.function.Function)"><code>forEach(Function)</code></a> consumer
-returned for the previous element completes.</p>
+as they are asked for. Nothing is decoded ahead of the caller: the next element is decoded
+when <a href="#next()"><code>next()</code></a> or <a href="#poll()"><code>poll()</code></a> is called, or when the stage the <a href="#forEach(java.util.function.Function)"><code>forEach(Function)</code></a>
+consumer returned for the previous element completes, and at most one piece of the body is
+received before it is asked for.</p>
 
 <pre><code>request.elements(Person.class)
     .forEach(person -&gt; people.saveAsync(person))
