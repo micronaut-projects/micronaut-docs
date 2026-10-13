@@ -23036,6 +23036,263 @@ interceptors it was created with, so a non-singleton interceptor is one instance
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="interceptionTarget">Knowing the Target</h3>
+<div class="paragraph">
+<p>A non-singleton interceptor created for one bean can inject <a href="../api/io/micronaut/context/InterceptionTarget.html">InterceptionTarget</a> to learn which bean
+that target is. Its <code>definition()</code> is the definition of the intercepted bean, carrying the bean&#8217;s qualifier, so two
+targets of one class, such as two beans of one <a href="../api/io/micronaut/context/annotation/EachBean.html">@EachBean</a>, are told apart:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Two targets of one class</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@EachBean(ChannelConfiguration.class) // <b class="conum">(1)</b>
+@Labelled
+public class Channel {
+
+    private final ChannelConfiguration configuration;
+
+    public Channel(ChannelConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
+    public String send(String message) {
+        return message + " from " + configuration.getSender();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Two targets of one class</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">@EachBean(ChannelConfiguration.__qualname__)  # <b class="conum">(1)</b>
+@Labelled
+class Channel:
+    def __init__(self, configuration: ChannelConfiguration):
+        self.configuration = configuration
+
+    def send(self, message: str) -&gt; str:
+        return f"{message} from {self.configuration.sender}"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Two targets of one class</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@EachBean(ChannelConfiguration::class) // <b class="conum">(1)</b>
+@Labelled
+open class Channel(private val configuration: ChannelConfiguration) {
+
+    open fun send(message: String): String = "$message from ${configuration.sender}"
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Two targets of one class</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@EachBean(ChannelConfiguration) // <b class="conum">(1)</b>
+@Labelled
+class Channel {
+
+    private final ChannelConfiguration configuration
+
+    Channel(ChannelConfiguration configuration) {
+        this.configuration = configuration
+    }
+
+    String send(String message) {
+        "$message from ${configuration.sender}"
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>One <code>Channel</code> for each configured channel, each with the name of its configuration as qualifier</td>
+</tr>
+</table>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">An interceptor that knows its target</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.aop.InterceptorBean;
+import io.micronaut.aop.MethodInterceptor;
+import io.micronaut.aop.MethodInvocationContext;
+import io.micronaut.context.InterceptionTarget;
+import io.micronaut.context.annotation.Prototype;
+import io.micronaut.core.naming.Named;
+
+@Prototype
+@InterceptorBean(Labelled.class)
+public class LabelInterceptor implements MethodInterceptor&lt;Object, String&gt; {
+
+    private final String label;
+
+    public LabelInterceptor(InterceptionTarget target) { // <b class="conum">(1)</b>
+        this.label = target.definition().getDeclaredQualifier() instanceof Named named
+            ? named.getName() : target.definition().getBeanType().getSimpleName(); // <b class="conum">(2)</b>
+    }
+
+    @Override
+    public String intercept(MethodInvocationContext&lt;Object, String&gt; context) {
+        return "[" + label + "] " + context.proceed();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">An interceptor that knows its target</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import java
+
+from micronaut.aop import InterceptorBean, MethodInvocationContext
+from micronaut.context import InterceptionTarget
+from micronaut.context.annotation import Prototype
+
+@Prototype
+@InterceptorBean(Labelled)
+class LabelInterceptor(MethodInterceptor):
+    def __init__(self, target: InterceptionTarget):  # <b class="conum">(1)</b>
+        qualifier = target.definition().getDeclaredQualifier()
+        self.label = qualifier.getName() if isinstance(qualifier, Named) \
+            else target.definition().getBeanType().getSimpleName()  # <b class="conum">(2)</b>
+
+    def intercept(self, context: MethodInvocationContext):
+        return f"[{self.label}] {context.proceed()}"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">An interceptor that knows its target</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.aop.InterceptorBean
+import io.micronaut.aop.MethodInterceptor
+import io.micronaut.aop.MethodInvocationContext
+import io.micronaut.context.InterceptionTarget
+import io.micronaut.context.annotation.Prototype
+import io.micronaut.core.naming.Named
+
+@Prototype
+@InterceptorBean(Labelled::class)
+class LabelInterceptor(target: InterceptionTarget) : MethodInterceptor&lt;Any, String&gt; { // <b class="conum">(1)</b>
+
+    private val label: String = (target.definition().declaredQualifier as? Named)?.name
+        ?: target.definition().beanType.simpleName // <b class="conum">(2)</b>
+
+    override fun intercept(context: MethodInvocationContext&lt;Any, String&gt;): String {
+        return "[$label] ${context.proceed()}"
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">An interceptor that knows its target</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.aop.InterceptorBean
+import io.micronaut.aop.MethodInterceptor
+import io.micronaut.aop.MethodInvocationContext
+import io.micronaut.context.InterceptionTarget
+import io.micronaut.context.annotation.Prototype
+import io.micronaut.core.naming.Named
+
+@Prototype
+@InterceptorBean(Labelled)
+class LabelInterceptor implements MethodInterceptor&lt;Object, String&gt; {
+
+    private final String label
+
+    LabelInterceptor(InterceptionTarget target) { // <b class="conum">(1)</b>
+        def qualifier = target.definition().declaredQualifier
+        this.label = qualifier instanceof Named ? qualifier.name : target.definition().beanType.simpleName // <b class="conum">(2)</b>
+    }
+
+    @Override
+    String intercept(MethodInvocationContext&lt;Object, String&gt; context) {
+        "[$label] ${context.proceed()}"
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The bean this instance is created for, injected like any other dependency</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The qualifier of that bean, <code>@Named("sms")</code> for the <code>sms</code> channel</td>
+</tr>
+</table>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Each target is labelled with its own qualifier</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Channel sms = context.getBean(Channel.class, Qualifiers.byName("sms"));
+Channel email = context.getBean(Channel.class, Qualifiers.byName("email"));
+
+assertEquals("[sms] Hello from Fred", sms.send("Hello"));
+assertEquals("[email] Hello from Bob", email.send("Hello"));</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Each target is labelled with its own qualifier</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">sms = self.context.getBean(Channel, Qualifiers.byName("sms"))
+email = self.context.getBean(Channel, Qualifiers.byName("email"))
+
+assert "[sms] Hello from Fred" == str(sms.send("Hello"))
+assert "[email] Hello from Bob" == str(email.send("Hello"))</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Each target is labelled with its own qualifier</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val sms = context.getBean(Channel::class.java, Qualifiers.byName("sms"))
+val email = context.getBean(Channel::class.java, Qualifiers.byName("email"))
+
+assertEquals("[sms] Hello from Fred", sms.send("Hello"))
+assertEquals("[email] Hello from Bob", email.send("Hello"))</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Each target is labelled with its own qualifier</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">when:
+Channel sms = context.getBean(Channel, Qualifiers.byName('sms'))
+Channel email = context.getBean(Channel, Qualifiers.byName('email'))
+
+then:
+sms.send('Hello') == '[sms] Hello from Fred'
+email.send('Hello') == '[email] Hello from Bob'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The target is known only to the interceptor&#8217;s own injection points, not to the beans the interceptor depends on. It
+is not known to a singleton or custom-scoped interceptor, which is shared, or to an interceptor obtained by a plain
+lookup; an injection point declared <code>@Nullable</code> receives <code>null</code> in those cases and any other fails with a
+<code>NoSuchBeanException</code>.</p>
+</div>
+<div class="openblock lang-java lang-groovy lang-kotlin">
+<div class="content">
+<div class="paragraph">
+<p>The target is known whenever the container creates the interceptor for a bean: while the bean itself is created, to
+intercept its construction or lifecycle, and when a proxy with <code>lazyInterceptorsPerTarget</code> resolves the interceptors of
+a target on its first call. It is not known to the interceptors a proxy creates for a target the context holds no
+registration for. Without <code>lazyInterceptorsPerTarget</code> the interceptors of a proxy are injected into the proxy as
+ordinary dependencies, and do not know the target either.</p>
+</div>
+</div>
+</div>
+<div class="openblock lang-python">
+<div class="content">
+<div class="paragraph">
+<p>An advised Python bean is a runtime proxy, which creates its interceptors as the bean is created, so each one knows the
+bean without <code>lazyInterceptorsPerTarget</code>.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
