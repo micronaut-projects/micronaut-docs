@@ -78106,6 +78106,28 @@ repositories {
 </div>
 </div>
 <div class="sect2">
+<h3 id="_the_management_endpoints_call_the_completionstage_methods_of_their_spis_5_3">The management endpoints call the <code>CompletionStage</code> methods of their SPIs (5.3)</h3>
+<div class="paragraph">
+<p><code>HealthIndicator</code>, <code>HealthAggregator</code>, <code>InfoSource</code>, <code>InfoAggregator</code> and <code>LoggersManager</code> have experimental <code>CompletionStage</code> counterparts of their publisher methods (<code>getResultAsync</code>, <code>aggregateAsync</code>, <code>getSourceAsync</code>, <code>getLoggersAsync</code> and <code>getLoggerAsync</code>), which adapt the publisher methods by default. The health, info and loggers endpoints call them, and still return a single result <code>Publisher</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>DefaultHealthAggregator</code>, <code>ReactiveInfoAggregator</code>, <code>DiscoveryClientHealthIndicator</code> and <code>JdbcIndicator</code> combine the stages without a publisher. A subclass of them is called through its publisher methods, including <code>aggregateResults</code>, so that its overrides keep working.</p>
+</li>
+<li>
+<p>The results of the indicators are aggregated in the order of the indicators rather than in the order they complete. When two results have the same name, the one of the later indicator is kept.</p>
+</li>
+<li>
+<p>A mock indicator, source, aggregator or loggers manager that stubs only the publisher methods does not run the default <code>*Async</code> methods: a Spock or Mockito mock returns <code>null</code>, or a stage completed with <code>null</code>, and the endpoints then call the publisher methods instead.</p>
+</li>
+<li>
+<p>An indicator that throws from <code>getResult()</code> fails the aggregation, rather than throwing out of <code>aggregate(..)</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_refreshing_the_logback_configuration_follows_logbacks_own_lookup_5_3">Refreshing the Logback configuration follows Logback&#8217;s own lookup (5.3)</h3>
 <div class="paragraph">
 <p>When any <code>logger.*</code> property is set, the Micronaut framework resets Logback and configures it again. Previously that refresh used the first <code>Configurator</code> service regardless of its rank and of the status it returned, and otherwise the file set with <code>logback.configurationFile</code> or <code>logger.config</code>, or <code>logback.xml</code>. Now, unless a Logback XML configuration file is set in Micronaut configuration, the refresh configures Logback the same way Logback configures itself at startup:</p>
