@@ -58,6 +58,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#elements(io.micronaut.http.body.CloseableByteBody)" tabindex="0">elements(CloseableByteBody)</a></li>
+<li><a href="#lines(io.micronaut.http.body.CloseableByteBody,long)" tabindex="0">lines(CloseableByteBody, long)</a></li>
+<li><a href="#lineReader(long,java.util.function.Function)" tabindex="0">lineReader(long, Function)</a></li>
 <li><a href="#wrap(java.lang.Throwable)" tabindex="0">wrap(Throwable)</a></li>
 <li><a href="#read(io.micronaut.core.io.buffer.ReadBuffer)" tabindex="0">read(ReadBuffer)</a></li>
 <li><a href="#complete()" tabindex="0">complete()</a></li>
@@ -129,6 +131,20 @@ counted. Empty pieces are skipped.</div>
 <div class="block">Whether the pieces read so far are known to complete no other element, without decoding
 one: <a href="../body/PieceReader.html#poll()"><code>PieceReader.poll()</code></a> would return <code>null</code>.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;<a href="../body/PieceReader.html" title="interface in io.micronaut.http.body">PieceReader</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#lineReader(long,java.util.function.Function)" class="member-name-link">lineReader</a><wbr>(long&nbsp;maxLineLength,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;byte[],<wbr>T&gt;&nbsp;factory)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">The reader of the lines of a body, without their line ending: a line feed, a carriage
+return, or a carriage return and a line feed, as for an event stream.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../body/BodyElements.html" title="interface in io.micronaut.http.body">BodyElements</a><wbr>&lt;<a href="../../core/io/buffer/ByteBuffer.html" title="interface in io.micronaut.core.io.buffer">ByteBuffer</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#lines(io.micronaut.http.body.CloseableByteBody,long)" class="member-name-link">lines</a><wbr>(<a href="../body/CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a>&nbsp;body,
+ long&nbsp;maxLineLength)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">The lines of a response body, without their line ending: a line feed, a carriage return, or
+a carriage return and a line feed.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="../../core/io/buffer/ByteBuffer.html" title="interface in io.micronaut.core.io.buffer">ByteBuffer</a><wbr>&lt;?&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#poll()" class="member-name-link">poll</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -171,6 +187,46 @@ one: <a href="../body/PieceReader.html#poll()"><code>PieceReader.poll()</code></
 <dd><code>body</code> - The body, which the elements take over</dd>
 <dt>Returns:</dt>
 <dd>The pieces of the body</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="lines(io.micronaut.http.body.CloseableByteBody,long)">
+<h3>lines</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../body/BodyElements.html" title="interface in io.micronaut.http.body">BodyElements</a>&lt;<a href="../../core/io/buffer/ByteBuffer.html" title="interface in io.micronaut.core.io.buffer">ByteBuffer</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">lines</span><wbr><span class="parameters">(<a href="../body/CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a>&nbsp;body,
+ long&nbsp;maxLineLength)</span></div>
+<div class="block">The lines of a response body, without their line ending: a line feed, a carriage return, or
+a carriage return and a line feed. Every line is an element, an empty one too, and the bytes after the last
+line ending are not, as the lines of an event stream were split before.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>body</code> - The body, which the elements take over</dd>
+<dd><code>maxLineLength</code> - The largest number of bytes a line may have</dd>
+<dt>Returns:</dt>
+<dd>The lines</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="lineReader(long,java.util.function.Function)">
+<h3>lineReader</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="../body/PieceReader.html" title="interface in io.micronaut.http.body">PieceReader</a>&lt;T&gt;</span>&nbsp;<span class="element-name">lineReader</span><wbr><span class="parameters">(long&nbsp;maxLineLength,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;byte[],<wbr>T&gt;&nbsp;factory)</span></div>
+<div class="block">The reader of the lines of a body, without their line ending: a line feed, a carriage
+return, or a carriage return and a line feed, as for an event stream. Every line is an
+element, an empty one too, and the bytes after the last line ending are not.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="lineReader(long,java.util.function.Function)-type-param-T"><code>T</code> - The type of a line</span></dd>
+<dt>Parameters:</dt>
+<dd><code>maxLineLength</code> - The largest number of bytes a line may have</dd>
+<dd><code>factory</code> - The element of the bytes of a line</dd>
+<dt>Returns:</dt>
+<dd>The reader</dd>
 </dl>
 </div>
 </section>

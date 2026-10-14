@@ -57,6 +57,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
+<li><a href="#isInNonBlockingThread()" tabindex="0">isInNonBlockingThread()</a></li>
+<li><a href="#adaptPublisher(org.reactivestreams.Publisher,java.lang.Class)" tabindex="0">adaptPublisher(Publisher, Class)</a></li>
 <li><a href="#subscribe(org.reactivestreams.Publisher,org.reactivestreams.Subscriber,java.util.function.Supplier,java.util.function.Consumer)" tabindex="0">subscribe(Publisher, Subscriber, Supplier, Consumer)</a></li>
 </ol>
 </li>
@@ -78,8 +80,10 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">Interop with Reactor sources, the only place the publishers of bodies refer to Reactor: a
 Reactor source is subscribed to with the Reactor context of the downstream subscriber, and with
-a discard hook, so that it releases the items it drops when it is cancelled. Any other source
-is subscribed to directly, without a wrapper. Reactor operators are not used.
+a discard hook, so that it releases the items it drops when it is cancelled. Delegating sources
+also receive that context when a hook is needed, because they may hide a Reactor source.
+Without Reactor, sources are subscribed to directly. Declared Reactor argument types are
+adapted here without requiring Reactor converter beans.
 
 <p>Public only because the server module (<code>io.micronaut.http.server</code>) subscribes to body
 sources through it as well; it is internal API.</p></div>
@@ -104,6 +108,17 @@ sources through it as well; it is internal API.</p></div>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#adaptPublisher(org.reactivestreams.Publisher,java.lang.Class)" class="member-name-link">adaptPublisher</a><wbr>(<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;T&gt;&nbsp;source,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;type)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Adapt a native publisher to a declared Reactor argument without requiring converter beans.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isInNonBlockingThread()" class="member-name-link">isInNonBlockingThread</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Preserve Reactor's non-blocking-thread rules without requiring Reactor for native bodies.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#subscribe(org.reactivestreams.Publisher,org.reactivestreams.Subscriber,java.util.function.Supplier,java.util.function.Consumer)" class="member-name-link">subscribe</a><wbr>(<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;T&gt;&nbsp;source,
  <a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscriber.html" title="class or interface in org.reactivestreams" class="external-link">Subscriber</a>&lt;? super T&gt;&nbsp;subscriber,
@@ -129,6 +144,41 @@ sources through it as well; it is internal API.</p></div>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="isInNonBlockingThread()">
+<h3>isInNonBlockingThread</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isInNonBlockingThread</span>()</div>
+<div class="block">Preserve Reactor's non-blocking-thread rules without requiring Reactor for native bodies.
+This includes predicates registered with Reactor, not just its thread marker interface.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether Reactor forbids blocking on the current thread</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="adaptPublisher(org.reactivestreams.Publisher,java.lang.Class)">
+<h3>adaptPublisher</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;T&gt;</span>&nbsp;<span class="element-name">adaptPublisher</span><wbr><span class="parameters">(<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;T&gt;&nbsp;source,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;type)</span></div>
+<div class="block">Adapt a native publisher to a declared Reactor argument without requiring converter beans.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="adaptPublisher(org.reactivestreams.Publisher,java.lang.Class)-type-param-T"><code>T</code> - The element type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>source</code> - The source</dd>
+<dd><code>type</code> - The declared argument type</dd>
+<dt>Returns:</dt>
+<dd>The Reactor publisher, or the source for other argument types</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="subscribe(org.reactivestreams.Publisher,org.reactivestreams.Subscriber,java.util.function.Supplier,java.util.function.Consumer)">
 <h3>subscribe</h3>

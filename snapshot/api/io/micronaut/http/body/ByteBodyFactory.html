@@ -80,6 +80,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#isEventLoopThread()" tabindex="0">isEventLoopThread()</a></li>
 <li><a href="#createBodyAdapter(org.reactivestreams.Publisher,java.lang.Runnable)" tabindex="0">createBodyAdapter(Publisher, Runnable)</a></li>
 <li><a href="#createChecked(io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.core.io.buffer.ReadBuffer)" tabindex="0">createChecked(BodySizeLimits, ReadBuffer)</a></li>
+<li><a href="#adapt(io.micronaut.http.body.BodyElements)" tabindex="0">adapt(BodyElements)</a></li>
+<li><a href="#adapt(io.micronaut.http.body.BodyElements,java.util.OptionalLong)" tabindex="0">adapt(BodyElements, OptionalLong)</a></li>
 <li><a href="#adapt(org.reactivestreams.Publisher)" tabindex="0">adapt(Publisher)</a></li>
 <li><a href="#adapt(org.reactivestreams.Publisher,io.micronaut.http.body.stream.BodySizeLimits,io.micronaut.http.HttpHeaders,java.lang.Runnable)" tabindex="0">adapt(Publisher, BodySizeLimits, HttpHeaders, Runnable)</a></li>
 <li><a href="#adapt(org.reactivestreams.Publisher,java.util.OptionalLong)" tabindex="0">adapt(Publisher, OptionalLong)</a></li>
@@ -180,6 +182,19 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#adapt(io.micronaut.core.io.buffer.ReadBuffer)" class="member-name-link">adapt</a><wbr>(<a href="../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&nbsp;readBuffer)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Create a new <a href="CloseableAvailableByteBody.html" title="interface in io.micronaut.http.body"><code>CloseableAvailableByteBody</code></a> from the given buffer.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#adapt(io.micronaut.http.body.BodyElements)" class="member-name-link">adapt</a><wbr>(<a href="BodyElements.html" title="interface in io.micronaut.http.body">BodyElements</a>&lt;<a href="../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;&nbsp;elements)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Create a new streaming body from <a href="../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer"><code>ReadBuffer</code></a>s pulled one at a time, without Reactive
+Streams: an element is asked for when the consumer of the body wants more bytes.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#adapt(io.micronaut.http.body.BodyElements,java.util.OptionalLong)" class="member-name-link">adapt</a><wbr>(<a href="BodyElements.html" title="interface in io.micronaut.http.body">BodyElements</a>&lt;<a href="../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;&nbsp;elements,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/OptionalLong.html" title="class or interface in java.util" class="external-link">OptionalLong</a>&nbsp;contentLength)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Create a new streaming body from <a href="../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer"><code>ReadBuffer</code></a>s pulled one at a time, see
+<a href="#adapt(io.micronaut.http.body.BodyElements)"><code>adapt(BodyElements)</code></a>.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#adapt(org.reactivestreams.Publisher)" class="member-name-link">adapt</a><wbr>(<a href="http://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html" title="class or interface in org.reactivestreams" class="external-link">Publisher</a>&lt;<a href="../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;&nbsp;publisher)</code></div>
@@ -637,6 +652,46 @@ hold it, see <a href="stream/BaseSharedBuffer.html#setKeepInitialBytes()"><code>
 <dd><code>buf</code> - The buffer</dd>
 <dt>Returns:</dt>
 <dd>The body that wraps the buffer</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="adapt(io.micronaut.http.body.BodyElements)">
+<h3>adapt</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a></span>&nbsp;<span class="element-name">adapt</span><wbr><span class="parameters">(<a href="BodyElements.html" title="interface in io.micronaut.http.body">BodyElements</a>&lt;<a href="../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;&nbsp;elements)</span></div>
+<div class="block">Create a new streaming body from <a href="../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer"><code>ReadBuffer</code></a>s pulled one at a time, without Reactive
+Streams: an element is asked for when the consumer of the body wants more bytes. The body
+takes over the elements, and closes each buffer once its bytes are consumed. Discarding
+the body closes the elements.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>elements</code> - The pieces of the body</dd>
+<dt>Returns:</dt>
+<dd>The body</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="adapt(io.micronaut.http.body.BodyElements,java.util.OptionalLong)">
+<h3>adapt</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a></span>&nbsp;<span class="element-name">adapt</span><wbr><span class="parameters">(<a href="BodyElements.html" title="interface in io.micronaut.http.body">BodyElements</a>&lt;<a href="../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer">ReadBuffer</a>&gt;&nbsp;elements,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/OptionalLong.html" title="class or interface in java.util" class="external-link">OptionalLong</a>&nbsp;contentLength)</span></div>
+<div class="block">Create a new streaming body from <a href="../../core/io/buffer/ReadBuffer.html" title="class in io.micronaut.core.io.buffer"><code>ReadBuffer</code></a>s pulled one at a time, see
+<a href="#adapt(io.micronaut.http.body.BodyElements)"><code>adapt(BodyElements)</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>elements</code> - The pieces of the body</dd>
+<dd><code>contentLength</code> - The length of the body, if known</dd>
+<dt>Returns:</dt>
+<dd>The body</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>

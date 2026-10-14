@@ -78066,6 +78066,12 @@ repositories {
 <p>This section documents breaking changes between Micronaut versions</p>
 </div>
 <div class="sect2">
+<h3 id="_buffered_json_stream_responses_require_a_list_type_5_3">Buffered JSON stream responses require a list type (5.3)</h3>
+<div class="paragraph">
+<p>The JDK HTTP client now uses the shared JSON stream message body reader. For an <code>application/x-json-stream</code> response, <code>retrieve(request, Book.class)</code> no longer returns only the first JSON value. Retrieve <code>Argument.listOf(Book.class)</code> to read the complete stream, or use <code>jsonStream(request, Book.class)</code> to consume individual values as they arrive.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_the_application_context_is_built_with_the_loader_of_the_main_class_5_3">The application context is built with the loader of the main class (5.3)</h3>
 <div class="paragraph">
 <p><code>Micronaut.run(Application.class)</code>, and any <code>ApplicationContextBuilder.mainClass(&#8230;&#8203;)</code>, now builds the context with the class loader of the main class when that loader is the loader of <code>micronaut-inject</code> or one of its descendants, unless a class loader was set explicitly with <code>classLoader(&#8230;&#8203;)</code>, by the caller or by an <a href="../api/io/micronaut/context/ApplicationContextConfigurer.html">ApplicationContextConfigurer</a>. Previously the builder always used the loader of <code>micronaut-inject</code>. This only changes anything for an application whose main class is loaded by a child of that loader, for example by a plugin or deployment class loader: its beans, configuration files and services are now found through that loader. A main class of a parent loader, or of a loader beside it, still leaves the loader of <code>micronaut-inject</code>.</p>
@@ -78159,6 +78165,37 @@ repositories {
 </div>
 <div class="paragraph">
 <p>That logging system, <code>io.micronaut.management.endpoint.loggers.impl.LogbackLoggingSystem</code>, is created by the Micronaut framework when the loggers endpoint is enabled. Its public constructor, which reads only <code>logger.config</code>, is deprecated for removal, and with <code>null</code> it no longer defaults to <code>logback.xml</code>: the refresh then configures Logback the way Logback configures itself at startup. Do not construct the class: obtain the bean from the application context, for example by injecting <code>LoggingSystem</code> or <code>ManagedLoggingSystem</code>, or replace it with a bean of your own that implements both, annotated with <code>@Replaces(LogbackLoggingSystem.class)</code>, rather than extending it.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the_event_streams_of_the_http_client_follow_the_server_sent_events_specification_5_3">The event streams of the HTTP client follow the Server-Sent Events specification (5.3)</h3>
+<div class="paragraph">
+<p>The <code>eventStream</code> methods of <a href="../api/io/micronaut/http/client/sse/SseClient.html">SseClient</a> in the Netty client now decode the body as the <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#event-stream-interpretation">event stream interpretation</a> of the Server-Sent Events specification, like <code>exchangeEventStream</code> and the server-sent events of the <a href="../api/io/micronaut/http/client/AsyncStreamingHttpClient.html">AsyncStreamingHttpClient</a>. The body is still read as an event stream whatever the content type of the response, and an error status still fails the stream. A subscriber can observe these changes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A comment line, such as a <code>: ping</code> heartbeat, is ignored. Previously a comment followed by a blank line was emitted as an event with empty data.</p>
+</li>
+<li>
+<p>The <code>id</code> of an event carries over to the events that follow it until another <code>id</code> line, as the last event id of the specification. Previously only the event with the <code>id</code> line had an id.</p>
+</li>
+<li>
+<p>The name of an <code>event:</code> line and the value of an <code>id:</code> line are no longer trimmed: only the one space after the colon is removed.</p>
+</li>
+<li>
+<p>A <code>data</code> line without a colon adds an empty line to the data of the event, and a blank line after an event without data no longer fails the stream with a <code>NullPointerException</code>: an event without data is not emitted.</p>
+</li>
+<li>
+<p>A carriage return alone ends a line, as a line feed or a carriage return followed by a line feed does. A leading byte order mark is skipped, an <code>id</code> containing a null character and a <code>retry</code> that is not a number are ignored.</p>
+</li>
+<li>
+<p>When the request accepts an event stream, <code>dataStream</code> and <code>exchangeStream</code> split the body into lines at a carriage return alone as well.</p>
+</li>
+<li>
+<p>The line limit (<code>micronaut.http.client.max-content-length</code>) applies to each line and to the data of one event. Exceeding it fails <code>eventStream</code> with a <a href="../api/io/micronaut/http/client/exceptions/ContentLengthExceededException.html">ContentLengthExceededException</a>, an <code>HttpClientException</code>, instead of an <code>HttpClientException</code> ("Error consuming Server Sent Events") that wraps a <code>BufferLengthExceededException</code>.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
@@ -79164,6 +79201,28 @@ If the previous behavior is desired, configure the retryable annotation explicit
 </div>
 <div class="paragraph">
 <p>This changes which thread a <code>suspend</code> route runs on for applications that annotate one with <a href="../api/io/micronaut/scheduling/annotation/ExecuteOn.html">@ExecuteOn</a>, or that set <code>micronaut.server.thread-selection</code> to <code>AUTO</code>, <code>IO</code> or <code>BLOCKING</code> (the default is <code>MANUAL</code>, which selects no executor and is unaffected). To keep a <code>suspend</code> route on the event loop under <code>AUTO</code>, annotate it with <a href="../api/io/micronaut/core/annotation/NonBlocking.html">@NonBlocking</a>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_jdk_http_client_pipeline_options">JDK HTTP client pipeline options</h4>
+<div class="paragraph">
+<p>The JDK HTTP client preserves its existing redirect, request-timeout, and error-body behaviour by default. The following experimental options enable the corresponding shared-pipeline behaviour:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>micronaut.http.client.jdk.apply-request-timeout</code>: applies the configured <code>request-timeout</code> to the entire exchange.</p>
+</li>
+<li>
+<p><code>micronaut.http.client.jdk.use-micronaut-redirects</code>: uses Micronaut redirect handling, including its redirect limit and method rewriting rules.</p>
+</li>
+<li>
+<p><code>micronaut.http.client.jdk.decode-error-type</code>: decodes error responses using the exchange&#8217;s error type.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>All three options default to <code>false</code>. The JDK client also exposes <code>toAsyncStreaming()</code> for pulled JSON, byte, and event streams.</p>
 </div>
 </div>
 </div>
