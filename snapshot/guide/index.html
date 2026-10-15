@@ -485,7 +485,9 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesLocators"><a href="#functionalRoutesLocators"><strong>6.31.11</strong><span>Locator Routes</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesLimitations"><a href="#functionalRoutesLimitations"><strong>6.31.12</strong><span>Limitations</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesWebSocket"><a href="#functionalRoutesWebSocket"><strong>6.31.12</strong><span>WebSocket Routes</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesLimitations"><a href="#functionalRoutesLimitations"><strong>6.31.13</strong><span>Limitations</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-sessions"><a href="#sessions"><strong>6.32</strong><span>HTTP Sessions</span></a></div>
         
@@ -45021,7 +45023,363 @@ class LocatorRoutes implements HttpRoutes {
 <p>The server waits for the stage of an asynchronous locator without blocking. When the client goes away before the stage completes, the Netty server stops waiting for it, when the connection closes or the HTTP/2 stream is reset, without cancelling it: a locator may return a stage it shares with other requests, e.g. of a cache. A CORS preflight request for a path under the prefix of an asynchronous locator is answered once the locator has located its target, with the methods of its located routes, before the filters that run after the routes are matched.</p>
 </div>
 
-<h2 id="functionalRoutesLimitations"><a class="anchor" href="#functionalRoutesLimitations"></a>6.31.12 Limitations</h2>
+<h2 id="functionalRoutesWebSocket"><a class="anchor" href="#functionalRoutesWebSocket"></a>6.31.12 WebSocket Routes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/functionalRoutes/functionalRoutesWebSocket.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A <code>GET</code> route ends with <code>webSocket(&#8230;&#8203;)</code> instead of a handler: the server upgrades the requests to the route to WebSocket connections and calls the handler functions the lambda declares, the functional counterpart of a <a href="../api/io/micronaut/websocket/annotation/ServerWebSocket.html">@ServerWebSocket</a> bean. The route stays a route of the route builder: its path variables, groups, filters, conditions, order, port and attributes apply to the upgrade request. WebSocket routes need the <code>micronaut-websocket</code> dependency:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut:micronaut-websocket")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-websocket&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut:micronaut-websocket"</span>,
+]</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>The types of the WebSocket routes are in the package <a href="../api/io/micronaut/web/router/websocket/package-summary.html">io.micronaut.web.router.websocket</a>, experimental like the other functional routes.</p>
+</div>
+<div class="sect2">
+<h3 id="_handlers">Handlers</h3>
+<div class="listingblock multi-language-sample">
+<div class="title">A WebSocket route</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">routes.GET("/echo/{name}").webSocket(ws -&gt; ws // <b class="conum">(1)</b>
+    .onOpen((session, request) -&gt; // <b class="conum">(2)</b>
+        session.sendAsync("Hello " + session.getUriVariables().get("name", String.class).orElseThrow()))
+    .onMessage(String.class, (session, message) -&gt; session.sendAsync("echo " + message)) // <b class="conum">(3)</b>
+    .onError((session, error) -&gt; session.sendAsync("error " + error.getMessage())) // <b class="conum">(4)</b>
+    .onClose((session, reason) -&gt; null)); // <b class="conum">(5)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A WebSocket route</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">routes.GET("/echo/{name}").webSocket(lambda ws: ws  # <b class="conum">(1)</b>
+    .onOpen(lambda session, request:  # <b class="conum">(2)</b>
+            session.sendAsync("Hello " + session.getUriVariables().get("name", String).orElseThrow()))
+    .onMessage(String, lambda session, message: session.sendAsync("echo " + message))  # <b class="conum">(3)</b>
+    .onError(lambda session, error: session.sendAsync("error " + error.getMessage()))  # <b class="conum">(4)</b>
+    .onClose(lambda session, reason: None))  # <b class="conum">(5)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A WebSocket route</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">routes.GET("/echo/{name}").webSocket { ws -&gt; ws // <b class="conum">(1)</b>
+    .onOpen { session, _ -&gt; // <b class="conum">(2)</b>
+        session.sendAsync("Hello " + session.uriVariables.get("name", String::class.java).orElseThrow())
+    }
+    .onMessage(String::class.java) { session, message -&gt; session.sendAsync("echo $message") } // <b class="conum">(3)</b>
+    .onError { session, error -&gt; session.sendAsync("error " + error.message) } // <b class="conum">(4)</b>
+    .onClose { _, _ -&gt; null } // <b class="conum">(5)</b>
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A WebSocket route</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">routes.GET("/echo/{name}").webSocket { ws -&gt; ws // <b class="conum">(1)</b>
+    .onOpen { session, request -&gt; // <b class="conum">(2)</b>
+        session.sendAsync("Hello " + session.uriVariables.get("name", String).orElseThrow())
+    }
+    .onMessage(String) { session, message -&gt; session.sendAsync("echo " + message) } // <b class="conum">(3)</b>
+    .onError { session, error -&gt; session.sendAsync("error " + error.message) } // <b class="conum">(4)</b>
+    .onClose { session, reason -&gt; null } // <b class="conum">(5)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A <code>GET</code> route ends with <code>webSocket(&#8230;&#8203;)</code>: the lambda declares the handlers of its connections, each at most once.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The open handler receives the <a href="../api/io/micronaut/websocket/WebSocketSession.html">WebSocketSession</a> and the upgrade request. The path variables of the route are the URI variables of the session.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The message handler receives each message decoded to the type it declares: <code>String</code> and <code>byte[]</code> as they are, other types from JSON, like the message parameter of an <code>@OnMessage</code> method.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The error handler receives the error of a handler, or of a message that cannot be decoded. Without one, the connection is closed with <code>1011</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>A handler with nothing to wait for returns <code>null</code>: it is done.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Each handler receives the session first, like the JDK <code>java.net.http.WebSocket.Listener</code>, and returns a <code>CompletionStage</code> that completes when it is done, or <code>null</code> when it is done at once: it sends with <code>session.sendAsync(&#8230;&#8203;)</code> and returns the stage of the send. The handlers are <code>onOpen</code>, <code>onMessage</code>, <code>onMessageStream</code> (see below), <code>onPing</code>, <code>onPong</code>, <code>onClose</code> and <code>onError</code>; <code>subprotocols(&#8230;&#8203;)</code> and <code>maxPayloadLength(&#8230;&#8203;)</code> are like the members of <code>@ServerWebSocket</code> and <code>@OnMessage</code>. A message handler may be declared for a supertype of the messages, e.g. a <code>WebSocketMessageHandler&lt;Object&gt;</code> for <code>String</code> messages.</p>
+</div>
+<div class="paragraph">
+<p>The handlers run on the event loop by default, like a controller method that returns a stage: a handler must not block. A route whose handlers block, e.g. on I/O, runs them on another executor with <code>executeOn(&#8230;&#8203;)</code>, e.g. <code>executeOn(TaskExecutors.BLOCKING)</code>, see below.</p>
+</div>
+<div class="paragraph">
+<p>The sessions are the sessions of the <code>@ServerWebSocket</code> beans: <code>session.getOpenSessions()</code> and the <a href="../api/io/micronaut/websocket/WebSocketBroadcaster.html">WebSocketBroadcaster</a> reach both, and the upgrade request is the current request in the handlers. The handlers are shared by the connections of the route: the state of a connection belongs in the attributes of its session. A bean that declares routes injects the broadcaster as a <code>BeanProvider&lt;WebSocketBroadcaster&gt;</code>, since the broadcaster depends on the server, which depends on the routes.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the_upgrade_request">The upgrade request</h3>
+<div class="paragraph">
+<p>The filters of the route and of its groups, and the application&#8217;s filters, run on the upgrade request: a filter that answers with a response rejects the upgrade.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A filter that rejects the upgrade</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">routes.GET("/private")
+    .beforeReplacing(request -&gt; request.getHeaders().contains("X-Token") // <b class="conum">(1)</b>
+        ? null
+        : HttpResponse.status(HttpStatus.FORBIDDEN))
+    .and()
+    .webSocket(ws -&gt; ws
+        .onOpen((session, request) -&gt; session.sendAsync("welcome")));</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A filter that rejects the upgrade</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">(routes.GET("/private")
+    .beforeReplacing(lambda request:  # <b class="conum">(1)</b>
+                     None if request.getHeaders().contains("X-Token")
+                     else HttpResponse.status(HttpStatus.FORBIDDEN))
+    .and_()
+    .webSocket(lambda ws: ws
+        .onOpen(lambda session, request: session.sendAsync("welcome"))))</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A filter that rejects the upgrade</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">routes.GET("/private")
+    .beforeReplacing { request -&gt; // <b class="conum">(1)</b>
+        if (request.headers.contains("X-Token")) null else HttpResponse.status&lt;Any&gt;(HttpStatus.FORBIDDEN)
+    }
+    .and()
+    .webSocket { ws -&gt; ws
+        .onOpen { session, _ -&gt; session.sendAsync("welcome") }
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A filter that rejects the upgrade</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">routes.GET("/private")
+    .beforeReplacing { request -&gt; // <b class="conum">(1)</b>
+        request.headers.contains("X-Token") ? null : HttpResponse.status(HttpStatus.FORBIDDEN)
+    }
+    .and()
+    .webSocket { ws -&gt; ws
+        .onOpen { session, request -&gt; session.sendAsync("welcome") }
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A request without the header is answered with <code>403</code>, and the connection is not upgraded.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The conditions of <code>where(&#8230;&#8203;)</code>, the order and the port select the route like for any other request: of the WebSocket routes that match an upgrade request, the closest one is upgraded, then the one of the lowest order. A WebSocket route of the route builder is preferred to a <code>@ServerWebSocket</code> bean, whose routes are selected as before: the first one whose URI template matches the path. A <code>GET</code> request to a WebSocket route that is not an upgrade is answered with <code>400</code>.</p>
+</div>
+<div class="paragraph">
+<p>A WebSocket route is a route of an <code>HttpRoutes</code> bean: the server finds the route of an upgrade request among the routes it knows when it starts, so a located route, see <a href="#functionalRoutesLocators">Locator Routes</a>, cannot be a WebSocket route, and declaring one fails with an <code>IllegalStateException</code>.</p>
+</div>
+<div class="paragraph">
+<p>A WebSocket route has no media types and no response type: the media types of its groups do not apply to it, and <code>consumes(&#8230;&#8203;)</code>, <code>produces(&#8230;&#8203;)</code> or <code>responseType(&#8230;&#8203;)</code> on the route itself fail with an <code>IllegalStateException</code>. A message handler declares the type of its messages instead.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_streams">Streams</h3>
+<div class="paragraph">
+<p><code>session.sendAllAsync(publisher)</code> sends the messages of a Reactive Streams <code>Publisher</code>, no faster than the connection writes them. Its stage completes with <code>true</code> when the publisher completed and its messages were sent, and with <code>false</code> when the session closed first: the session closing cancels the publisher. <code>onMessageStream(&#8230;&#8203;)</code> receives the messages of a connection as a <code>Publisher</code>, at the pace its subscriber requests them.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Streams of messages</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">routes.GET("/ticks").webSocket(ws -&gt; ws
+    .onOpen((session, request) -&gt; session.sendAllAsync(Flux.range(1, 3).map(i -&gt; "tick " + i)))); // <b class="conum">(1)</b>
+routes.GET("/upper").webSocket(ws -&gt; ws
+    .onMessageStream(String.class, (session, messages) -&gt; // <b class="conum">(2)</b>
+        session.sendAllAsync(Flux.from(messages).map(message -&gt; message.toUpperCase(Locale.ROOT))))); // <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Streams of messages</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">routes.GET("/ticks").webSocket(lambda ws: ws
+    .onOpen(lambda session, request: session.sendAllAsync(Flux.range(1, 3).map(lambda i: f"tick {i}"))))  # <b class="conum">(1)</b>
+routes.GET("/upper").webSocket(lambda ws: ws
+    .onMessageStream(String, lambda session, messages:  # <b class="conum">(2)</b>
+                session.sendAllAsync(Flux.from_(messages).map(lambda message: message.upper()))))  # <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Streams of messages</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">routes.GET("/ticks").webSocket { ws -&gt; ws
+    .onOpen { session, _ -&gt; session.sendAllAsync(Flux.range(1, 3).map { "tick $it" }) } // <b class="conum">(1)</b>
+}
+routes.GET("/upper").webSocket { ws -&gt; ws
+    .onMessageStream(String::class.java) { session, messages -&gt; // <b class="conum">(2)</b>
+        session.sendAllAsync(Flux.from(messages).map { it.uppercase() }) // <b class="conum">(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Streams of messages</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">routes.GET("/ticks").webSocket { ws -&gt; ws
+    .onOpen { session, request -&gt; session.sendAllAsync(Flux.range(1, 3).map { "tick " + it }) } // <b class="conum">(1)</b>
+}
+routes.GET("/upper").webSocket { ws -&gt; ws
+    .onMessageStream(String) { session, messages -&gt; // <b class="conum">(2)</b>
+        session.sendAllAsync(Flux.from(messages).map { it.toUpperCase() }) // <b class="conum">(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The open handler sends a stream of messages.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The message stream handler is called once for each connection, after the open handler, with the messages of the connection in the order they are read. It subscribes to them before it is done: the messages of a handler that is done without a subscriber, or that fails, are discarded.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The replies are a stream too: the next message is read once a reply was sent. The publisher of the messages completes when the connection closes: on a close, before the close handler runs, so that the close handler can wait for the stream.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A route has <code>onMessage</code> or <code>onMessageStream</code>. A message stream receives its messages one after the other, so it has no <code>maxConcurrentMessages</code>. The handler and the subscriber run on the executor of the route, with the upgrade request as the current request.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_delivery_and_backpressure">Delivery and backpressure</h3>
+<div class="paragraph">
+<p>The handlers of a connection run one after the other: the first message is handled once the open handler is done, and each next message once the handler of the previous one is done, i.e. once the stage it returned completed. The connection reads at most <code>maxPendingMessages(&#8230;&#8203;)</code> messages ahead of its handlers, <code>16</code> by default, so a client cannot send messages faster than they are handled. A message sent in fragments counts each of its fragments, so that the messages that wait take a bounded amount of memory.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Concurrent handlers</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">routes.GET("/jobs")
+    .executeOn(TaskExecutors.BLOCKING) // <b class="conum">(1)</b>
+    .webSocket(ws -&gt; ws
+        .maxConcurrentMessages(4) // <b class="conum">(2)</b>
+        .maxPendingMessages(32) // <b class="conum">(3)</b>
+        .onMessage(String.class, (session, job) -&gt; session.sendAsync("done " + job)));</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Concurrent handlers</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">(routes.GET("/jobs")
+    .executeOn(TaskExecutors.BLOCKING)  # <b class="conum">(1)</b>
+    .webSocket(lambda ws: ws
+        .maxConcurrentMessages(4)  # <b class="conum">(2)</b>
+        .maxPendingMessages(32)  # <b class="conum">(3)</b>
+        .onMessage(String, lambda session, job: session.sendAsync("done " + job))))</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Concurrent handlers</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">routes.GET("/jobs")
+    .executeOn(TaskExecutors.BLOCKING) // <b class="conum">(1)</b>
+    .webSocket { ws -&gt; ws
+        .maxConcurrentMessages(4) // <b class="conum">(2)</b>
+        .maxPendingMessages(32) // <b class="conum">(3)</b>
+        .onMessage(String::class.java) { session, job -&gt; session.sendAsync("done $job") }
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Concurrent handlers</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">routes.GET("/jobs")
+    .executeOn(TaskExecutors.BLOCKING) // <b class="conum">(1)</b>
+    .webSocket { ws -&gt; ws
+        .maxConcurrentMessages(4) // <b class="conum">(2)</b>
+        .maxPendingMessages(32) // <b class="conum">(3)</b>
+        .onMessage(String) { session, job -&gt; session.sendAsync("done " + job) }
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The executor of the route runs its handlers: here the executor for blocking work. By default they run on the event loop.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Up to 4 messages of a connection are handled at the same time, in any order.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Up to 32 messages are read ahead of the handlers.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The pings are answered as they are read, and a close is handled as soon as it is read, while the handlers that run go on: the messages read before it that still wait for their turn are discarded, except for a message stream, which receives them before it completes. Once <code>maxPendingMessages</code> messages wait, the connection decodes nothing until a handler is done, the pings and the close included, even when many frames arrive at once. It still reads up to 64 KiB more, undecoded, so that a client that drops the connection without a close is noticed at once, with an abnormal closure (<code>1006</code>). <code>maxPendingMessages(0)</code> reads all the time, without backpressure.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+A handler that returns a stage that does not complete, e.g. the stage of <code>sendAllAsync</code> for a stream that does not end, holds the next messages of its connection back. A handler that streams while the connection receives starts the stream and returns <code>null</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>@ServerWebSocket</code> beans keep their behavior: their connections read all the time, and their messages are handled as they are read.</p>
+</div>
+</div>
+
+<h2 id="functionalRoutesLimitations"><a class="anchor" href="#functionalRoutesLimitations"></a>6.31.13 Limitations</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/functionalRoutes/functionalRoutesLimitations.adoc"'>
@@ -45749,6 +46107,18 @@ class ChatServerWebSocket {
 </td>
 <td class="content">
 A working example of WebSockets in action can be found at <a href="https://guides.micronaut.io/latest/micronaut-websocket.html">Micronaut Guides</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+A WebSocket endpoint can also be declared in code, as a route of the route builder, with its handlers as functions, streams of messages and backpressure: see <a href="#functionalRoutesWebSocket">WebSocket Routes</a>.
 </td>
 </tr>
 </table>

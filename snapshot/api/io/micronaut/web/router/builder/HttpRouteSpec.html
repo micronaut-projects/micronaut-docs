@@ -68,6 +68,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#respond(io.micronaut.http.HttpResponse)" tabindex="0">respond(HttpResponse)</a></li>
 <li><a href="#respond(java.util.function.Supplier)" tabindex="0">respond(Supplier)</a></li>
 <li><a href="#respond(java.util.function.Function)" tabindex="0">respond(Function)</a></li>
+<li><a href="#webSocket(java.util.function.Consumer)" tabindex="0">webSocket(Consumer)</a></li>
 <li><a href="#sse(io.micronaut.web.router.builder.SseHandler)" tabindex="0">sse(SseHandler)</a></li>
 </ol>
 </li>
@@ -220,6 +221,14 @@ see <a href="#responseType(io.micronaut.core.type.Argument)"><code>responseType(
 <div class="block">End the route with a server-sent events handler: the response is a
 <code>text/event-stream</code> of the events the handler pushes to its
 <a href="../../../http/sse/SseEmitter.html" title="interface in io.micronaut.http.sse"><code>SseEmitter</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#webSocket(java.util.function.Consumer)" class="member-name-link">webSocket</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../websocket/WebSocketEndpointSpec.html" title="interface in io.micronaut.web.router.websocket">WebSocketEndpointSpec</a>&gt;&nbsp;endpoint)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">End a <code>GET</code> route with WebSocket handler functions, the functional counterpart of a
+<a href="../../../websocket/annotation/ServerWebSocket.html" title="annotation interface in io.micronaut.websocket.annotation"><code>ServerWebSocket</code></a> bean: the server upgrades a
+<code>GET</code> request to the URI template to a WebSocket connection, and calls the handlers
+the lambda declares, see <a href="../websocket/WebSocketEndpointSpec.html" title="interface in io.micronaut.web.router.websocket"><code>WebSocketEndpointSpec</code></a>.</div>
 </div>
 </div>
 </div>
@@ -494,6 +503,46 @@ event loop when neither has one: then it must not block.</p></div>
 <dd><code>response</code> - Creates the response of a request from its path variables</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if the route was already ended</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="webSocket(java.util.function.Consumer)">
+<h3>webSocket</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">webSocket</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../websocket/WebSocketEndpointSpec.html" title="interface in io.micronaut.web.router.websocket">WebSocketEndpointSpec</a>&gt;&nbsp;endpoint)</span></div>
+<div class="block">End a <code>GET</code> route with WebSocket handler functions, the functional counterpart of a
+<a href="../../../websocket/annotation/ServerWebSocket.html" title="annotation interface in io.micronaut.websocket.annotation"><code>ServerWebSocket</code></a> bean: the server upgrades a
+<code>GET</code> request to the URI template to a WebSocket connection, and calls the handlers
+the lambda declares, see <a href="../websocket/WebSocketEndpointSpec.html" title="interface in io.micronaut.web.router.websocket"><code>WebSocketEndpointSpec</code></a>. Requires <code>micronaut-websocket</code>.
+
+<pre><code>routes.GET("/chat/{room}")
+    .beforeReplacing(request -&gt; authorized(request) ? null : HttpResponse.forbidden()).and()
+    .webSocket(ws -&gt; ws
+        .onOpen((session, request) -&gt; session.sendAsync("joined " + session.getUriVariables().get("room", String.class).orElseThrow()))
+        .onMessage(Argument.of(ChatMessage.class), (session, message) -&gt; session.sendAsync(reply(message))));
+</code></pre>
+
+<p>The route is a route of the upgrade request: its conditions, filters, groups, order, port
+and attributes apply to the upgrade request, e.g. a filter that answers with a response
+rejects the upgrade, and a request that is not an upgrade is answered with an error. Of the
+WebSocket routes that match an upgrade, the closest one is upgraded, then the one of the
+lowest order, like the route of any other request. Its executor, see
+<a href="ExecutionSpec.html#executeOn(java.lang.String)"><code>ExecutionSpec.executeOn(String)</code></a>, or the executor of its group, runs the handlers of the
+connections: by default the event loop, so a handler that blocks, e.g. on I/O, needs another
+executor, e.g. <code>executeOn(TaskExecutors.BLOCKING)</code>. A WebSocket route has no media
+types and no response type: the media types of its group do not apply to it, and its own,
+e.g. <a href="RouteSpec.html#produces(io.micronaut.http.MediaType...)"><code>RouteSpec.produces(io.micronaut.http.MediaType...)</code></a>, are an error.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>endpoint</code> - Declares the handlers of the WebSocket connections</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if the route was already ended, is not a route of <code>GET</code>
+                              only, has media types or a response type, or
+                              <code>micronaut-websocket</code> is missing</dd>
 <dt>Since:</dt>
 <dd>5.3.0</dd>
 </dl>

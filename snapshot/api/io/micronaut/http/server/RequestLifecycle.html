@@ -71,6 +71,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#onError(io.micronaut.http.HttpRequest,java.lang.Throwable)" tabindex="0">onError(HttpRequest, Throwable)</a></li>
 <li><a href="#onWriteError(io.micronaut.http.HttpRequest,java.lang.Throwable)" tabindex="0">onWriteError(HttpRequest, Throwable)</a></li>
 <li><a href="#runWithFilters(io.micronaut.http.HttpRequest,java.util.function.BiFunction)" tabindex="0">runWithFilters(HttpRequest, BiFunction)</a></li>
+<li><a href="#runWithFilters(io.micronaut.http.HttpRequest,io.micronaut.web.router.RouteMatch,java.util.function.BiFunction)" tabindex="0">runWithFilters(HttpRequest, RouteMatch, BiFunction)</a></li>
 <li><a href="#onFilteredRequest(io.micronaut.http.HttpRequest)" tabindex="0">onFilteredRequest(HttpRequest)</a></li>
 <li><a href="#matchRoute(io.micronaut.http.HttpRequest)" tabindex="0">matchRoute(HttpRequest)</a></li>
 <li><a href="#provideRouteResponse(io.micronaut.http.HttpRequest,io.micronaut.web.router.UriRouteMatch,io.micronaut.core.propagation.PropagatedContext)" tabindex="0">provideRouteResponse(HttpRequest, UriRouteMatch, PropagatedContext)</a></li>
@@ -225,9 +226,17 @@ the request filters ran.</div>
 </div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final <a href="../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a><wbr>&lt;<a href="../HttpResponse.html" title="interface in io.micronaut.http">HttpResponse</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runWithFilters(io.micronaut.http.HttpRequest,java.util.function.BiFunction)" class="member-name-link">runWithFilters</a><wbr>(<a href="../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runWithFilters(io.micronaut.http.HttpRequest,io.micronaut.web.router.RouteMatch,java.util.function.BiFunction)" class="member-name-link">runWithFilters</a><wbr>(<a href="../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
+ <a href="../../web/router/RouteMatch.html" title="interface in io.micronaut.web.router">RouteMatch</a>&lt;?&gt;&nbsp;routeMatch,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;, <a href="../../core/propagation/PropagatedContext.html" title="interface in io.micronaut.core.propagation">PropagatedContext</a>, <a href="../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="../HttpResponse.html" title="interface in io.micronaut.http">HttpResponse</a>&lt;?&gt;&gt;&gt;&nbsp;responseProvider)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Run the filters for this request and its matched route, the filters of the route included
+(e.g.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final <a href="../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a><wbr>&lt;<a href="../HttpResponse.html" title="interface in io.micronaut.http">HttpResponse</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runWithFilters(io.micronaut.http.HttpRequest,java.util.function.BiFunction)" class="member-name-link">runWithFilters</a><wbr>(<a href="../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;, <a href="../../core/propagation/PropagatedContext.html" title="interface in io.micronaut.core.propagation">PropagatedContext</a>, <a href="../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="../HttpResponse.html" title="interface in io.micronaut.http">HttpResponse</a>&lt;?&gt;&gt;&gt;&nbsp;responseProvider)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Run the filters for this request, and then run the given flow.</div>
 </div>
 </div>
@@ -408,6 +417,29 @@ again, but the response filters run on the response that replaces the failed one
 <dd><code>responseProvider</code> - Downstream flow, runs inside the filters</dd>
 <dt>Returns:</dt>
 <dd>Execution flow that completes after the all the filters and the downstream flow</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="runWithFilters(io.micronaut.http.HttpRequest,io.micronaut.web.router.RouteMatch,java.util.function.BiFunction)">
+<h3>runWithFilters</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="../HttpResponse.html" title="interface in io.micronaut.http">HttpResponse</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">runWithFilters</span><wbr><span class="parameters">(<a href="../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
+ <a href="../../web/router/RouteMatch.html" title="interface in io.micronaut.web.router">RouteMatch</a>&lt;?&gt;&nbsp;routeMatch,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;, <a href="../../core/propagation/PropagatedContext.html" title="interface in io.micronaut.core.propagation">PropagatedContext</a>, <a href="../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;<a href="../HttpResponse.html" title="interface in io.micronaut.http">HttpResponse</a>&lt;?&gt;&gt;&gt;&nbsp;responseProvider)</span></div>
+<div class="block">Run the filters for this request and its matched route, the filters of the route included
+(e.g. the filters of a route of the route builder and of its groups), and then run the
+given flow.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>request</code> - The request</dd>
+<dd><code>routeMatch</code> - The matched route</dd>
+<dd><code>responseProvider</code> - Downstream flow, runs inside the filters</dd>
+<dt>Returns:</dt>
+<dd>Execution flow that completes after the all the filters and the downstream flow</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>
