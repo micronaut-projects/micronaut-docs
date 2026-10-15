@@ -217,25 +217,27 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionHierarchy"><a href="#introspectionHierarchy"><strong>3.18.7</strong><span>Type Hierarchy</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-atCreator"><a href="#atCreator"><strong>3.18.8</strong><span>Constructor Methods</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-typeHierarchyRecords"><a href="#typeHierarchyRecords"><strong>3.18.8</strong><span>Type Hierarchy Records</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-staticAtCreator"><a href="#staticAtCreator"><strong>3.18.9</strong><span>Static Creator Methods</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-atCreator"><a href="#atCreator"><strong>3.18.9</strong><span>Constructor Methods</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionConstructors"><a href="#introspectionConstructors"><strong>3.18.10</strong><span>Describing Constructors</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-staticAtCreator"><a href="#staticAtCreator"><strong>3.18.10</strong><span>Static Creator Methods</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionBuilders"><a href="#introspectionBuilders"><strong>3.18.11</strong><span>Builders</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionConstructors"><a href="#introspectionConstructors"><strong>3.18.11</strong><span>Describing Constructors</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionEnums"><a href="#introspectionEnums"><strong>3.18.12</strong><span>Introspect Enums</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionBuilders"><a href="#introspectionBuilders"><strong>3.18.12</strong><span>Builders</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionTypeArguments"><a href="#introspectionTypeArguments"><strong>3.18.13</strong><span>Type Arguments</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionEnums"><a href="#introspectionEnums"><strong>3.18.13</strong><span>Introspect Enums</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedAnnotationOnAConfigurationClass"><a href="#introspectedAnnotationOnAConfigurationClass"><strong>3.18.14</strong><span>Use the @Introspected Annotation on a Configuration Class</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectionTypeArguments"><a href="#introspectionTypeArguments"><strong>3.18.14</strong><span>Type Arguments</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectExistingAnnotations"><a href="#introspectExistingAnnotations"><strong>3.18.15</strong><span>Write an AnnotationMapper to Introspect Existing Annotations</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectedAnnotationOnAConfigurationClass"><a href="#introspectedAnnotationOnAConfigurationClass"><strong>3.18.15</strong><span>Use the @Introspected Annotation on a Configuration Class</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-beanWrapperApi"><a href="#beanWrapperApi"><strong>3.18.16</strong><span>The BeanWrapper API</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-introspectExistingAnnotations"><a href="#introspectExistingAnnotations"><strong>3.18.16</strong><span>Write an AnnotationMapper to Introspect Existing Annotations</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-kotlinAndBeanIntrospection"><a href="#kotlinAndBeanIntrospection"><strong>3.18.17</strong><span>Kotlin and Bean Introspection</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-beanWrapperApi"><a href="#beanWrapperApi"><strong>3.18.17</strong><span>The BeanWrapper API</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-kotlinAndBeanIntrospection"><a href="#kotlinAndBeanIntrospection"><strong>3.18.18</strong><span>Kotlin and Bean Introspection</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-beanMappers"><a href="#beanMappers"><strong>3.19</strong><span>Bean Mappers</span></a></div>
         
@@ -10202,7 +10204,196 @@ hierarchy.isDeclared(method);            // whether Book declares a bean method 
 </table>
 </div>
 
-<h2 id="atCreator"><a class="anchor" href="#atCreator"></a>3.18.8 Constructor Methods</h2>
+<h2 id="typeHierarchyRecords"><a class="anchor" href="#typeHierarchyRecords"></a>3.18.8 Type Hierarchy Records</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/ioc/introspection/typeHierarchyRecords.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A bean introspection describes a bean, and its <a href="#introspectionHierarchy">type hierarchy</a> is raw. Some code needs the generic hierarchy of classes that are not beans: the class of an event payload whose generic supertypes decide which observers hear it, a class that appears as a type argument or a bound, or a class of a library or of the JDK. The <a href="../api/io/micronaut/core/annotation/TypeHierarchyImport.html">@TypeHierarchyImport</a> annotation imports that hierarchy at compile time, as it is declared, so that it is read without reflection through <a href="../api/io/micronaut/core/type/TypeHierarchies.html">TypeHierarchies</a>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.annotation.TypeHierarchyImport;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
+@TypeHierarchyImport // <b class="conum">(1)</b>
+public class Payload&lt;T extends Number&gt; extends ArrayList&lt;T&gt; implements Supplier&lt;List&lt;T&gt;&gt; {
+
+    @Override
+    public List&lt;T&gt; get() {
+        return this;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">T = TypeVar("T", bound=Number)
+
+class Base(Generic[T]):
+    def value(self) -&gt; T:
+        return None
+
+@TypeHierarchyImport  # <b class="conum">(1)</b>
+class Payload(Base[T], Supplier[T], Generic[T]):
+    def get(self) -&gt; T:
+        return None</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.core.annotation.TypeHierarchyImport
+import java.util.function.Supplier
+
+@TypeHierarchyImport // <b class="conum">(1)</b>
+class Payload&lt;T : Number&gt; : ArrayList&lt;T&gt;(), Supplier&lt;List&lt;T&gt;&gt; {
+
+    override fun get(): List&lt;T&gt; = this
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.annotation.TypeHierarchyImport
+
+import java.util.function.Supplier
+
+@TypeHierarchyImport // <b class="conum">(1)</b>
+class Payload&lt;T extends Number&gt; extends ArrayList&lt;T&gt; implements Supplier&lt;List&lt;T&gt;&gt; {
+
+    @Override
+    List&lt;T&gt; get() {
+        this
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.annotation.TypeHierarchyImport;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+@TypeHierarchyImport(classes = {ArrayList.class, HashMap.class}) // <b class="conum">(2)</b>
+final class Hierarchies {
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from java.util import ArrayList, HashMap
+from micronaut.core.annotation import TypeHierarchyImport
+
+@TypeHierarchyImport(classes=[ArrayList, HashMap])  # <b class="conum">(2)</b>
+class Hierarchies:
+    pass</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.core.annotation.TypeHierarchyImport
+
+@TypeHierarchyImport(classes = [ArrayList::class, HashMap::class]) // <b class="conum">(2)</b>
+class Hierarchies</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.annotation.TypeHierarchyImport
+
+@TypeHierarchyImport(classes = [ArrayList, HashMap]) // <b class="conum">(2)</b>
+final class Hierarchies {
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Imports the hierarchy of the annotated class</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Imports the hierarchies of the given classes instead, which can be classes of a library or of the JDK</td>
+</tr>
+</table>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">TypeHierarchy hierarchy = TypeHierarchies.find(Payload.class).orElseThrow(); // <b class="conum">(1)</b>
+
+List&lt;Argument&lt;?&gt;&gt; variables = hierarchy.getTypeVariables(); // <b class="conum">(2)</b>
+Argument&lt;?&gt; superclass = hierarchy.getGenericSuperclass().orElseThrow(); // <b class="conum">(3)</b>
+List&lt;Argument&lt;?&gt;&gt; closure = hierarchy.getTypeClosure(Argument.of(Payload.class, Integer.class)); // <b class="conum">(4)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Payload = java.type("micronaut.docs.ioc.hierarchy.Payload")
+TypeHierarchies = java.type("io.micronaut.core.type.TypeHierarchies")
+Argument = java.type("io.micronaut.core.type.Argument")
+hierarchy = TypeHierarchies.find(Payload).orElseThrow() # <b class="conum">(1)</b>
+
+variables = hierarchy.getTypeVariables() # <b class="conum">(2)</b>
+superclass = hierarchy.getGenericSuperclass().orElseThrow() # <b class="conum">(3)</b>
+closure = hierarchy.getTypeClosure(Argument.of(Payload, java.type("java.lang.Integer"))) # <b class="conum">(4)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val hierarchy = TypeHierarchies.find(Payload::class.java).orElseThrow() // <b class="conum">(1)</b>
+
+val variables = hierarchy.typeVariables // <b class="conum">(2)</b>
+val superclass = hierarchy.genericSuperclass.orElseThrow() // <b class="conum">(3)</b>
+val closure = hierarchy.getTypeClosure(Argument.of(Payload::class.java, Int::class.javaObjectType)) // <b class="conum">(4)</b></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">def hierarchy = TypeHierarchies.find(Payload).orElseThrow() // <b class="conum">(1)</b>
+
+def variables = hierarchy.typeVariables // <b class="conum">(2)</b>
+def superclass = hierarchy.genericSuperclass.orElseThrow() // <b class="conum">(3)</b>
+def closure = hierarchy.getTypeClosure(Argument.of(Payload, Integer)) // <b class="conum">(4)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Finds the record of a class; empty when none was imported</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The type variables, each a placeholder with its bounds</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The generic superclass with its arguments as declared, <code>ArrayList&lt;T&gt;</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The closure of a parameterization: <code>Payload&lt;Integer&gt;</code>, <code>ArrayList&lt;Integer&gt;</code>, <code>AbstractList&lt;Integer&gt;</code>, &#8230;&#8203;, <code>Supplier&lt;List&lt;Integer&gt;&gt;</code>, <code>Object</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The hierarchy is made of <a href="../api/io/micronaut/core/type/Argument.html">Argument</a> instances: a type variable is a <a href="../api/io/micronaut/core/type/GenericPlaceholder.html">GenericPlaceholder</a> with its bounds, a wildcard a <a href="../api/io/micronaut/core/type/WildcardArgument.html">WildcardArgument</a>, a type written without its type arguments a raw type. The record holds every super type of the type as the compiler listed them (<code>ClassElement.getAllSuperTypes()</code>), with their type arguments written in the variables of the type, so the hierarchy is walked once, at compile time. <code>getTypeClosure(parameterization)</code> substitutes the actual type arguments into each entry, erasing all of them for a raw parameterization as the Java Language Specification does, each type once and <code>Object</code> last.</p>
+</div>
+<div class="paragraph">
+<p>A record is a small generated class, one per type, found through the <code>META-INF/micronaut</code> service entries like a bean definition is, and loaded only when its type is asked for. A compile-time visitor imports a type with <code>importTypeHierarchy</code> of <a href="../api/io/micronaut/inject/visitor/VisitorContext.html">VisitorContext</a>.</p>
+</div>
+
+<h2 id="atCreator"><a class="anchor" href="#atCreator"></a>3.18.9 Constructor Methods</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/ioc/introspection/atCreator.adoc"'>
@@ -10338,7 +10529,7 @@ A Python class declares a single <code><em>init</em></code>, so there is no cons
 </div>
 </div>
 
-<h2 id="staticAtCreator"><a class="anchor" href="#staticAtCreator"></a>3.18.9 Static Creator Methods</h2>
+<h2 id="staticAtCreator"><a class="anchor" href="#staticAtCreator"></a>3.18.10 Static Creator Methods</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/ioc/introspection/staticAtCreator.adoc"'>
@@ -10462,7 +10653,7 @@ There can be multiple "creator" methods annotated. If there is one without argum
 </table>
 </div>
 
-<h2 id="introspectionConstructors"><a class="anchor" href="#introspectionConstructors"></a>3.18.10 Describing Constructors</h2>
+<h2 id="introspectionConstructors"><a class="anchor" href="#introspectionConstructors"></a>3.18.11 Describing Constructors</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/ioc/introspection/introspectionConstructors.adoc"'>
@@ -10704,7 +10895,7 @@ Describing constructors does not change how beans of the type are built. The con
 </table>
 </div>
 
-<h2 id="introspectionBuilders"><a class="anchor" href="#introspectionBuilders"></a>3.18.11 Builders</h2>
+<h2 id="introspectionBuilders"><a class="anchor" href="#introspectionBuilders"></a>3.18.12 Builders</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/ioc/introspection/introspectionBuilders.adoc"'>
@@ -10932,7 +11123,7 @@ Introspection Builder does not work with <a href="https://groovy-lang.org/metapr
 </table>
 </div>
 
-<h2 id="introspectionEnums"><a class="anchor" href="#introspectionEnums"></a>3.18.12 Introspect Enums</h2>
+<h2 id="introspectionEnums"><a class="anchor" href="#introspectionEnums"></a>3.18.13 Introspect Enums</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/ioc/introspection/introspectionEnums.adoc"'>
@@ -10945,7 +11136,7 @@ Introspection Builder does not work with <a href="https://groovy-lang.org/metapr
 <p>It is possible to introspect enums as well. Add the annotation to the enum, and it can be constructed through the standard <code>valueOf</code> method.</p>
 </div>
 
-<h2 id="introspectionTypeArguments"><a class="anchor" href="#introspectionTypeArguments"></a>3.18.13 Type Arguments</h2>
+<h2 id="introspectionTypeArguments"><a class="anchor" href="#introspectionTypeArguments"></a>3.18.14 Type Arguments</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/ioc/introspection/introspectionTypeArguments.adoc"'>
@@ -11250,7 +11441,7 @@ Type arguments are read by position from <code>getTypeParameters()</code>. None 
 </div>
 </div>
 
-<h2 id="introspectedAnnotationOnAConfigurationClass"><a class="anchor" href="#introspectedAnnotationOnAConfigurationClass"></a>3.18.14 Use the @Introspected Annotation on a Configuration Class</h2>
+<h2 id="introspectedAnnotationOnAConfigurationClass"><a class="anchor" href="#introspectedAnnotationOnAConfigurationClass"></a>3.18.15 Use the @Introspected Annotation on a Configuration Class</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/ioc/introspection/introspectedAnnotationOnAConfigurationClass.adoc"'>
@@ -11316,7 +11507,7 @@ You can also use the <code>packages</code> member of the <a href="../api/io/micr
 </table>
 </div>
 
-<h2 id="introspectExistingAnnotations"><a class="anchor" href="#introspectExistingAnnotations"></a>3.18.15 Write an AnnotationMapper to Introspect Existing Annotations</h2>
+<h2 id="introspectExistingAnnotations"><a class="anchor" href="#introspectExistingAnnotations"></a>3.18.16 Write an AnnotationMapper to Introspect Existing Annotations</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/ioc/introspection/introspectExistingAnnotations.adoc"'>
@@ -11344,7 +11535,7 @@ The <code>AnnotationMapper</code> must be on the annotation processor classpath.
 </table>
 </div>
 
-<h2 id="beanWrapperApi"><a class="anchor" href="#beanWrapperApi"></a>3.18.16 The BeanWrapper API</h2>
+<h2 id="beanWrapperApi"><a class="anchor" href="#beanWrapperApi"></a>3.18.17 The BeanWrapper API</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/ioc/introspection/beanWrapperApi.adoc"'>
@@ -11422,7 +11613,7 @@ println("Person's age now $newAge")</code></pre>
 </table>
 </div>
 
-<h2 id="kotlinAndBeanIntrospection"><a class="anchor" href="#kotlinAndBeanIntrospection"></a>3.18.17 Kotlin and Bean Introspection</h2>
+<h2 id="kotlinAndBeanIntrospection"><a class="anchor" href="#kotlinAndBeanIntrospection"></a>3.18.18 Kotlin and Bean Introspection</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/ioc/introspection/kotlinAndBeanIntrospection.adoc"'>
