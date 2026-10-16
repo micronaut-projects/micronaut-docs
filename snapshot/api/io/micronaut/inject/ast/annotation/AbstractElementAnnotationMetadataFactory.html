@@ -237,7 +237,7 @@ it.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../../annotation/AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookupForField(io.micronaut.inject.ast.FieldElement)" class="member-name-link">lookupForField</a><wbr>(<a href="../FieldElement.html" title="interface in io.micronaut.inject.ast">FieldElement</a>&nbsp;fieldElement)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Lookup annotation metadata for the field.</div>
+<div class="block">Lookup annotation metadata for the field read through its owning type.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../../annotation/AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookupForField(io.micronaut.inject.ast.FieldElement,boolean)" class="member-name-link">lookupForField</a><wbr>(<a href="../FieldElement.html" title="interface in io.micronaut.inject.ast">FieldElement</a>&nbsp;fieldElement,
@@ -258,7 +258,7 @@ it.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../../annotation/AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookupForParameter(io.micronaut.inject.ast.ParameterElement)" class="member-name-link">lookupForParameter</a><wbr>(<a href="../ParameterElement.html" title="interface in io.micronaut.inject.ast">ParameterElement</a>&nbsp;parameterElement)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Lookup annotation metadata for the parameter.</div>
+<div class="block">Lookup annotation metadata for the parameter read through its owning type.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../../annotation/AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookupTypeAnnotationsForClass(io.micronaut.inject.ast.ClassElement)" class="member-name-link">lookupTypeAnnotationsForClass</a><wbr>(<a href="../ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;classElement)</code></div>
@@ -465,14 +465,20 @@ it. Mutations are written to the entry, so every element created for the same us
 <h3>lookupForParameter</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../../annotation/AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></span>&nbsp;<span class="element-name">lookupForParameter</span><wbr><span class="parameters">(<a href="../ParameterElement.html" title="interface in io.micronaut.inject.ast">ParameterElement</a>&nbsp;parameterElement)</span></div>
-<div class="block">Lookup annotation metadata for the parameter. The entry is keyed by the declaring type of the method, not
-by the owning type, so that a parameter of an inherited method shares one entry whichever class it is read
-through.</div>
+<div class="block">Lookup annotation metadata for the parameter read through its owning type. A mutation made through the type
+declaring the method is visible through every type the method is read through, a mutation made through a
+subclass is visible through that subclass only.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>parameterElement</code> - The element</dd>
 <dt>Returns:</dt>
 <dd>The annotation metadata</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="../../annotation/AbstractAnnotationMetadataBuilder.html#lookupOrBuildForParameter(T,T,T,T)"><code>AbstractAnnotationMetadataBuilder.lookupOrBuildForParameter(Object, Object, Object, Object)</code></a></li>
+</ul>
+</dd>
 </dl>
 </div>
 </section>
@@ -482,8 +488,9 @@ through.</div>
 <h3>lookupForField</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../../annotation/AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></span>&nbsp;<span class="element-name">lookupForField</span><wbr><span class="parameters">(<a href="../FieldElement.html" title="interface in io.micronaut.inject.ast">FieldElement</a>&nbsp;fieldElement)</span></div>
-<div class="block">Lookup annotation metadata for the field. The entry is keyed by the declaring type of the field, not by the
-owning type, so that an inherited field shares one entry whichever class it is read through.</div>
+<div class="block">Lookup annotation metadata for the field read through its owning type. A mutation made through the type
+declaring the field is visible through every type the field is read through, a mutation made through a
+subclass is visible through that subclass only.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>fieldElement</code> - The element</dd>
@@ -499,9 +506,8 @@ owning type, so that an inherited field shares one entry whichever class it is r
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../../annotation/AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata.html" title="interface in io.micronaut.inject.annotation">AbstractAnnotationMetadataBuilder.CachedAnnotationMetadata</a></span>&nbsp;<span class="element-name">lookupForField</span><wbr><span class="parameters">(<a href="../FieldElement.html" title="interface in io.micronaut.inject.ast">FieldElement</a>&nbsp;fieldElement,
  boolean&nbsp;propertyComponent)</span></div>
-<div class="block">Lookup annotation metadata for the field read through its owning type. A mutation made on the field is keyed
-by the declaring type, a mutation made on the field as a component of a bean property belongs to the owning
-type.</div>
+<div class="block">Lookup annotation metadata for the field read through its owning type. A mutation made on the field through
+a subclass, or on the field as a component of a bean property, belongs to the owning type.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>fieldElement</code> - The element</dd>
