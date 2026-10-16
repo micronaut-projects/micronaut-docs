@@ -82,10 +82,12 @@ loadScripts(document, 'script');</script>
 
 <p>A record is a class with a constructor and nothing else, which passes the type, its variables, its direct super
 types and <a href="../ast/ClassElement.html#getAllSuperTypes()"><code>all its super types</code></a>, built with the argument factories from class
-constants, to <a href="../../core/type/GeneratedTypeHierarchy.html" title="class in io.micronaut.core.type"><code>GeneratedTypeHierarchy</code></a>. It is written into the package of the first originating element, or
-into the package of the type when the type, a bound or a super type of it is a non-public class of that package,
-so that the class constants of the record resolve. A super type that is not public and of another package, which no
-record could name, is left out of the record; a type whose own declaration names such a class is refused.</p></div>
+constants, to <a href="../../core/type/GeneratedTypeHierarchy.html" title="class in io.micronaut.core.type"><code>GeneratedTypeHierarchy</code></a>. It is written into the package of the first originating element; only
+a type that is itself not public is recorded in its own package, the one package that can name it. A super type that
+the record cannot name, a class that is not public and of another package than the record or one whose arguments
+name such a class, is left out of the recorded closure with the types above it kept, and is recorded by the name of
+its class instead (<a href="../../core/type/TypeHierarchy.html#getOmittedSuperTypeNames()"><code>TypeHierarchy.getOmittedSuperTypeNames()</code></a>); a type whose variables are bounded by such a
+class is refused.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -163,8 +165,9 @@ record could name, is left out of the record; a type whose own declaration names
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;recordName,
  <a href="../visitor/VisitorContext.html" title="interface in io.micronaut.inject.visitor">VisitorContext</a>&nbsp;context,
  <a href="../ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a>...&nbsp;originatingElements)</span></div>
-<div class="block">Writes the record of a type. A type recorded several times in a compilation is written once: a compiler that
-refuses a second write of the same class is taken at its word.</div>
+<div class="block">Writes the record of a type. A type recorded several times into the same package is written once: a
+compiler that refuses a second write of the same class is taken at its word. A type recorded from several
+packages is written into each, see <a href="../../core/type/TypeHierarchies.html#find(java.lang.String,java.lang.ClassLoader)"><code>TypeHierarchies.find(String, ClassLoader)</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>type</code> - The type</dd>

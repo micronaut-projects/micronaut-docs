@@ -10397,10 +10397,35 @@ def closure = hierarchy.getTypeClosure(Argument.of(Payload, Integer)) // <b clas
 </table>
 </div>
 <div class="paragraph">
-<p>The hierarchy is made of <a href="../api/io/micronaut/core/type/Argument.html">Argument</a> instances: a type variable is a <a href="../api/io/micronaut/core/type/GenericPlaceholder.html">GenericPlaceholder</a> with its bounds, a wildcard a <a href="../api/io/micronaut/core/type/WildcardArgument.html">WildcardArgument</a>, a type written without its type arguments a raw type. The record holds every super type of the type as the compiler listed them (<code>ClassElement.getAllSuperTypes()</code>), with their type arguments written in the variables of the type, so the hierarchy is walked once, at compile time. <code>getTypeClosure(parameterization)</code> substitutes the actual type arguments into each entry, erasing all of them for a raw parameterization as the Java Language Specification does, each type once and <code>Object</code> last.</p>
+<p>The hierarchy is made of <a href="../api/io/micronaut/core/type/Argument.html">Argument</a> instances: a type variable is a <a href="../api/io/micronaut/core/type/GenericPlaceholder.html">GenericPlaceholder</a> with its bounds, a wildcard a <a href="../api/io/micronaut/core/type/WildcardArgument.html">WildcardArgument</a>, a type written without its type arguments a raw type. The record holds the super types of the type as the compiler listed them (<code>ClassElement.getAllSuperTypes()</code>), every one of them that the record can name (see below), with their type arguments written in the variables of the type, so the hierarchy is walked once, at compile time. <code>getTypeClosure(parameterization)</code> substitutes the actual type arguments into each entry, erasing all of them for a raw parameterization as the Java Language Specification does, each type once and <code>Object</code> last.</p>
 </div>
 <div class="paragraph">
-<p>A record is a small generated class, one per type, found through the <code>META-INF/micronaut</code> service entries like a bean definition is, and loaded only when its type is asked for. A compile-time visitor imports a type with <code>importTypeHierarchy</code> of <a href="../api/io/micronaut/inject/visitor/VisitorContext.html">VisitorContext</a>.</p>
+<p>A record is a small generated class, written once for each type and package it is written into, found through the <code>META-INF/micronaut</code> service entries like a bean definition is, and loaded only when its type is asked for. A compile-time visitor imports a type with <code>importTypeHierarchy</code> of <a href="../api/io/micronaut/inject/visitor/VisitorContext.html">VisitorContext</a>.</p>
+</div>
+<div class="paragraph">
+<p>A record is written into the package of the class that imports the type, or under it: the record of a class of the same package is <code>com.example.$Payload$TypeHierarchy</code>, and the record of a class of another package goes into a sub-package of the importing package named after the package of the type, <code>com.example.$$java.util.$ArrayList$TypeHierarchy</code> for <code>java.util.ArrayList</code> imported from <code>com.example</code>. Only a type that is itself not public is recorded in its own package, the one package that can name it; a public class nested in a class that is not public counts as not public. A type of the JDK that is not public cannot be recorded.</p>
+</div>
+<div class="paragraph">
+<p>A record can only name the classes that are public or of the package it is written for, the importing package. A super type whose declaration names any other class is left out of the record, with the types above it kept:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>a super type whose class is neither, such as the package-private <code>java.lang.AbstractStringBuilder</code> that <code>StringBuilder</code> extends or a package-private base class of a library</p>
+</li>
+<li>
+<p>a public super type whose type arguments name such a class, at any depth, <code>Supplier&lt;List&lt;Hidden&gt;&gt;</code> for a package-private <code>Hidden</code>, or a class nested in one</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Such a super type is missing from <code>getSuperTypes()</code> and from <code>getTypeClosure(&#8230;&#8203;)</code>, and from <code>getGenericSuperclass()</code> or <code>getGenericInterfaces()</code> when it is a direct super type. <code>getOmittedSuperTypeNames()</code> lists the name of the class of each, without its type arguments, so that code which knows the class from its own package can still tell that it is a super type. The names are erased evidence of membership only, not generic metadata: <code>Base&lt;String&gt;</code> and <code>Base&lt;Integer&gt;</code> are both <code>p.Base</code>, and code that needs the type arguments of such a super type keeps a record of its own, written in the package of the class. A record written by a processor that predates the names lists none, which says nothing about what it left out.</p>
+</div>
+<div class="paragraph">
+<p>A type imported from several packages has a record in each, and they can leave out different super types. <code>TypeHierarchies</code> finds the record in the package of the type when there is one, and otherwise the one that left out the fewest super types.</p>
+</div>
+<div class="paragraph">
+<p>Some declarations cannot be recorded at all, and fail the compilation: a type whose variables are bounded by a class the record cannot name, since leaving the bound out would change what the variable is bounded by and erases to, and a type that is, or extends, an inner class of a generic class (<code>Outer&lt;T&gt;.Inner</code>), whose variables the arguments of the enclosing class bind and a record does not keep.</p>
 </div>
 
 <h2 id="atCreator"><a class="anchor" href="#atCreator"></a>3.18.9 Constructor Methods</h2>

@@ -90,9 +90,13 @@ loadScripts(document, 'script');</script>
 
 <p>A record is a generated class, registered as a <code>META-INF/micronaut</code> service of <a href="TypeHierarchy.html" title="interface in io.micronaut.core.type"><code>TypeHierarchy</code></a>,
 whose name says which type it describes. A lookup reads the names of the service entries of the class loader,
-which the service index of a packaged application already holds, and loads the one record of the type asked for:
-no other record is loaded, and the class asked about is not read reflectively. Each lookup instantiates the
-record anew, which is a handful of <a href="Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a>s; a caller that asks for a hierarchy repeatedly keeps it.</p></div>
+which the service index of a packaged application already holds, and loads the record of the type asked for: no
+record of another type is loaded, and the class asked about is not read reflectively. A type recorded from several
+packages has a record in each, and a record written outside the package of the type can have left out super types
+it could not name (<a href="TypeHierarchy.html#getOmittedSuperTypeNames()"><code>TypeHierarchy.getOmittedSuperTypeNames()</code></a>): the record in the package of the type is
+preferred, otherwise the one that left out the fewest, the first by name among those, whatever order the class path
+lists them in. Each lookup instantiates the record anew, which is a handful of <a href="Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a>s; a caller that
+asks for a hierarchy repeatedly keeps it.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -245,7 +249,9 @@ thread has none, the class loader of this class.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="TypeHierarchy.html" title="interface in io.micronaut.core.type">TypeHierarchy</a>&gt;</span>&nbsp;<span class="element-name">find</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeName,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;classLoader)</span></div>
-<div class="block">Finds the hierarchy recorded for a type by its name, among the records a class loader sees.</div>
+<div class="block">Finds the hierarchy recorded for a type by its name, among the records a class loader sees. Of several records
+of the type, written from several packages, the one in the package of the type is found, otherwise the one that
+left out the fewest super types, the first by name among those.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>typeName</code> - The name of the type, as <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html#getName()" title="class or interface in java.lang" class="external-link"><code>Class.getName()</code></a> gives it</dd>

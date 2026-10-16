@@ -62,6 +62,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#getGenericSuperclass()" tabindex="0">getGenericSuperclass()</a></li>
 <li><a href="#getGenericInterfaces()" tabindex="0">getGenericInterfaces()</a></li>
 <li><a href="#getSuperTypes()" tabindex="0">getSuperTypes()</a></li>
+<li><a href="#getOmittedSuperTypeNames()" tabindex="0">getOmittedSuperTypeNames()</a></li>
 <li><a href="#getDeclaration()" tabindex="0">getDeclaration()</a></li>
 <li><a href="#getTypeClosure(io.micronaut.core.type.Argument)" tabindex="0">getTypeClosure(Argument)</a></li>
 </ol>
@@ -83,7 +84,7 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public sealed interface </span><span class="element-name type-name-label">TypeHierarchy</span>
 <span class="permits">permits <a href="GeneratedTypeHierarchy.html" title="class in io.micronaut.core.type">GeneratedTypeHierarchy</a></span></div>
 <div class="block">The generic hierarchy of a type as it was declared: its type variables with their bounds, its generic superclass
-and generic interfaces, and every super type it has, transitively, with their type arguments written in terms of
+and generic interfaces, and the super types it has, transitively, with their type arguments written in terms of
 those variables.
 
 <p>A hierarchy is recorded at compile time, by the Micronaut processors, for the types a compilation asks for with
@@ -100,7 +101,13 @@ declaration order, a type reached twice listed once, <a href="https://docs.oracl
 says: a type variable is a <a href="GenericPlaceholder.html" title="interface in io.micronaut.core.type"><code>GenericPlaceholder</code></a> with its bounds, a wildcard is a <a href="WildcardArgument.html" title="interface in io.micronaut.core.type"><code>WildcardArgument</code></a>, a
 type used without its type arguments is a raw type (<a href="Argument.html#isRawType()"><code>Argument.isRawType()</code></a>) and so are its super types, and
 an array of a variable is a placeholder whose type is the array of the erasure of the variable.
-<a href="#getTypeClosure(io.micronaut.core.type.Argument)"><code>getTypeClosure(Argument)</code></a> substitutes the actual arguments of a parameterization into each entry.</p></div>
+<a href="#getTypeClosure(io.micronaut.core.type.Argument)"><code>getTypeClosure(Argument)</code></a> substitutes the actual arguments of a parameterization into each entry.</p>
+
+<p>A record names only the classes that are public or of the package it is written for, the package of the class
+that imported the type. A super type whose declaration names another class is left out of the record, with the
+types above it kept: of <a href="#getSuperTypes()"><code>getSuperTypes()</code></a>, of <a href="#getGenericSuperclass()"><code>getGenericSuperclass()</code></a> or
+<a href="#getGenericInterfaces()"><code>getGenericInterfaces()</code></a> when it is a direct super type, and so of <a href="#getTypeClosure(io.micronaut.core.type.Argument)"><code>getTypeClosure(Argument)</code></a>. It is
+listed by name in <a href="#getOmittedSuperTypeNames()"><code>getOmittedSuperTypeNames()</code></a> instead.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -139,26 +146,34 @@ when it declares none.</div>
 <div class="block">The generic superclass, with its type arguments as declared, which can name the
 <a href="#getTypeVariables()"><code>type variables</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getSuperTypes()" class="member-name-link">getSuperTypes</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getOmittedSuperTypeNames()" class="member-name-link">getOmittedSuperTypeNames</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Every super type of the type, transitively, with its type arguments written in the
-<a href="#getTypeVariables()"><code>type variables</code></a> of the type along the path that reaches it: the super class and its
+<div class="block">The names of the super types left out of the <a href="#getSuperTypes()"><code>super types</code></a> because the record could not
+name their declaration: one whose class is not public and of another package than the record, such as the
+package-private <code>java.lang.AbstractStringBuilder</code> of <code>StringBuilder</code>, or a public one whose type
+arguments name such a class at any depth, such as <code>Supplier&lt;List&lt;Hidden&gt;&gt;</code>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getSuperTypes()" class="member-name-link">getSuperTypes</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">The super types of the type, transitively, with their type arguments written in the
+<a href="#getTypeVariables()"><code>type variables</code></a> of the type along the path that reaches them: the super class and its
 super types first, then each interface and its super types, each type once, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a> last.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a><wbr>&lt;?&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getType()" class="member-name-link">getType</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getTypeClosure(io.micronaut.core.type.Argument)" class="member-name-link">getTypeClosure</a><wbr>(<a href="Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&nbsp;parameterization)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a><wbr>&lt;?&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getType()" class="member-name-link">getType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getTypeClosure(io.micronaut.core.type.Argument)" class="member-name-link">getTypeClosure</a><wbr>(<a href="Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&nbsp;parameterization)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">The type closure of a parameterization of the type: the parameterization itself, then each of the
 <a href="#getSuperTypes()"><code>super types</code></a> with the actual type arguments substituted for the type variables, in the
 same order, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a> last.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTypeVariables()" class="member-name-link">getTypeVariables</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTypeVariables()" class="member-name-link">getTypeVariables</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">The type variables the type declares, in order, each a <a href="GenericPlaceholder.html" title="interface in io.micronaut.core.type"><code>GenericPlaceholder</code></a> named as the variable, whose
 type is the erasure of the variable and whose <a href="GenericPlaceholder.html#getBounds()"><code>bounds</code></a> are those declared.</div>
 </div>
@@ -211,7 +226,8 @@ type is the erasure of the variable and whose <a href="GenericPlaceholder.html#g
 <a href="#getTypeVariables()"><code>type variables</code></a>. A raw <code>extends</code> is a raw argument.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The superclass, or empty for an interface and for a type that extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a></dd>
+<dd>The superclass, or empty for an interface, for a type that extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a> and for a superclass
+the record could not name, which is then one of the <a href="#getOmittedSuperTypeNames()"><code>omitted super types</code></a></dd>
 </dl>
 </div>
 </section>
@@ -224,7 +240,8 @@ type is the erasure of the variable and whose <a href="GenericPlaceholder.html#g
 <div class="block">The generic interfaces the type implements, or an interface extends, with their type arguments as declared.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The interfaces, in the order declared</dd>
+<dd>The interfaces, in the order declared, without those the record could not name, which are then
+<a href="#getOmittedSuperTypeNames()"><code>omitted super types</code></a></dd>
 </dl>
 </div>
 </section>
@@ -234,13 +251,44 @@ type is the erasure of the variable and whose <a href="GenericPlaceholder.html#g
 <h3>getSuperTypes</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">getSuperTypes</span>()</div>
-<div class="block">Every super type of the type, transitively, with its type arguments written in the
-<a href="#getTypeVariables()"><code>type variables</code></a> of the type along the path that reaches it: the super class and its
+<div class="block">The super types of the type, transitively, with their type arguments written in the
+<a href="#getTypeVariables()"><code>type variables</code></a> of the type along the path that reaches them: the super class and its
 super types first, then each interface and its super types, each type once, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a> last. A super type
-that could not be named from the record, a package-private class of another package, is left out.</div>
+the record could not name is left out with the types above it kept, and is listed by name in
+<a href="#getOmittedSuperTypeNames()"><code>getOmittedSuperTypeNames()</code></a>.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The super types, in declaration order and with <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a> last</dd>
+<dd>The super types the record names, in declaration order and with <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a> last</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getOmittedSuperTypeNames()">
+<h3>getOmittedSuperTypeNames</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">getOmittedSuperTypeNames</span>()</div>
+<div class="block">The names of the super types left out of the <a href="#getSuperTypes()"><code>super types</code></a> because the record could not
+name their declaration: one whose class is not public and of another package than the record, such as the
+package-private <code>java.lang.AbstractStringBuilder</code> of <code>StringBuilder</code>, or a public one whose type
+arguments name such a class at any depth, such as <code>Supplier&lt;List&lt;Hidden&gt;&gt;</code>. Each is the
+<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html#getName()" title="class or interface in java.lang" class="external-link"><code>name</code></a> of the class of the super type, without its type arguments, in the order of the
+super types and once, so that a consumer that knows the class by name, in its own package, can still tell it is
+a super type of the type.
+
+<p>The names are erased evidence of membership only, not generic metadata: a super type <code>Base&lt;String&gt;</code>
+and a super type <code>Base&lt;Integer&gt;</code> are both <code>p.Base</code>, and nothing says what the type arguments of the
+super type left out were. A consumer that needs them reads them from a record of its own, written in the package
+of the class. A type variable bounded by such a class is not widened: leaving the bound out would change what
+the variable is bounded by and erases to, so a type whose variables are bounded by a class the record cannot name
+is not recorded from another package.</p>
+
+<p>A record written by a processor that predates this list, with the constructor of
+<a href="GeneratedTypeHierarchy.html" title="class in io.micronaut.core.type"><code>GeneratedTypeHierarchy</code></a> that takes no names, has an empty list too: for such a record it carries no
+information on what was left out.</p></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The names of the super types left out, empty when the record names them all or was written without them</dd>
 </dl>
 </div>
 </section>

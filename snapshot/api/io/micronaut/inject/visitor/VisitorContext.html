@@ -974,12 +974,14 @@ invalidated the elements of the compilation once its last round is over.</p>
 <div class="block">Records the generic hierarchy of a type, which <a href="../../core/type/TypeHierarchies.html#find(java.lang.Class)"><code>TypeHierarchies.find(Class)</code></a> finds
 at run time as a <a href="../../core/type/TypeHierarchy.html" title="interface in io.micronaut.core.type"><code>TypeHierarchy</code></a>: its type variables with their bounds, its generic
 superclass and its generic interfaces, as declared. The type can be any class the compilation sees, a class of
-a library or of the JDK included. The record is a small generated class, one per type, written once per
-compilation however many times the type is recorded. A parameterized usage of the type, the
+a library or of the JDK included. The record is a small generated class, written once per type and
+package it is written into, however many times the type is recorded from there; a type recorded from several
+packages has a record in each, and the lookup prefers the one in the package of the type. A parameterized usage of the type, the
 <code>Box&lt;String&gt;</code> of a field, records the declaration <code>Box&lt;T&gt;</code>.
 
 <p>The record is named after the type and written into the package of the first originating element, or into
-the package of the type when the type, a bound or a supertype of it is not public. Every originating element is
+the package of the type when the type itself is not public. A super type the record cannot name from its package
+is left out of it and named in <a href="../../core/type/TypeHierarchy.html#getOmittedSuperTypeNames()"><code>TypeHierarchy.getOmittedSuperTypeNames()</code></a>. Every originating element is
 reported to the compiler, as for <a href="#registerBean(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>registerBean(ClassElement, Element...)</code></a>, and the same rule applies: the
 record is written with the round, and recording from <a href="TypeElementVisitor.html#finish(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finish(VisitorContext)</code></a> is not
 portable.</p></div>
