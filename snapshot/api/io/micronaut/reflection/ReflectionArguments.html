@@ -208,7 +208,8 @@ annotations of each level.</div>
 <a href="../core/type/GenericPlaceholder.html" title="interface in io.micronaut.core.type"><code>GenericPlaceholder</code></a> of the type it erases to with every bound the variable declares, a wildcard a
 <a href="../core/type/WildcardArgument.html" title="interface in io.micronaut.core.type"><code>WildcardArgument</code></a> of the type it is bounded by with its upper and lower bounds, a generic array the
 array of its component carrying the type arguments or the variable of the component, and a generic type
-named without its type arguments a <a href="../core/type/Argument.html#isRawType()"><code>raw</code></a> argument.</div>
+named without its type arguments a <a href="../core/type/Argument.html#isRawType()"><code>raw</code></a> argument, as is an array of one, <code>List[]</code>,
+at the array and at its component.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;@Nullable <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a><wbr>&lt;T&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#resolveGenericToArgument(java.lang.Class,java.lang.Class)" class="member-name-link">resolveGenericToArgument</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;type,
@@ -346,7 +347,8 @@ wildcard to its bound and a generic array to the array of its raw component.</di
 <a href="../core/type/GenericPlaceholder.html" title="interface in io.micronaut.core.type"><code>GenericPlaceholder</code></a> of the type it erases to with every bound the variable declares, a wildcard a
 <a href="../core/type/WildcardArgument.html" title="interface in io.micronaut.core.type"><code>WildcardArgument</code></a> of the type it is bounded by with its upper and lower bounds, a generic array the
 array of its component carrying the type arguments or the variable of the component, and a generic type
-named without its type arguments a <a href="../core/type/Argument.html#isRawType()"><code>raw</code></a> argument. The conversion is lossless:
+named without its type arguments a <a href="../core/type/Argument.html#isRawType()"><code>raw</code></a> argument, as is an array of one, <code>List[]</code>,
+at the array and at its component. The conversion is lossless:
 <a href="#toExactType(io.micronaut.core.type.Argument)"><code>toExactType(Argument)</code></a> renders the argument back as an equal type.
 
 <p>Unlike <a href="#of(java.lang.reflect.Type)"><code>of(Type)</code></a>, which reads a wildcard as its bound and a generic array as the array of its
@@ -707,10 +709,19 @@ once, with the type arguments the argument gives carried into them - the closure
 holds <code>List&lt;String&gt;</code>, <code>Collection&lt;String&gt;</code> and <code>Iterable&lt;String&gt;</code>, and ends with
 <code>Object</code>. A super type is read as <a href="#ofExact(java.lang.reflect.Type)"><code>ofExact(Type)</code></a> reads one, with the type-use annotations of
 the <code>extends</code> and <code>implements</code> clauses that reach it, as <a href="#resolveGenericToArgument(java.lang.Class,java.lang.Class)"><code>resolveGenericToArgument(Class, Class)</code></a>
-reads one.
+reads one. The order is the one <code>ClassElement.getAllSuperTypes()</code> lists at compile time: the superclass
+and its super types first, then each interface and its super types, in declaration order, <code>Object</code>
+last.
 
 <p>The super types of a variable or of a wildcard are those of the type it is bounded by, and the closure
-of a primitive is the primitive alone.</p></div>
+of a primitive is the primitive alone. The super types of a raw argument, a generic type used without its
+type arguments, are raw, and so are those above a super type written raw (JLS 4.8).</p>
+
+<p>An array is an array of each super type of its component, with the arguments of the component, then,
+for an array of arrays, an array of <code>Object</code>, <code>Cloneable</code> and <code>Serializable</code> of each fewer
+dimension, then <code>Cloneable</code>, <code>Serializable</code> and <code>Object</code> (JLS 4.10.3), as
+<code>ClassElement.getAllSuperTypes()</code> lists them at compile time: <code>String[][]</code> holds
+<code>CharSequence[][]</code>, <code>Object[][]</code> and <code>Object[]</code>.</p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>argument</code> - The argument</dd>
