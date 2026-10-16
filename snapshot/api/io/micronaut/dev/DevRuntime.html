@@ -75,9 +75,19 @@ loadScripts(document, 'script');</script>
 <li><a href="#isReloading()" tabindex="0">isReloading()</a></li>
 <li><a href="#whenReady()" tabindex="0">whenReady()</a></li>
 <li><a href="#reload()" tabindex="0">reload()</a></li>
+<li><a href="#changed(java.util.Collection,java.util.Collection)" tabindex="0">changed(Collection, Collection)</a></li>
 <li><a href="#restart()" tabindex="0">restart()</a></li>
 <li><a href="#awaitGeneration(int,java.time.Duration)" tabindex="0">awaitGeneration(int, Duration)</a></li>
+<li><a href="#startTests()" tabindex="0">startTests()</a></li>
+<li><a href="#requestTests(io.micronaut.dev.TestRequest)" tabindex="0">requestTests(TestRequest)</a></li>
+<li><a href="#watchTests(boolean)" tabindex="0">watchTests(boolean)</a></li>
+<li><a href="#isWatchingTests()" tabindex="0">isWatchingTests()</a></li>
+<li><a href="#lastTestRun()" tabindex="0">lastTestRun()</a></li>
+<li><a href="#testRuns()" tabindex="0">testRuns()</a></li>
+<li><a href="#failedTestClasses()" tabindex="0">failedTestClasses()</a></li>
+<li><a href="#awaitTestRun(int,java.time.Duration)" tabindex="0">awaitTestRun(int, Duration)</a></li>
 <li><a href="#close()" tabindex="0">close()</a></li>
+<li><a href="#awaitClose()" tabindex="0">awaitClose()</a></li>
 </ol>
 </li>
 </ol>
@@ -109,7 +119,7 @@ finds it from any context the application builds. A change is handled as one bat
 runtime's own thread: sources are compiled per language, the class output is compared with the
 previous snapshot, and a difference in classes restarts the application while a difference in
 resources only reaches the resource watches of the running context. A configuration file
-change restarts as well, retaining nothing, until the configuration refresh lands. A failed
+change is refreshed in place, and restarts only when the refresh cannot apply it. A failed
 compilation leaves the running generation as it is and is reported until the next success.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
@@ -137,24 +147,46 @@ compilation leaves the running generation as it is and is reported until the nex
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">The compilers registered as services, those available in this JVM.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../context/ApplicationContext.html" title="interface in io.micronaut.context">ApplicationContext</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitGeneration(int,java.time.Duration)" class="member-name-link">awaitGeneration</a><wbr>(int&nbsp;generation,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;timeout)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitClose()" class="member-name-link">awaitClose</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Waits until the runtime is closed, by a shutdown hook, a key, or a tool.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../context/ApplicationContext.html" title="interface in io.micronaut.context">ApplicationContext</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitGeneration(int,java.time.Duration)" class="member-name-link">awaitGeneration</a><wbr>(int&nbsp;generation,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;timeout)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Waits for a generation's context to start.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="loader/DevClassLoader.html" title="class in io.micronaut.dev.loader">DevClassLoader</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#classLoader()" class="member-name-link">classLoader</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="test/TestRunSummary.html" title="class in io.micronaut.dev.test">TestRunSummary</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#awaitTestRun(int,java.time.Duration)" class="member-name-link">awaitTestRun</a><wbr>(int&nbsp;run,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;timeout)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Waits for a test run to finish, in test mode.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#changed(java.util.Collection,java.util.Collection)" class="member-name-link">changed</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;&nbsp;changed,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;&nbsp;deleted)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Applies a change something other than the watcher reports, a test harness or an IDE: the files are
+sorted into the source and resource roots they are under, enqueued as the watcher would enqueue
+them, behind any batch already pending, and the batch is awaited.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="loader/DevClassLoader.html" title="class in io.micronaut.dev.loader">DevClassLoader</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#classLoader()" class="member-name-link">classLoader</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../context/ApplicationContext.html" title="interface in io.micronaut.context">ApplicationContext</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#context()" class="member-name-link">context</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @Nullable <a href="DevRuntime.html" title="class in io.micronaut.dev">DevRuntime</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#current()" class="member-name-link">current</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../context/ApplicationContext.html" title="interface in io.micronaut.context">ApplicationContext</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#context()" class="member-name-link">context</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @Nullable <a href="DevRuntime.html" title="class in io.micronaut.dev">DevRuntime</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#current()" class="member-name-link">current</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#failedTestClasses()" class="member-name-link">failedTestClasses</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#generation()" class="member-name-link">generation</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -163,8 +195,14 @@ compilation leaves the running generation as it is and is reported until the nex
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Whether a reload is in progress: sources compiling or the application restarting.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="CompileFailure.html" title="class in io.micronaut.dev">CompileFailure</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lastFailure()" class="member-name-link">lastFailure</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isWatchingTests()" class="member-name-link">isWatchingTests</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="CompileFailure.html" title="class in io.micronaut.dev">CompileFailure</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lastFailure()" class="member-name-link">lastFailure</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="test/TestRunSummary.html" title="class in io.micronaut.dev.test">TestRunSummary</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lastTestRun()" class="member-name-link">lastTestRun</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="livereload/LiveReloadServer.html" title="interface in io.micronaut.dev.livereload">LiveReloadServer</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#liveReload()" class="member-name-link">liveReload</a>()</code></div>
@@ -195,25 +233,44 @@ saved without the watcher noticing, or after a failed compilation was fixed else
 <div class="block">Requests a reload without waiting for it: for a caller the reload would stop, such as an endpoint
 of the application.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#restart()" class="member-name-link">restart</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="test/TestRunSummary.html" title="class in io.micronaut.dev.test">TestRunSummary</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#requestTests(io.micronaut.dev.TestRequest)" class="member-name-link">requestTests</a><wbr>(<a href="TestRequest.html" title="enum class in io.micronaut.dev">TestRequest</a>&nbsp;request)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Runs tests a person or a tool asked for, in test mode, behind any change pending, and waits for the run.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#restart()" class="member-name-link">restart</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Restarts the application on a new generation without compiling anything.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retainedCount()" class="member-name-link">retainedCount</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../context/ApplicationContext.html" title="interface in io.micronaut.context">ApplicationContext</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#start(java.lang.String%5B%5D)" class="member-name-link">start</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retainedCount()" class="member-name-link">retainedCount</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../context/ApplicationContext.html" title="interface in io.micronaut.context">ApplicationContext</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#start(java.lang.String%5B%5D)" class="member-name-link">start</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Runs the application and starts watching.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="test/TestRunSummary.html" title="class in io.micronaut.dev.test">TestRunSummary</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startTests()" class="member-name-link">startTests</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Runs the runtime in test mode: watches, compiles what changes, and runs the tests it affects on a new
+generation each time.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="manifest/DevReloadStrategy.html" title="enum class in io.micronaut.dev.manifest">DevReloadStrategy</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#strategy()" class="member-name-link">strategy</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#watchedRoots()" class="member-name-link">watchedRoots</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testRuns()" class="member-name-link">testRuns</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#watchedRoots()" class="member-name-link">watchedRoots</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#watchTests(boolean)" class="member-name-link">watchTests</a><wbr>(boolean&nbsp;watching)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Turns watching on or off, in test mode: while it is off, changes compile but run no test until one is asked for.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class or interface in java.util.concurrent" class="external-link">CompletableFuture</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#whenReady()" class="member-name-link">whenReady</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -470,6 +527,26 @@ generation's main: the reload waits for both</dd>
 </section>
 </li>
 <li>
+<section class="detail" id="changed(java.util.Collection,java.util.Collection)">
+<h3>changed</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">changed</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;&nbsp;changed,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;&nbsp;deleted)</span></div>
+<div class="block">Applies a change something other than the watcher reports, a test harness or an IDE: the files are
+sorted into the source and resource roots they are under, enqueued as the watcher would enqueue
+them, behind any batch already pending, and the batch is awaited. A file under no root is ignored.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>changed</code> - The files written</dd>
+<dd><code>deleted</code> - The files deleted</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="restart()">
 <h3>restart</h3>
 <div class="horizontal-scroll">
@@ -504,6 +581,119 @@ generation's main: the reload waits for both</dd>
 </section>
 </li>
 <li>
+<section class="detail" id="startTests()">
+<h3>startTests</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="test/TestRunSummary.html" title="class in io.micronaut.dev.test">TestRunSummary</a></span>&nbsp;<span class="element-name">startTests</span>()</div>
+<div class="block">Runs the runtime in test mode: watches, compiles what changes, and runs the tests it affects on a new
+generation each time. Returns once the first run, of every test, finished, or at once when the settings ask for
+no first run.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The first run, or null when there was none</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if the manifest is not in test mode or another runtime runs the process</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="requestTests(io.micronaut.dev.TestRequest)">
+<h3>requestTests</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="test/TestRunSummary.html" title="class in io.micronaut.dev.test">TestRunSummary</a></span>&nbsp;<span class="element-name">requestTests</span><wbr><span class="parameters">(<a href="TestRequest.html" title="enum class in io.micronaut.dev">TestRequest</a>&nbsp;request)</span></div>
+<div class="block">Runs tests a person or a tool asked for, in test mode, behind any change pending, and waits for the run.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>request</code> - Which tests</dd>
+<dt>Returns:</dt>
+<dd>The run, or null when nothing ran</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="watchTests(boolean)">
+<h3>watchTests</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">watchTests</span><wbr><span class="parameters">(boolean&nbsp;watching)</span></div>
+<div class="block">Turns watching on or off, in test mode: while it is off, changes compile but run no test until one is asked for.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>watching</code> - Whether a change runs the tests it affects</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isWatchingTests()">
+<h3>isWatchingTests</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isWatchingTests</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether a change runs the tests it affects, in test mode</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="lastTestRun()">
+<h3>lastTestRun</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="test/TestRunSummary.html" title="class in io.micronaut.dev.test">TestRunSummary</a>&gt;</span>&nbsp;<span class="element-name">lastTestRun</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The last test run, in test mode</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="testRuns()">
+<h3>testRuns</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">testRuns</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>How many test runs finished, in test mode</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="failedTestClasses()">
+<h3>failedTestClasses</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">failedTestClasses</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The test classes that failed in their last run, in test mode</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="awaitTestRun(int,java.time.Duration)">
+<h3>awaitTestRun</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="test/TestRunSummary.html" title="class in io.micronaut.dev.test">TestRunSummary</a></span>&nbsp;<span class="element-name">awaitTestRun</span><wbr><span class="parameters">(int&nbsp;run,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;timeout)</span>
+                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/TimeoutException.html" title="class or interface in java.util.concurrent" class="external-link">TimeoutException</a></span></div>
+<div class="block">Waits for a test run to finish, in test mode.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>run</code> - The run, counted from one</dd>
+<dd><code>timeout</code> - How long to wait</dd>
+<dt>Returns:</dt>
+<dd>The run</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/TimeoutException.html" title="class or interface in java.util.concurrent" class="external-link">TimeoutException</a></code> - if it did not finish in time</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="close()">
 <h3>close</h3>
 <div class="horizontal-scroll">
@@ -513,6 +703,21 @@ generation's main: the reload waits for both</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 <dt>Specified by:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/Closeable.html#close()" title="class or interface in java.io" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a></code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="awaitClose()">
+<h3>awaitClose</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">awaitClose</span>()
+                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></span></div>
+<div class="block">Waits until the runtime is closed, by a shutdown hook, a key, or a tool. Test mode runs no application thread to
+keep the JVM alive, so its launcher waits here.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - if the waiting thread is interrupted</dd>
 </dl>
 </div>
 </section>

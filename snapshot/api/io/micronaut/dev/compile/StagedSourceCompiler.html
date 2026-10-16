@@ -65,6 +65,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#runCompilation(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.List)" tabindex="0">runCompilation(CompilationRequest, Set, Set, Path, Path, List)</a></li>
+<li><a href="#compilesEmptyBatches()" tabindex="0">compilesEmptyBatches()</a></li>
 <li><a href="#compile(io.micronaut.dev.compile.CompilationRequest)" tabindex="0">compile(CompilationRequest)</a></li>
 <li><a href="#staging(java.nio.file.Path)" tabindex="0">staging(Path)</a></li>
 <li><a href="#outputsOf(java.nio.file.Path,java.lang.String)" tabindex="0">outputsOf(Path, String)</a></li>
@@ -88,7 +89,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="GroovySourceCompiler.html" title="class in io.micronaut.dev.compile">GroovySourceCompiler</a>, <a href="JavacSourceCompiler.html" title="class in io.micronaut.dev.compile">JavacSourceCompiler</a></code></dd>
+<dd><code><a href="GroovySourceCompiler.html" title="class in io.micronaut.dev.compile">GroovySourceCompiler</a>, <a href="JavacSourceCompiler.html" title="class in io.micronaut.dev.compile">JavacSourceCompiler</a>, <a href="KotlinSourceCompiler.html" title="class in io.micronaut.dev.compile">KotlinSourceCompiler</a></code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
@@ -171,26 +172,34 @@ classes a source produces is learnt from the compiler and kept beside the class 
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Compiles the request.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>protected static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#outputsOf(java.nio.file.Path,java.lang.String)" class="member-name-link">outputsOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;classOutput,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#compilesEmptyBatches()" class="member-name-link">compilesEmptyBatches</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether a batch that selects no source to compile, one that only deletes sources, still runs
+<a href="#runCompilation(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.List)"><code>runCompilation(CompilationRequest, Set, Set, Path, Path, List)</code></a>, with an empty set: a compiler whose processors keep state between runs and
+regenerate what depends on every source, as KSP does, needs to see the deletion, and what the run
+produces replaces what the deleted sources produced.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>protected static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#outputsOf(java.nio.file.Path,java.lang.String)" class="member-name-link">outputsOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;classOutput,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">What the output holds for a top-level class: its class files and those of its nested classes,
 the classes Micronaut generated for it, and its entries in the <code>META-INF/micronaut</code> index.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract @Nullable <a href="StagedSourceCompiler.Produced.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler.Produced</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#runCompilation(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.List)" class="member-name-link">runCompilation</a><wbr>(<a href="CompilationRequest.html" title="class in io.micronaut.dev.compile">CompilationRequest</a>&nbsp;request,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract @Nullable <a href="StagedSourceCompiler.Produced.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler.Produced</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#runCompilation(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.List)" class="member-name-link">runCompilation</a><wbr>(<a href="CompilationRequest.html" title="class in io.micronaut.dev.compile">CompilationRequest</a>&nbsp;request,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;&nbsp;toCompile,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;hiddenClasses,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;staging,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;generatedStaging,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="CompileDiagnostic.html" title="class in io.micronaut.dev.compile">CompileDiagnostic</a>&gt;&nbsp;diagnostics)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Runs the compiler on the selected sources.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>protected static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#staging(java.nio.file.Path)" class="member-name-link">staging</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;output)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>protected static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#staging(java.nio.file.Path)" class="member-name-link">staging</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;output)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">The staging directory beside an output directory.</div>
 </div>
 </div>
@@ -201,7 +210,7 @@ the classes Micronaut generated for it, and its entries in the <code>META-INF/mi
 <code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.micronaut.dev.compile.SourceCompiler">Methods inherited from interface&nbsp;<a href="SourceCompiler.html#method-summary" title="interface in io.micronaut.dev.compile">SourceCompiler</a></h3>
-<code><a href="SourceCompiler.html#close()" title="close()">close</a>, <a href="SourceCompiler.html#isAvailable()" title="isAvailable()">isAvailable</a>, <a href="SourceCompiler.html#kinds()" title="kinds()">kinds</a></code></div>
+<code><a href="SourceCompiler.html#close()" title="close()">close</a>, <a href="SourceCompiler.html#isAvailable()" title="isAvailable()">isAvailable</a>, <a href="SourceCompiler.html#jointKinds()" title="jointKinds()">jointKinds</a>, <a href="SourceCompiler.html#kinds()" title="kinds()">kinds</a></code></div>
 </section>
 </li>
 </ul>
@@ -254,6 +263,22 @@ the classes Micronaut generated for it, and its entries in the <code>META-INF/mi
 <dd>What was produced, by source, or null when the compilation failed</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if the compiler cannot read or write</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="compilesEmptyBatches()">
+<h3>compilesEmptyBatches</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">compilesEmptyBatches</span>()</div>
+<div class="block">Whether a batch that selects no source to compile, one that only deletes sources, still runs
+<a href="#runCompilation(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.List)"><code>runCompilation(CompilationRequest, Set, Set, Path, Path, List)</code></a>, with an empty set: a compiler whose processors keep state between runs and
+regenerate what depends on every source, as KSP does, needs to see the deletion, and what the run
+produces replaces what the deleted sources produced. By default such a batch only removes.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>True to run the compilation for an empty batch</dd>
 </dl>
 </div>
 </section>

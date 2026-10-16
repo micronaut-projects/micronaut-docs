@@ -60,6 +60,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#field-detail" tabindex="0">Field Details</a>
 <ol class="toc-list">
 <li><a href="#MANIFEST_OPTION" tabindex="0">MANIFEST_OPTION</a></li>
+<li><a href="#RUNNING" tabindex="0">RUNNING</a></li>
 </ol>
 </li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
@@ -71,6 +72,7 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#main(java.lang.String%5B%5D)" tabindex="0">main(String[])</a></li>
 <li><a href="#run(java.lang.String%5B%5D)" tabindex="0">run(String[])</a></li>
+<li><a href="#runForStatus(java.lang.String%5B%5D)" tabindex="0">runForStatus(String[])</a></li>
 <li><a href="#launch(io.micronaut.dev.manifest.DevManifest,java.lang.String%5B%5D)" tabindex="0">launch(DevManifest, String[])</a></li>
 <li><a href="#createClassLoader(io.micronaut.dev.manifest.DevManifest)" tabindex="0">createClassLoader(DevManifest)</a></li>
 <li><a href="#parentClassLoader()" tabindex="0">parentClassLoader()</a></li>
@@ -95,7 +97,7 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">The entry point of development mode: <code>java -cp @runtime.argfile io.micronaut.dev.MicronautDevMain --manifest build/micronaut-dev/dev.properties</code>.
 Reads the manifest, builds the reloadable class loader over the project's outputs, starts the
-<a href="DevRuntime.html" title="class in io.micronaut.dev"><code>DevRuntime</code></a> and runs the application's own main through it.
+<a href="DevRuntime.html" title="class in io.micronaut.dev"><code>DevRuntime</code></a> and runs the application's own main through it, or in test mode its tests.
 
 <p>Open for subclassing: a launcher for another language, such as Pyronaut, overrides the template
 methods to add compilers, choose the loader's roots, or run something other than a Java main.</p></div>
@@ -122,6 +124,11 @@ methods to add compilers, choose the loader's roots, or run something other than
 <div class="col-second even-row-color"><code><a href="#MANIFEST_OPTION" class="member-name-link">MANIFEST_OPTION</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">The argument naming the manifest.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final int</code></div>
+<div class="col-second odd-row-color"><code><a href="#RUNNING" class="member-name-link">RUNNING</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">What <a href="#runForStatus(java.lang.String%5B%5D)"><code>runForStatus(String[])</code></a> returns while the runtime keeps running in the background.</div>
 </div>
 </div>
 </section>
@@ -189,6 +196,12 @@ its <code>main</code>.</div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Runs the launcher with the given arguments and keeps the JVM alive while the application runs.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runForStatus(java.lang.String%5B%5D)" class="member-name-link">runForStatus</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Runs the launcher with the given arguments and keeps the JVM alive while the application, or in test mode the
+watching, runs.</div>
+</div>
 </div>
 </div>
 </div>
@@ -217,6 +230,23 @@ its <code>main</code>.</div>
 <dd>
 <ul class="tag-list">
 <li><a href="../../../constant-values.html#io.micronaut.dev.MicronautDevMain.MANIFEST_OPTION">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="RUNNING">
+<h3>RUNNING</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">RUNNING</span></div>
+<div class="block">What <a href="#runForStatus(java.lang.String%5B%5D)"><code>runForStatus(String[])</code></a> returns while the runtime keeps running in the background.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../constant-values.html#io.micronaut.dev.MicronautDevMain.RUNNING">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
@@ -273,6 +303,28 @@ its <code>main</code>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>args</code> - The arguments</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></code> - if the launch fails</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="runForStatus(java.lang.String[])">
+<h3>runForStatus</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">runForStatus</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</span>
+                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></span></div>
+<div class="block">Runs the launcher with the given arguments and keeps the JVM alive while the application, or in test mode the
+watching, runs. In test mode the call returns once the runtime is closed, with the status the process exits with:
+0 when the last run passed, 1 otherwise; with <code>micronaut.dev.test.once</code> the tests run once first. On a terminal, test mode also reads single keys: space
+runs the last tests again, <code>a</code> every test, <code>f</code> the failures, <code>w</code> turns watching on or off, and
+<code>q</code> exits with the last run's status.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>args</code> - The arguments</dd>
+<dt>Returns:</dt>
+<dd>The status to exit with, or <a href="#RUNNING"><code>RUNNING</code></a> while the runtime runs in the background</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></code> - if the launch fails</dd>
 </dl>

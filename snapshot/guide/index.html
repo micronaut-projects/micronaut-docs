@@ -691,6 +691,8 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-devModeWatch"><a href="#devModeWatch"><strong>13.3</strong><span>Watching Beans, Configuration and Resources</span></a></div>
         
+        <div class="toc-item" style="margin-left:10px" id="toc-item-devModeTest"><a href="#devModeTest"><strong>13.4</strong><span>Continuous Testing</span></a></div>
+        
         <div class="toc-item" style="margin-left:0px" id="toc-item-commandLineApps"><a href="#commandLineApps"><strong>14</strong><span>Standalone Command Line Applications</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-picocli"><a href="#picocli"><strong>14.1</strong><span>Picocli Support</span></a></div>
@@ -64882,6 +64884,9 @@ micronaut.dev.retain=javax.sql.DataSource</code></pre>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>On macOS, put <code>micronaut-runtime-osx</code> on the development runtime classpath as well, which the build plugins do. The launcher then watches through the native file system events instead of the JDK&#8217;s polling service, and a save is noticed at once rather than seconds later.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -65016,6 +65021,49 @@ Everything under the manifest&#8217;s <code>micronaut.dev.</code> keys can be se
 </div>
 </div>
 <div class="sect1">
+<h2 id="_compilers">Compilers</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The launcher compiles each language with a compiler of its own, all of them incrementally. The changed sources and every source whose classes reference them are compiled together against the previous output, and the outputs replace the old ones only when the compilation succeeded.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Java compiles through the JDK&#8217;s own <code>javac</code>, with the annotation processors of the processor path.</p>
+</li>
+<li>
+<p>Groovy compiles through the project&#8217;s own Groovy on the launch classpath, with the Micronaut AST transformations the compile classpath carries.</p>
+</li>
+<li>
+<p>Kotlin compiles through the Kotlin Build Tools API when <code>kotlin-build-tools-impl</code> is on the launch classpath at the project&#8217;s Kotlin version. It runs the symbol processors of the processor path first when <code>symbol-processing-aa-embeddable</code> is there at the project&#8217;s KSP version. The <code>-A</code> options of the language pass to the processors, and the other options to <code>kotlinc</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The build plugins put these artifacts on the launch classpath for the languages the project uses, so <code>micronaut-dev</code> itself depends on neither Kotlin nor Groovy.</p>
+</div>
+<div class="paragraph">
+<p>Python compiles through the Pyronaut compiler of <code>micronaut-inject-python</code> when it is on the launch classpath:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The compiler generates the Java stubs and bean definitions of the Python modules, and compiles them in one <code>javac</code> run with the module&#8217;s Java sources, since each references the other. When the Java sources share the Python class output, the Python compiler compiles them too, with the options of both languages, and <code>javac</code> never runs on them alone.</p>
+</li>
+<li>
+<p>The compiler plans its incremental work itself and keeps its state beside the class output. In one transaction, it then copies what changed into the class output and the generated stubs into the generated sources directory, and removes what it no longer produces.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Python modules are resources of the class output, so a Python edit starts a new generation, whose GraalPy context imports the new modules; the GraalPy engine stays loaded.</p>
+</div>
+<div class="paragraph">
+<p>Reloading needs a JVM: a native image can neither define the classes of a new generation nor redefine a class, so the native toolchain of Pyronaut restarts the process instead.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_livereload">LiveReload</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -65052,6 +65100,25 @@ Everything under the manifest&#8217;s <code>micronaut.dev.</code> keys can be se
 </div>
 <div class="paragraph">
 <p>A page of any other site is refused, so that a site the developer visits cannot follow the reloads. This holds for the script a browser extension injects too, since it runs in the page and connects with the page&#8217;s origin. Open the application through <code>localhost</code>, the loopback address or a name under <code>.localhost</code>, such as <code>myapp.localhost</code>, which browsers resolve to the loopback address.</p>
+</div>
+<div class="sect2">
+<h3 id="_serving_other_pages">Serving other pages</h3>
+<div class="paragraph">
+<p>The server also serves pages that are not the application&#8217;s, such as a test report:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>LiveReloadServer.serve(prefix, directory)</code> mounts a directory at an <code><a href="http://localhost:35729" class="bare">http://localhost:35729</a></code> address, with the client script in its HTML. Nothing outside the directory is served.</p>
+</li>
+<li>
+<p>A page that follows something as it happens subscribes to a topic of the event channel, <code>ws://localhost:35729/micronaut-dev/events?topic=&lt;topic&gt;</code>, and receives the JSON that <code>LiveReloadServer.publish(topic, json)</code> sends. The channel is apart from the LiveReload socket, whose clients reject commands they do not know.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A component reaches the server through <code>DevRuntime.current().liveReload()</code>, in test mode too.</p>
+</div>
 </div>
 </div>
 </div>
@@ -65134,7 +65201,26 @@ Everything under the manifest&#8217;s <code>micronaut.dev.</code> keys can be se
 <p>A changed template, static file or message bundle does not restart anything: it reaches the beans that watch resources of that kind (see the next section).</p>
 </div>
 <div class="paragraph">
-<p>A changed configuration file restarts the application, retaining nothing.</p>
+<p>A changed configuration file is applied in place, without a new generation. The configuration is refreshed: the configuration beans are bound again, the refreshable beans are disposed of, and the configuration watches are told.</p>
+</div>
+<div class="paragraph">
+<p>The application restarts only when the refresh cannot apply the change:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>a configuration watch answers <code>REQUIRES_RESTART</code>;</p>
+</li>
+<li>
+<p>a singleton received a changed property through <code>@Value</code> or <code>@Property</code> rather than a configuration bean;</p>
+</li>
+<li>
+<p>a definition&#8217;s <code>@Requires</code> names a changed property, whose presence the change may have flipped.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A bean retained across restarts that watched a changed prefix is not kept when that restart comes.</p>
 </div>
 </div>
 </div>
@@ -65159,6 +65245,9 @@ Everything under the manifest&#8217;s <code>micronaut.dev.</code> keys can be se
 </div>
 <div class="paragraph">
 <p>A module declares which of its beans are retained with <a href="../api/io/micronaut/context/annotation/Retain.html">Retain</a>, on the bean&#8217;s class or on the factory method that produces it. A module that defines a connection pool does so, so that a restart keeps the pool, and an in-memory database with it. The bean is dropped and created again when the configuration under one of the prefixes its <code>invalidatedBy</code> names changes.</p>
+</div>
+<div class="paragraph">
+<p>A configuration bean the retained bean received under one of those prefixes, such as its <code>@ConfigurationProperties</code>, does not keep it from being retained, and is not retained with it. Each generation binds it again, so the retained bean must copy the values it needs rather than keep the configuration bean.</p>
 </div>
 <div class="paragraph">
 <p>Set <code>micronaut.dev.retain-annotated=false</code> to retain only what <code>micronaut.dev.retain</code> names.</p>
@@ -65964,6 +66053,9 @@ final class SerializerLookup {
 <div class="paragraph">
 <p>Resources are watched the same way: a template engine registers <code>resources(ResourceKind.VIEWS).include("<strong>*/</strong>.html").watch(change &#8594; &#8230;&#8203;)</code> and clears what the change affects, rather than filtering an event every engine receives.</p>
 </div>
+<div class="paragraph">
+<p>The build tools give <code>src/main/resources</code> as the configuration root, so a file kept there, such as a GraphQL schema, is watched with <code>resources(ResourceKind.CONFIG).include("<strong>*/</strong>.graphqls")</code>. Every change under that root reaches the watches of <code>CONFIG</code>, the configuration files among them. Only a configuration file refreshes the configuration: a file the environment looked for when it read its configuration, found or not, as <code>Environment.getConfigurationFiles()</code> lists them. These are the <code>application</code> and <code>bootstrap</code> files, plain or for an environment such as <code>application-dev.yml</code>, of each configuration location, in each format a property source loader reads, the files <code>micronaut.config.files</code> names, and the files a <code>micronaut.config.import</code> imports, an optional import of a file created later included.</p>
+</div>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -65975,6 +66067,262 @@ Existing <a href="../api/io/micronaut/context/processor/ExecutableMethodProcesso
 </td>
 </tr>
 </table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_testing_a_module_against_a_reload">Testing a module against a reload</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>micronaut-dev-tck</code> is a small TCK a module runs in its own build. Add <code>micronaut-dev-tck</code> and <code>micronaut-inject-java</code> to the test classpath to use it. A harness:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>writes a project into a directory;</p>
+</li>
+<li>
+<p>compiles it with the annotation processor on the test classpath;</p>
+</li>
+<li>
+<p>starts it through the development runtime, in the test&#8217;s JVM;</p>
+</li>
+<li>
+<p>reloads it after an edit.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>A test therefore sees two real generations. The module under test is on the test classpath, so it is parent-tier, as it is for an application; the sources the test writes are the reloadable tier.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Reloading a module&#8217;s registry</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">try (ReloadHarness harness = ReloadHarness.inDirectory(tempDir)) {
+    harness.property("spec.name", "GreetingRegistryReloadTest");
+    harness.property("micronaut.server.port", "-1");
+    harness.source("example.Greeter", greeter("one"));
+    harness.start();
+    harness.source("example.Greeter", greeter("two"));
+    harness.reload();
+    ReloadTck.assertFollowsReload(harness, context -&gt; context.getBean(GreetingRegistry.class).current());
+    ReloadTck.assertRetiredGenerationsCollected(harness);
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Reloading a module&#8217;s registry</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">ReloadHarness.inDirectory(tempDir).use { harness -&gt;
+    harness.property("spec.name", "GreetingRegistryReloadTest")
+    harness.property("micronaut.server.port", "-1")
+    harness.source("example.Greeter", greeter("one"))
+    harness.start()
+    harness.source("example.Greeter", greeter("two"))
+    harness.reload()
+    ReloadTck.assertFollowsReload(harness) { context -&gt; context.getBean(GreetingRegistry::class.java).current() }
+    ReloadTck.assertRetiredGenerationsCollected(harness)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Reloading a module&#8217;s registry</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">try (ReloadHarness harness = ReloadHarness.inDirectory(tempDir)) {
+    harness.property("spec.name", "GreetingRegistryReloadTest")
+    harness.property("micronaut.server.port", "-1")
+    harness.source("example.Greeter", greeter("one"))
+    harness.start()
+    harness.source("example.Greeter", greeter("two"))
+    harness.reload()
+    ReloadTck.assertFollowsReload(harness) { context -&gt; context.getBean(GreetingRegistry).current() }
+    ReloadTck.assertRetiredGenerationsCollected(harness)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The sources the test writes are Java, which the harness compiles. Here each generation&#8217;s <code>Greeter</code> implements a type of the module under test:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">The source of each generation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">private static String greeter(String answer) {
+    return """
+        package example;
+
+        @jakarta.inject.Singleton
+        public class Greeter implements io.micronaut.docs.devmode.tck.Greeting {
+            @Override
+            public String greet() {
+                return "%s";
+            }
+        }
+        """.formatted(answer);
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">The source of each generation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">private fun greeter(answer: String) = """
+    package example;
+
+    @jakarta.inject.Singleton
+    public class Greeter implements io.micronaut.docs.devmode.tck.Greeting {
+        @Override
+        public String greet() {
+            return "$answer";
+        }
+    }
+    """.trimIndent()</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">The source of each generation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">private static String greeter(String answer) {
+    """\
+    package example;
+
+    @jakarta.inject.Singleton
+    public class Greeter implements io.micronaut.docs.devmode.tck.Greeting {
+        @Override
+        public String greet() {
+            return "${answer}";
+        }
+    }
+    """.stripIndent()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="../api/io/micronaut/dev/tck/ReloadTck.html">ReloadTck</a> holds the assertions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>assertFollowsReload</code> checks that what a registry hands out after the reload is the new generation&#8217;s, and names the fix when it is not: watch the definitions, or resolve through the context on use.</p>
+</li>
+<li>
+<p><code>assertRetained</code> checks that a bean the module retains is the same instance the new generation serves.</p>
+</li>
+<li>
+<p><code>assertRetiredGenerationsCollected</code> checks that no retired generation is reachable once the garbage collector ran, which a static cache or an unstopped thread would prevent.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+<h2 id="devModeTest"><a class="anchor" href="#devModeTest"></a>13.4 Continuous Testing</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/devMode/devModeTest.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In test mode the development runtime runs a project&#8217;s tests instead of its application. It watches the sources, compiles a change in process, and runs the tests the change can affect on a new generation, in the same JVM. The library jars, the compilers, the JIT and expensive parent-tier state therefore stay warm from one run to the next.</p>
+</div>
+<div class="paragraph">
+<p>The build plugins start it with <code>./gradlew mnTest</code> and <code>mvn mn:test</code>.</p>
+</div>
+<div class="sect1">
+<h2 id="_the_manifest">The manifest</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The manifest switches the mode and names the test sources, their output, and how they run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.dev.mode=test
+micronaut.dev.test.sources.java=src/test/java
+micronaut.dev.test.compile.java.output=build/classes/java/test
+micronaut.dev.test.resources.config=src/test/resources
+micronaut.dev.test.runner=junit-platform
+micronaut.dev.test.selection=affected
+micronaut.dev.test.reports=build/test-results/mnTest
+micronaut.dev.test.filter=com.example.*Test</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The test sources compile with the application&#8217;s compilers, against the application&#8217;s output. Both outputs are the reloadable tier, so a test and the classes it tests always come from one generation.</p>
+</div>
+<div class="paragraph">
+<p>Test-only libraries, JUnit and <code>micronaut-test</code> among them, are on the launch classpath. Without <code>test.compile-classpath</code> or <code>test.processor-path</code>, the tests compile with the application&#8217;s.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_which_tests_run">Which tests run</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A change runs the test classes that reference a changed class, directly or through other classes, as the class files tell, together with the classes that failed in their last run.</p>
+</div>
+<div class="paragraph">
+<p>Every test runs:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>after a change of resources or configuration;</p>
+</li>
+<li>
+<p>when a changed class declares compile-time constants, which javac inlines without a reference to follow;</p>
+</li>
+<li>
+<p>with <code>test.selection=all</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A change that does not compile runs nothing and is reported, and the last results stand.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_console">The console</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>On a terminal, single keys ask for runs:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>space runs the last tests again;</p>
+</li>
+<li>
+<p><code>a</code> runs every test;</p>
+</li>
+<li>
+<p><code>f</code> runs the failures;</p>
+</li>
+<li>
+<p><code>w</code> turns watching on or off;</p>
+</li>
+<li>
+<p><code>q</code> exits with the last run&#8217;s status.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>With <code>test.once=true</code> the tests run once, and the launcher exits with their status.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_test_runners_and_reports">Test runners and reports</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Test execution is pluggable: a <code>TestRunner</code> registered as a service and named by <code>test.runner</code> runs the selected tests and streams their events.</p>
+</div>
+<div class="paragraph">
+<p>The JUnit Platform runner is built in. It runs every engine on the classpath, from Jupiter and Spock to Pyronaut&#8217;s pytest engine, when <code>junit-platform-launcher</code> is on the launch classpath.</p>
+</div>
+<div class="paragraph">
+<p>The events become JUnit XML reports, one <code>TEST-&lt;class&gt;.xml</code> per class in the Surefire shape, which every CI server and IDE reads. They also go to every <code>TestReportListener</code> registered as a service, such as an HTML report.</p>
 </div>
 </div>
 </div>

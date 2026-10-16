@@ -58,6 +58,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#kinds()" tabindex="0">kinds()</a></li>
+<li><a href="#jointKinds()" tabindex="0">jointKinds()</a></li>
 <li><a href="#isAvailable()" tabindex="0">isAvailable()</a></li>
 <li><a href="#compile(io.micronaut.dev.compile.CompilationRequest)" tabindex="0">compile(CompilationRequest)</a></li>
 <li><a href="#close()" tabindex="0">close()</a></li>
@@ -77,7 +78,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="GroovySourceCompiler.html" title="class in io.micronaut.dev.compile">GroovySourceCompiler</a>, <a href="JavacSourceCompiler.html" title="class in io.micronaut.dev.compile">JavacSourceCompiler</a>, <a href="StagedSourceCompiler.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler</a></code></dd>
+<dd><code><a href="GroovySourceCompiler.html" title="class in io.micronaut.dev.compile">GroovySourceCompiler</a>, <a href="JavacSourceCompiler.html" title="class in io.micronaut.dev.compile">JavacSourceCompiler</a>, <a href="KotlinSourceCompiler.html" title="class in io.micronaut.dev.compile">KotlinSourceCompiler</a>, <a href="PythonSourceCompiler.html" title="class in io.micronaut.dev.compile">PythonSourceCompiler</a>, <a href="StagedSourceCompiler.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler</a></code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
@@ -124,9 +125,16 @@ requests (loaded processors, a compiler session) and releases it when closed.</p
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Whether the compiler can run in this JVM.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#kinds()" class="member-name-link">kinds</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#jointKinds()" class="member-name-link">jointKinds</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">The languages this compiler compiles together with its own when they share its class output: the
+Python compiler compiles the Java sources of a Python module, since the stubs it generates and the
+Java sources reference each other.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#kinds()" class="member-name-link">kinds</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -149,6 +157,22 @@ requests (loaded processors, a compiler session) and releases it when closed.</p
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The languages this compiler handles</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="jointKinds()">
+<h3>jointKinds</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&gt;</span>&nbsp;<span class="element-name">jointKinds</span>()</div>
+<div class="block">The languages this compiler compiles together with its own when they share its class output: the
+Python compiler compiles the Java sources of a Python module, since the stubs it generates and the
+Java sources reference each other. Such a language is not compiled on its own: its roots are in
+this compiler's requests and its changes come with them.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The languages, none by default</dd>
 </dl>
 </div>
 </section>

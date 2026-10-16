@@ -59,12 +59,15 @@ loadScripts(document, 'script');</script>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
 <li><a href="#%3Cinit%3E(java.util.List,io.micronaut.management.endpoint.EndpointDefaultConfiguration,io.micronaut.core.value.PropertyResolver)" tabindex="0">EndpointSensitivityProcessor(List, EndpointDefaultConfiguration, PropertyResolver)</a></li>
+<li><a href="#%3Cinit%3E(java.util.List,io.micronaut.management.endpoint.EndpointDefaultConfiguration,io.micronaut.core.value.PropertyResolver,io.micronaut.context.BeanContext)" tabindex="0">EndpointSensitivityProcessor(List, EndpointDefaultConfiguration, PropertyResolver, BeanContext)</a></li>
 </ol>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
+<li><a href="#close()" tabindex="0">close()</a></li>
 <li><a href="#getEndpointMethods()" tabindex="0">getEndpointMethods()</a></li>
 <li><a href="#process(io.micronaut.inject.BeanDefinition,io.micronaut.context.BeanContext)" tabindex="0">process(BeanDefinition, BeanContext)</a></li>
+<li><a href="#onChange(io.micronaut.context.watch.BeanDefinitionChange)" tabindex="0">onChange(BeanDefinitionChange)</a></li>
 </ol>
 </li>
 </ol>
@@ -80,18 +83,22 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="../../context/processor/BeanDefinitionProcessor.html" title="interface in io.micronaut.context.processor">BeanDefinitionProcessor</a>&lt;<a href="annotation/Endpoint.html" title="annotation interface in io.micronaut.management.endpoint.annotation">Endpoint</a>&gt;</code></dd>
+<dd><code><a href="../../context/processor/BeanDefinitionProcessor.html" title="interface in io.micronaut.context.processor">BeanDefinitionProcessor</a>&lt;<a href="annotation/Endpoint.html" title="annotation interface in io.micronaut.management.endpoint.annotation">Endpoint</a>&gt;, <a href="../../context/watch/BeanDefinitionWatcher.html" title="interface in io.micronaut.context.watch">BeanDefinitionWatcher</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/inject/Singleton.html" title="class or interface in jakarta.inject" class="external-link">@Singleton</a>
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">EndpointSensitivityProcessor</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements <a href="../../context/processor/BeanDefinitionProcessor.html" title="interface in io.micronaut.context.processor">BeanDefinitionProcessor</a>&lt;<a href="annotation/Endpoint.html" title="annotation interface in io.micronaut.management.endpoint.annotation">Endpoint</a>&gt;</span></div>
-<div class="block">Finds any sensitive endpoints.</div>
+implements <a href="../../context/processor/BeanDefinitionProcessor.html" title="interface in io.micronaut.context.processor">BeanDefinitionProcessor</a>&lt;<a href="annotation/Endpoint.html" title="annotation interface in io.micronaut.management.endpoint.annotation">Endpoint</a>&gt;, <a href="../../context/watch/BeanDefinitionWatcher.html" title="interface in io.micronaut.context.watch">BeanDefinitionWatcher</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</span></div>
+<div class="block">Finds any sensitive endpoints, and keeps the answer current: as a watcher of the endpoint definitions
+and of the <code>endpoints</code> configuration when the context can be watched, an endpoint that went
+leaves the map and a sensitivity setting that changed is applied, and as a processor otherwise.</div>
 <dl class="notes">
+<dt>Since:</dt>
+<dd>1.0</dd>
 <dt>Author:</dt>
-<dd>Sergio del Amo</dd>
+<dd>James Kleeh</dd>
 </dl>
 </div>
 </section>
@@ -109,8 +116,17 @@ implements <a href="../../context/processor/BeanDefinitionProcessor.html" title=
  <a href="EndpointDefaultConfiguration.html" title="class in io.micronaut.management.endpoint">EndpointDefaultConfiguration</a>&nbsp;defaultConfiguration,
  <a href="../../core/value/PropertyResolver.html" title="interface in io.micronaut.core.value">PropertyResolver</a>&nbsp;propertyResolver)</code></div>
 <div class="col-last even-row-color">
+<div class="block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">Use <a href="#%3Cinit%3E(java.util.List,io.micronaut.management.endpoint.EndpointDefaultConfiguration,io.micronaut.core.value.PropertyResolver,io.micronaut.context.BeanContext)"><code>EndpointSensitivityProcessor(List, EndpointDefaultConfiguration, PropertyResolver, BeanContext)</code></a></div>
+</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.util.List,io.micronaut.management.endpoint.EndpointDefaultConfiguration,io.micronaut.core.value.PropertyResolver,io.micronaut.context.BeanContext)" class="member-name-link">EndpointSensitivityProcessor</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="EndpointConfiguration.html" title="class in io.micronaut.management.endpoint">EndpointConfiguration</a>&gt;&nbsp;endpointConfigurations,
+ <a href="EndpointDefaultConfiguration.html" title="class in io.micronaut.management.endpoint">EndpointDefaultConfiguration</a>&nbsp;defaultConfiguration,
+ <a href="../../core/value/PropertyResolver.html" title="interface in io.micronaut.core.value">PropertyResolver</a>&nbsp;propertyResolver,
+ @Nullable <a href="../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Constructs with the existing and default endpoint configurations used to determine if a given endpoint is
-sensitive.</div>
+sensitive, and the context whose endpoints and configuration are watched.</div>
 </div>
 </div>
 </section>
@@ -126,9 +142,20 @@ sensitive.</div>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject">ExecutableMethod</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getEndpointMethods()" class="member-name-link">getEndpointMethods</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Closes the configuration watches, which outlive the creation of the processor.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject">ExecutableMethod</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getEndpointMethods()" class="member-name-link">getEndpointMethods</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onChange(io.micronaut.context.watch.BeanDefinitionChange)" class="member-name-link">onChange</a><wbr>(<a href="../../context/watch/BeanDefinitionChange.html" title="class in io.micronaut.context.watch">BeanDefinitionChange</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;change)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Called once per batch: first with every definition selected, and afterwards whenever one is added or
+removed.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#process(io.micronaut.inject.BeanDefinition,io.micronaut.context.BeanContext)" class="member-name-link">process</a><wbr>(<a href="../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&nbsp;beanDefinition,
  <a href="../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext)</code></div>
@@ -156,10 +183,14 @@ sensitive.</div>
 <section class="detail" id="&lt;init&gt;(java.util.List,io.micronaut.management.endpoint.EndpointDefaultConfiguration,io.micronaut.core.value.PropertyResolver)">
 <h3>EndpointSensitivityProcessor</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/inject/Inject.html" title="class or interface in jakarta.inject" class="external-link">@Inject</a>
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html#since()" title="class or interface in java.lang" class="external-link">since</a>="5.3.0",
+            <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Deprecated.html#forRemoval()" title="class or interface in java.lang" class="external-link">forRemoval</a>=true)
 </span><span class="modifiers">public</span>&nbsp;<span class="element-name">EndpointSensitivityProcessor</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="EndpointConfiguration.html" title="class in io.micronaut.management.endpoint">EndpointConfiguration</a>&gt;&nbsp;endpointConfigurations,
  <a href="EndpointDefaultConfiguration.html" title="class in io.micronaut.management.endpoint">EndpointDefaultConfiguration</a>&nbsp;defaultConfiguration,
  <a href="../../core/value/PropertyResolver.html" title="interface in io.micronaut.core.value">PropertyResolver</a>&nbsp;propertyResolver)</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">Use <a href="#%3Cinit%3E(java.util.List,io.micronaut.management.endpoint.EndpointDefaultConfiguration,io.micronaut.core.value.PropertyResolver,io.micronaut.context.BeanContext)"><code>EndpointSensitivityProcessor(List, EndpointDefaultConfiguration, PropertyResolver, BeanContext)</code></a></div>
+</div>
 <div class="block">Constructs with the existing and default endpoint configurations used to determine if a given endpoint is
 sensitive.</div>
 <dl class="notes">
@@ -167,6 +198,29 @@ sensitive.</div>
 <dd><code>endpointConfigurations</code> - The endpoint configurations</dd>
 <dd><code>defaultConfiguration</code> - The default endpoint configuration</dd>
 <dd><code>propertyResolver</code> - The property resolver</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(java.util.List,io.micronaut.management.endpoint.EndpointDefaultConfiguration,io.micronaut.core.value.PropertyResolver,io.micronaut.context.BeanContext)">
+<h3>EndpointSensitivityProcessor</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/inject/Inject.html" title="class or interface in jakarta.inject" class="external-link">@Inject</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="element-name">EndpointSensitivityProcessor</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="EndpointConfiguration.html" title="class in io.micronaut.management.endpoint">EndpointConfiguration</a>&gt;&nbsp;endpointConfigurations,
+ <a href="EndpointDefaultConfiguration.html" title="class in io.micronaut.management.endpoint">EndpointDefaultConfiguration</a>&nbsp;defaultConfiguration,
+ <a href="../../core/value/PropertyResolver.html" title="interface in io.micronaut.core.value">PropertyResolver</a>&nbsp;propertyResolver,
+ @Nullable <a href="../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext)</span></div>
+<div class="block">Constructs with the existing and default endpoint configurations used to determine if a given endpoint is
+sensitive, and the context whose endpoints and configuration are watched.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>endpointConfigurations</code> - The endpoint configurations</dd>
+<dd><code>defaultConfiguration</code> - The default endpoint configuration</dd>
+<dd><code>propertyResolver</code> - The property resolver</dd>
+<dd><code>beanContext</code> - The bean context</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>
@@ -179,6 +233,16 @@ sensitive.</div>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="close()">
+<h3>close</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/annotation/PreDestroy.html" title="class or interface in jakarta.annotation" class="external-link">@PreDestroy</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()</div>
+<div class="block">Closes the configuration watches, which outlive the creation of the processor.</div>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="getEndpointMethods()">
 <h3>getEndpointMethods</h3>
@@ -206,6 +270,23 @@ the sensitive configuration for the endpoint.</dd>
 <dt>Parameters:</dt>
 <dd><code>beanDefinition</code> - The bean definition</dd>
 <dd><code>beanContext</code> - The bean context</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="onChange(io.micronaut.context.watch.BeanDefinitionChange)">
+<h3>onChange</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onChange</span><wbr><span class="parameters">(<a href="../../context/watch/BeanDefinitionChange.html" title="class in io.micronaut.context.watch">BeanDefinitionChange</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;change)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../context/watch/BeanDefinitionWatcher.html#onChange(io.micronaut.context.watch.BeanDefinitionChange)">BeanDefinitionWatcher</a></code></span></div>
+<div class="block">Called once per batch: first with every definition selected, and afterwards whenever one is added or
+removed. A bean of an added definition can be obtained from the context inside this call.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../context/watch/BeanDefinitionWatcher.html#onChange(io.micronaut.context.watch.BeanDefinitionChange)">onChange</a></code>&nbsp;in interface&nbsp;<code><a href="../../context/watch/BeanDefinitionWatcher.html" title="interface in io.micronaut.context.watch">BeanDefinitionWatcher</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></dd>
+<dt>Parameters:</dt>
+<dd><code>change</code> - The change</dd>
 </dl>
 </div>
 </section>
