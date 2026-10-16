@@ -787,21 +787,23 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-extendingJavaClasses"><a href="#extendingJavaClasses"><strong>17.3.18</strong><span>Extending Java Classes</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-moduleScripts"><a href="#moduleScripts"><strong>17.3.19</strong><span>Module Scripts</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-typeChecking"><a href="#typeChecking"><strong>17.3.19</strong><span>Type Checking</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-testing"><a href="#testing"><strong>17.3.19.1</strong><span>JUnit 5 Module Tests</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-moduleScripts"><a href="#moduleScripts"><strong>17.3.20</strong><span>Module Scripts</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-graalTools"><a href="#graalTools"><strong>17.3.20</strong><span>GraalPy Tools</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-testing"><a href="#testing"><strong>17.3.20.1</strong><span>JUnit 5 Module Tests</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-asyncAwait"><a href="#asyncAwait"><strong>17.3.21</strong><span>Async/Await</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-graalTools"><a href="#graalTools"><strong>17.3.21</strong><span>GraalPy Tools</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioRuntime"><a href="#asyncioRuntime"><strong>17.3.21.1</strong><span>Netty-Backed Asyncio Runtime</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-asyncAwait"><a href="#asyncAwait"><strong>17.3.22</strong><span>Async/Await</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioNetworking"><a href="#asyncioNetworking"><strong>17.3.21.2</strong><span>Asyncio Networking and TLS</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioRuntime"><a href="#asyncioRuntime"><strong>17.3.22.1</strong><span>Netty-Backed Asyncio Runtime</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioStreaming"><a href="#asyncioStreaming"><strong>17.3.21.3</strong><span>Python-Native Streaming</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioNetworking"><a href="#asyncioNetworking"><strong>17.3.22.2</strong><span>Asyncio Networking and TLS</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioUnsupported"><a href="#asyncioUnsupported"><strong>17.3.21.4</strong><span>Unsupported Asyncio APIs</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioStreaming"><a href="#asyncioStreaming"><strong>17.3.22.3</strong><span>Python-Native Streaming</span></a></div>
+        
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioUnsupported"><a href="#asyncioUnsupported"><strong>17.3.22.4</strong><span>Unsupported Asyncio APIs</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-kotlin"><a href="#kotlin"><strong>17.4</strong><span>Micronaut for Kotlin</span></a></div>
         
@@ -70315,7 +70317,212 @@ class HelloService:
 
 
 
-<h2 id="moduleScripts"><a class="anchor" href="#moduleScripts"></a>17.3.19 Module Scripts</h2>
+<h2 id="typeChecking"><a class="anchor" href="#typeChecking"></a>17.3.19 Type Checking</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/typeChecking.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The compiler can check Python code against the Java types it uses. Decorators are checked against the annotations they resolve to, and calls, attribute reads and constructions are checked against the Java classes and the Python classes of the compilation they are made on. Every problem is reported with its location and an excerpt of the source:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">error: [python:unknown-method] Java type [java.util.ArrayList] has no method named [ad]; did you mean [add]?
+  --&gt; src/main/python/shop/service.py:14:16
+   |
+ 14 |         values.ad(item.title)
+   |                ^^</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The checker never guesses: anything it cannot type, such as a value of a third-party Python library, an untyped parameter or a local assigned different types, is left alone. It is experimental and off by default.</p>
+</div>
+<div class="sect1">
+<h2 id="_enabling_type_checking">Enabling Type Checking</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The annotation processor option <code>micronaut.python.typecheck</code> selects the mode:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Mode</th>
+<th class="tableblock halign-left valign-top">Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>off</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Nothing is checked unless switched on by a decorator (the default).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>warn</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Problems are reported as warnings; the compilation succeeds.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>error</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Problems are reported as errors; the compilation fails once all of them are reported.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Pass the option to <code>javac</code> as <code>-Amicronaut.python.typecheck=error</code>, or set it on the compiler API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">PyronautCompiler.builder()
+    .pythonSrc("src/main/python")
+    .typeCheck(TypeCheckMode.ERROR)
+    .pythonDiagnosticCallback(diagnostic -&gt; log.warn(diagnostic.toString()))
+    .build()
+    .compile();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The callback receives every diagnostic before the compiler reports it, with its rule, message, location and suggestions.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_switching_checking_on_or_off_for_a_scope">Switching Checking On or Off for a Scope</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>TypeChecked</code> annotation switches checking for a class, a function or, applied as a bare statement, a module. The nearest declaration wins: a function over its class, a class over its module, a module over the compilation&#8217;s mode. A scope switched on under mode <code>off</code> is checked at <code>error</code> severity.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from jakarta.inject import Singleton
+from micronaut.context.python.annotation import TypeChecked
+
+@Singleton
+@TypeChecked(False)          <i class="conum" data-value="1"></i><b>(1)</b>
+class LegacyAdapter:
+    def convert(self, payload):
+        return payload.whatever()
+
+@Singleton
+class OrderService:
+    @TypeChecked              <i class="conum" data-value="2"></i><b>(2)</b>
+    def place(self, order: str) -&gt; str:
+        return order.strip()</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The whole class is left unchecked</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The function is checked even when the compilation does not check by default</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The annotation is kept in the source only and leaves no trace in the generated classes. The option <code>micronaut.python.typecheck.annotations</code> lists, comma separated, the qualified names of the decorators accepted as the switch; the default accepts <code>io.micronaut.context.python.annotation.TypeChecked</code> and <code>pyronaut.build.TypeChecked</code>. A name is matched by the resolved import, so an alias works without a class of that name on the classpath.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_what_is_checked">What Is Checked</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Each rule has a stable identifier, shown in the message as <code>[python:&lt;rule&gt;]</code>.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Rule</th>
+<th class="tableblock halign-left valign-top">Reported when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>unknown-decorator-member</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A keyword argument of a decorator names no member of the annotation it resolves to. The member most likely meant is suggested.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>decorator-member-type</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A literal cannot be the value of the annotation member: a number for a <code>String</code> member, a list for a member that is not an array, a string that is not a constant of an enum member.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>decorator-positional</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Positional arguments are given to an annotation without a <code>value</code> member, or more than one to a Java annotation. A decorator defined in Python takes its positional arguments in the order of its parameters.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>decorator-target</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An annotation is applied to a class or function its targets exclude. An around or introduction binding on a class advises every method of the class and is accepted.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>not-an-annotation</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A Java class that is not an annotation is used as a decorator.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>unknown-method</code>, <code>unknown-attribute</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A call or attribute read on a Java receiver names no method, field, nested type or enum constant. A getter is suggested for a missing attribute of its name. Every enum offers <code>values</code> and <code>valueOf</code> on the class and <code>name</code>, <code>ordinal</code> and <code>compareTo</code> on a constant, and every <code>Map</code> the Python mapping protocol.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>no-matching-overload</code>, <code>unknown-constructor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No overload or constructor accepts the arguments, by their number or by the types the checker knows. The candidates are listed. <code>unknown-constructor</code> is also reported when an enum or a class without an accessible constructor is instantiated.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>abstract-instantiation</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An interface or an abstract class is instantiated.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>static-access</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An instance method or field is called, read or referenced on the class itself, such as an enum&#8217;s <code>name()</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>unknown-python-member</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A call or attribute read on a Python class of the compilation names nothing in the class, its Python bases, its Java bases or its subclasses in the compilation (the value may be any of them). A nested class is a member of its outer class, and a Java-style accessor of an attribute (<code>getName</code> for <code>name</code>) is accepted because the value may be the generated Java object. A class is never reported when it defines <code><em>getattr</em></code> or <code><em>getattribute</em></code>, names a metaclass, carries a decorator other than a Java annotation or <code>dataclass</code>, or extends a class outside the compilation: any of these can install members the compiler does not see.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>python-arity</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The arguments of a call to a Python function do not fit its signature: too many positional arguments, a missing required argument (positional or keyword-only), a keyword for a positional-only parameter, an unknown or repeated keyword, or arguments to a class without a constructor. A call on the class itself takes the receiver as its first argument unless the method is a class or static method. A construction uses the class&#8217;s own <code><em>init</em></code>, else the nearest inherited one, else the implicit constructor that takes no arguments.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>argument-type</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An argument the checker can type does not fit the hinted parameter of a Python function.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The types the checker knows are the Java classes imported into the module, bound with <code>java.type()</code> or written out in full after <code>import java</code>, the Python classes of the compilation, the hinted parameters of the function, and the locals assigned earlier in the function body. A call of a method of a class of the compilation has the type its return hint names, or the return type of the Java method it implements; an unhinted method has the one type its body returns, when the checker infers one, and an attribute <code><em>init</em></code> assigns a hinted parameter, a Java call or a construction has that type. A Java <code>String</code>, boxed number or boolean returned to Python is a Python value at run time, so its methods are never judged; only genuine Java receivers are. The values GraalPy presents as Python standard types, such as <code>java.time</code> dates and <code>UUID</code>, keep their Java type as they flow through hints, fields, arguments and returns, but their own members are never judged either. Nothing is known of <code>Object</code> (an erased type variable says nothing about the value) or of arrays. Only public members count, since the host exposes no others; a Python subclass reaches the protected methods of its Java base as well. A Java type that is not public, or has a supertype that is not public, can have members the compiler does not see; nothing is reported on it. A parameter hinted with an interface or an abstract class may hold any implementation, so a member the type lacks is not reported on it either; the members it declares are still checked. Conversions at the Java boundary are applied when arguments are matched: a Python <code>str</code> fits a <code>String</code>, <code>CharSequence</code>, <code>char</code>, <code>Class</code> or enum parameter, an <code>int</code> fits every numeric type, a <code>list</code> fits a <code>List</code>, <code>Collection</code>, <code>Iterable</code> or array, and <code>None</code> fits any reference type.</p>
+</div>
+<div class="paragraph">
+<p>Not checked: comprehensions, lambdas and nested functions, the methods of Python values, the Python classes of other compilations, and constructions involving a <code><em>new</em></code>, a base outside the compilation, a Java base or a decorator that may generate the constructor.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_running_the_existing_tests_with_checking_on">Running the Existing Tests with Checking On</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The tests of a project are the best measure of false positives. <code>inject-python-test</code> runs its whole suite at a mode given by a system property:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./gradlew :micronaut-inject-python-test:test -Ppython-ci -Dmicronaut.python.typecheck=error</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="moduleScripts"><a class="anchor" href="#moduleScripts"></a>17.3.20 Module Scripts</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/moduleScripts.adoc"'>
@@ -70349,7 +70556,7 @@ def module_root() -&gt; dict:
 <p>An explicit controller annotation takes precedence over the implicit controller added for modules containing HTTP routes. Explicit scope annotations also take precedence over the automatic <code>ContextPooled</code> scope used by otherwise unscoped route modules.</p>
 </div>
 
-<h2 id="testing"><a class="anchor" href="#testing"></a>17.3.19.1 JUnit 5 Module Tests</h2>
+<h2 id="testing"><a class="anchor" href="#testing"></a>17.3.20.1 JUnit 5 Module Tests</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/moduleScripts/testing.adoc"'>
@@ -70395,7 +70602,7 @@ def test_root():
 <p>The generated Java test class carries the runtime <code>MicronautTest</code> and <code>Test</code> annotations required by the JUnit 5 and Micronaut test extensions. The synthetic <code>self</code> parameter is omitted from the Java method signature and is supplied automatically when the Python function is invoked.</p>
 </div>
 
-<h2 id="graalTools"><a class="anchor" href="#graalTools"></a>17.3.20 GraalPy Tools</h2>
+<h2 id="graalTools"><a class="anchor" href="#graalTools"></a>17.3.21 GraalPy Tools</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/graalTools.adoc"'>
@@ -70501,7 +70708,7 @@ dap = true</code></pre>
 </div>
 </div>
 
-<h2 id="asyncAwait"><a class="anchor" href="#asyncAwait"></a>17.3.21 Async/Await</h2>
+<h2 id="asyncAwait"><a class="anchor" href="#asyncAwait"></a>17.3.22 Async/Await</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/asyncAwait.adoc"'>
@@ -70718,7 +70925,7 @@ async def task_group(self) -&gt; str:
 </div>
 </div>
 
-<h2 id="asyncioRuntime"><a class="anchor" href="#asyncioRuntime"></a>17.3.21.1 Netty-Backed Asyncio Runtime</h2>
+<h2 id="asyncioRuntime"><a class="anchor" href="#asyncioRuntime"></a>17.3.22.1 Netty-Backed Asyncio Runtime</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioRuntime.adoc"'>
@@ -70792,7 +70999,7 @@ runtime = [
 </ul>
 </div>
 
-<h2 id="asyncioNetworking"><a class="anchor" href="#asyncioNetworking"></a>17.3.21.2 Asyncio Networking and TLS</h2>
+<h2 id="asyncioNetworking"><a class="anchor" href="#asyncioNetworking"></a>17.3.22.2 Asyncio Networking and TLS</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioNetworking.adoc"'>
@@ -71012,7 +71219,7 @@ runtime = [
 </div>
 </div>
 
-<h2 id="asyncioStreaming"><a class="anchor" href="#asyncioStreaming"></a>17.3.21.3 Python-Native Streaming</h2>
+<h2 id="asyncioStreaming"><a class="anchor" href="#asyncioStreaming"></a>17.3.22.3 Python-Native Streaming</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioStreaming.adoc"'>
@@ -71180,7 +71387,7 @@ async def events(self) -&gt; AsyncIterator[Event[Tick]]:  # <b class="conum">(1)
 </div>
 </div>
 
-<h2 id="asyncioUnsupported"><a class="anchor" href="#asyncioUnsupported"></a>17.3.21.4 Unsupported Asyncio APIs</h2>
+<h2 id="asyncioUnsupported"><a class="anchor" href="#asyncioUnsupported"></a>17.3.22.4 Unsupported Asyncio APIs</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioUnsupported.adoc"'>
