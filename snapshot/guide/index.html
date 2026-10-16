@@ -43795,15 +43795,15 @@ In Python, a Java method named after a Python keyword takes a trailing underscor
 <div class="sect2">
 <h3 id="_conditions_and_order">Conditions and order</h3>
 <div class="paragraph">
-<p><code>where(RouteCondition)</code>, on a route or a group, matches only the requests that meet the condition, like <code>@RouteCondition</code> on a controller method. <a href="../api/io/micronaut/web/router/builder/RouteCondition.html">RouteCondition</a> builds declarative conditions on the headers, query parameters, cookies and method of a request, its host and client address, and the time it arrives, and combines them with <code>all</code>, <code>any</code>, <code>not</code>, <code>and</code>, <code>or</code> and <code>negate</code>.</p>
+<p><code>where(RequestCondition)</code>, on a route or a group, matches only the requests that meet the condition, like <code>@RouteCondition</code> on a controller method. <a href="../api/io/micronaut/web/router/builder/RequestCondition.html">RequestCondition</a> builds declarative conditions on the headers, query parameters, cookies and method of a request, its host and client address, and the time it arrives, and combines them with <code>all</code>, <code>any</code>, <code>not</code>, <code>and</code>, <code>or</code> and <code>negate</code>.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">A route for the requests that meet a condition</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">routes.GET("/search")
-    .where(RouteCondition.any( // <b class="conum">(1)</b>
-        RouteCondition.header("X-Beta"),
-        RouteCondition.query("beta", "true")))
+    .where(RequestCondition.any( // <b class="conum">(1)</b>
+        RequestCondition.header("X-Beta"),
+        RequestCondition.query("beta", "true")))
     .order(-1) // <b class="conum">(2)</b>
     .handle((request, pathVariables) -&gt; text("beta search"));
 routes.GET("/search", (request, pathVariables) -&gt; text("search")); // <b class="conum">(3)</b></code></pre>
@@ -43813,9 +43813,9 @@ routes.GET("/search", (request, pathVariables) -&gt; text("search")); // <b clas
 <div class="title">A route for the requests that meet a condition</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">(routes.GET("/search")
-    .where(RouteCondition.any(  # <b class="conum">(1)</b>
-        RouteCondition.header("X-Beta"),
-        RouteCondition.query("beta", "true")))
+    .where(RequestCondition.any(  # <b class="conum">(1)</b>
+        RequestCondition.header("X-Beta"),
+        RequestCondition.query("beta", "true")))
     .order(-1)  # <b class="conum">(2)</b>
     .handle(lambda request, path_variables: text("beta search")))
 routes.GET("/search", lambda request, path_variables: text("search"))  # <b class="conum">(3)</b></code></pre>
@@ -43825,9 +43825,9 @@ routes.GET("/search", lambda request, path_variables: text("search"))  # <b clas
 <div class="title">A route for the requests that meet a condition</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">routes.GET("/search")
-    .where(RouteCondition.any( // <b class="conum">(1)</b>
-        RouteCondition.header("X-Beta"),
-        RouteCondition.query("beta", "true")))
+    .where(RequestCondition.any( // <b class="conum">(1)</b>
+        RequestCondition.header("X-Beta"),
+        RequestCondition.query("beta", "true")))
     .order(-1) // <b class="conum">(2)</b>
     .handle { request, pathVariables -&gt; text("beta search") }
 routes.GET("/search") { request, pathVariables -&gt; text("search") } // <b class="conum">(3)</b></code></pre>
@@ -43837,9 +43837,9 @@ routes.GET("/search") { request, pathVariables -&gt; text("search") } // <b clas
 <div class="title">A route for the requests that meet a condition</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">routes.GET("/search")
-    .where(RouteCondition.any( // <b class="conum">(1)</b>
-        RouteCondition.header("X-Beta"),
-        RouteCondition.query("beta", "true")))
+    .where(RequestCondition.any( // <b class="conum">(1)</b>
+        RequestCondition.header("X-Beta"),
+        RequestCondition.query("beta", "true")))
     .order(-1) // <b class="conum">(2)</b>
     .handle { request, pathVariables -&gt; text("beta search") }
 routes.GET("/search") { request, pathVariables -&gt; text("search") } // <b class="conum">(3)</b></code></pre>
@@ -43871,10 +43871,10 @@ routes.GET("/search") { request, pathVariables -&gt; text("search") } // <b clas
 <div class="title">Conditions with matchers</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">routes.GET("/downloads/{file}")
-    .where(RouteCondition.header("X-Channel", ValueMatcher.oneOf("beta", "canary").ignoringCase()) // <b class="conum">(1)</b>
-        .or(RouteCondition.cookie("channel", ValueMatcher.equalTo("beta"))))
-    .where(RouteCondition.peerAddress("127.0.0.0/8", "::1")) // <b class="conum">(2)</b>
-    .where(RouteCondition.after(Instant.parse("2026-01-01T00:00:00Z"))) // <b class="conum">(3)</b>
+    .where(RequestCondition.header("X-Channel", ValueMatcher.oneOf("beta", "canary").ignoringCase()) // <b class="conum">(1)</b>
+        .or(RequestCondition.cookie("channel", ValueMatcher.equalTo("beta"))))
+    .where(RequestCondition.peerAddress("127.0.0.0/8", "::1")) // <b class="conum">(2)</b>
+    .where(RequestCondition.after(Instant.parse("2026-01-01T00:00:00Z"))) // <b class="conum">(3)</b>
     .constrain("file", ValueMatcher.endsWith(".zip")) // <b class="conum">(4)</b>
     .handle((request, pathVariables) -&gt; text("download " + pathVariables.getString("file")));</code></pre>
 </div>
@@ -43883,10 +43883,10 @@ routes.GET("/search") { request, pathVariables -&gt; text("search") } // <b clas
 <div class="title">Conditions with matchers</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">(routes.GET("/downloads/{file}")
-    .where(RouteCondition.header("X-Channel", ValueMatcher.oneOf("beta", "canary").ignoringCase())  # <b class="conum">(1)</b>
-        .or_(RouteCondition.cookie("channel", ValueMatcher.equalTo("beta"))))
-    .where(RouteCondition.peerAddress("127.0.0.0/8", "::1"))  # <b class="conum">(2)</b>
-    .where(RouteCondition.after(Instant.parse("2026-01-01T00:00:00Z")))  # <b class="conum">(3)</b>
+    .where(RequestCondition.header("X-Channel", ValueMatcher.oneOf("beta", "canary").ignoringCase())  # <b class="conum">(1)</b>
+        .or_(RequestCondition.cookie("channel", ValueMatcher.equalTo("beta"))))
+    .where(RequestCondition.peerAddress("127.0.0.0/8", "::1"))  # <b class="conum">(2)</b>
+    .where(RequestCondition.after(Instant.parse("2026-01-01T00:00:00Z")))  # <b class="conum">(3)</b>
     .constrain("file", ValueMatcher.endsWith(".zip"))  # <b class="conum">(4)</b>
     .handle(lambda request, path_variables: text("download " + path_variables.getString("file"))))</code></pre>
 </div>
@@ -43895,10 +43895,10 @@ routes.GET("/search") { request, pathVariables -&gt; text("search") } // <b clas
 <div class="title">Conditions with matchers</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">routes.GET("/downloads/{file}")
-    .where(RouteCondition.header("X-Channel", ValueMatcher.oneOf("beta", "canary").ignoringCase()) // <b class="conum">(1)</b>
-        .or(RouteCondition.cookie("channel", ValueMatcher.equalTo("beta"))))
-    .where(RouteCondition.peerAddress("127.0.0.0/8", "::1")) // <b class="conum">(2)</b>
-    .where(RouteCondition.after(Instant.parse("2026-01-01T00:00:00Z"))) // <b class="conum">(3)</b>
+    .where(RequestCondition.header("X-Channel", ValueMatcher.oneOf("beta", "canary").ignoringCase()) // <b class="conum">(1)</b>
+        .or(RequestCondition.cookie("channel", ValueMatcher.equalTo("beta"))))
+    .where(RequestCondition.peerAddress("127.0.0.0/8", "::1")) // <b class="conum">(2)</b>
+    .where(RequestCondition.after(Instant.parse("2026-01-01T00:00:00Z"))) // <b class="conum">(3)</b>
     .constrain("file", ValueMatcher.endsWith(".zip")) // <b class="conum">(4)</b>
     .handle { request, pathVariables -&gt; text("download " + pathVariables.getString("file")) }</code></pre>
 </div>
@@ -43907,10 +43907,10 @@ routes.GET("/search") { request, pathVariables -&gt; text("search") } // <b clas
 <div class="title">Conditions with matchers</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">routes.GET("/downloads/{file}")
-    .where(RouteCondition.header("X-Channel", ValueMatcher.oneOf("beta", "canary").ignoringCase()) // <b class="conum">(1)</b>
-        .or(RouteCondition.cookie("channel", ValueMatcher.equalTo("beta"))))
-    .where(RouteCondition.peerAddress("127.0.0.0/8", "::1")) // <b class="conum">(2)</b>
-    .where(RouteCondition.after(Instant.parse("2026-01-01T00:00:00Z"))) // <b class="conum">(3)</b>
+    .where(RequestCondition.header("X-Channel", ValueMatcher.oneOf("beta", "canary").ignoringCase()) // <b class="conum">(1)</b>
+        .or(RequestCondition.cookie("channel", ValueMatcher.equalTo("beta"))))
+    .where(RequestCondition.peerAddress("127.0.0.0/8", "::1")) // <b class="conum">(2)</b>
+    .where(RequestCondition.after(Instant.parse("2026-01-01T00:00:00Z"))) // <b class="conum">(3)</b>
     .constrain("file", ValueMatcher.endsWith(".zip")) // <b class="conum">(4)</b>
     .handle { request, pathVariables -&gt; text("download " + pathVariables.getString("file")) }</code></pre>
 </div>
@@ -43942,13 +43942,134 @@ routes.GET("/search") { request, pathVariables -&gt; text("search") } // <b clas
 <p>There are two conditions on the address of a client. <code>peerAddress(&#8230;&#8203;)</code> reads the address of the peer of the connection only, never a header: use it for access control, e.g. an allow or a deny list. <code>remoteAddress(&#8230;&#8203;)</code> reads the address as the <a href="../api/io/micronaut/http/server/util/HttpClientAddressResolver.html">HttpClientAddressResolver</a> resolves it: from the header that <code>micronaut.server.client-address-header</code> names, or else from the <code>Forwarded</code> and <code>X-Forwarded-For</code> headers of the request, or else the peer of the connection. Without that property any client can send those headers and choose its address, so <code>remoteAddress(&#8230;&#8203;)</code> is right only behind a trusted proxy that sets the configured header, where the peer is the proxy and the header is the client.</p>
 </div>
 <div class="paragraph">
-<p>The router normalizes the conditions of a route when it builds the route: the conditions of its groups and its own become one condition, nested <code>all</code> and <code>any</code> are flattened, double negations and duplicates are removed, and the parts are ordered cheapest first: the methods, then the lookups of a value and the time, then the prefixes, suffixes and parts, then the regular expressions and the host and the client and peer addresses, which cost the same and keep the order they were declared in, and last the conditions of lambdas, in the order they were declared, outer group first. The evaluation stops at the first part that decides. A condition is data that only the router evaluates, with the host and client address resolvers of the server and the clock of the application: it is not a <code>Predicate</code>. <code>RouteCondition.custom(predicate)</code>, or <code>where(Predicate&lt;HttpRequest&lt;?&gt;&gt;)</code>, takes a lambda for what the other conditions do not express; the lambda is given the request as it is, e.g. its <code>Host</code> header rather than the host the server resolves, and <code>RouteCondition.custom(&#8230;&#8203;)</code> makes a lambda a condition to combine with <code>and</code>, <code>or</code>, <code>all</code> and <code>any</code>. <a href="../api/io/micronaut/web/router/builder/RequestPredicates.html">RequestPredicates</a> has shorthands of these conditions, and <code>accept(&#8230;&#8203;)</code> and <code>contentType(&#8230;&#8203;)</code>, which compare media types with their wildcards and are conditions of lambdas.</p>
+<p>The router normalizes the conditions of a route when it builds the route: the conditions of its groups and its own become one condition, nested <code>all</code> and <code>any</code> are flattened, double negations and duplicates are removed, and the parts are ordered cheapest first: the methods, then the lookups of a value and the time, then the prefixes, suffixes and parts, then the regular expressions and the host and the client and peer addresses, which cost the same and keep the order they were declared in, and last the conditions of lambdas, in the order they were declared, outer group first. The evaluation stops at the first part that decides. A condition is data that only the router evaluates, with the host and client address resolvers of the server and the clock of the application: it is not a <code>Predicate</code>. <code>RequestCondition.custom(predicate)</code>, or <code>where(Predicate&lt;HttpRequest&lt;?&gt;&gt;)</code>, takes a lambda for what the other conditions do not express; the lambda is given the request as it is, e.g. its <code>Host</code> header rather than the host the server resolves, and <code>RequestCondition.custom(&#8230;&#8203;)</code> makes a lambda a condition to combine with <code>and</code>, <code>or</code>, <code>all</code> and <code>any</code>. <a href="../api/io/micronaut/web/router/builder/RequestPredicates.html">RequestPredicates</a> has shorthands of these conditions, and <code>accept(&#8230;&#8203;)</code> and <code>contentType(&#8230;&#8203;)</code>, which compare media types with their wildcards and are conditions of lambdas.</p>
 </div>
 <div class="paragraph">
 <p>The order only breaks a tie between routes that are equally good for a request. Among the routes that match a request, the router first keeps the routes that explicitly produce the media type the request accepts first, then, for a request with a body, the routes that explicitly consume its <code>Content-Type</code>, then the routes with the most specific URI template. It then prefers a route of the request&#8217;s method over a route of <code>any(&#8230;&#8203;)</code>, and an explicit <code>HEAD</code> route over an implicit one, and only then compares the orders: the order never makes a less specific route win, and an <code>any(&#8230;&#8203;)</code> route never wins over a route of the request&#8217;s method, whatever their orders. Routes left with the same order still make the request ambiguous, which is answered with <code>400</code>. A group&#8217;s order applies to its routes, and a route&#8217;s own order overrides it.</p>
 </div>
 <div class="paragraph">
 <p>The order is global: it is compared between any routes left for a request, controller routes and the routes of every <code>HttpRoutes</code> bean and group alike, and the lower order wins. Controller routes have the order <code>0</code>, so a handler route with a negative order wins a tie with a controller route, and one with a positive order loses it. The order of an <code>HttpRoutes</code> bean, e.g. <code>@Order</code> on the bean, orders the beans, not their routes.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_conditions_on_the_body">Conditions on the body</h3>
+<div class="paragraph">
+<p><code>RequestCondition.body(&#8230;&#8203;)</code>, <code>bodyText(&#8230;&#8203;)</code> and <code>bodyBytes(&#8230;&#8203;)</code> are conditions on the body of the request, so that routes on the same path can be chosen by the body. A request whose body does not meet them is answered as if the route did not exist: by the next route the request matches, or with <code>404</code>.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Routes chosen by the body of the request</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">routes.POST("/orders")
+    .where(RequestCondition.body(ORDER, order -&gt; "express".equals(order.get("kind")))) // <b class="conum">(1)</b>
+    .order(-1) // <b class="conum">(2)</b>
+    .body(ORDER)
+    .handle((request, pathVariables, order) -&gt; text("express order " + order.get("id")));
+routes.POST("/orders").body(ORDER).handle((request, pathVariables, order) -&gt; text("order " + order.get("id"))); // <b class="conum">(3)</b>
+routes.POST("/imports")
+    .where(RequestCondition.bodyText(text -&gt; text.startsWith("id,")).maxBytes(1024)) // <b class="conum">(4)</b>
+    .consumesAll()
+    .handle((request, pathVariables) -&gt; text("csv import"));
+routes.POST("/payments")
+    .where(RequestCondition.bodyAsync(ORDER, order -&gt; isKnownCustomer(order.get("customer")))) // <b class="conum">(5)</b>
+    .body(ORDER)
+    .handle((request, pathVariables, order) -&gt; text("payment of " + order.get("customer")));</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Routes chosen by the body of the request</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">(routes.POST("/orders")
+    .where(RequestCondition.body(ORDER, lambda order: order.get("kind") == "express"))  # <b class="conum">(1)</b>
+    .order(-1)  # <b class="conum">(2)</b>
+    .body(ORDER)
+    .handle(lambda request, path_variables, order: text(f"express order {order.get('id')}")))
+routes.POST("/orders").body(ORDER).handle(lambda request, path_variables, order: text(f"order {order.get('id')}"))  # <b class="conum">(3)</b>
+(routes.POST("/imports")
+    .where(RequestCondition.bodyText(lambda body: body.startswith("id,")).maxBytes(1024))  # <b class="conum">(4)</b>
+    .consumesAll()
+    .handle(lambda request, path_variables: text("csv import")))
+(routes.POST("/payments")
+    .where(RequestCondition.bodyAsync(ORDER, lambda order: is_known_customer(order.get("customer"))))  # <b class="conum">(5)</b>
+    .body(ORDER)
+    .handle(lambda request, path_variables, order: text(f"payment of {order.get('customer')}")))</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Routes chosen by the body of the request</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">routes.POST("/orders")
+    .where(RequestCondition.body(ORDER) { order -&gt; order["kind"] == "express" }) // <b class="conum">(1)</b>
+    .order(-1) // <b class="conum">(2)</b>
+    .body(ORDER)
+    .handle { request, pathVariables, order -&gt; text("express order " + order["id"]) }
+routes.POST("/orders").body(ORDER).handle { request, pathVariables, order -&gt; text("order " + order["id"]) } // <b class="conum">(3)</b>
+routes.POST("/imports")
+    .where(RequestCondition.bodyText { text -&gt; text.startsWith("id,") }.maxBytes(1024)) // <b class="conum">(4)</b>
+    .consumesAll()
+    .handle { request, pathVariables -&gt; text("csv import") }
+routes.POST("/payments")
+    .where(RequestCondition.bodyAsync(ORDER) { order -&gt; isKnownCustomer(order["customer"]) }) // <b class="conum">(5)</b>
+    .body(ORDER)
+    .handle { request, pathVariables, order -&gt; text("payment of " + order["customer"]) }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Routes chosen by the body of the request</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">routes.POST("/orders")
+    .where(RequestCondition.body(ORDER) { Map&lt;String, Object&gt; order -&gt; order.kind == "express" }) // <b class="conum">(1)</b>
+    .order(-1) // <b class="conum">(2)</b>
+    .body(ORDER)
+    .handle { request, pathVariables, Map&lt;String, Object&gt; order -&gt; text("express order " + order.id) }
+routes.POST("/orders").body(ORDER).handle { request, pathVariables, Map&lt;String, Object&gt; order -&gt; text("order " + order.id) } // <b class="conum">(3)</b>
+routes.POST("/imports")
+    .where(RequestCondition.bodyText { String text -&gt; text.startsWith("id,") }.maxBytes(1024)) // <b class="conum">(4)</b>
+    .consumesAll()
+    .handle { request, pathVariables -&gt; text("csv import") }
+routes.POST("/payments")
+    .where(RequestCondition.bodyAsync(ORDER) { Map&lt;String, Object&gt; order -&gt; isKnownCustomer(order.customer) }) // <b class="conum">(5)</b>
+    .body(ORDER)
+    .handle { request, pathVariables, Map&lt;String, Object&gt; order -&gt; text("payment of " + order.customer) }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The body decoded to a type, like a <code>@Body</code> argument, by the message body reader of the type and of the <code>Content-Type</code> of the request, meets the predicate. <code>body(Class, Predicate)</code> takes a class instead of an <code>Argument</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A body condition gives a route no priority: the order ranks the routes of the same URI template, here before the fallback. Two routes of the same rank that the body both matches make the request ambiguous, answered with <code>400</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The route for the other bodies, which reads the same body.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>A condition on the text of the body, decoded with the charset of the request, with a limit of the bytes it reads.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>A condition decided later: <code>bodyAsync(&#8230;&#8203;)</code> returns a <code>CompletionStage&lt;Boolean&gt;</code>, e.g. of a lookup in a database, and the route is chosen when it completes, without blocking.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><code>RequestCondition.bodyAsync(type, condition)</code> decides later: its condition returns a <code>CompletionStage&lt;Boolean&gt;</code>, e.g. of a lookup in a database, and the route is chosen when the stage completes, without blocking. A stage that fails does not meet the condition, which is logged as a warning. A request whose client goes away while a stage is pending stops waiting for it; the stage is not cancelled, since it may be shared. The conditions of the routes are evaluated one after the other, so a slow stage delays the choice of the route of every request to the path: keep such lookups fast, e.g. cached.</p>
+</div>
+<div class="paragraph">
+<p>A body condition is a part that every request of the route meets: a condition of a route or a group, or a part of <code>all(&#8230;&#8203;)</code> or <code>and(&#8230;&#8203;)</code>. It cannot be a part of <code>any(&#8230;&#8203;)</code>, <code>or(&#8230;&#8203;)</code> or <code>not(&#8230;&#8203;)</code>, which fail with an <code>IllegalArgumentException</code>. The body conditions of the groups of a route, outer group first, and of the route must all be met. The routes of a located target can have body conditions too: the target is located without the body, and its routes are then chosen by the body like the other routes. The body decides within the target: a request whose body meets the conditions of none of its routes is not found, it does not fall through to the routes outside the locator, like a request that no route of the target matches. Their limits are not known when the server starts: a limit above <code>micronaut.server.max-request-buffer-size</code> reads up to that limit.</p>
+</div>
+<div class="paragraph">
+<p>A request is first matched without its body, like any other: its URI, method, other conditions, constraints and media types. The <code>405</code>, <code>415</code> and <code>406</code> responses and CORS preflight requests are decided without reading the body. When a route with a body condition is among the routes left, the server reads the body once, asynchronously and without blocking, after the pre-matching filters ran, so a condition sees the body as those filters left it. It reads the body from a copy of the <code>AsyncRequestBody</code> of the request, and then tries the routes in the order the router ranks them: by the specificity of the URI template, the media types, then the order. The first route whose body conditions the body meets, or that has none, answers the request. The body is read once for the routes the request matched, and each type is decoded once for them; the routes of a located target the body chose read it again. The predicates must be fast and must not block.</p>
+</div>
+<div class="paragraph">
+<p>The route that answers reads the same body, as a typed body, a form, an <code>AsyncRequestBody</code> or a <code>@Body</code> argument. Routes with body conditions therefore leave the streaming path: the body is buffered, up to the largest limit of the conditions of the routes the request matched, <code>maxBytes(&#8230;&#8203;)</code>, which is <code>micronaut.server.max-request-buffer-size</code> by default. A limit lowers the limit of the server and cannot raise it: a route with a condition whose limit is above <code>micronaut.server.max-request-buffer-size</code> fails the startup of the server. A body larger than the limit of a condition and a body that does not decode do not meet the condition, which is logged at <code>DEBUG</code> level. The limit of a body a pre-matching filter set is its length in bytes for a string or a byte array; another object has no size of its own. A body larger than <code>micronaut.server.max-request-buffer-size</code> cannot be kept for another route once it is read: when its length is not known in advance, e.g. a chunked body, the request fails with <code>413</code>, like a <code>@Body</code> argument would, also when a less preferred route would stream it, and when its <code>Content-Length</code> is larger, it is not read: it does not meet the body conditions and goes to the next route. Set <code>micronaut.server.max-request-buffer-size</code>, or a lower <code>maxBytes(&#8230;&#8203;)</code>, accordingly. A request whose body matches none of its routes is answered with <code>404</code>, also when a static resource is on its path.</p>
+</div>
+<div class="paragraph">
+<p>An implicit <code>HEAD</code> route has the body conditions of its <code>GET</code> route, which see the empty body of the <code>HEAD</code> request. A request whose routes have no body condition is matched exactly as without them: its body is not read, and nothing is buffered for it.</p>
 </div>
 </div>
 <div class="sect2">
