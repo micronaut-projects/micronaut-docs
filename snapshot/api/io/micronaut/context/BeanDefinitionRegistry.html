@@ -67,6 +67,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#findBeanDefinition(java.lang.Class,io.micronaut.context.Qualifier)" tabindex="0">findBeanDefinition(Class, Qualifier)</a></li>
 <li><a href="#findBeanDefinition(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)" tabindex="0">findBeanDefinition(Argument, Qualifier)</a></li>
 <li><a href="#findBeanDefinition(io.micronaut.core.type.Argument)" tabindex="0">findBeanDefinition(Argument)</a></li>
+<li><a href="#selectAmong(io.micronaut.core.type.Argument,java.util.Collection)" tabindex="0">selectAmong(Argument, Collection)</a></li>
 <li><a href="#findBeanRegistration(T)" tabindex="0">findBeanRegistration(T)</a></li>
 <li><a href="#findBeanDefinition(T)" tabindex="0">findBeanDefinition(T)</a></li>
 <li><a href="#getBeanDefinitions(java.lang.Class)" tabindex="0">getBeanDefinitions(Class)</a></li>
@@ -416,6 +417,14 @@ loadScripts(document, 'script');</script>
 <div class="deprecation-comment">Use <a href="#registerBeanDefinition(io.micronaut.context.RuntimeBeanDefinition)"><code>registerBeanDefinition(RuntimeBeanDefinition)</code></a></div>
 </div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;T&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#selectAmong(io.micronaut.core.type.Argument,java.util.Collection)" class="member-name-link">selectAmong</a><wbr>(@Nullable <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;T&gt;&nbsp;beanType,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;T&gt;&gt;&nbsp;candidates)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Select among candidate bean definitions the caller has already chosen, with the rules a lookup by type
+applies once it has collected its candidates, so that a selection made by other rules and an injection
+point agree on the bean they pick.</div>
+</div>
 </div>
 </div>
 </div>
@@ -635,6 +644,56 @@ invoking any <a href="https://jakarta.ee/specifications/platform/9/apidocs/jakar
                                                                for the given type</dd>
 <dt>Since:</dt>
 <dd>3.0.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="selectAmong(io.micronaut.core.type.Argument,java.util.Collection)">
+<h3>selectAmong</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;T&gt;&gt;</span>&nbsp;<span class="element-name">selectAmong</span><wbr><span class="parameters">(@Nullable <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;T&gt;&nbsp;beanType,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;T&gt;&gt;&nbsp;candidates)</span></div>
+<div class="block">Select among candidate bean definitions the caller has already chosen, with the rules a lookup by type
+applies once it has collected its candidates, so that a selection made by other rules and an injection
+point agree on the bean they pick. The candidates are not looked up, filtered or checked against the
+bean type, and nothing is cached: the caller chose them, and this method only picks among them.
+
+<p>The first rule that singles out one candidate decides, in this precedence:</p>
+<ol>
+    <li>The <a href="annotation/Primary.html" title="annotation interface in io.micronaut.context.annotation"><code>Primary</code></a> candidates, where there are any: the
+    later rules apply to them alone.</li>
+    <li>The choice of the <a href="BeanResolutionCustomizer.html#resolveNonUniqueBean(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier,java.util.Collection)"><code>BeanResolutionCustomizer.resolveNonUniqueBean(Argument, Qualifier, Collection)</code></a> of the context.</li>
+    <li>The candidates that are not <a href="annotation/Secondary.html" title="annotation interface in io.micronaut.context.annotation"><code>Secondary</code></a>. Where every
+    candidate is secondary they all stay in.</li>
+    <li>The candidate of the highest precedence by <a href="../core/order/Ordered.html" title="interface in io.micronaut.core.order"><code>Ordered</code></a> order, unless
+    it shares its order with the next one.</li>
+    <li>The candidate that is the <a href="annotation/DefaultImplementation.html" title="annotation interface in io.micronaut.context.annotation"><code>DefaultImplementation</code></a> the
+    first remaining candidate declares.</li>
+    <li>The one candidate whose bean type is exactly the requested type.</li>
+</ol>
+
+<p>The result is one definition when a rule decides, and otherwise the candidates the rules left,
+so that the caller can tell ambiguity from a choice without an exception. One candidate or none is
+returned as it is. When the requested type is not known the customizer and the exact type are not
+consulted, and the customizer is told of no qualifier.</p>
+
+<p>A lookup by type applies these rules to the candidates its qualifier left and then decides what is
+still left in ways this method does not: candidates that are all secondary are a
+<a href="exceptions/NonUniqueBeanException.html" title="class in io.micronaut.context.exceptions"><code>NonUniqueBeanException</code></a> whatever the qualifier, otherwise
+<a href="annotation/Any.html" title="annotation interface in io.micronaut.context.annotation"><code>Any</code></a> takes the first, a <a href="annotation/EachProperty.html" title="annotation interface in io.micronaut.context.annotation"><code>EachProperty</code></a>
+bean is matched by its name, and anything else is a <code>NonUniqueBeanException</code>. A caller of this
+method decides those for itself.</p></div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="selectAmong(io.micronaut.core.type.Argument,java.util.Collection)-type-param-T"><code>T</code> - The bean type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>beanType</code> - The requested bean type, or <code>null</code> when it is not known</dd>
+<dd><code>candidates</code> - The candidate definitions to choose among</dd>
+<dt>Returns:</dt>
+<dd>The one definition the rules picked, or the candidates they left</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>
