@@ -65,6 +65,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#getDeclaringTypes(io.micronaut.core.beans.BeanMethod)" tabindex="0">getDeclaringTypes(BeanMethod)</a></li>
 <li><a href="#getDeclaredMethods()" tabindex="0">getDeclaredMethods()</a></li>
 <li><a href="#isDeclared(io.micronaut.core.beans.BeanMethod)" tabindex="0">isDeclared(BeanMethod)</a></li>
+<li><a href="#getGenericHierarchy()" tabindex="0">getGenericHierarchy()</a></li>
+<li><a href="#getTypeClosure()" tabindex="0">getTypeClosure()</a></li>
 </ol>
 </li>
 </ol>
@@ -90,7 +92,9 @@ with the super class and the interfaces each of them declares, and the methods t
 super classes and interfaces of that, then its interfaces and theirs, each once. <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a> is reported
 as a super class, it is not described itself.</p>
 
-<p>The types are raw: the type arguments a type passes to its super class and interfaces are not described.</p>
+<p>The types are raw: the type arguments a type passes to its super class and interfaces are not described here.
+The generic hierarchy of the introspected type is recorded beside the introspection as a <a href="../type/TypeHierarchy.html" title="interface in io.micronaut.core.type"><code>TypeHierarchy</code></a>,
+see <a href="#getGenericHierarchy()"><code>getGenericHierarchy()</code></a> and <a href="#getTypeClosure()"><code>getTypeClosure()</code></a>.</p>
 
 <p>Each <a href="BeanIntrospection.html#getBeanMethods()"><code>bean method</code></a> of the introspection knows its declaring levels:
 the type declaring it and every type of the hierarchy declaring a method it overrides, whether or not that
@@ -143,15 +147,28 @@ method it overrides, each once, nearest first: in the breadth first order of the
 introspected type, the super class before the interfaces, so a type the introspected type extends or
 implements directly comes before a type that one extends or implements in turn.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getInterfaces(java.lang.Class)" class="member-name-link">getInterfaces</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;type)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../type/TypeHierarchy.html" title="interface in io.micronaut.core.type">TypeHierarchy</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getGenericHierarchy()" class="member-name-link">getGenericHierarchy</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">The generic hierarchy of the introspected type: its type variables with their bounds, its generic super class and
+its generic interfaces as declared, recorded at compile time with the introspection.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getInterfaces(java.lang.Class)" class="member-name-link">getInterfaces</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;type)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">The interfaces a type of the hierarchy declares itself, in declaration order.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getSuperclass(java.lang.Class)" class="member-name-link">getSuperclass</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;type)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getSuperclass(java.lang.Class)" class="member-name-link">getSuperclass</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;type)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">The super class a type of the hierarchy declares.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getTypeClosure()" class="member-name-link">getTypeClosure</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">The type closure of the introspected type with its type arguments: the type parameterized by its own variables,
+then every super type with the arguments substituted along the path, each once, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a> last, see
+<a href="../type/TypeHierarchy.html#getTypeClosure(io.micronaut.core.type.Argument)"><code>TypeHierarchy.getTypeClosure(Argument)</code></a>.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTypes()" class="member-name-link">getTypes</a>()</code></div>
@@ -286,6 +303,41 @@ overrides the methods of the interfaces the introspected type introduces as well
 <dd><code>method</code> - A bean method instance of the introspection, compared by identity</dd>
 <dt>Returns:</dt>
 <dd>True if the type declares it, false if it inherits it or it is not a bean method of the introspection</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getGenericHierarchy()">
+<h3>getGenericHierarchy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../type/TypeHierarchy.html" title="interface in io.micronaut.core.type">TypeHierarchy</a>&gt;</span>&nbsp;<span class="element-name">getGenericHierarchy</span>()</div>
+<div class="block">The generic hierarchy of the introspected type: its type variables with their bounds, its generic super class and
+its generic interfaces as declared, recorded at compile time with the introspection. It is empty when the
+introspection was compiled without the record, or the record is not on the class path.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The generic hierarchy of the introspected type</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getTypeClosure()">
+<h3>getTypeClosure</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">getTypeClosure</span>()</div>
+<div class="block">The type closure of the introspected type with its type arguments: the type parameterized by its own variables,
+then every super type with the arguments substituted along the path, each once, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a> last, see
+<a href="../type/TypeHierarchy.html#getTypeClosure(io.micronaut.core.type.Argument)"><code>TypeHierarchy.getTypeClosure(Argument)</code></a>. Without a <a href="#getGenericHierarchy()"><code>generic hierarchy</code></a> the
+closure is <a href="#getTypes()"><code>the raw types</code></a> as arguments, followed by <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The type closure</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>
