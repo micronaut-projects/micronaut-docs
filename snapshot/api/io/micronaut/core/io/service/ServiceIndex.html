@@ -62,6 +62,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#micronautServices()" tabindex="0">micronautServices()</a></li>
 <li><a href="#standardServices()" tabindex="0">standardServices()</a></li>
 <li><a href="#classPath()" tabindex="0">classPath()</a></li>
+<li><a href="#logCheck()" tabindex="0">logCheck()</a></li>
 </ol>
 </li>
 </ol>
@@ -117,15 +118,15 @@ rules:</p>
     is tested on every name of the index.</li>
     <li>At most one index can be registered: registering a second one fails.</li>
     <li>A lookup that comes before <a href="../../optim/StaticOptimizations.html" title="class in io.micronaut.core.optim"><code>StaticOptimizations</code></a> is initialized, which runs the loaders, scans the
-    class path. That is the case of the preload of the bean definition prefetch, whose one scan starts on a thread
-    of the pool before the loaders run.</li>
+    class path.</li>
     <li>Setting the system property <code>micronaut.service.index.enabled</code> to <code>false</code> switches the index
     off, so that the class path is scanned. The property is read at the start of each lookup: when a
     <a href="SoftServiceLoader.ServiceCollector.html" title="interface in io.micronaut.core.io.service"><code>SoftServiceLoader.ServiceCollector</code></a> is created, which <a href="SoftServiceLoader.html" title="class in io.micronaut.core.io.service"><code>SoftServiceLoader</code></a> does for each collection
     of a type, and on each call of
     <a href="MicronautMetaServiceLoaderUtils.html#findMicronautMetaServiceEntries(java.lang.ClassLoader,java.lang.String)"><code>MicronautMetaServiceLoaderUtils.findMicronautMetaServiceEntries(ClassLoader, String)</code></a>. A collector that
     is reused keeps the answer it was created with.</li>
-    <li>The first lookup that uses the index logs that at <code>INFO</code>, once.</li>
+    <li>Whether the index is used is logged once, at <code>INFO</code>, when the application context starts. A lookup
+    does not log, because the first one can come before logging is configured.</li>
 </ul>
 
 <p>An index describes a closed world: a JAR added to the class path after the index was built is not seen for the
@@ -217,20 +218,25 @@ application, but it rules out registering an index for a unit that a container d
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="ServiceIndex.ClassPathEntry.html" title="class in io.micronaut.core.io.service">ServiceIndex.ClassPathEntry</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#classPath()" class="member-name-link">classPath</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#micronautServices()" class="member-name-link">micronautServices</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="ServiceIndex.html" title="class in io.micronaut.core.io.service">ServiceIndex</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#ofTrusted(java.lang.ClassLoader,java.util.Map,java.util.Map,java.util.List)" class="member-name-link">ofTrusted</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;classLoader,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#logCheck()" class="member-name-link">logCheck</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Logs, once, whether the index that was checked last is used.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#micronautServices()" class="member-name-link">micronautServices</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="ServiceIndex.html" title="class in io.micronaut.core.io.service">ServiceIndex</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#ofTrusted(java.lang.ClassLoader,java.util.Map,java.util.Map,java.util.List)" class="member-name-link">ofTrusted</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;classLoader,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&gt;&nbsp;micronautServices,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&gt;&nbsp;standardServices,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ServiceIndex.ClassPathEntry.html" title="class in io.micronaut.core.io.service">ServiceIndex.ClassPathEntry</a>&gt;&nbsp;classPath)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates an index that uses the given maps, with their sets and lists, as they are.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#standardServices()" class="member-name-link">standardServices</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#standardServices()" class="member-name-link">standardServices</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -315,6 +321,17 @@ scan finds them. A type that is missing is scanned</dd>
 <dd>The entries of the class path the index was built for, in any order, or null if the class path is not
 compared</dd>
 </dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="logCheck()">
+<h3>logCheck</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">logCheck</span>()</div>
+<div class="block">Logs, once, whether the index that was checked last is used. A lookup does not log it, because the first lookup
+can come before logging is configured, or on a thread of the common pool while it is configured. The application
+context calls this when it starts.</div>
 </div>
 </section>
 </li>

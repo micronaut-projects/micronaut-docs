@@ -86,7 +86,14 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">PythonImportMappings</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">The curated Python modules the <a href="PythonImportMapper.html" title="interface in io.micronaut.python.imports"><code>mappers</code></a> on a class path contribute, and their
-resolution against a <a href="ClassIndex.html" title="interface in io.micronaut.python.imports"><code>ClassIndex</code></a>.</div>
+resolution against a <a href="ClassIndex.html" title="interface in io.micronaut.python.imports"><code>ClassIndex</code></a>.
+
+<p>Unless a contribution turns <a href="PythonModuleMapping.html#snakeCaseAliases()"><code>snake_case aliases</code></a> off, a module
+also exports each annotation under its snake_case name, the spelling Python decorators conventionally take:
+<code>@serde.serdeable</code> applies <code>Serdeable</code>, as <code>@serde.Serdeable</code> does. The alias is left out
+when the module already exports the name (a member, or a nested module such as <code>http.status</code> for
+<code>Status</code>), when two annotations of the module share it, when it is a Python keyword, or when it is the
+name of a Python builtin (<code>property</code>, <code>filter</code>), which importing it would shadow.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
