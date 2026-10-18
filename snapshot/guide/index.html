@@ -79902,6 +79902,9 @@ repositories {
 <div class="paragraph">
 <p>The built-in load balancers and composite clients implement the new experimental <code>AsyncLoadBalancer</code>, <code>AsyncDiscoveryClient</code> and <code>AsyncConfigurationClient</code> interfaces, and <code>DefaultAsyncFunctionDiscoveryClient</code> serves the <code>@FunctionClient</code> methods that return a <code>CompletionStage</code> or a value. They call the <code>DiscoveryClient</code> beans that do not implement <code>AsyncDiscoveryClient</code> through their publishers, with a plain subscriber. When such a publisher is a Reactor publisher, its Reactor context holds the propagated context of the request, but no longer the other entries of the Reactor context of the caller. The <code>LoadBalancer</code>, <code>DiscoveryClient</code>, <code>ConfigurationClient</code> and <code>FunctionDiscoveryClient</code> interfaces are unchanged, and a load balancer that does not implement <code>AsyncLoadBalancer</code> is selected through its publisher as before.</p>
 </div>
+<div class="paragraph">
+<p><code>FunctionInvoker</code> has an experimental <code>invokeAsync</code>, which <code>@FunctionClient</code> methods that return a <code>CompletionStage</code> call, and which <code>HttpFunctionExecutor</code> implements with the asynchronous HTTP client. Such a method that returns <code>CompletionStage&lt;Void&gt;</code> now completes with <code>null</code>, where it failed with a <code>FunctionNotFoundException</code>, and <code>HttpFunctionExecutor.invoke</code> with a <code>CompletionStage</code> type returns the future of <code>invokeAsync</code>.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_the_management_endpoints_call_the_completionstage_methods_of_their_spis_5_3">The management endpoints call the <code>CompletionStage</code> methods of their SPIs (5.3)</h3>
