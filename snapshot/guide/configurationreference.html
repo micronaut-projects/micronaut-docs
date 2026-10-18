@@ -2543,6 +2543,12 @@
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.ssl.ssl-context</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">javax.net.ssl.SSLContext</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.ssl.protocol</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
 <td class="tableblock halign-left valign-top"></td>
@@ -2568,6 +2574,12 @@
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.ssl.insecure-trust-all-certificates</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.services.*.ssl.endpoint-identification</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"></td>
@@ -3696,6 +3708,13 @@
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.client.ssl.ssl-context</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">javax.net.ssl.SSLContext</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A ready {@link SSLContext} to use instead of the configured key and trust material. Protocols, ciphers and
+ client authentication still apply, and ALPN is negotiated as for a built context. Not supported for HTTP/3.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.client.ssl.protocol</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the protocol to use. Default value ("TLS").</p></td>
@@ -3726,6 +3745,15 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Whether the client should disable checking of the remote SSL certificate. Only applies if no trust store
  is configured. &lt;b&gt;Note: This makes the SSL connection insecure, and should only be used for testing. If you are
  using a self-signed certificate, set up a trust store instead.&lt;/b&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.http.client.ssl.endpoint-identification</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the client checks that the server certificate matches the host name (HTTPS endpoint identification).
+ Disable it to verify the host name some other way, for example with a {@link javax.net.ssl.HostnameVerifier}
+ after the handshake. &lt;b&gt;Note: Without any host name check the connection is open to man-in-the-middle
+ attacks.&lt;/b&gt; Default value ({@value #DEFAULT_ENDPOINT_IDENTIFICATION}).</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
@@ -3992,6 +4020,13 @@
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.ssl.ssl-context</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">javax.net.ssl.SSLContext</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A ready {@link SSLContext} to use instead of the configured key and trust material. Protocols, ciphers and
+ client authentication still apply, and ALPN is negotiated as for a built context. Not supported for HTTP/3.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.ssl.protocol</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the protocol to use. Default value ("TLS").</p></td>
@@ -4008,6 +4043,14 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Whether an OpenSSL-backed TLS implementation should be preferred if it&#8217;s on the classpath.
  {@code true} by default.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.ssl.context-name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of a {@link javax.net.ssl.SSLContext} bean to serve with, instead of the configured key and trust
+ material. The client authentication mode, protocols and ciphers still apply, and ALPN is negotiated for
+ HTTP/2. A context set with {@link #setSslContext(javax.net.ssl.SSLContext)} takes precedence.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -4226,6 +4269,13 @@
  for the SSL context. When set, Micronaut resolves the named provider and subscribes to its keystore updates; when
  not set, the legacy {@code trust-store} configuration is used instead. May be combined with {@code keyName} to also
  source the key material from a provider.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.ssl.ssl-context</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">javax.net.ssl.SSLContext</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A ready {@link SSLContext} to use instead of the configured key and trust material. Protocols, ciphers and
+ client authentication still apply, and ALPN is negotiated as for a built context. Not supported for HTTP/3.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>

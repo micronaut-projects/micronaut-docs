@@ -52461,6 +52461,87 @@ micronaut.certificate.resource.cert-a.password=newPassword</code></pre>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_serving_with_a_provided_sslcontext">Serving with a Provided SSLContext</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When the key and trust material are managed elsewhere, the server can serve with a ready <code>javax.net.ssl.SSLContext</code> bean instead. Name the bean with <code>context-name</code>; the client authentication mode, protocols and ciphers still apply, and ALPN is negotiated for HTTP/2:</p>
+</div>
+<div class="openblock">
+<div class="title">Provided SSLContext Configuration Example</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.server.ssl.enabled=true
+micronaut.server.ssl.context-name=mtls
+micronaut.server.ssl.client-authentication=need</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  server:
+    ssl:
+      enabled: true
+      context-name: mtls
+      client-authentication: need</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {server = {ssl = {enabled = true, context-name = "mtls", client-authentication = "need"}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  server {
+    ssl {
+      enabled = true
+      contextName = "mtls"
+      clientAuthentication = "need"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    server {
+      ssl {
+        enabled = true
+        context-name = "mtls"
+        client-authentication = "need"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "server": {
+      "ssl": {
+        "enabled": true,
+        "context-name": "mtls",
+        "client-authentication": "need"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>A context set programmatically with <code>ServerSslConfiguration.setSslContext(..)</code> takes precedence over <code>context-name</code>. A provided context cannot be used for HTTP/3.</p>
+</div>
+</div>
+</div>
 
 <h2 id="dualProtocol"><a class="anchor" href="#dualProtocol"></a>6.39.9 Enabling HTTP and HTTPS</h2>
 
@@ -53438,41 +53519,76 @@ runtime = [
 <p>It may be necessary in a testing or development environment to disable hostname verification.</p>
 </div>
 <div class="paragraph">
-<p>To disable hostname verification in your test classpath, you could create a <a href="#replaces">Bean Replacement</a> in <code>src/test/java</code>:</p>
+<p>To disable hostname verification, set <code>endpoint-identification</code> to <code>false</code>:</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.http.client.netty.ssl;
-
-import io.micronaut.context.annotation.BootstrapContextCompatible;
-import io.micronaut.context.annotation.Replaces;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.annotation.Secondary;
-import io.micronaut.context.env.Environment;
-import io.micronaut.core.io.ResourceResolver;
-import io.micronaut.http.client.HttpVersionSelection;
-import io.micronaut.http.ssl.SslConfiguration;
-import io.netty.handler.ssl.SslContextBuilder;
-import jakarta.inject.Singleton;
-
-@Requires(env = Environment.TEST)
-@Singleton
-@BootstrapContextCompatible
-@Secondary
-@Replaces(NettyClientSslBuilder.class)
-class NettyClientSslBuilderReplacement extends NettyClientSslBuilder {
-    NettyClientSslBuilderReplacement(ResourceResolver resourceResolver) {
-        super(resourceResolver);
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.http.client.ssl.endpoint-identification=false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  http:
+    client:
+      ssl:
+        endpoint-identification: false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {http = {client = {ssl = {endpoint-identification = false}}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  http {
+    client {
+      ssl {
+        endpointIdentification = false
+      }
     }
-
-    @Override
-    protected SslContextBuilder createSslContextBuilder(SslConfiguration ssl, HttpVersionSelection versionSelection) {
-        SslContextBuilder builder = super.createSslContextBuilder(ssl, versionSelection);
-        builder.endpointIdentificationAlgorithm(null);
-        return builder;
-    }
+  }
 }</code></pre>
 </div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    http {
+      client {
+        ssl {
+          endpoint-identification = false
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "http": {
+      "client": {
+        "ssl": {
+          "endpoint-identification": false
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>The same option applies to a client created with a <code>DefaultHttpClientConfiguration</code>, together with <code>SslConfiguration.setSslContext(..)</code> to connect with a ready <code>javax.net.ssl.SSLContext</code> instead of the configured key and trust stores. Without endpoint identification, a <code>javax.net.ssl.HostnameVerifier</code> can still check the host name after the handshake.</p>
 </div>
 <div class="admonitionblock warning">
 <table>
