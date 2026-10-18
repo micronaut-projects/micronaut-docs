@@ -57,8 +57,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
-<li><a href="#recordClassName(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)" tabindex="0">recordClassName(ClassElement, Element...)</a></li>
-<li><a href="#write(io.micronaut.inject.ast.ClassElement,java.lang.String,io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.Element...)" tabindex="0">write(ClassElement, String, VisitorContext, Element...)</a></li>
+<li><a href="#write(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.Element...)" tabindex="0">write(ClassElement, VisitorContext, Element...)</a></li>
+<li><a href="#writeIfRecordable(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.Element...)" tabindex="0">writeIfRecordable(ClassElement, VisitorContext, Element...)</a></li>
 </ol>
 </li>
 </ol>
@@ -78,7 +78,7 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public final class </span><span class="element-name type-name-label">TypeHierarchyWriter</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">Writes the record of the generic hierarchy of a type, a <a href="../../core/type/TypeHierarchy.html" title="interface in io.micronaut.core.type"><code>TypeHierarchy</code></a> found at run time with
-<a href="../../core/type/TypeHierarchies.html" title="class in io.micronaut.core.type"><code>TypeHierarchies</code></a>. See <a href="../visitor/VisitorContext.html#importTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>VisitorContext.importTypeHierarchy(ClassElement, Element...)</code></a>.
+<a href="../../core/type/TypeHierarchies.html" title="class in io.micronaut.core.type"><code>TypeHierarchies</code></a>. See <a href="../visitor/VisitorContext.html#recordTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>VisitorContext.recordTypeHierarchy(ClassElement, Element...)</code></a>.
 
 <p>A record is a class with a constructor and nothing else, which passes the type, its variables, its direct super
 types and <a href="../ast/ClassElement.html#getAllSuperTypes()"><code>all its super types</code></a>, built with the argument factories from class
@@ -86,8 +86,8 @@ constants, to <a href="../../core/type/GeneratedTypeHierarchy.html" title="class
 a type that is itself not public is recorded in its own package, the one package that can name it. A super type that
 the record cannot name, a class that is not public and of another package than the record or one whose arguments
 name such a class, is left out of the recorded closure with the types above it kept, and is recorded by the name of
-its class instead (<a href="../../core/type/TypeHierarchy.html#getOmittedSuperTypeNames()"><code>TypeHierarchy.getOmittedSuperTypeNames()</code></a>); a type whose variables are bounded by such a
-class is refused.</p></div>
+its class instead (<a href="../../core/type/TypeHierarchy.html#getOmittedSuperTypeNames()"><code>TypeHierarchy.getOmittedSuperTypeNames()</code></a>), and the names are reported to the caller as
+well; a type whose variables are bounded by such a class is refused.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -109,19 +109,20 @@ class is refused.</p></div>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#recordClassName(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)" class="member-name-link">recordClassName</a><wbr>(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;type,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../visitor/TypeHierarchyRecord.html" title="interface in io.micronaut.inject.visitor">TypeHierarchyRecord</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#write(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.Element...)" class="member-name-link">write</a><wbr>(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;type,
+ <a href="../visitor/VisitorContext.html" title="interface in io.micronaut.inject.visitor">VisitorContext</a>&nbsp;context,
  <a href="../ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a>...&nbsp;originatingElements)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">The name of the record of a type, see <a href="../../core/type/TypeHierarchies.html#recordClassName(java.lang.String,java.lang.String)"><code>TypeHierarchies.recordClassName(String, String)</code></a>.</div>
+<div class="block">Writes the record of a type, and reports what it says and leaves out.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#write(io.micronaut.inject.ast.ClassElement,java.lang.String,io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.Element...)" class="member-name-link">write</a><wbr>(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;type,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;recordName,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../visitor/TypeHierarchyRecord.html" title="interface in io.micronaut.inject.visitor">TypeHierarchyRecord</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#writeIfRecordable(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.Element...)" class="member-name-link">writeIfRecordable</a><wbr>(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;type,
  <a href="../visitor/VisitorContext.html" title="interface in io.micronaut.inject.visitor">VisitorContext</a>&nbsp;context,
  <a href="../ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a>...&nbsp;originatingElements)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Writes the record of a type.</div>
+<div class="block">Writes the record of a type as <a href="#write(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.Element...)"><code>write(ClassElement, VisitorContext, Element...)</code></a> does, unless no record
+can describe the type, which is then not written.</div>
 </div>
 </div>
 </div>
@@ -141,39 +142,46 @@ class is refused.</p></div>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="recordClassName(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)">
-<h3>recordClassName</h3>
+<section class="detail" id="write(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.Element...)">
+<h3>write</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">recordClassName</span><wbr><span class="parameters">(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;type,
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../visitor/TypeHierarchyRecord.html" title="interface in io.micronaut.inject.visitor">TypeHierarchyRecord</a></span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;type,
+ <a href="../visitor/VisitorContext.html" title="interface in io.micronaut.inject.visitor">VisitorContext</a>&nbsp;context,
  <a href="../ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a>...&nbsp;originatingElements)</span></div>
-<div class="block">The name of the record of a type, see <a href="../../core/type/TypeHierarchies.html#recordClassName(java.lang.String,java.lang.String)"><code>TypeHierarchies.recordClassName(String, String)</code></a>.</div>
+<div class="block">Writes the record of a type, and reports what it says and leaves out. A type recorded several times into the
+same package is written once: a compiler that refuses a second write of the same class is taken at its word.
+A type recorded from several packages is written into each, see <a href="../../core/type/TypeHierarchies.html#find(java.lang.String,java.lang.ClassLoader)"><code>TypeHierarchies.find(String, ClassLoader)</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>type</code> - The type</dd>
+<dd><code>type</code> - The type, a declaration</dd>
+<dd><code>context</code> - The visitor context</dd>
 <dd><code>originatingElements</code> - The originating elements, at least one</dd>
 <dt>Returns:</dt>
-<dd>The name of the record</dd>
+<dd>The record</dd>
+<dt>Throws:</dt>
+<dd><code><a href="../processing/ProcessingException.html" title="class in io.micronaut.inject.processing">ProcessingException</a></code> - if no record can describe the type, or the record cannot be written</dd>
 </dl>
 </div>
 </section>
 </li>
 <li>
-<section class="detail" id="write(io.micronaut.inject.ast.ClassElement,java.lang.String,io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.Element...)">
-<h3>write</h3>
+<section class="detail" id="writeIfRecordable(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.Element...)">
+<h3>writeIfRecordable</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;type,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;recordName,
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../visitor/TypeHierarchyRecord.html" title="interface in io.micronaut.inject.visitor">TypeHierarchyRecord</a>&gt;</span>&nbsp;<span class="element-name">writeIfRecordable</span><wbr><span class="parameters">(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;type,
  <a href="../visitor/VisitorContext.html" title="interface in io.micronaut.inject.visitor">VisitorContext</a>&nbsp;context,
  <a href="../ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a>...&nbsp;originatingElements)</span></div>
-<div class="block">Writes the record of a type. A type recorded several times into the same package is written once: a
-compiler that refuses a second write of the same class is taken at its word. A type recorded from several
-packages is written into each, see <a href="../../core/type/TypeHierarchies.html#find(java.lang.String,java.lang.ClassLoader)"><code>TypeHierarchies.find(String, ClassLoader)</code></a>.</div>
+<div class="block">Writes the record of a type as <a href="#write(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.Element...)"><code>write(ClassElement, VisitorContext, Element...)</code></a> does, unless no record
+can describe the type, which is then not written.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>type</code> - The type</dd>
-<dd><code>recordName</code> - The name of the record, from <a href="#recordClassName(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>recordClassName(ClassElement, Element...)</code></a></dd>
+<dd><code>type</code> - The type, a declaration</dd>
 <dd><code>context</code> - The visitor context</dd>
 <dd><code>originatingElements</code> - The originating elements, at least one</dd>
+<dt>Returns:</dt>
+<dd>The record, or empty when no record can describe the type</dd>
+<dt>Throws:</dt>
+<dd><code><a href="../processing/ProcessingException.html" title="class in io.micronaut.inject.processing">ProcessingException</a></code> - if the record cannot be written</dd>
 </dl>
 </div>
 </section>

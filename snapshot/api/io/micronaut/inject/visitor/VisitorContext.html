@@ -97,6 +97,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#addGeneratedResource(java.lang.String)" tabindex="0">addGeneratedResource(String)</a></li>
 <li><a href="#registerBean(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)" tabindex="0">registerBean(ClassElement, Element...)</a></li>
 <li><a href="#importTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)" tabindex="0">importTypeHierarchy(ClassElement, Element...)</a></li>
+<li><a href="#recordTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)" tabindex="0">recordTypeHierarchy(ClassElement, Element...)</a></li>
+<li><a href="#tryRecordTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)" tabindex="0">tryRecordTypeHierarchy(ClassElement, Element...)</a></li>
 </ol>
 </li>
 </ol>
@@ -323,12 +325,28 @@ superclass and its generic interfaces, as declared.</div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Allows printing informational messages.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../ast/beans/BeanElementBuilder.html" title="interface in io.micronaut.inject.ast.beans">BeanElementBuilder</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#registerBean(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)" class="member-name-link">registerBean</a><wbr>(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;beanType,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="TypeHierarchyRecord.html" title="interface in io.micronaut.inject.visitor">TypeHierarchyRecord</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#recordTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)" class="member-name-link">recordTypeHierarchy</a><wbr>(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;type,
  <a href="../ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a>...&nbsp;originatingElements)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Records the generic hierarchy of a type as <a href="#importTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>importTypeHierarchy(ClassElement, Element...)</code></a> does, and
+reports what the record leaves out: the super types it cannot name from its package, by the names the record
+lists at run time.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../ast/beans/BeanElementBuilder.html" title="interface in io.micronaut.inject.ast.beans">BeanElementBuilder</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#registerBean(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)" class="member-name-link">registerBean</a><wbr>(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;beanType,
+ <a href="../ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a>...&nbsp;originatingElements)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Registers a bean of the given type, which may be a class of the compilation or one already compiled, for
 example a class of a library.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="TypeHierarchyRecord.html" title="interface in io.micronaut.inject.visitor">TypeHierarchyRecord</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#tryRecordTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)" class="member-name-link">tryRecordTypeHierarchy</a><wbr>(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;type,
+ <a href="../ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a>...&nbsp;originatingElements)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Records the generic hierarchy of a type as <a href="#recordTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>recordTypeHierarchy(ClassElement, Element...)</code></a> does, unless
+no record can describe the type: a type whose variables are bounded by a class the record cannot name, a type
+that is or extends an inner class of a generic class, or a type of the JDK that is not public.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../writer/GeneratedFile.html" title="interface in io.micronaut.inject.writer">GeneratedFile</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#visitGeneratedFile(java.lang.String)" class="member-name-link">visitGeneratedFile</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path)</code></div>
@@ -981,10 +999,11 @@ packages has a record in each, and the lookup prefers the one in the package of 
 
 <p>The record is named after the type and written into the package of the first originating element, or into
 the package of the type when the type itself is not public. A super type the record cannot name from its package
-is left out of it and named in <a href="../../core/type/TypeHierarchy.html#getOmittedSuperTypeNames()"><code>TypeHierarchy.getOmittedSuperTypeNames()</code></a>. Every originating element is
-reported to the compiler, as for <a href="#registerBean(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>registerBean(ClassElement, Element...)</code></a>, and the same rule applies: the
-record is written with the round, and recording from <a href="TypeElementVisitor.html#finish(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finish(VisitorContext)</code></a> is not
-portable.</p></div>
+is left out of it and named in <a href="../../core/type/TypeHierarchy.html#getOmittedSuperTypeNames()"><code>TypeHierarchy.getOmittedSuperTypeNames()</code></a>; a visitor
+that needs to know what was left out calls <a href="#recordTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>recordTypeHierarchy(ClassElement, Element...)</code></a> instead. Every
+originating element is reported to the compiler, as for <a href="#registerBean(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>registerBean(ClassElement, Element...)</code></a>, and the
+same rule applies: the record is written with the round, and recording from
+<a href="TypeElementVisitor.html#finish(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finish(VisitorContext)</code></a> is not portable.</p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>type</code> - The type</dd>
@@ -992,6 +1011,62 @@ portable.</p></div>
                            package of the compilation</dd>
 <dt>Returns:</dt>
 <dd>The name of the record</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if no originating element is given, or the first one is of another kind</dd>
+<dd><code><a href="../processing/ProcessingException.html" title="class in io.micronaut.inject.processing">ProcessingException</a></code> - if no record can describe the type, see
+                                                            <a href="#tryRecordTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>tryRecordTypeHierarchy(ClassElement, Element...)</code></a></dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="recordTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)">
+<h3>recordTypeHierarchy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="TypeHierarchyRecord.html" title="interface in io.micronaut.inject.visitor">TypeHierarchyRecord</a></span>&nbsp;<span class="element-name">recordTypeHierarchy</span><wbr><span class="parameters">(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;type,
+ <a href="../ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a>...&nbsp;originatingElements)</span></div>
+<div class="block">Records the generic hierarchy of a type as <a href="#importTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>importTypeHierarchy(ClassElement, Element...)</code></a> does, and
+reports what the record leaves out: the super types it cannot name from its package, by the names the record
+lists at run time.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The type</dd>
+<dd><code>originatingElements</code> - The originating elements, at least one; the first must be a class, a member or a
+                           package of the compilation</dd>
+<dt>Returns:</dt>
+<dd>The name of the record and the names of the super types it leaves out</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if no originating element is given, or the first one is of another kind</dd>
+<dd><code><a href="../processing/ProcessingException.html" title="class in io.micronaut.inject.processing">ProcessingException</a></code> - if no record can describe the type, see
+                                                            <a href="#tryRecordTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>tryRecordTypeHierarchy(ClassElement, Element...)</code></a></dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="tryRecordTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)">
+<h3>tryRecordTypeHierarchy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="TypeHierarchyRecord.html" title="interface in io.micronaut.inject.visitor">TypeHierarchyRecord</a>&gt;</span>&nbsp;<span class="element-name">tryRecordTypeHierarchy</span><wbr><span class="parameters">(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;type,
+ <a href="../ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a>...&nbsp;originatingElements)</span></div>
+<div class="block">Records the generic hierarchy of a type as <a href="#recordTypeHierarchy(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>recordTypeHierarchy(ClassElement, Element...)</code></a> does, unless
+no record can describe the type: a type whose variables are bounded by a class the record cannot name, a type
+that is or extends an inner class of a generic class, or a type of the JDK that is not public. Those fail the
+compilation when recorded with the other methods, with the reason; here nothing is written and nothing is
+returned, for a visitor that keeps a description of its own in that case. A record that cannot be written for
+another reason still fails the compilation.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The type</dd>
+<dd><code>originatingElements</code> - The originating elements, at least one; the first must be a class, a member or a
+                           package of the compilation</dd>
+<dt>Returns:</dt>
+<dd>The name of the record and the names of the super types it leaves out, or empty when no record can
+describe the type</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if no originating element is given, or the first one is of another kind</dd>
 <dt>Since:</dt>
