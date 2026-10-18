@@ -67,6 +67,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#getList(java.lang.String,java.lang.Class)" tabindex="0">getList(String, Class)</a></li>
 <li><a href="#getList(java.lang.String,io.micronaut.core.type.Argument)" tabindex="0">getList(String, Argument)</a></li>
 <li><a href="#findList(java.lang.String,java.lang.Class)" tabindex="0">findList(String, Class)</a></li>
+<li><a href="#raw()" tabindex="0">raw()</a></li>
+<li><a href="#rawString(java.lang.String)" tabindex="0">rawString(String)</a></li>
 </ol>
 </li>
 </ol>
@@ -195,6 +197,18 @@ argument of a controller method: the values of an exploded variable, e.g.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#names()" class="member-name-link">names</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="PathVariables.html" title="interface in io.micronaut.http">PathVariables</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#raw()" class="member-name-link">raw</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">The variables with their values as they appear in the path of the request, not
+percent-decoded, e.g.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#rawString(java.lang.String)" class="member-name-link">rawString</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">The value of a required variable as it appears in the path, not percent-decoded, see
+<a href="#raw()"><code>raw()</code></a>.</div>
+</div>
 </div>
 </div>
 </div>
@@ -427,6 +441,55 @@ type, as it does for a controller argument.</div>
 <dd><code>type</code> - The type of the elements</dd>
 <dt>Returns:</dt>
 <dd>The values, if the variable has a value</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="raw()">
+<h3>raw</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="PathVariables.html" title="interface in io.micronaut.http">PathVariables</a></span>&nbsp;<span class="element-name">raw</span>()</div>
+<div class="block">The variables with their values as they appear in the path of the request, not
+percent-decoded, e.g. <code>a%2Fb</code> for <code>a/b</code>, <code>+</code> that is not a space, and the
+percent-encoded bytes of a non-ASCII value: what a framework needs for a variable it must
+not decode, e.g. a JAX-RS <code>@Encoded</code> path parameter. The variables of the prefixes of
+the locator routes of a located route are raw as well. The accessors convert the raw values
+like the decoded ones, and the raw variables of the raw variables are themselves.
+
+<pre><code>@Get("/files/{name}")
+String file(PathVariables pathVariables) {
+    return pathVariables.raw().getString("name"); // "a%2Fb" for /files/a%2Fb
+}
+</code></pre></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The raw variables</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link">UnsupportedOperationException</a></code> - if the source of the variables does not have their raw
+values, e.g. a route match of another router</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="rawString(java.lang.String)">
+<h3>rawString</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">rawString</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<div class="block">The value of a required variable as it appears in the path, not percent-decoded, see
+<a href="#raw()"><code>raw()</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - The name of the variable</dd>
+<dt>Returns:</dt>
+<dd>The raw value</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/RuntimeException.html" title="class or interface in java.lang" class="external-link">RuntimeException</a></code> - if the variable has no value, answered with 400</dd>
 <dt>Since:</dt>
 <dd>5.3.0</dd>
 </dl>

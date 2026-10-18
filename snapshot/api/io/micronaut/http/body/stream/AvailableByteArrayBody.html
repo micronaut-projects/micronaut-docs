@@ -243,7 +243,15 @@ claiming this body in the process.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../CloseableAvailableByteBody.html" title="interface in io.micronaut.http.body">CloseableAvailableByteBody</a></span>&nbsp;<span class="element-name">split</span>()</div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../ByteBody.html#split()">ByteBody</a></code></span></div>
-<div class="block">Equivalent to <code>split(SplitBackpressureMode.SLOWEST)</code>.</div>
+<div class="block">Equivalent to <code>split(SplitBackpressureMode.SLOWEST)</code>.
+<p><b>Both bodies must be read at the same time.</b> With <code>SLOWEST</code>, data is only
+requested from upstream when <i>both</i> bodies want more. If one body is only read after
+the other has completed (for example a filter that buffers the split body and then lets the
+route read the original), the first body never completes: the server stops reading after
+its initial window (about 64 KiB on Netty), a request with <code>Expect: 100-continue</code>
+never gets its <code>100 Continue</code>, and the request hangs until the idle timeout. Use
+<a href="../ByteBody.html#split(io.micronaut.http.body.ByteBody.SplitBackpressureMode)"><code>split(SplitBackpressureMode.FASTEST)</code></a> for that
+pattern. See <a href="../ByteBody.SplitBackpressureMode.html" title="enum class in io.micronaut.http.body"><code>ByteBody.SplitBackpressureMode</code></a> for how to choose a mode.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../AvailableByteBody.html#split()">split</a></code>&nbsp;in interface&nbsp;<code><a href="../AvailableByteBody.html" title="interface in io.micronaut.http.body">AvailableByteBody</a></code></dd>
