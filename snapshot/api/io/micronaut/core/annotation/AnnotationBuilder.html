@@ -66,6 +66,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#build(java.util.Map)" tabindex="0">build(Map)</a></li>
 <li><a href="#build(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.convert.ConversionService)" tabindex="0">build(AnnotationValue, ConversionService)</a></li>
 <li><a href="#build(io.micronaut.core.annotation.AnnotationValue)" tabindex="0">build(AnnotationValue)</a></li>
+<li><a href="#toMap(A)" tabindex="0">toMap(A)</a></li>
+<li><a href="#toMap(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.convert.ConversionService)" tabindex="0">toMap(AnnotationValue, ConversionService)</a></li>
 </ol>
 </li>
 </ol>
@@ -91,7 +93,8 @@ loadScripts(document, 'script');</script>
 
 <p>A builder is stateless and thread safe, and is meant to be looked up once, with
 <a href="#find(java.lang.Class)"><code>find(Class)</code></a>, and then reused. The implementations are generated at compile
-time for the types listed in <a href="RegisterAnnotations.html" title="annotation interface in io.micronaut.core.annotation"><code>RegisterAnnotations</code></a>.</p>
+time for the types listed in <a href="RegisterAnnotations.html" title="annotation interface in io.micronaut.core.annotation"><code>RegisterAnnotations</code></a>, and for the types the visitors of a compilation request
+a builder for.</p>
 
 <p>A member that is an annotation is read from an <a href="AnnotationValue.html" title="class in io.micronaut.core.annotation"><code>AnnotationValue</code></a>, from a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link"><code>Map</code></a> of its members or
 from an instance, and an array of annotations from an array or a collection of those. A member that is a class
@@ -167,6 +170,20 @@ conversion service.</div>
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;classLoader)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Finds the builder of an annotation type by name, among the builders visible to a class loader.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#toMap(A)" class="member-name-link">toMap</a><wbr>(<a href="#type-param-A" title="type parameter in AnnotationBuilder">A</a>&nbsp;annotation)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Reads the members of an annotation of the type, as typed values: a boxed primitive, a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a>, a
+<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link"><code>Class</code></a>, an enum constant, an annotation, or an array of those, with the type the member declares.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#toMap(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.convert.ConversionService)" class="member-name-link">toMap</a><wbr>(<a href="AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&nbsp;annotationValue,
+ <a href="../convert/ConversionService.html" title="interface in io.micronaut.core.convert">ConversionService</a>&nbsp;conversionService)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Reads the members of an annotation value as typed values, as <a href="#toMap(A)"><code>toMap(Annotation)</code></a> does: the members the
+value does not give get the defaults of the annotation type, and every value is converted to the type of its
+member, as <a href="#build(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.convert.ConversionService)"><code>build(AnnotationValue, ConversionService)</code></a> converts them.</div>
 </div>
 </div>
 </div>
@@ -329,6 +346,60 @@ conversion service.</div>
 <dd><code>annotationValue</code> - The annotation value</dd>
 <dt>Returns:</dt>
 <dd>The annotation</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="toMap(A)">
+<h3 id="toMap(java.lang.annotation.Annotation)">toMap</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</span>&nbsp;<span class="element-name">toMap</span><wbr><span class="parameters">(<a href="#type-param-A" title="type parameter in AnnotationBuilder">A</a>&nbsp;annotation)</span></div>
+<div class="block">Reads the members of an annotation of the type, as typed values: a boxed primitive, a <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a>, a
+<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link"><code>Class</code></a>, an enum constant, an annotation, or an array of those, with the type the member declares. Each
+member is read through its accessor, so the annotation can be one this builder created, an annotation of the JVM
+or any other implementation. An array is a copy that the caller owns, and a member the annotation does not set
+is left out.
+
+<p>This is not the form the annotation metadata records the members in, which
+<a href="AnnotationValueProvider.html#annotationValue()"><code>AnnotationValueProvider.annotationValue()</code></a> answers: no enum is turned into its name and no class into an
+<a href="AnnotationClassValue.html" title="class in io.micronaut.core.annotation"><code>AnnotationClassValue</code></a>.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>annotation</code> - The annotation</dd>
+<dt>Returns:</dt>
+<dd>The members by name, in the order the annotation type declares them</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link">UnsupportedOperationException</a></code> - When the builder was generated by a version of Micronaut that does not
+read annotations, then the module that registers it has to be compiled again</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="toMap(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.convert.ConversionService)">
+<h3>toMap</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</span>&nbsp;<span class="element-name">toMap</span><wbr><span class="parameters">(<a href="AnnotationValue.html" title="class in io.micronaut.core.annotation">AnnotationValue</a>&lt;?&gt;&nbsp;annotationValue,
+ <a href="../convert/ConversionService.html" title="interface in io.micronaut.core.convert">ConversionService</a>&nbsp;conversionService)</span></div>
+<div class="block">Reads the members of an annotation value as typed values, as <a href="#toMap(A)"><code>toMap(Annotation)</code></a> does: the members the
+value does not give get the defaults of the annotation type, and every value is converted to the type of its
+member, as <a href="#build(io.micronaut.core.annotation.AnnotationValue,io.micronaut.core.convert.ConversionService)"><code>build(AnnotationValue, ConversionService)</code></a> converts them.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>annotationValue</code> - The annotation value, of the annotation type of this builder</dd>
+<dd><code>conversionService</code> - The conversion service converting the values to the member types</dd>
+<dt>Returns:</dt>
+<dd>The members by name, in the order the annotation type declares them</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - When the annotation value is of another annotation type, or a value
+cannot be converted</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link">UnsupportedOperationException</a></code> - When the builder was generated by a version of Micronaut that does not
+read annotations</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>
