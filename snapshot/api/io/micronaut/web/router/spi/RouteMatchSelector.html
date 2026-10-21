@@ -60,6 +60,7 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#select(io.micronaut.http.HttpRequest,java.util.List)" tabindex="0">select(HttpRequest, List)</a></li>
 <li><a href="#order()" tabindex="0">order()</a></li>
+<li><a href="#selectsMediaTypes()" tabindex="0">selectsMediaTypes()</a></li>
 <li><a href="#selectedMediaType(io.micronaut.http.PathVariables)" tabindex="0">selectedMediaType(PathVariables)</a></li>
 <li><a href="#locatorPrefix(io.micronaut.web.router.UriRouteInfo)" tabindex="0">locatorPrefix(UriRouteInfo)</a></li>
 </ol>
@@ -88,16 +89,29 @@ resolution of ambiguous routes by the media types and the specificity of the tem
 routes of a selector the types are compatible when one matches the other, without the
 parameters: <code>Accept: image/*</code> reaches the routes that produce <code>image/png</code> and
 <code>image/*</code>; when none is compatible the router answers <code>406</code> or <code>415</code> as for
-other routes. When the candidates have different selectors, or none, the Micronaut policy
+other routes, unless the selector <a href="#selectsMediaTypes()"><code>selects the media types</code></a> itself. When the candidates have different selectors, or none, the Micronaut policy
 selects, and no selector is called. For example a JAX-RS selector selects by the specificity of
 JAX-RS (section 3.7.2), then by the content type of the request against <code>@Consumes</code> and
 the accepted types, with their quality, against <code>@Produces</code>, with their <code>qs</code>.</p>
+
+<p>A selector that ranks the routes by their path first and by the media types only after
+that, as JAX-RS does, returns <code>true</code> from <a href="#selectsMediaTypes()"><code>selectsMediaTypes()</code></a>: the router then
+gives it the matches of its routes whatever their content type and accepted types, and the
+selector answers a request that the route it chose cannot serve with
+<a href="RouteMatchSelector.Selection.html#notAcceptable(io.micronaut.web.router.UriRouteMatch)"><code>RouteMatchSelector.Selection.notAcceptable(UriRouteMatch)</code></a> (<code>406</code>) or
+<a href="RouteMatchSelector.Selection.html#unsupportedMediaType(io.micronaut.web.router.UriRouteMatch)"><code>RouteMatchSelector.Selection.unsupportedMediaType(UriRouteMatch)</code></a> (<code>415</code>).</p>
 
 <p>A locator route is never given to <a href="#select(io.micronaut.http.HttpRequest,java.util.List)"><code>select(HttpRequest, List)</code></a>: its target is located after the
 selection. When locator routes are among the candidates and they all have the same selector,
 the router keeps the most specific of them by the <a href="#order()"><code>order</code></a> of the selector, or by
 the Micronaut policy. The selection is therefore not staged as in JAX-RS: a resource method
-that the media types exclude does not keep a request from a locator route of the same path.</p>
+that the media types exclude does not keep a request from a locator route of the same path.
+A locator route is however dropped when its selector has an <a href="#order()"><code>order</code></a> and a route
+of the same selector that is not a locator route, of any HTTP method, matches the path and is
+more specific: the request is then routed as if the locator route did not match, so the
+<code>405</code> status, its <code>Allow</code> header and the automatic <code>OPTIONS</code> and
+<code>HEAD</code> responses of the more specific route apply, as when JAX-RS matches the path
+before the method.</p>
 
 <p>When the router finds the routes of the path of every HTTP method
 (<a href="../Router.html#findAny(io.micronaut.http.HttpRequest)"><code>Router.findAny(HttpRequest)</code></a>), e.g. for the <code>405</code> status
@@ -175,6 +189,11 @@ when locator routes are among the candidates, see the class documentation.</div>
 negotiated, for the path variables given to a handler, see
 <a href="../UriRouteMatch.html#getSelectedMediaType()"><code>UriRouteMatch.getSelectedMediaType()</code></a>.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#selectsMediaTypes()" class="member-name-link">selectsMediaTypes</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Whether this selector selects by the media types itself.</div>
+</div>
 </div>
 </div>
 </div>
@@ -225,6 +244,30 @@ compare equal are equally specific, and a request both match is ambiguous.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The order, or empty for the Micronaut policy</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="selectsMediaTypes()">
+<h3>selectsMediaTypes</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">selectsMediaTypes</span>()</div>
+<div class="block">Whether this selector selects by the media types itself. When <code>true</code>, the router does
+not drop the routes of this selector whose consumed and produced types are not compatible
+with the content type and the accepted types of the request before <a href="#select(io.micronaut.http.HttpRequest,java.util.List)"><code>select(HttpRequest, List)</code></a> runs:
+the selector is given every match of the path and the method, and chooses the route by the
+path first, e.g. by the most specific template. When the chosen route cannot serve the
+media types, the selector returns <a href="RouteMatchSelector.Selection.html#notAcceptable(io.micronaut.web.router.UriRouteMatch)"><code>RouteMatchSelector.Selection.notAcceptable(UriRouteMatch)</code></a> or
+<a href="RouteMatchSelector.Selection.html#unsupportedMediaType(io.micronaut.web.router.UriRouteMatch)"><code>RouteMatchSelector.Selection.unsupportedMediaType(UriRouteMatch)</code></a> to answer <code>406</code> or <code>415</code>
+with the types of that route, instead of an empty selection, which is answered as when no
+route matches. When the candidates of a request do not all have this selector, the matches
+of its routes whose types are not compatible are dropped as for other routes.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether the selector is given the matches of every media type, <code>false</code> by default</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>

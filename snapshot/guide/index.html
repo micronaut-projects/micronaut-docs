@@ -489,11 +489,13 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesLocators"><a href="#functionalRoutesLocators"><strong>6.31.11</strong><span>Locator Routes</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesWebSocket"><a href="#functionalRoutesWebSocket"><strong>6.31.12</strong><span>WebSocket Routes</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesTemplates"><a href="#functionalRoutesTemplates"><strong>6.31.12</strong><span>Route Templates and Route Selectors</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesStaticResources"><a href="#functionalRoutesStaticResources"><strong>6.31.13</strong><span>Static Resources</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesWebSocket"><a href="#functionalRoutesWebSocket"><strong>6.31.13</strong><span>WebSocket Routes</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesLimitations"><a href="#functionalRoutesLimitations"><strong>6.31.14</strong><span>Limitations</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesStaticResources"><a href="#functionalRoutesStaticResources"><strong>6.31.14</strong><span>Static Resources</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-functionalRoutesLimitations"><a href="#functionalRoutesLimitations"><strong>6.31.15</strong><span>Limitations</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-sessions"><a href="#sessions"><strong>6.32</strong><span>HTTP Sessions</span></a></div>
         
@@ -27720,6 +27722,18 @@ class MyRoutes extends GroovyRouteBuilder { // <b class="conum">(1)</b>
 </tr>
 </table>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+A route given an object, like the injected controller above, targets the bean of the type of the object, not the object itself: when the route is built, the bean definition of that type is looked up, and the method is invoked on that bean. The type must therefore resolve to a single bean. To target a specific bean definition, for example one of several <code>@EachProperty</code> beans, use the variants that take a <a href="../api/io/micronaut/inject/BeanDefinition.html">BeanDefinition</a> and an <a href="../api/io/micronaut/inject/ExecutableMethod.html">ExecutableMethod</a>, such as <code>RouteBuilder::GET(String,BeanDefinition,ExecutableMethod)</code>.
+</td>
+</tr>
+</table>
+</div>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -45653,7 +45667,42 @@ class LocatorRoutes implements HttpRoutes {
 <p>The server waits for the stage of an asynchronous locator without blocking. When the client goes away before the stage completes, the Netty server stops waiting for it, when the connection closes or the HTTP/2 stream is reset, without cancelling it: a locator may return a stage it shares with other requests, e.g. of a cache. A CORS preflight request for a path under the prefix of an asynchronous locator is answered once the locator has located its target, with the methods of its located routes, before the filters that run after the routes are matched.</p>
 </div>
 
-<h2 id="functionalRoutesWebSocket"><a class="anchor" href="#functionalRoutesWebSocket"></a>6.31.12 WebSocket Routes</h2>
+<h2 id="functionalRoutesTemplates"><a class="anchor" href="#functionalRoutesTemplates"></a>6.31.12 Route Templates and Route Selectors</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/functionalRoutes/functionalRoutesTemplates.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <code>String</code> templates of the routes are URI templates, unless a group parses them with another template language: <code>templates(parser)</code> on a group takes a <a href="../api/io/micronaut/http/uri/RouteTemplateParser.html">RouteTemplateParser</a>, which parses the templates of the routes and of the locator prefixes of the group into <a href="../api/io/micronaut/http/uri/RouteTemplate.html">RouteTemplate</a> instances, e.g. the templates of a JAX-RS application. These are experimental SPIs for the integrations of other web frameworks.</p>
+</div>
+<div class="paragraph">
+<p>The routes of a template language usually also share a <a href="../api/io/micronaut/web/router/spi/RouteMatchSelector.html">RouteMatchSelector</a>, given with <code>selectedBy(selector)</code> on a group or a route. When every route that matches a request has the same selector, the selector chooses among their matches, instead of the Micronaut policy, and may negotiate the media type of the response, which the handler reads with <code>RouteMatchSelector.selectedMediaType(pathVariables)</code>. Its <code>order()</code> ranks the routes where no selection runs, e.g. among locator routes. When the routes that match have different selectors, or none, the Micronaut policy applies, as it does for every route without a selector.</p>
+</div>
+<div class="paragraph">
+<p>By default the router gives a selector only the routes whose consumed and produced types are compatible with the content type and the accepted types of the request. A selector that ranks the routes by the path first, as JAX-RS does (section 3.7.2), overrides <code>selectsMediaTypes()</code> to return <code>true</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The selector is given the matching routes of the method of the request whatever their media types, so it can choose the route of the most specific template first. When that route cannot serve the media types of the request, it returns <code>Selection.notAcceptable(match)</code> or <code>Selection.unsupportedMediaType(match)</code>: the request is answered with <code>406</code> or <code>415</code>, with the produced or consumed types of that route, as a failure of that route: the status and error routes of its groups, and of the groups of its locator routes, answer before the global ones, and a static file of the same path is not served. An empty selection is still answered as when no route matches, with <code>404</code> or <code>405</code>.</p>
+</li>
+<li>
+<p>For example, with <code>/r/fixed</code> producing <code>application/json</code> and <code>/r/{x}</code> producing <code>text/plain</code>, <code>GET /r/fixed</code> with <code>Accept: text/plain</code> is answered with <code>406</code> by <code>/r/fixed</code>, instead of being routed to <code>/r/{x}</code>.</p>
+</li>
+<li>
+<p>When the routes matching a request do not all have that selector, the routes whose media types are not compatible are dropped first, as for other routes.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A locator route accepts every HTTP method. When its selector has an <code>order()</code>, the router drops a locator route that a route of the same selector, which is not a locator route, is more specific than for any HTTP method: the request is then routed as if the locator route did not match the path. With a route <code>GET /items/sub</code> and a locator route <code>/items/{id}</code>, <code>OPTIONS /items/sub</code> is answered by the automatic <code>OPTIONS</code> response with <code>Allow: GET, HEAD, OPTIONS</code> (with <code>micronaut.server.dispatch-options-requests</code> enabled) and <code>POST /items/sub</code> with <code>405</code>, instead of running the locator with <code>sub</code> as its id. A path that the more specific route does not match, such as <code>/items/5/details</code>, is still located.</p>
+</div>
+
+<h2 id="functionalRoutesWebSocket"><a class="anchor" href="#functionalRoutesWebSocket"></a>6.31.13 WebSocket Routes</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/functionalRoutes/functionalRoutesWebSocket.adoc"'>
@@ -46009,7 +46058,7 @@ A handler that returns a stage that does not complete, e.g. the stage of <code>s
 </div>
 </div>
 
-<h2 id="functionalRoutesStaticResources"><a class="anchor" href="#functionalRoutesStaticResources"></a>6.31.13 Static Resources</h2>
+<h2 id="functionalRoutesStaticResources"><a class="anchor" href="#functionalRoutesStaticResources"></a>6.31.14 Static Resources</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/functionalRoutes/functionalRoutesStaticResources.adoc"'>
@@ -46280,7 +46329,7 @@ routes.path("/manual", manual_routes)</code></pre>
 </div>
 </div>
 
-<h2 id="functionalRoutesLimitations"><a class="anchor" href="#functionalRoutesLimitations"></a>6.31.14 Limitations</h2>
+<h2 id="functionalRoutesLimitations"><a class="anchor" href="#functionalRoutesLimitations"></a>6.31.15 Limitations</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/functionalRoutes/functionalRoutesLimitations.adoc"'>
@@ -46997,6 +47046,18 @@ class ChatServerWebSocket {
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
 <td>The <a href="../api/io/micronaut/websocket/annotation/OnClose.html">@OnClose</a> annotation declares the method to invoke when the WebSocket is closed.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Like the URI of a controller, the URI of a <a href="../api/io/micronaut/websocket/annotation/ServerWebSocket.html">@ServerWebSocket</a> is under the context path of the server, <code>micronaut.server.context-path</code>, if one is configured. With a context path of <code>/app</code>, the example above is mapped under <code>/app/chat/{topic}/{username}</code>.
+</td>
 </tr>
 </table>
 </div>
@@ -80498,6 +80559,12 @@ repositories {
 
 <div class="paragraph">
 <p>This section documents breaking changes between Micronaut versions</p>
+</div>
+<div class="sect2">
+<h3 id="_serverwebsocket_uris_are_under_the_context_path_5_3"><code>@ServerWebSocket</code> URIs are under the context path (5.3)</h3>
+<div class="paragraph">
+<p>When <code>micronaut.server.context-path</code> is set, the URI of a <a href="../api/io/micronaut/websocket/annotation/ServerWebSocket.html">@ServerWebSocket</a> is now under the context path, like the URIs of the controllers and of the WebSocket routes of the route builder. Previously a <code>@ServerWebSocket("/chat")</code> was mapped under <code>/chat</code> whatever the context path, and with a context path of <code>/app</code> it is now mapped under <code>/app/chat</code>: an upgrade request to <code>/chat</code> is no longer answered by the WebSocket. Clients should connect to the URI under the context path. The URI is resolved by the <a href="../api/io/micronaut/web/router/RouteBuilder.UriNamingStrategy.html">UriNamingStrategy</a>, like the URI of a controller, so that a custom naming strategy that does not add the context path keeps the previous URI.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_buffered_json_stream_responses_require_a_list_type_5_3">Buffered JSON stream responses require a list type (5.3)</h3>
