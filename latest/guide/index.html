@@ -899,7 +899,7 @@
         <h1>Micronaut Core</h1>
         <p></p>
         <p>Core components supporting the Micronaut Framework</p>
-        <p><strong>Version:</strong> 5.2.17 </p>
+        <p><strong>Version:</strong> 5.2.18 </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -2124,7 +2124,7 @@ repositories {
 }
 
 micronaut {
-    version = "5.2.17" <i class="conum" data-value="2"></i><b>(2)</b>
+    version = "5.2.18" <i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </div>
 </div>
@@ -13878,8 +13878,8 @@ final class AccountService {
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.17"
-    compileOnly "io.micronaut:micronaut-inject-java:5.2.17"
+    annotationProcessor "io.micronaut:micronaut-inject-java:5.2.18"
+    compileOnly "io.micronaut:micronaut-inject-java:5.2.18"
     ...
 }</code></pre>
 </div>
@@ -14301,7 +14301,7 @@ Previously, we recommended using <code>Micronaut.defaultEnvironments("dev")</cod
 | |\/| | |/ __| '__/ _ \| '_ \ / _` | | | | __|
 | |  | | | (__| | | (_) | | | | (_| | |_| | |_
 |_|  |_|_|\___|_|  \___/|_| |_|\__,_|\__,_|\__|
-  Micronaut (5.2.17)
+  Micronaut (5.2.18)
 
 17:07:22.997 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 611ms. Server Running: http://localhost:8080</code></pre>
 </div>
@@ -14488,6 +14488,13 @@ then:
 <div class="paragraph">
 <p>You can import additional configuration directly from a configuration file using <code>micronaut.config.import</code>.
 The value can be a single string, a list, or indexed entries (<code>micronaut.config.import[0]</code>, <code>micronaut.config.import[1]</code>, &#8230;&#8203;).</p>
+</div>
+<div class="paragraph">
+<p>Import locations and structured declaration values support property placeholders, including defaults and custom property expression resolvers.
+Placeholders are resolved before selecting the provider or parsing the connection string, using the current configuration and properties from imports already loaded.
+Declarations in one property source are resolved together, so a later entry cannot reference properties supplied by an earlier entry in the same list; use a nested import for that dependency.
+For example, <code><a href="file://${CONFIG_DIRECTORY:/etc/myapp}/shared.properties" class="bare">file://${CONFIG_DIRECTORY:/etc/myapp}/shared.properties</a></code> selects a directory from configuration or an environment variable, defaulting to <code>/etc/myapp</code>.
+A missing placeholder without a default fails configuration loading even when the import has the <code>optional:</code> prefix; that prefix permits a missing import target.</p>
 </div>
 <div class="openblock">
 <div class="title">Importing additional configuration</div>
