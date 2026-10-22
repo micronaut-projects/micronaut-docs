@@ -61,6 +61,8 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#PREFIX" tabindex="0">PREFIX</a></li>
 <li><a href="#MANIFEST_PROPERTY" tabindex="0">MANIFEST_PROPERTY</a></li>
+<li><a href="#MAX_GENERATIONS" tabindex="0">MAX_GENERATIONS</a></li>
+<li><a href="#NATIVE_MAX_GENERATIONS" tabindex="0">NATIVE_MAX_GENERATIONS</a></li>
 </ol>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
@@ -71,6 +73,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#mainClass()" tabindex="0">mainClass()</a></li>
 <li><a href="#projectDir()" tabindex="0">projectDir()</a></li>
 <li><a href="#strategy()" tabindex="0">strategy()</a></li>
+<li><a href="#patchInPlace()" tabindex="0">patchInPlace()</a></li>
 <li><a href="#runtimeClasspath()" tabindex="0">runtimeClasspath()</a></li>
 <li><a href="#reloadableRoots()" tabindex="0">reloadableRoots()</a></li>
 <li><a href="#compileClasspath()" tabindex="0">compileClasspath()</a></li>
@@ -85,6 +88,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#compileOptions(io.micronaut.dev.compile.SourceKind)" tabindex="0">compileOptions(SourceKind)</a></li>
 <li><a href="#buildTool()" tabindex="0">buildTool()</a></li>
 <li><a href="#buildToolTrigger()" tabindex="0">buildToolTrigger()</a></li>
+<li><a href="#generations()" tabindex="0">generations()</a></li>
+<li><a href="#maxGenerations()" tabindex="0">maxGenerations()</a></li>
 <li><a href="#retain()" tabindex="0">retain()</a></li>
 <li><a href="#retainAnnotated()" tabindex="0">retainAnnotated()</a></li>
 <li><a href="#liveReload()" tabindex="0">liveReload()</a></li>
@@ -124,6 +129,7 @@ holding one entry per line, which keeps long classpaths off the command line.</p
 micronaut.dev.main-class=example.Application
 micronaut.dev.project-dir=.
 micronaut.dev.strategy=auto
+micronaut.dev.patch-in-place=true
 micronaut.dev.runtime-classpath=@runtime.argfile
 micronaut.dev.reloadable=build/classes/java/main,build/resources/main
 micronaut.dev.compile-classpath=@compile.argfile
@@ -139,6 +145,7 @@ micronaut.dev.compile.java.options=-parameters,--release,21,-Amicronaut.processi
 micronaut.dev.build-tool=gradle
 micronaut.dev.build-tool.trigger=build/micronaut-dev/reload
 micronaut.dev.retain=javax.sql.DataSource
+micronaut.dev.max-generations=10
 </pre></div>
 <dl class="notes">
 <dt>Since:</dt>
@@ -180,6 +187,19 @@ micronaut.dev.retain=javax.sql.DataSource
 <div class="col-second even-row-color"><code><a href="#MANIFEST_PROPERTY" class="member-name-link">MANIFEST_PROPERTY</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">The system property naming the manifest file.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#MAX_GENERATIONS" class="member-name-link">MAX_GENERATIONS</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">The key of the generation budget: how many generations one process creates before it closes for its launcher to
+relaunch it.</div>
+</div>
+<div class="col-first even-row-color"><code>static final int</code></div>
+<div class="col-second even-row-color"><code><a href="#NATIVE_MAX_GENERATIONS" class="member-name-link">NATIVE_MAX_GENERATIONS</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">The generation budget in a native image, where the classes of a retired generation are never unloaded: GraalVM's
+runtime class loading keeps every class it defines, in a metaspace whose size is fixed when the image is built, and
+the interpreter's data for them on the heap, for the life of the process.</div>
 </div>
 <div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#PREFIX" class="member-name-link">PREFIX</a></code></div>
@@ -232,20 +252,32 @@ micronaut.dev.retain=javax.sql.DataSource
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The generated sources directory of a language: its own setting, else a directory next to the class output.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isIncremental()" class="member-name-link">isIncremental</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DevManifest.LiveReload.html" title="class in io.micronaut.dev.manifest">DevManifest.LiveReload</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#liveReload()" class="member-name-link">liveReload</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#generations()" class="member-name-link">generations</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The directory the class loader snapshots each generation into, <code>micronaut.dev.generations</code>: by default
+<code>build/micronaut-dev/generations</code> under the project, which a Maven build points into <code>target</code>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isIncremental()" class="member-name-link">isIncremental</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="DevManifest.html" title="class in io.micronaut.dev.manifest">DevManifest</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#load(java.nio.file.Path)" class="member-name-link">load</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;file)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DevManifest.LiveReload.html" title="class in io.micronaut.dev.manifest">DevManifest.LiveReload</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#liveReload()" class="member-name-link">liveReload</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="DevManifest.html" title="class in io.micronaut.dev.manifest">DevManifest</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#load(java.nio.file.Path)" class="member-name-link">load</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;file)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Reads a manifest file.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mainClass()" class="member-name-link">mainClass</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mainClass()" class="member-name-link">mainClass</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#maxGenerations()" class="member-name-link">maxGenerations</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The generation budget, <code>micronaut.dev.max-generations</code>: how many generations the runtime creates in one
+process.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DevMode.html" title="enum class in io.micronaut.dev.manifest">DevMode</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mode()" class="member-name-link">mode</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -255,63 +287,71 @@ micronaut.dev.retain=javax.sql.DataSource
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Builds a manifest from properties, for a launcher that assembles them itself.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#processorPath()" class="member-name-link">processorPath</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#projectDir()" class="member-name-link">projectDir</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#patchInPlace()" class="member-name-link">patchInPlace</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether a change of resources alone is offered to the running application's
+<a href="../../context/reload/InPlaceResourceReloader.html" title="interface in io.micronaut.context.reload"><code>InPlaceResourceReloader</code></a>s before a restart, so that, for example, a Python
+module whose generated classes did not change is patched into the running interpreters instead of starting a new
+generation.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#processorPath()" class="member-name-link">processorPath</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reloadableRoots()" class="member-name-link">reloadableRoots</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#projectDir()" class="member-name-link">projectDir</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="ResourceRoot.html" title="class in io.micronaut.dev.manifest">ResourceRoot</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resourceRoots()" class="member-name-link">resourceRoots</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reloadableRoots()" class="member-name-link">reloadableRoots</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retain()" class="member-name-link">retain</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="ResourceRoot.html" title="class in io.micronaut.dev.manifest">ResourceRoot</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resourceRoots()" class="member-name-link">resourceRoots</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retainAnnotated()" class="member-name-link">retainAnnotated</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retain()" class="member-name-link">retain</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retainAnnotated()" class="member-name-link">retainAnnotated</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Whether the beans a module annotated with <a href="../../context/annotation/Retain.html" title="annotation interface in io.micronaut.context.annotation"><code>Retain</code></a> are retained too, as they
 are unless <code>micronaut.dev.retain-annotated=false</code>, which leaves only what <code>micronaut.dev.retain</code> names.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runtimeClasspath()" class="member-name-link">runtimeClasspath</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../compile/SourceRoot.html" title="class in io.micronaut.dev.compile">SourceRoot</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sourceRoots()" class="member-name-link">sourceRoots</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runtimeClasspath()" class="member-name-link">runtimeClasspath</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../compile/SourceRoot.html" title="class in io.micronaut.dev.compile">SourceRoot</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sourceRoots(io.micronaut.dev.compile.SourceKind)" class="member-name-link">sourceRoots</a><wbr>(<a href="../compile/SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&nbsp;kind)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sourceRoots()" class="member-name-link">sourceRoots</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../compile/SourceRoot.html" title="class in io.micronaut.dev.compile">SourceRoot</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sourceRoots(io.micronaut.dev.compile.SourceKind)" class="member-name-link">sourceRoots</a><wbr>(<a href="../compile/SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&nbsp;kind)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The source roots of one language.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DevReloadStrategy.html" title="enum class in io.micronaut.dev.manifest">DevReloadStrategy</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#strategy()" class="member-name-link">strategy</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testClassOutput(io.micronaut.dev.compile.SourceKind)" class="member-name-link">testClassOutput</a><wbr>(<a href="../compile/SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&nbsp;kind)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DevReloadStrategy.html" title="enum class in io.micronaut.dev.manifest">DevReloadStrategy</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#strategy()" class="member-name-link">strategy</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testClassOutput(io.micronaut.dev.compile.SourceKind)" class="member-name-link">testClassOutput</a><wbr>(<a href="../compile/SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&nbsp;kind)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The class output of a test language: <code>micronaut.dev.test.compile.&lt;kind&gt;.output</code>, or else <code>&lt;output&gt;-test</code>
 beside the application's output of that language.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="ResourceRoot.html" title="class in io.micronaut.dev.manifest">ResourceRoot</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testResourceRoots()" class="member-name-link">testResourceRoots</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="ResourceRoot.html" title="class in io.micronaut.dev.manifest">ResourceRoot</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testResourceRoots()" class="member-name-link">testResourceRoots</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The test resource roots, read live ahead of the main ones in test mode.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TestSettings.html" title="class in io.micronaut.dev.manifest">TestSettings</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testSettings()" class="member-name-link">testSettings</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../compile/SourceRoot.html" title="class in io.micronaut.dev.compile">SourceRoot</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testSourceRoots()" class="member-name-link">testSourceRoots</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TestSettings.html" title="class in io.micronaut.dev.manifest">TestSettings</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testSettings()" class="member-name-link">testSettings</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../compile/SourceRoot.html" title="class in io.micronaut.dev.compile">SourceRoot</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testSourceRoots()" class="member-name-link">testSourceRoots</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The test source roots, compiled into the test class outputs against the main ones.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DevManifest.html" title="class in io.micronaut.dev.manifest">DevManifest</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testView()" class="member-name-link">testView</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DevManifest.html" title="class in io.micronaut.dev.manifest">DevManifest</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testView()" class="member-name-link">testView</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The tests seen as a manifest of their own, so that they compile as the application does: its source roots are
 the test roots, its class outputs, generated sources and options are those of <code>micronaut.dev.test.compile.&lt;kind&gt;.*</code>,
 its compile classpath is <code>micronaut.dev.test.compile-classpath</code>, or else the application's, with the
@@ -363,6 +403,47 @@ the application's.</div>
 <dd>
 <ul class="tag-list">
 <li><a href="../../../../constant-values.html#io.micronaut.dev.manifest.DevManifest.MANIFEST_PROPERTY">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="MAX_GENERATIONS">
+<h3>MAX_GENERATIONS</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">MAX_GENERATIONS</span></div>
+<div class="block">The key of the generation budget: how many generations one process creates before it closes for its launcher to
+relaunch it.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#io.micronaut.dev.manifest.DevManifest.MAX_GENERATIONS">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="NATIVE_MAX_GENERATIONS">
+<h3>NATIVE_MAX_GENERATIONS</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">NATIVE_MAX_GENERATIONS</span></div>
+<div class="block">The generation budget in a native image, where the classes of a retired generation are never unloaded: GraalVM's
+runtime class loading keeps every class it defines, in a metaspace whose size is fixed when the image is built, and
+the interpreter's data for them on the heap, for the life of the process.
+Measured on a Pyronaut application whose generations each hold a GraalPy context, adding a route per generation:
+once a retired generation is released, what stays is its classes and their data, about 1.3 MB of heap a
+generation, and the resident memory of 61 generations stayed under 1 GB, with the metaspace not exhausted. Fifty
+bounds that growth with room to spare.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#io.micronaut.dev.manifest.DevManifest.NATIVE_MAX_GENERATIONS">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
@@ -456,6 +537,23 @@ the application's.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The reload strategy asked for, <a href="DevReloadStrategy.html#AUTO"><code>DevReloadStrategy.AUTO</code></a> when the manifest does not say</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="patchInPlace()">
+<h3>patchInPlace</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">patchInPlace</span>()</div>
+<div class="block">Whether a change of resources alone is offered to the running application's
+<a href="../../context/reload/InPlaceResourceReloader.html" title="interface in io.micronaut.context.reload"><code>InPlaceResourceReloader</code></a>s before a restart, so that, for example, a Python
+module whose generated classes did not change is patched into the running interpreters instead of starting a new
+generation. On by default, under every strategy: patching defines no class, so it needs no agent and is not what
+<code>restart</code> opts out of. <code>micronaut.dev.patch-in-place=false</code> turns it off.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether resources may be patched in place</dd>
 </dl>
 </div>
 </section>
@@ -639,6 +737,41 @@ the application's.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The file the build tool touches when it finished compiling, if named</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="generations()">
+<h3>generations</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a></span>&nbsp;<span class="element-name">generations</span>()</div>
+<div class="block">The directory the class loader snapshots each generation into, <code>micronaut.dev.generations</code>: by default
+<code>build/micronaut-dev/generations</code> under the project, which a Maven build points into <code>target</code>. The
+launcher owns it and empties it when it starts.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The directory</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="maxGenerations()">
+<h3>maxGenerations</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">maxGenerations</span>()</div>
+<div class="block">The generation budget, <code>micronaut.dev.max-generations</code>: how many generations the runtime creates in one
+process. When a reload would create one more, the runtime closes and the launcher exits with
+<a href="../MicronautDevMain.html#RELAUNCH"><code>MicronautDevMain.RELAUNCH</code></a>, for whoever started it to start it again. Unlimited, zero, on
+the JVM, which unloads a retired generation once nothing refers to it; <a href="#NATIVE_MAX_GENERATIONS"><code>NATIVE_MAX_GENERATIONS</code></a> in a
+native image, which never does. <code>unlimited</code> or <code>0</code> lifts it.
+Test mode runs its tests on a generation of their own from the second on, and checks the budget after a run, so that
+a run is never lost to the relaunch: watching, it takes at least three, or two without a first run, and run once it
+takes any.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The budget, zero when unlimited</dd>
 </dl>
 </div>
 </section>

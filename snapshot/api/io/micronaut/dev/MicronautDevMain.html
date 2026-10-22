@@ -61,6 +61,7 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#MANIFEST_OPTION" tabindex="0">MANIFEST_OPTION</a></li>
 <li><a href="#RUNNING" tabindex="0">RUNNING</a></li>
+<li><a href="#RELAUNCH" tabindex="0">RELAUNCH</a></li>
 </ol>
 </li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
@@ -77,6 +78,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#createClassLoader(io.micronaut.dev.manifest.DevManifest)" tabindex="0">createClassLoader(DevManifest)</a></li>
 <li><a href="#parentClassLoader()" tabindex="0">parentClassLoader()</a></li>
 <li><a href="#createCompilers(io.micronaut.dev.manifest.DevManifest)" tabindex="0">createCompilers(DevManifest)</a></li>
+<li><a href="#relaunch(io.micronaut.dev.DevRuntime)" tabindex="0">relaunch(DevRuntime)</a></li>
 <li><a href="#launchApplication(java.lang.ClassLoader,java.lang.String,java.lang.String%5B%5D)" tabindex="0">launchApplication(ClassLoader, String, String[])</a></li>
 </ol>
 </li>
@@ -126,8 +128,15 @@ methods to add compilers, choose the loader's roots, or run something other than
 <div class="block">The argument naming the manifest.</div>
 </div>
 <div class="col-first odd-row-color"><code>static final int</code></div>
-<div class="col-second odd-row-color"><code><a href="#RUNNING" class="member-name-link">RUNNING</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#RELAUNCH" class="member-name-link">RELAUNCH</a></code></div>
 <div class="col-last odd-row-color">
+<div class="block">The status the launcher exits with when the runtime closed because its generation budget,
+<code>micronaut.dev.max-generations</code>, is spent: whoever started the process starts it again, and the new process
+starts from the classes the last change compiled.</div>
+</div>
+<div class="col-first even-row-color"><code>static final int</code></div>
+<div class="col-second even-row-color"><code><a href="#RUNNING" class="member-name-link">RUNNING</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">What <a href="#runForStatus(java.lang.String%5B%5D)"><code>runForStatus(String[])</code></a> returns while the runtime keeps running in the background.</div>
 </div>
 </div>
@@ -191,14 +200,19 @@ its <code>main</code>.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parentClassLoader()" class="member-name-link">parentClassLoader</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#run(java.lang.String%5B%5D)" class="member-name-link">run</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#relaunch(io.micronaut.dev.DevRuntime)" class="member-name-link">relaunch</a><wbr>(<a href="DevRuntime.html" title="class in io.micronaut.dev">DevRuntime</a>&nbsp;runtime)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Called once the runtime closed because its generation budget is spent.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#run(java.lang.String%5B%5D)" class="member-name-link">run</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Runs the launcher with the given arguments and keeps the JVM alive while the application runs.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runForStatus(java.lang.String%5B%5D)" class="member-name-link">runForStatus</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runForStatus(java.lang.String%5B%5D)" class="member-name-link">runForStatus</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Runs the launcher with the given arguments and keeps the JVM alive while the application, or in test mode the
 watching, runs.</div>
 </div>
@@ -247,6 +261,26 @@ watching, runs.</div>
 <dd>
 <ul class="tag-list">
 <li><a href="../../../constant-values.html#io.micronaut.dev.MicronautDevMain.RUNNING">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="RELAUNCH">
+<h3>RELAUNCH</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">RELAUNCH</span></div>
+<div class="block">The status the launcher exits with when the runtime closed because its generation budget,
+<code>micronaut.dev.max-generations</code>, is spent: whoever started the process starts it again, and the new process
+starts from the classes the last change compiled. A native image, which never unloads a class, has a budget by
+default; see <a href="manifest/DevManifest.html#maxGenerations()"><code>DevManifest.maxGenerations()</code></a>.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../constant-values.html#io.micronaut.dev.MicronautDevMain.RELAUNCH">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
@@ -388,6 +422,21 @@ runtime jars, with the manifest's resource roots and then its reloadable roots a
 <dd><code>manifest</code> - The manifest</dd>
 <dt>Returns:</dt>
 <dd>The compilers</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="relaunch(io.micronaut.dev.DevRuntime)">
+<h3>relaunch</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">relaunch</span><wbr><span class="parameters">(<a href="DevRuntime.html" title="class in io.micronaut.dev">DevRuntime</a>&nbsp;runtime)</span></div>
+<div class="block">Called once the runtime closed because its generation budget is spent. In run mode this exits the process with
+<a href="#RELAUNCH"><code>RELAUNCH</code></a>; in test mode <a href="#runForStatus(java.lang.String%5B%5D)"><code>runForStatus(String[])</code></a> returns that status instead, once the runtime is
+closed. A launcher that relaunches the application itself overrides this.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>runtime</code> - The closed runtime</dd>
 </dl>
 </div>
 </section>

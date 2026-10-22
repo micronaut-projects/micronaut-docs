@@ -66504,7 +66504,8 @@ micronaut.dev.resources.config=src/main/resources
 micronaut.dev.resources.views=src/main/resources/views
 micronaut.dev.resources.static=src/main/resources/static
 micronaut.dev.compile.java.output=build/classes/java/main
-micronaut.dev.retain=javax.sql.DataSource</code></pre>
+micronaut.dev.retain=javax.sql.DataSource
+micronaut.dev.patch-in-place=true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -66524,7 +66525,13 @@ micronaut.dev.retain=javax.sql.DataSource</code></pre>
 </ul>
 </div>
 <div class="paragraph">
-<p>On macOS, put <code>micronaut-runtime-osx</code> on the development runtime classpath as well, which the build plugins do. The launcher then watches through the native file system events instead of the JDK&#8217;s polling service, and a save is noticed at once rather than seconds later.</p>
+<p>On macOS, put <code>micronaut-runtime-osx</code> on the development runtime classpath as well, which the build plugins do. The launcher then watches through the native file system events, and a save is noticed at once.</p>
+</div>
+<div class="paragraph">
+<p>Without it, and in a native image, the launcher compares the watched directories every 250 milliseconds, rather than use the JDK&#8217;s service, which polls every two seconds at best.</p>
+</div>
+<div class="paragraph">
+<p>The launcher snapshots the reloadable tier for each generation into <code>build/micronaut-dev/generations</code> under the project, or the directory <code>micronaut.dev.generations</code> names, such as a Maven build&#8217;s <code>target/micronaut-dev/generations</code>. It empties that directory when it starts, and refuses to when it holds files it did not write.</p>
 </div>
 </div>
 </div>
@@ -66698,7 +66705,50 @@ Everything under the manifest&#8217;s <code>micronaut.dev.</code> keys can be se
 <p>The Python modules are resources of the class output, so a Python edit starts a new generation, whose GraalPy context imports the new modules; the GraalPy engine stays loaded.</p>
 </div>
 <div class="paragraph">
-<p>Reloading needs a JVM: a native image can neither define the classes of a new generation nor redefine a class, so the native toolchain of Pyronaut restarts the process instead.</p>
+<p>The native image of Pyronaut runs the launcher too. The image is the parent tier, and each generation&#8217;s classes are defined at runtime by GraalVM&#8217;s runtime class loading (<code>-H:+RuntimeClassLoading</code>), with the framework methods they call kept in the image by <code>-H:Preserve</code>. In a native image:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>a body-only edit restarts the generation, since a native image cannot redefine a class;</p>
+</li>
+<li>
+<p>on macOS, the FSEvents watch service of <code>micronaut-runtime-osx</code> cannot be loaded, since it uses JNA, so the image compares the watched directories every 250 milliseconds instead.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_generation_budget">Generation budget</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>On the JVM, a retired generation is unloaded once nothing refers to its classes. In a native image it never is: the classes GraalVM defines at runtime stay for the life of the process, in a metaspace whose size is fixed when the image is built, with the interpreter&#8217;s data on the heap.</p>
+</div>
+<div class="paragraph">
+<p>The launcher therefore counts generations against a budget, <code>micronaut.dev.max-generations</code>. When a change would start one generation more:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>the change is compiled;</p>
+</li>
+<li>
+<p>the runtime closes;</p>
+</li>
+<li>
+<p>the launcher exits with status <code>3</code> (<code>MicronautDevMain.RELAUNCH</code>);</p>
+</li>
+<li>
+<p>whoever started it starts it again, and the new process starts from the classes that change compiled.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The budget is unlimited on the JVM, and 50 generations in a native image (<code>DevManifest.NATIVE_MAX_GENERATIONS</code>). The native budget was measured on a Pyronaut application, where a retired generation leaves only its classes and their data behind, about 1.3 MB of heap each, and 61 generations stayed under 1 GB of resident memory.</p>
+</div>
+<div class="paragraph">
+<p><code>unlimited</code> or <code>0</code> lifts the budget. In test mode a run beyond it ends the same way, with <code>runForStatus</code> returning the status.</p>
 </div>
 </div>
 </div>
@@ -66830,6 +66880,61 @@ Everything under the manifest&#8217;s <code>micronaut.dev.</code> keys can be se
 </div>
 <div class="paragraph">
 <p>The agent is <code>micronaut-dev</code> itself, launched with <code>-javaagent</code>, which the build plugins add. Without it, or with <code>strategy=restart</code>, every change restarts.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_python_modules">Python modules</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A Python edit that changes only bodies leaves the classes the compiler generates byte for byte the same: only the module and the bytecode written for it change in the class output. Such a change, in which no class changed and no file was added or removed, is offered to the running context&#8217;s <a href="../api/io/micronaut/context/reload/InPlaceResourceReloader.html">InPlaceResourceReloader</a> beans before anything restarts.</p>
+</div>
+<div class="paragraph">
+<p>The Python runtime&#8217;s reloader patches the edited modules into every GraalPy context of the application: the primary one, the pooled ones and those of the asyncio event loops. In each of them:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the module, class and function objects stay;</p>
+</li>
+<li>
+<p>the functions run the new code;</p>
+</li>
+<li>
+<p>the classes get the new members;</p>
+</li>
+<li>
+<p>the module&#8217;s other globals are rebound, except the ones the application injects.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The generation keeps running, under every strategy, <code>restart</code> included, since nothing is redefined. <code>micronaut.dev.patch-in-place=false</code> turns it off.</p>
+</div>
+<div class="paragraph">
+<p>What the merge cannot follow is refused, and restarts instead:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>a changed base class or metaclass;</p>
+</li>
+<li>
+<p>a function that became a class or a generator;</p>
+</li>
+<li>
+<p>a closure over other variables;</p>
+</li>
+<li>
+<p>a package initialiser (<code><em>init</em>.py</code>) or the main script;</p>
+</li>
+<li>
+<p>a module the compiler generated.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Patching is not atomic across contexts: a failure in any of them restarts the application, whose new generation discards what the others applied. Module-level code runs again when a module is patched, so a side effect of it, a registry filled at import, happens again.</p>
 </div>
 </div>
 </div>
@@ -67961,7 +68066,70 @@ micronaut.dev.test.filter=com.example.*Test</code></pre>
 <p>The JUnit Platform runner is built in. It runs every engine on the classpath, from Jupiter and Spock to Pyronaut&#8217;s pytest engine, when <code>junit-platform-launcher</code> is on the launch classpath.</p>
 </div>
 <div class="paragraph">
+<p>A run of every test selects the test class outputs and, for a language whose tests an engine discovers from their source files, such as Python, the test source directories. Tests grouped under a file run again by their file.</p>
+</div>
+<div class="paragraph">
 <p>The events become JUnit XML reports, one <code>TEST-&lt;class&gt;.xml</code> per class in the Surefire shape, which every CI server and IDE reads. They also go to every <code>TestReportListener</code> registered as a service, such as an HTML report.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_changes_taken_in_place">Changes taken in place</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A runner that keeps state built over a generation between runs, such as an interpreter, can take a change in place instead. <code>TestRunner.inPlaceReloader(ClassLoader)</code> answers with an <a href="../api/io/micronaut/context/reload/InPlaceResourceReloader.html">InPlaceResourceReloader</a> for the loader of its last run.</p>
+</div>
+<div class="paragraph">
+<p>A change of the class output that holds no class and only changes resources that generation already holds, as a Python edit that changes only bodies, is offered to it. When it takes the change:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>the generation&#8217;s snapshot gets the new contents;</p>
+</li>
+<li>
+<p>the reloader applies them;</p>
+</li>
+<li>
+<p>the tests the change owes run on the same generation, so the change takes no generation from the budget.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>A run that no change preceded, as one asked for from the console, uses that generation too while the runner keeps state built over it. Anything else, a refusal or a failure included, runs on a new generation.</p>
+</div>
+<div class="paragraph">
+<p><code>micronaut.dev.patch-in-place=false</code> turns this off, as it does in development mode.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_html_report">HTML Report</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Add <code>micronaut-dev-test-report</code> to the development runtime classpath, as the build plugins do for <code>mnTest</code> and <code>mn:test</code>, and test mode also writes a page of the latest result of every test. The page goes to <code>micronaut.dev.test.html-report</code>, by default <code>build/micronaut-dev/test-report/index.html</code>. On the page:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>failures come first, with their stack frames linked to the project&#8217;s sources, in the file browser, IntelliJ IDEA or VS Code, and their captured output;</p>
+</li>
+<li>
+<p>a change that does not compile is shown above the results it left standing;</p>
+</li>
+<li>
+<p>the last runs are listed beside them.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The page keeps the results as the XML reports do, so it never holds only the last affected run.</p>
+</div>
+<div class="paragraph">
+<p>A product built on Micronaut puts its own logo in the header with a <code>META-INF/micronaut-dev/test-report/brand.properties</code> on the launch classpath, naming the product, <code>name</code>, and the resource of its logo, <code>logo</code>, an SVG or a PNG.</p>
+</div>
+<div class="paragraph">
+<p>With <code>micronaut-dev-livereload</code> on the classpath as well, the LiveReload server serves the page at <code><a href="http://localhost:35729/tests/" class="bare">http://localhost:35729/tests/</a></code>, or the path <code>micronaut.dev.test.html-report-path</code> names, such as <code>/reports/tests/</code>. The launcher logs the address. The page follows each run test by test over the event channel&#8217;s <code>tests</code> topic, without reloading. Opened from the file system, the page shows the state it was written with.</p>
 </div>
 </div>
 </div>
