@@ -62,6 +62,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#the-body-of-the-request-heading" tabindex="0">The body of the request</a></li>
 <li><a href="#copies-heading" tabindex="0">Copies</a></li>
 <li><a href="#filters-heading" tabindex="0">Filters</a></li>
+<li><a href="#filters-without-arguments-heading" tabindex="0">Filters without arguments</a></li>
 <li><a href="#100-continue-heading" tabindex="0">100 Continue</a></li>
 </ol>
 </li>
@@ -85,6 +86,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#takeBody()" tabindex="0">takeBody()</a></li>
 <li><a href="#discardBody()" tabindex="0">discardBody()</a></li>
 <li><a href="#copy()" tabindex="0">copy()</a></li>
+<li><a href="#of(io.micronaut.http.HttpRequest)" tabindex="0">of(HttpRequest)</a></li>
 </ol>
 </li>
 </ol>
@@ -222,6 +224,19 @@ that continues with another <a href="../ServerHttpRequest.html" title="interface
 its <a href="../ServerHttpRequest.html#byteBody()"><code>byteBody()</code></a>. The body is read once
 either way.</p>
 
+<h2 id="filters-without-arguments-heading">Filters without arguments</h2>
+<p>A filter that is not given arguments, an <a href="../filter/HttpServerFilter.html" title="interface in io.micronaut.http.filter"><code>HttpServerFilter</code></a>
+or a filter of a functional route, e.g. <code>beforeReplacingAsync</code>, gets the body of its
+request with <a href="#of(io.micronaut.http.HttpRequest)"><code>of(HttpRequest)</code></a>, and reads it like a filter method does: it reads a
+<a href="#copy()"><code>copy()</code></a> to leave the body for the route.</p>
+<pre><code>routes.serverFilter("/signed/**").beforeReplacingAsync(request -&gt; AsyncRequestBody.of(request)
+    .copy()
+    .bytes(64 * 1024)
+    .thenApply(bytes -&gt; verifier.verify(request, bytes) ? null : HttpResponse.unauthorized()));
+</code></pre>
+<p>Nothing is read before the body is: a filter that does not read the body leaves it
+streamed to the route. What its reads left open is released when the request ends.</p>
+
 <h2 id="100-continue-heading"><code>100 Continue</code></h2>
 <p>A request that expects <code>100 Continue</code> is answered with <code>100 Continue</code> when the
 body is first read. A handler that answers without reading the body, e.g. with <code>401</code>,
@@ -241,7 +256,7 @@ never receives it.</p></div>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -310,39 +325,45 @@ one JSON value per line).</div>
 <div class="block">Whether the request has a body, without reading it: a body with a length other than zero,
 or a body of unknown length.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../form/FormParts.html" title="interface in io.micronaut.http.form">FormParts</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#parts()" class="member-name-link">parts</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="AsyncRequestBody.html" title="interface in io.micronaut.http.body">AsyncRequestBody</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#of(io.micronaut.http.HttpRequest)" class="member-name-link">of</a><wbr>(<a href="../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
+<div class="block">The body of a request received by the server, for a filter that is not given arguments,
+e.g.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../form/FormParts.html" title="interface in io.micronaut.http.form">FormParts</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#parts()" class="member-name-link">parts</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Read the submitted form part by part, as it arrives.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#takeBody()" class="member-name-link">takeBody</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="CloseableByteBody.html" title="interface in io.micronaut.http.body">CloseableByteBody</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#takeBody()" class="member-name-link">takeBody</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Take the body, unread and undecoded: the caller becomes responsible for it, and must
 consume or close it, e.g.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#text()" class="member-name-link">text</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#text()" class="member-name-link">text</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Read the whole body as text, in the charset of the request (the charset of its content
 type, else the default charset of the server), with the limit of the server
 for buffered request content (<code>micronaut.server.max-request-buffer-size</code>).</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#text(int)" class="member-name-link">text</a><wbr>(int&nbsp;maximumBytes)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#text(int)" class="member-name-link">text</a><wbr>(int&nbsp;maximumBytes)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Read the whole body as text, in the charset of the request.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#text(int,java.nio.charset.Charset)" class="member-name-link">text</a><wbr>(int&nbsp;maximumBytes,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#text(int,java.nio.charset.Charset)" class="member-name-link">text</a><wbr>(int&nbsp;maximumBytes,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/charset/Charset.html" title="class or interface in java.nio.charset" class="external-link">Charset</a>&nbsp;charset)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Read the whole body as text, in the given charset, whatever the content type of the
 request says.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#transferTo(java.nio.file.Path)" class="member-name-link">transferTo</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;destination)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#transferTo(java.nio.file.Path)" class="member-name-link">transferTo</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;destination)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Write the body to a new file.</div>
 </div>
 </div>
@@ -758,6 +779,41 @@ object. A copy of a body that was consumed cannot be read either.</p></div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The copy</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="of(io.micronaut.http.HttpRequest)">
+<h3>of</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="AsyncRequestBody.html" title="interface in io.micronaut.http.body">AsyncRequestBody</a></span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request)</span></div>
+<div class="block">The body of a request received by the server, for a filter that is not given arguments,
+e.g. an <a href="../filter/HttpServerFilter.html" title="interface in io.micronaut.http.filter"><code>HttpServerFilter</code></a> or a filter of a functional
+route: the body of the request as the filters before it left it, like the
+<code>AsyncRequestBody</code> argument of a filter method. Read a <a href="#copy()"><code>copy()</code></a> of it to leave
+the body for the route. Each call creates an independent reader; acquiring another reader
+does not copy the bytes or allow the same bytes to be consumed twice. Readers of requests that
+wrap the same body share its consumption state and synchronize access to its bytes.
+The effective body is resolved when a read starts, including a replacement set after this
+method was called. Read a <a href="#copy()"><code>copy()</code></a> for each reader that must leave the body intact.
+
+<p>It is supported by the Netty server. A server that does not support it, e.g. a servlet
+server that does not implement it yet, throws an <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link"><code>UnsupportedOperationException</code></a>.</p>
+
+<p>What the reads left open is released when the request ends, not when the filter
+completed: the work on the body must be part of the stage the filter returns.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>request</code> - The request: a request received by the server, or a request a filter
+               continued with that wraps it</dd>
+<dt>Returns:</dt>
+<dd>The body</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link">UnsupportedOperationException</a></code> - if the request was not received by a server that
+supports it</dd>
 <dt>Since:</dt>
 <dd>5.3.0</dd>
 </dl>

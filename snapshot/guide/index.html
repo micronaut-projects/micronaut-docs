@@ -451,7 +451,9 @@
         
         <div class="toc-item" style="margin-left:30px" id="toc-item-httpServerFilterErrorStates"><a href="#httpServerFilterErrorStates"><strong>6.29.3.2</strong><span>HttpServerFilter Error States</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-responseHeaderPopulator"><a href="#responseHeaderPopulator"><strong>6.29.4</strong><span>Response Header Populators</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-filterBodyBuffer"><a href="#filterBodyBuffer"><strong>6.29.4</strong><span>Reading the Body in a Filter</span></a></div>
+        
+        <div class="toc-item" style="margin-left:20px" id="toc-item-responseHeaderPopulator"><a href="#responseHeaderPopulator"><strong>6.29.5</strong><span>Response Header Populators</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-byteBody"><a href="#byteBody"><strong>6.30</strong><span>Advanced body access</span></a></div>
         
@@ -21758,6 +21760,398 @@ Since Micronaut injection happens at compile time, generally the advice should b
 </div>
 </div>
 <div class="sect1">
+<h2 id="_binding_interceptors_by_annotation_members">Binding Interceptors by Annotation Members</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default an interceptor applies wherever its binding annotation is declared, whatever the annotation&#8217;s members. Declaring <a href="../api/io/micronaut/aop/InterceptorBinding.html">@InterceptorBinding</a> with <code>bindMembers = true</code> on the binding annotation makes the members part of the binding: an interceptor annotated with the binding annotation only applies where the annotation is declared with the same member values. Members annotated with <a href="../api/io/micronaut/context/annotation/NonBinding.html">@NonBinding</a> are left out of the comparison.</p>
+</div>
+<div class="paragraph">
+<p>A repeatable binding annotation can be declared several times on the interceptor and on the target. By default the interceptor applies when any one of its occurrences matches any one of the target&#8217;s, and the occurrences on a method are added to those on its class. Setting <code>matchAllOccurrences = true</code> matches the occurrences as one group, which is how Jakarta Interceptors and CDI bind repeatable interceptor bindings:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>every occurrence declared on the interceptor must be declared on the target, which may declare more;</p>
+</li>
+<li>
+<p>the occurrences declared on a method replace those declared on its class, and a method declaring none uses those of its class.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Repeatable Binding Annotation Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.aop.Around;
+import io.micronaut.aop.InterceptorBinding;
+import io.micronaut.context.annotation.NonBinding;
+import java.lang.annotation.*;
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@Repeatable(Audits.class) // <b class="conum">(1)</b>
+@Around
+@InterceptorBinding(bindMembers = true, matchAllOccurrences = true) // <b class="conum">(2)</b>
+public @interface Audit {
+
+    String value(); // <b class="conum">(3)</b>
+
+    @NonBinding // <b class="conum">(4)</b>
+    String reason() default "";
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Repeatable Binding Annotation Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.aop.Around
+import io.micronaut.aop.InterceptorBinding
+import io.micronaut.context.annotation.NonBinding
+import kotlin.annotation.AnnotationRetention.RUNTIME
+import kotlin.annotation.AnnotationTarget.CLASS
+import kotlin.annotation.AnnotationTarget.FUNCTION
+
+@MustBeDocumented
+@Retention(RUNTIME)
+@Target(CLASS, FUNCTION)
+@JvmRepeatable(Audits::class) // <b class="conum">(1)</b>
+@Around
+@InterceptorBinding(bindMembers = true, matchAllOccurrences = true) // <b class="conum">(2)</b>
+annotation class Audit(
+    val value: String, // <b class="conum">(3)</b>
+    @get:NonBinding // <b class="conum">(4)</b>
+    val reason: String = ""
+)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Repeatable Binding Annotation Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.aop.Around
+import io.micronaut.aop.InterceptorBinding
+import io.micronaut.context.annotation.NonBinding
+import java.lang.annotation.*
+import static java.lang.annotation.ElementType.*
+import static java.lang.annotation.RetentionPolicy.RUNTIME
+
+@Documented
+@Retention(RUNTIME)
+@Target([TYPE, METHOD])
+@Repeatable(Audits) // <b class="conum">(1)</b>
+@Around
+@InterceptorBinding(bindMembers = true, matchAllOccurrences = true) // <b class="conum">(2)</b>
+@interface Audit {
+
+    String value() // <b class="conum">(3)</b>
+
+    @NonBinding // <b class="conum">(4)</b>
+    String reason() default ""
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The annotation is repeatable</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The members bind interceptors, and every occurrence must match</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>value</code> member is compared</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <code>reason</code> member is left out of the comparison</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+A decorator declared in Python cannot be repeated, so a Python application declares a repeatable binding annotation in Java and imports it, as the Python examples below do with <code>io.micronaut.docs.aop.binding.Audit</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Interceptor Requiring Two Occurrences</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.aop.MethodInterceptor;
+import io.micronaut.aop.MethodInvocationContext;
+import jakarta.inject.Singleton;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+@Singleton
+@Audit("security") // <b class="conum">(1)</b>
+@Audit("billing")
+public class PaymentAuditInterceptor implements MethodInterceptor&lt;Object, Object&gt; {
+
+    private final List&lt;String&gt; audited = new CopyOnWriteArrayList&lt;&gt;();
+
+    @Override
+    public Object intercept(MethodInvocationContext&lt;Object, Object&gt; context) {
+        audited.add(context.getMethodName());
+        return context.proceed();
+    }
+
+    public List&lt;String&gt; getAudited() {
+        return audited;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Interceptor Requiring Two Occurrences</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import java
+
+from jakarta.inject import Singleton
+from micronaut.aop import MethodInvocationContext
+from io.micronaut.docs.aop.binding import Audit
+
+@Singleton
+@Audit("security")  # <b class="conum">(1)</b>
+@Audit("billing")
+class PaymentAuditInterceptor(MethodInterceptor):
+    def __init__(self):
+        self.audited = []
+
+    def intercept(self, context: MethodInvocationContext):
+        self.audited.append(str(context.getMethodName()))
+        return context.proceed()</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Interceptor Requiring Two Occurrences</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.aop.MethodInterceptor
+import io.micronaut.aop.MethodInvocationContext
+import jakarta.inject.Singleton
+import java.util.concurrent.CopyOnWriteArrayList
+
+@Singleton
+@Audit("security") // <b class="conum">(1)</b>
+@Audit("billing")
+class PaymentAuditInterceptor : MethodInterceptor&lt;Any, Any&gt; {
+
+    val audited: MutableList&lt;String&gt; = CopyOnWriteArrayList()
+
+    override fun intercept(context: MethodInvocationContext&lt;Any, Any&gt;): Any? {
+        audited.add(context.methodName)
+        return context.proceed()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Interceptor Requiring Two Occurrences</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.aop.MethodInterceptor
+import io.micronaut.aop.MethodInvocationContext
+import jakarta.inject.Singleton
+import java.util.concurrent.CopyOnWriteArrayList
+
+@Singleton
+@Audit("security") // <b class="conum">(1)</b>
+@Audit("billing")
+class PaymentAuditInterceptor implements MethodInterceptor&lt;Object, Object&gt; {
+
+    final List&lt;String&gt; audited = new CopyOnWriteArrayList&lt;&gt;()
+
+    @Override
+    Object intercept(MethodInvocationContext&lt;Object, Object&gt; context) {
+        audited.add(context.methodName)
+        return context.proceed()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The interceptor applies only where both <code>security</code> and <code>billing</code> are declared</td>
+</tr>
+</table>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Repeatable Binding Usage Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Singleton
+@Audit(value = "security", reason = "card data") // <b class="conum">(1)</b>
+@Audit("billing")
+public class PaymentService {
+
+    public void pay() { // <b class="conum">(2)</b>
+        // charge the payment
+    }
+
+    @Audit("billing") // <b class="conum">(3)</b>
+    public void refund() {
+        // return the payment
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Repeatable Binding Usage Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">@Singleton
+@Audit("security", reason="card data")  # <b class="conum">(1)</b>
+@Audit("billing")
+class PaymentService:
+    def pay(self) -&gt; None:  # <b class="conum">(2)</b>
+        pass  # charge the payment
+
+    @Audit("billing")  # <b class="conum">(3)</b>
+    def refund(self) -&gt; None:
+        pass  # return the payment</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Repeatable Binding Usage Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Singleton
+@Audit(value = "security", reason = "card data") // <b class="conum">(1)</b>
+@Audit("billing")
+open class PaymentService {
+
+    open fun pay() { // <b class="conum">(2)</b>
+        // charge the payment
+    }
+
+    @Audit("billing") // <b class="conum">(3)</b>
+    open fun refund() {
+        // return the payment
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Repeatable Binding Usage Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Singleton
+@Audit(value = "security", reason = "card data") // <b class="conum">(1)</b>
+@Audit("billing")
+class PaymentService {
+
+    void pay() { // <b class="conum">(2)</b>
+        // charge the payment
+    }
+
+    @Audit("billing") // <b class="conum">(3)</b>
+    void refund() {
+        // return the payment
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The class declares both occurrences; <code>reason</code> differs from the interceptor&#8217;s but is not compared</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>pay()</code> uses the occurrences of its class and is intercepted</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><code>refund()</code> declares its own occurrences, which replace those of the class, so it is not intercepted</td>
+</tr>
+</table>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Repeatable Binding Test</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Test
+void testEveryOccurrenceMustMatch() {
+    try (ApplicationContext applicationContext = ApplicationContext.run()) {
+        var paymentService = applicationContext.getBean(PaymentService.class);
+        paymentService.pay();
+        paymentService.refund();
+
+        var interceptor = applicationContext.getBean(PaymentAuditInterceptor.class);
+        assertEquals(List.of("pay"), interceptor.getAudited());
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Repeatable Binding Test</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">@Test
+def test_every_occurrence_must_match(self, payment_service: PaymentService,
+                                     interceptor: PaymentAuditInterceptor):
+    payment_service.pay()
+    payment_service.refund()
+
+    assert interceptor.audited == ["pay"]</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Repeatable Binding Test</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Test
+fun testEveryOccurrenceMustMatch() {
+    ApplicationContext.run().use { applicationContext -&gt;
+        val paymentService = applicationContext.getBean(PaymentService::class.java)
+        paymentService.pay()
+        paymentService.refund()
+
+        val interceptor = applicationContext.getBean(PaymentAuditInterceptor::class.java)
+        interceptor.audited shouldBe listOf("pay")
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Repeatable Binding Test</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">void "every occurrence must match"() {
+    given:
+    def applicationContext = ApplicationContext.run()
+    def paymentService = applicationContext.getBean(PaymentService)
+
+    when:
+    paymentService.pay()
+    paymentService.refund()
+
+    then:
+    applicationContext.getBean(PaymentAuditInterceptor).audited == ['pay']
+
+    cleanup:
+    applicationContext.close()
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>matchAllOccurrences</code> is experimental. It only changes the selection of interceptors bound by an annotation that sets it, so existing bindings behave as before.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_customizing_proxy_generation">Customizing Proxy Generation</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -40898,7 +41292,264 @@ The examples use <a href="https://projectreactor.io">Project Reactor</a>, howeve
 <p>The publisher returned from <code>chain.proceed</code> should never emit an error. In the cases where an upstream filter emitted an error or the route itself threw an exception, the error response should be emitted instead of the exception. In some cases it may be desirable to know the cause of the error response and for this purpose an attribute exists on the response if it was created as a result of an exception being emitted or thrown. The original cause is stored as the attribute <a href="../api/io/micronaut/http/HttpAttributes.html#EXCEPTION">EXCEPTION</a>.</p>
 </div>
 
-<h2 id="responseHeaderPopulator"><a class="anchor" href="#responseHeaderPopulator"></a>6.29.4 Response Header Populators</h2>
+<h2 id="filterBodyBuffer"><a class="anchor" href="#filterBodyBuffer"></a>6.29.4 Reading the Body in a Filter</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/filters/filterBodyBuffer.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A filter sometimes has to look at the bytes of the request body before the route runs, e.g. to verify a signature or a checksum, while the route still reads the body afterwards. A request filter method can take an <a href="../api/io/micronaut/http/body/AsyncRequestBody.html">AsyncRequestBody</a> argument for it, see <a href="#asyncRequestBody">Reading the Body Asynchronously</a>. A filter that is not given arguments, an <a href="../api/io/micronaut/http/filter/HttpServerFilter.html">HttpServerFilter</a> or a filter of a <a href="#functionalRoutesFilters">functional route</a>, e.g. <code>beforeReplacingAsync</code>, gets the same body with <code>AsyncRequestBody.of(request)</code>.</p>
+</div>
+<div class="paragraph">
+<p>The following pre-matching filter rejects a request whose body does not match the checksum in its <code>X-Content-SHA256</code> header:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A filter that reads the body</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.RequestFilter;
+import io.micronaut.http.annotation.ServerFilter;
+import io.micronaut.http.body.AsyncRequestBody;
+import io.micronaut.http.server.annotation.PreMatching;
+import org.jspecify.annotations.Nullable;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+import java.util.concurrent.CompletionStage;
+
+@ServerFilter("/checksum")
+public class ChecksumFilter {
+    @RequestFilter
+    @PreMatching
+    public CompletionStage&lt;@Nullable HttpResponse&lt;?&gt;&gt; verify(HttpRequest&lt;?&gt; request) {
+        String expected = request.getHeaders().get("X-Content-SHA256");
+        return AsyncRequestBody.of(request) // <b class="conum">(1)</b>
+            .copy()
+            .bytes(1024 * 1024) // <b class="conum">(2)</b>
+            .thenApply(bytes -&gt; sha256(bytes).equals(expected)
+                ? null // <b class="conum">(3)</b>
+                : HttpResponse.badRequest("Checksum mismatch")); // <b class="conum">(4)</b>
+    }
+
+    private static String sha256(byte[] bytes) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A filter that reads the body</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import java
+from micronaut.http import HttpRequest, HttpResponse
+from micronaut.http.annotation import RequestFilter, ServerFilter
+from micronaut.http.body import AsyncRequestBody
+from micronaut.http.server.annotation import PreMatching
+
+CompletionStage = java.type("java.util.concurrent.CompletionStage")
+HexFormat = java.type("java.util.HexFormat")
+MessageDigest = java.type("java.security.MessageDigest")
+
+@ServerFilter("/checksum")
+class ChecksumFilter:
+    @RequestFilter
+    @PreMatching
+    def verify(self, request: HttpRequest) -&gt; CompletionStage[HttpResponse | None]:
+        expected = request.getHeaders().get("X-Content-SHA256")
+        return (AsyncRequestBody.of(request)  # <b class="conum">(1)</b>
+                .copy()
+                .bytes(1024 * 1024)  # <b class="conum">(2)</b>
+                .thenApply(lambda data: None  # <b class="conum">(3)</b>
+                           if sha256(data) == expected
+                           else HttpResponse.badRequest("Checksum mismatch")))  # <b class="conum">(4)</b>
+
+
+def sha256(data) -&gt; str:
+    return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(data))</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A filter that reads the body</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.HttpRequest
+import io.micronaut.http.HttpResponse
+import io.micronaut.http.annotation.RequestFilter
+import io.micronaut.http.annotation.ServerFilter
+import io.micronaut.http.body.AsyncRequestBody
+import io.micronaut.http.server.annotation.PreMatching
+import org.jspecify.annotations.Nullable
+import java.security.MessageDigest
+import java.util.HexFormat
+import java.util.concurrent.CompletionStage
+
+@ServerFilter("/checksum")
+class ChecksumFilter {
+
+    @RequestFilter
+    @PreMatching
+    fun verify(request: HttpRequest&lt;*&gt;): CompletionStage&lt;@Nullable HttpResponse&lt;*&gt;?&gt; {
+        val expected = request.headers["X-Content-SHA256"]
+        return AsyncRequestBody.of(request) // <b class="conum">(1)</b>
+            .copy()
+            .bytes(1024 * 1024) // <b class="conum">(2)</b>
+            .thenApply&lt;HttpResponse&lt;*&gt;?&gt; { bytes -&gt;
+                if (sha256(bytes) == expected) null // <b class="conum">(3)</b>
+                else HttpResponse.badRequest("Checksum mismatch") // <b class="conum">(4)</b>
+            }
+    }
+
+    private fun sha256(bytes: ByteArray): String =
+        HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes))
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A filter that reads the body</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.HttpRequest
+import io.micronaut.http.HttpResponse
+import io.micronaut.http.annotation.RequestFilter
+import io.micronaut.http.annotation.ServerFilter
+import io.micronaut.http.body.AsyncRequestBody
+import io.micronaut.http.server.annotation.PreMatching
+import org.jspecify.annotations.Nullable
+
+import java.security.MessageDigest
+import java.util.concurrent.CompletionStage
+
+@ServerFilter('/checksum')
+class ChecksumFilter {
+    @RequestFilter
+    @PreMatching
+    CompletionStage&lt;@Nullable HttpResponse&lt;?&gt;&gt; verify(HttpRequest&lt;?&gt; request) {
+        String expected = request.headers.get('X-Content-SHA256')
+        AsyncRequestBody.of(request) // <b class="conum">(1)</b>
+            .copy()
+            .bytes(1024 * 1024) // <b class="conum">(2)</b>
+            .thenApply { byte[] bytes -&gt;
+                sha256(bytes) == expected
+                    ? null // <b class="conum">(3)</b>
+                    : HttpResponse.badRequest('Checksum mismatch') // <b class="conum">(4)</b>
+            }
+    }
+
+    private static String sha256(byte[] bytes) {
+        MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>AsyncRequestBody.of(request)</code> is the body of the request, and <code>copy()</code> a copy whose reads leave the body for the route.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>bytes(maximumBytes)</code> buffers the copy without blocking the event loop and completes with its bytes. The bytes can be read as often as needed.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Complete with <code>null</code> to proceed: the route reads the body, unaffected by the filter.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Or answer the request without invoking the route.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">The route still reads the body</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Controller("/checksum")
+public class ChecksumController {
+
+    @Post(consumes = MediaType.TEXT_PLAIN, produces = MediaType.TEXT_PLAIN)
+    public String upload(@Body String body) { // <b class="conum">(1)</b>
+        return "Received " + body.length() + " characters";
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">The route still reads the body</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">@Controller("/checksum")
+class ChecksumController:
+
+    @Post(consumes=MediaType.TEXT_PLAIN, produces=MediaType.TEXT_PLAIN)
+    def upload(self, body: Annotated[str, Body]) -&gt; str:  # <b class="conum">(1)</b>
+        return "Received " + str(len(body)) + " characters"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">The route still reads the body</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Controller("/checksum")
+class ChecksumController {
+
+    @Post(consumes = [MediaType.TEXT_PLAIN], produces = [MediaType.TEXT_PLAIN])
+    fun upload(@Body body: String): String { // <b class="conum">(1)</b>
+        return "Received ${body.length} characters"
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">The route still reads the body</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Controller('/checksum')
+class ChecksumController {
+
+    @Post(consumes = MediaType.TEXT_PLAIN, produces = MediaType.TEXT_PLAIN)
+    String upload(@Body String body) { // <b class="conum">(1)</b>
+        "Received ${body.length()} characters"
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>@Body</code> argument reads the body of the request after the filter read its copy.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>AsyncRequestBody.of(request)</code> is supported by the Netty server. A server that does not support it, e.g. a servlet server without support for it yet, throws an <code>UnsupportedOperationException</code>: a filter method can take an <a href="../api/io/micronaut/http/body/AsyncRequestBody.html">AsyncRequestBody</a> argument there instead.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Each call of <code>AsyncRequestBody.of</code> creates an independent reader. Readers of the same bytes share their consumption state and synchronize access, including readers acquired through different wrappers. Acquiring another reader does not copy the bytes or allow the same bytes to be consumed twice: read a <code>copy()</code> for each reader that must leave the body for the route. The body is resolved when the read starts, so an earlier lookup does not hide a body replacement by another filter.</p>
+</div>
+<div class="paragraph">
+<p>Nothing is read before the filter reads the body, so requests whose filters do not read it stream their body to the route as usual. A request that sends <code>Expect: 100-continue</code> is answered with <code>100 Continue</code> when the filter reads the body: a filter that answers without reading it, e.g. with <code>401</code>, never receives it.</p>
+</div>
+<div class="paragraph">
+<p>The copy is held in memory for the route, so it is limited by <code>micronaut.server.max-request-buffer-size</code>, and by the smaller limit given to <code>bytes</code>: a larger body fails the returned stage with a <a href="../api/io/micronaut/http/exceptions/ContentLengthExceededException.html">ContentLengthExceededException</a>, answered with <code>413 Request Entity Too Large</code>. What the reads of a body from <code>AsyncRequestBody.of</code> leave open is released when the request ends.</p>
+</div>
+
+<h2 id="responseHeaderPopulator"><a class="anchor" href="#responseHeaderPopulator"></a>6.29.5 Response Header Populators</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/httpServer/filters/responseHeaderPopulator.adoc"'>
@@ -41039,6 +41690,18 @@ discarding any data if it has not been claimed by the argument binder.</p>
 </td>
 <td class="content">
 The <a href="../api/io/micronaut/http/filter/FilterBodyParser.html">FilterBodyParser</a> API allows you to get a Map representation of a request&#8217;s body whose content type is either application/x-www-form-urlencoded or application/json.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+To read the body in a filter while the route still reads it, read a <code>copy()</code> of its <a href="../api/io/micronaut/http/body/AsyncRequestBody.html">AsyncRequestBody</a> instead of splitting <code>byteBody()</code> yourself, see <a href="#filterBodyBuffer">Reading the Body in a Filter</a>.
 </td>
 </tr>
 </table>
@@ -70864,6 +71527,37 @@ email = (Email.builder()
 </div>
 <div class="paragraph">
 <p>The underscore is only dropped when the remaining name is a Python keyword and the Java object has no member with the underscored name; a Java method that is really called <code>from_</code> is still reached as <code>from_</code>.</p>
+</div>
+<div class="sect1">
+<h2 id="_java_instance_members">Java instance members</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The compiler registers unambiguous snake_case method names and read-only getter properties for
+public Java APIs referenced by imports (directly or through a curated module such as <code>pyronaut.http</code>),
+Java bases, or type hints, and for their method return types one level deep. It also registers Java receiver types whose aliases the type checker resolves in
+checked code, including deeper call chains. The registration applies to concrete implementations
+of those APIs; types reached only dynamically need an explicit import or type hint:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">port = server.port                         # server.getPort()
+name = authentication.name                 # authentication.getName()
+request.basic_auth("user", "password")     # request.basicAuth("user", "password")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A public instance <code>getX()</code> method with no arguments and a non-void return type exposes the property <code>x</code>. A boolean <code>isX()</code> getter does the same. Acronyms stay together: <code>getHTTPStatus()</code> exposes <code>http_status</code> and <code>get_http_status()</code>. The <code>getClass()</code> method does not expose a property; use the existing <code>class_</code> member when accessing a Java class.</p>
+</div>
+<div class="paragraph">
+<p>The original Java names remain available. A snake_case method calls the same Java member, with the same overload selection and argument conversions. Existing fields and methods take precedence over synthesized names, including a Java method already named with snake_case. Properties are read-only even when a corresponding setter exists; assignment does not call the setter.</p>
+</div>
+<div class="paragraph">
+<p>An ambiguous alias is omitted. For example, if both <code>getURL()</code> and <code>getUrl()</code> exist, neither <code>url</code> nor <code>get_url</code> is synthesized. If <code>getReady()</code> and <code>isReady()</code> both exist, <code>ready</code> is omitted. Static methods have no synthesized aliases or properties. A method name shared by static and instance overloads has no snake_case method alias, because its bound Java member includes both kinds of overload.</p>
+</div>
+<div class="paragraph">
+<p>These names are supported by the runtime and the compiler&#8217;s type checker. Editor completion depends on the editor stubs generated by Pyronaut tooling, which must expose these names separately.</p>
+</div>
+</div>
 </div>
 <div class="sect1">
 <h2 id="_java_packages_under_io">Java packages under <code>io</code></h2>
