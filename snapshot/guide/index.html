@@ -15254,6 +15254,13 @@ then:
 <p>You can import additional configuration directly from a configuration file using <code>micronaut.config.import</code>.
 The value can be a single string, a list, or indexed entries (<code>micronaut.config.import[0]</code>, <code>micronaut.config.import[1]</code>, &#8230;&#8203;).</p>
 </div>
+<div class="paragraph">
+<p>Import locations and structured declaration values support property placeholders, including defaults and custom property expression resolvers.
+Placeholders are resolved before selecting the provider or parsing the connection string, using the current configuration and properties from imports already loaded.
+Declarations in one property source are resolved together, so a later entry cannot reference properties supplied by an earlier entry in the same list; use a nested import for that dependency.
+For example, <code><a href="file://${CONFIG_DIRECTORY:/etc/myapp}/shared.properties" class="bare">file://${CONFIG_DIRECTORY:/etc/myapp}/shared.properties</a></code> selects a directory from configuration or an environment variable, defaulting to <code>/etc/myapp</code>.
+A missing placeholder without a default fails configuration loading even when the import has the <code>optional:</code> prefix; that prefix permits a missing import target.</p>
+</div>
 <div class="openblock">
 <div class="title">Importing additional configuration</div>
 <div class="content">
@@ -28292,379 +28299,7 @@ String lock(String name)</code></pre>
 </div>
 
 
-<div class="paragraph">
-<p>Instead of one method argument per URI variable, a method can declare an argument of type <a href="../api/io/micronaut/http/PathVariables.html">PathVariables</a>. It gives every variable of the route that matched the request, and converts a value when it is read.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<a href="../api/io/micronaut/http/PathVariables.html">PathVariables</a> is experimental. Its API may change in a future release.
-</td>
-</tr>
-</table>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Reading the Path Variables</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.PathVariables;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
 
-import java.util.List;
-
-@Controller
-public class ItemController {
-
-    @Get("/items/{id}{/page}") // <b class="conum">(1)</b>
-    public String item(PathVariables pathVariables) { // <b class="conum">(2)</b>
-        long id = pathVariables.getLong("id"); // <b class="conum">(3)</b>
-        int page = pathVariables.getInt("page", 1); // <b class="conum">(4)</b>
-        return "Item " + id + ", page " + page;
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Reading the Path Variables</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import java
-from micronaut.http import PathVariables
-from micronaut.http.annotation import Controller, Get
-
-Integer = java.type("java.lang.Integer")
-
-@Controller
-class ItemController:
-
-    @Get("/items/{id}{/page}")  # <b class="conum">(1)</b>
-    def item(self, pathVariables: PathVariables) -&gt; str:  # <b class="conum">(2)</b>
-        item_id = pathVariables.getLong("id")  # <b class="conum">(3)</b>
-        page = pathVariables.getInt("page", 1)  # <b class="conum">(4)</b>
-        return f"Item {item_id}, page {page}"</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Reading the Path Variables</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.PathVariables
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
-
-@Controller
-class ItemController {
-
-    @Get("/items/{id}{/page}") // <b class="conum">(1)</b>
-    fun item(pathVariables: PathVariables): String { // <b class="conum">(2)</b>
-        val id = pathVariables.getLong("id") // <b class="conum">(3)</b>
-        val page = pathVariables.getInt("page", 1) // <b class="conum">(4)</b>
-        return "Item $id, page $page"
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Reading the Path Variables</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.PathVariables
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
-
-@Controller
-class ItemController {
-
-    @Get("/items/{id}{/page}") // <b class="conum">(1)</b>
-    String item(PathVariables pathVariables) { // <b class="conum">(2)</b>
-        long id = pathVariables.getLong("id") // <b class="conum">(3)</b>
-        int page = pathVariables.getInt("page", 1) // <b class="conum">(4)</b>
-        "Item $id, page $page"
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The route has a required variable <code>id</code> and an optional variable <code>page</code></td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The method declares a <a href="../api/io/micronaut/http/PathVariables.html">PathVariables</a> argument instead of one argument per variable</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td><code>getLong</code> converts the value of a required variable</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td><code>getInt</code> with a default value is used for an optional variable</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>A request to <code>/items/5</code> answers <code>Item 5, page 1</code>, and one to <code>/items/5/3</code> answers <code>Item 5, page 3</code>.</p>
-</div>
-<div class="sect1">
-<h2 id="_accessors">Accessors</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Values convert with the conversion service of the route, the same way as the <a href="../api/io/micronaut/http/annotation/PathVariable.html">PathVariable</a> arguments of a method:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>getString</code>, <code>getInt</code>, <code>getLong</code>, <code>getBoolean</code> and the accessors of the other primitive types read a required variable.</p>
-</li>
-<li>
-<p>The same accessors with a second argument, e.g. <code>getInt("page", 1)</code>, return the default value when the variable has no value.</p>
-</li>
-<li>
-<p><code>findString</code>, <code>findInt</code>, <code>findLong</code>, <code>findDouble</code> and <code>findBoolean</code> return an empty optional when the variable has no value.</p>
-</li>
-<li>
-<p><code>get(name, type)</code> and <code>find(name, type)</code> convert to any other type, e.g. <code>UUID</code>, and accept an <a href="../api/io/micronaut/core/type/Argument.html">Argument</a> for a generic type.</p>
-</li>
-<li>
-<p><code>names()</code> and <code>contains(name)</code> tell which variables have a value.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>The values of an exploded variable, e.g. <code>/files{/path*}</code>, or of a comma separated value are read as a list:</p>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Reading a List</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Get("/tags/{tags}")
-public String tags(PathVariables pathVariables) {
-    List&lt;String&gt; tags = pathVariables.getStrings("tags"); // <b class="conum">(1)</b>
-    return "Tags " + tags;
-}
-
-@Get("/sum/{numbers}")
-public String sum(PathVariables pathVariables) {
-    List&lt;Integer&gt; numbers = pathVariables.getList("numbers", Integer.class); // <b class="conum">(2)</b>
-    return "Sum " + numbers.stream().mapToInt(Integer::intValue).sum();
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Reading a List</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">@Get("/tags/{tags}")
-def tags(self, pathVariables: PathVariables) -&gt; str:
-    tags = pathVariables.getStrings("tags")  # <b class="conum">(1)</b>
-    return "Tags [" + ", ".join(tags) + "]"
-
-@Get("/sum/{numbers}")
-def total(self, pathVariables: PathVariables) -&gt; str:
-    numbers = pathVariables.getList("numbers", Integer)  # <b class="conum">(2)</b>
-    return f"Sum {sum(numbers)}"</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Reading a List</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Get("/tags/{tags}")
-fun tags(pathVariables: PathVariables): String {
-    val tags = pathVariables.getStrings("tags") // <b class="conum">(1)</b>
-    return "Tags $tags"
-}
-
-@Get("/sum/{numbers}")
-fun sum(pathVariables: PathVariables): String {
-    val numbers = pathVariables.getList("numbers", Int::class.javaObjectType) // <b class="conum">(2)</b>
-    return "Sum ${numbers.sum()}"
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Reading a List</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">@Get("/tags/{tags}")
-String tags(PathVariables pathVariables) {
-    List&lt;String&gt; tags = pathVariables.getStrings("tags") // <b class="conum">(1)</b>
-    "Tags $tags"
-}
-
-@Get("/sum/{numbers}")
-String sum(PathVariables pathVariables) {
-    List&lt;Integer&gt; numbers = pathVariables.getList("numbers", Integer) // <b class="conum">(2)</b>
-    "Sum ${numbers.sum()}"
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><code>getStrings</code> splits the value, so <code>/tags/red,green</code> gives <code>[red, green]</code></td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td><code>getList</code> converts each value, so <code>/sum/1,2,3</code> gives <code>[1, 2, 3]</code></td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_errors">Errors</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>A required variable that has no value, or a value that does not convert, is answered with <code>400 Bad Request</code>, the same as for a <a href="../api/io/micronaut/http/annotation/PathVariable.html">PathVariable</a> argument. With the example above, <code>/items/abc</code> is answered with <code>400</code>.</p>
-</div>
-<div class="paragraph">
-<p>A method that declares <a href="../api/io/micronaut/http/PathVariables.html">PathVariables</a> reads the variables itself, so the compile-time route validation does not report the variables of the URI template that have no argument of their own.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_in_filters">In Filters</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The request filter methods of a <a href="../api/io/micronaut/http/annotation/ServerFilter.html">ServerFilter</a> run after the request is routed, so they can declare <a href="../api/io/micronaut/http/PathVariables.html">PathVariables</a> too:</p>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Reading the Path Variables in a Filter</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.core.annotation.Nullable;
-import io.micronaut.http.HttpResponse;
-import io.micronaut.http.HttpStatus;
-import io.micronaut.http.PathVariables;
-import io.micronaut.http.annotation.RequestFilter;
-import io.micronaut.http.annotation.ServerFilter;
-
-import java.util.OptionalLong;
-import java.util.Set;
-
-@ServerFilter("/items/**") // <b class="conum">(1)</b>
-public class ArchivedItemFilter {
-
-    private static final Set&lt;Long&gt; ARCHIVED = Set.of(7L);
-
-    @RequestFilter
-    public @Nullable HttpResponse&lt;?&gt; archived(PathVariables pathVariables) { // <b class="conum">(2)</b>
-        OptionalLong id = pathVariables.findLong("id"); // <b class="conum">(3)</b>
-        if (id.isPresent() &amp;&amp; ARCHIVED.contains(id.getAsLong())) {
-            return HttpResponse.status(HttpStatus.GONE); // <b class="conum">(4)</b>
-        }
-        return null;
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Reading the Path Variables in a Filter</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from micronaut.http import HttpResponse, HttpStatus, PathVariables
-from micronaut.http.annotation import RequestFilter, ServerFilter
-
-@ServerFilter("/items/**")  # <b class="conum">(1)</b>
-class ArchivedItemFilter:
-    ARCHIVED = {7}
-
-    @RequestFilter
-    def archived(self, pathVariables: PathVariables) -&gt; HttpResponse | None:  # <b class="conum">(2)</b>
-        item_id = pathVariables.findLong("id")  # <b class="conum">(3)</b>
-        if item_id.isPresent() and item_id.getAsLong() in self.ARCHIVED:
-            return HttpResponse.status(HttpStatus.GONE)  # <b class="conum">(4)</b>
-        return None</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Reading the Path Variables in a Filter</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.HttpResponse
-import io.micronaut.http.HttpStatus
-import io.micronaut.http.PathVariables
-import io.micronaut.http.annotation.RequestFilter
-import io.micronaut.http.annotation.ServerFilter
-
-@ServerFilter("/items/**") // <b class="conum">(1)</b>
-class ArchivedItemFilter {
-
-    private val archived = setOf(7L)
-
-    @RequestFilter
-    fun archived(pathVariables: PathVariables): HttpResponse&lt;*&gt;? { // <b class="conum">(2)</b>
-        val id = pathVariables.findLong("id") // <b class="conum">(3)</b>
-        if (id.isPresent &amp;&amp; archived.contains(id.asLong)) {
-            return HttpResponse.status&lt;Any&gt;(HttpStatus.GONE) // <b class="conum">(4)</b>
-        }
-        return null
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Reading the Path Variables in a Filter</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.core.annotation.Nullable
-import io.micronaut.http.HttpResponse
-import io.micronaut.http.HttpStatus
-import io.micronaut.http.PathVariables
-import io.micronaut.http.annotation.RequestFilter
-import io.micronaut.http.annotation.ServerFilter
-
-@ServerFilter("/items/**") // <b class="conum">(1)</b>
-class ArchivedItemFilter {
-
-    private static final Set&lt;Long&gt; ARCHIVED = [7L] as Set
-
-    @RequestFilter
-    @Nullable
-    HttpResponse&lt;?&gt; archived(PathVariables pathVariables) { // <b class="conum">(2)</b>
-        OptionalLong id = pathVariables.findLong("id") // <b class="conum">(3)</b>
-        if (id.present &amp;&amp; ARCHIVED.contains(id.asLong)) {
-            return HttpResponse.status(HttpStatus.GONE) // <b class="conum">(4)</b>
-        }
-        return null
-    }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The filter applies to the <code>/items/**</code> routes</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The request filter method declares a <a href="../api/io/micronaut/http/PathVariables.html">PathVariables</a> argument</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td><code>findLong</code> reads the <code>id</code> variable of the route that matched the request, if it has one</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>The filter answers the request itself, here with <code>410 Gone</code></td>
-</tr>
-</table>
-</div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-A <a href="../api/io/micronaut/http/server/annotation/PreMatching.html">PreMatching</a> filter method runs before the request is routed, so there are no path variables yet. With <code>micronaut-http-validation</code> on the annotation processor path, a <a href="../api/io/micronaut/http/PathVariables.html">PathVariables</a> parameter of a <code>@PreMatching</code> filter method or of a <a href="../api/io/micronaut/http/annotation/ClientFilter.html">ClientFilter</a> method is a compilation error.
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
 
 <h2 id="binding"><a class="anchor" href="#binding"></a>6.5 Simple Request Binding</h2>
 
@@ -48771,6 +48406,9 @@ that defining this listener will disable the implicit TCP listeners. You can add
 </table>
 </div>
 <div class="paragraph">
+<p>The <code>micronaut.server.idle-timeout</code> setting also applies to HTTP/3 connections, as the QUIC maximum idle timeout (<code>max_idle_timeout</code>). Idle QUIC connections are closed once it elapses. A negative value disables the idle timeout.</p>
+</div>
+<div class="paragraph">
 <p>Additionally, the netty HTTP/3 codec needs to be present on the classpath:</p>
 </div>
 <div class="paragraph">
@@ -61933,7 +61571,8 @@ so if you configure e.g. the maximum number of connections, what is meant is the
 </div>
 <div class="paragraph">
 <p>You can configure the pool through the <code>micronaut.http.client.pool.*</code> properties or, for specific services, via
-<code>micronaut.http.services.*.pool.*</code>. I&#8217;ll only mention the simple property name from here on.</p>
+<code>micronaut.http.services.*.pool.*</code>. A service inherits the global pool settings, and any value set for that service
+overrides the global one. I&#8217;ll only mention the simple property name from here on.</p>
 </div>
 <div class="paragraph">
 <p>HTTP/1.1 and HTTP/2.0 connections are handled and configured separately, because the latter can handle many concurrent
@@ -72097,6 +71736,9 @@ EventBus.publish(counting_listener(counts), ["a", "b"])  # <b class="conum">(3)<
 <p>A type argument of the base (<code>class Sub(Subscriber[str])</code>) is dropped at run time; the raw interface is the base of the adapter.</p>
 </div>
 <div class="paragraph">
+<p>The host adapter is only available on a JVM: in a native executable (a native image, or a native Pyronaut launcher) the class statement fails with <code>SystemError: Java Class can be extended only in JVM mode</code>, and the compiler warns about such a class (<code>Python class [&#8230;&#8203;] is defined inside a function and implements the Java interface [&#8230;&#8203;]</code>). Code that must also run natively defines the class at module level, or passes a function or lambda where Java expects a functional interface.</p>
+</div>
+<div class="paragraph">
 <p>The adapter passes the constructor arguments on to the Java constructor, which an interface has none of, and cannot combine the interface with another base. A class defined inside a function that declares an <code><em>init</em></code> with parameters, that is decorated (a decorator such as <code>@dataclass</code> may generate the constructor), or that has more than one base, is therefore a plain Python object as described above: Java receives a proxy of the interface, which suffices for a Java method that is not overloaded on other interfaces.</p>
 </div>
 </div>
@@ -72505,7 +72147,174 @@ class HelloService:
 </div>
 
 
+<div class="paragraph">
+<p>A Python class can extend a Java class, abstract or concrete, in the same way it extends a Python class. The compiler generates a Java class that extends the Java class and delegates to the Python object, so the Python class can be injected and used wherever the Java base is expected, and Java code calling a method of the base reaches the Python override.</p>
+</div>
+<div class="paragraph">
+<p>Given the Java base class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package docs.javabases;
 
+public abstract class AbstractGreeter {
+
+    private final String greeting;
+    private int count;
+
+    protected AbstractGreeter(String greeting) {
+        this.greeting = greeting;
+    }
+
+    protected abstract String name();
+
+    public String greet() {
+        count++;
+        return greeting + ", " + name() + " (" + count + ")";
+    }
+
+    public int count() {
+        return count;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A Python class extends it as follows:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Extending a Java class</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from jakarta.inject import Singleton
+from docs.javabases import AbstractGreeter
+
+@Singleton
+class PythonGreeter(AbstractGreeter):
+    def __init__(self):
+        super().__init__("Hello")  # <b class="conum">(1)</b>
+
+    def name(self) -&gt; str:  # <b class="conum">(2)</b>
+        return "Python"
+
+    def greet(self) -&gt; str:  # <b class="conum">(3)</b>
+        return super().greet().upper()
+
+    def greet_twice(self) -&gt; str:  # <b class="conum">(4)</b>
+        return self.greet() + " " + self.greet()</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The arguments of <code>super().<em>init</em>(&#8230;&#8203;)</code> are passed to the constructor of the Java base</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Abstract methods of the base are implemented in Python</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>A method of the base is overridden in Python; <code>super().greet()</code> calls the Java implementation</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The Python object calls the inherited Java methods on itself</td>
+</tr>
+</table>
+</div>
+<div class="sect1">
+<h2 id="_checked_exceptions">Checked exceptions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A method of the Java base that declares checked exceptions is overridden like any other; the generated Java override declares the same exceptions. A Java exception raised by the Python override (a <code>java.io.IOException</code> imported from Java, or a Python exception class extending it) reaches the Java caller as that exception, so a <code>catch</code> block of the base, or of the framework calling the method, handles it as it handles a Java implementation. An exception the base method itself throws when called through <code>super()</code> is caught in Python with <code>except</code>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Overriding a method declaring a checked exception</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from java.io import IOException
+from jakarta.inject import Singleton
+from docs.javabases import ChannelInitializer
+
+@Singleton
+class QueueInitializer(ChannelInitializer):
+    def initialize(self, channel: str, name: str) -&gt; None:  # <b class="conum">(1)</b>
+        if name.startswith("reserved"):
+            raise IOException(f"{name} is reserved")  # <b class="conum">(2)</b>
+        super().initialize(channel, "queue:" + name)  # <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>ChannelInitializer.initialize(String, String)</code> declares <code>throws IOException</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>An <code>IOException</code> raised in Python is thrown by the generated override</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The Java implementation may throw the <code>IOException</code> too; Python code catches it with <code>except IOException</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A Python exception that is not one of the declared exceptions (a <code>ValueError</code>, for instance) propagates to Java as a <code>PolyglotException</code>, as from any other bridged method.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_how_it_works">How it works</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The generated Java class is the only Java instance of the base class. The compiler resolves the Java constructor of the base from the arguments the Python constructor passes to <code>super().<em>init</em>(&#8230;&#8203;)</code>, so those arguments must be positional and are best constructor parameters or literals: it matches their number and static types (a Python <code>int</code> matches <code>long</code>/<code>Long</code> and <code>double</code>/<code>Double</code> parameters as a Java <code>int</code> widens to them) and reports an error when no constructor, or more than one, matches. A constructor that calls <code>super().<em>init</em>(&#8230;&#8203;)</code> on several branches must pass the same arguments on each. A class without a <code>super().<em>init</em>(&#8230;&#8203;)</code> call uses the no-argument constructor of the base.</p>
+</div>
+<div class="paragraph">
+<p>When that constructor takes no arguments, the generated constructors create the Python object without running <code><em>init</em></code>, construct the base, and then run <code><em>init</em></code>, so <code><em>init</em></code> can call inherited methods (<code>self.add(&#8230;&#8203;)</code>) on the Java instance. A Java constructor that calls a method the Python class overrides (a request handler base initialising itself through a hook, for instance) reaches the Python override before <code><em>init</em></code> has run, so the override must not rely on attributes <code><em>init</em></code> sets. When the constructor takes arguments, or the class is introspected, an introduction or a test class, the generated constructors run <code><em>init</em></code> first and then call the constructor of the base with the recorded arguments. A base method cannot be called from <code><em>init</em></code> then: the Java instance exists once <code><em>init</em></code> has returned. A Java constructor calling an override sees the complete Python object.</p>
+</div>
+<div class="paragraph">
+<p>At run time the Java base is not in the Python class hierarchy; a generated Python base class stands in for it. It defines every public and protected instance method of the Java base, so <code>self.baseMethod(&#8230;&#8203;)</code> and <code>super().baseMethod(&#8230;&#8203;)</code> invoke the Java implementation on the Java instance, and it lets a Python override of a base method be what Java callers reach. The state of the base lives in that Java instance, whichever side accesses it. A Java method named after a Python keyword is called through its trailing-underscore alias (<code>self.from_()</code>), as elsewhere.</p>
+</div>
+<div class="paragraph">
+<p>An inherited varargs method (<code>add(Component&#8230;&#8203; components)</code>) accepts any number of trailing arguments (<code>self.add(header, body, footer)</code>, or none), which are converted to an array of the component type. A single trailing Java array of the component type is passed through as that array, as in Java. When a method has several overloads, a fixed-arity overload that matches the arguments is selected before a varargs one.</p>
+</div>
+<div class="paragraph">
+<p>The Java class is created when the Python class is instantiated from Java, for example as an injected bean, and the first time an inherited method is called on an object created in Python code. A Python object passed to Java where the base class is expected is represented by the same Java instance every time.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_limitations">Limitations</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>A final Java class, a non-static inner class, and a class without a public or protected constructor cannot be extended; the compiler reports an error for that class and continues with the others.</p>
+</li>
+<li>
+<p>Public fields of the Java base are not accessible from Python; use accessor methods.</p>
+</li>
+<li>
+<p><code>isinstance(obj, JavaBase)</code> is <code>False</code> in Python: the Java base is not in the Python class hierarchy. Use <code>isinstance(obj, PythonClass)</code> or check the Java view (<code>obj</code> converted to the base type) from Java.</p>
+</li>
+<li>
+<p>A Python test class (a class with <code>@Test</code> methods) extending a Java class is instantiated by the test framework before the application context exists, so the base must have a no-argument constructor; the Python object is created, and bound to the Java instance, when the first test method runs.</p>
+</li>
+<li>
+<p>A class nested in another class extends a Java class the same way (its generated Java class is <code>Outer$Inner</code>). A class defined inside a function has no generated Java class; it extends the Java class through the GraalPy host adapter, with its rules, and is not injectable. The adapter supports the simple shapes only: a class without <code><em>init</em></code>, whose constructor arguments are passed at instantiation (<code>Local(5)</code>), overriding non-abstract methods. It cannot call a base constructor from <code><em>init</em></code> (<code>super().<em>init</em>("x")</code> fails with an arity error) and a base constructor calling an abstract method the class implements fails with <code>UnsupportedOperationException</code>; define such a class at module level.</p>
+</li>
+<li>
+<p>The GraalPy host adapter of a class defined inside a function is only available on a JVM: a native executable (a native image, or a native Pyronaut launcher) fails with <code>SystemError: Java Class can be extended only in JVM mode</code> when the class statement runs. The compiler warns about such a class (<code>Python class [&#8230;&#8203;] is defined inside a function and extends the Java class [&#8230;&#8203;]</code>); define it at module level, where its generated Java class is used on the JVM and in a native executable alike.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Python classes extending Java exception classes are Python exceptions at run time; see the exception handling documentation.</p>
+</div>
+</div>
+</div>
 
 <h2 id="typeChecking"><a class="anchor" href="#typeChecking"></a>17.3.19 Type Checking</h2>
 
@@ -81425,6 +81234,12 @@ repositories {
 
 <div class="paragraph">
 <p>This section documents breaking changes between Micronaut versions</p>
+</div>
+<div class="sect2">
+<h3 id="_a_plus_sign_in_a_path_variable_is_a_plus_sign_5_3">A plus sign in a path variable is a plus sign (5.3)</h3>
+<div class="paragraph">
+<p>The decoded value of a path variable, for example a <a href="../api/io/micronaut/http/annotation/PathVariable.html">PathVariable</a> argument, <code>getString</code> of <a href="../api/io/micronaut/http/PathVariables.html">PathVariables</a> or <code>getVariableValues()</code> of a route match, now keeps a <code>` as a plus sign, as RFC 3986 defines for the path. Previously the router decoded the values like form data, so `/items/a+b` gave `a b`. A space in a path is percent-encoded as `%20`, which is still decoded to a space, and `%2B` is decoded to `</code> as before. A client that sent <code>` for a space in a path should send `%20`. Query parameters and form fields are not affected: they still decode a `</code> to a space. To keep the previous decoding, where a <code>+</code> in a path variable is a space, set <code>micronaut.router.path-variable-plus-as-space: true</code>.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_serverwebsocket_uris_are_under_the_context_path_5_3"><code>@ServerWebSocket</code> URIs are under the context path (5.3)</h3>
