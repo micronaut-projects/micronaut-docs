@@ -157,6 +157,8 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-iocDebugging"><a href="#iocDebugging"><strong>3.3</strong><span>Debugging Dependency Injection</span></a></div>
         
+        <div class="toc-item" style="margin-left:20px" id="toc-item-beanResolutionTracers"><a href="#beanResolutionTracers"><strong>3.3.1</strong><span>Custom Bean Resolution Tracers</span></a></div>
+        
         <div class="toc-item" style="margin-left:10px" id="toc-item-beanContext"><a href="#beanContext"><strong>3.4</strong><span>The BeanContext</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-injection"><a href="#injection"><strong>3.5</strong><span>Dependency Injection Types</span></a></div>
@@ -799,21 +801,23 @@
         
         <div class="toc-item" style="margin-left:20px" id="toc-item-typeChecking"><a href="#typeChecking"><strong>17.3.19</strong><span>Type Checking</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-moduleScripts"><a href="#moduleScripts"><strong>17.3.20</strong><span>Module Scripts</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-staticCompilation"><a href="#staticCompilation"><strong>17.3.20</strong><span>Static Compilation</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-testing"><a href="#testing"><strong>17.3.20.1</strong><span>JUnit 5 Module Tests</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-moduleScripts"><a href="#moduleScripts"><strong>17.3.21</strong><span>Module Scripts</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-graalTools"><a href="#graalTools"><strong>17.3.21</strong><span>GraalPy Tools</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-testing"><a href="#testing"><strong>17.3.21.1</strong><span>JUnit 5 Module Tests</span></a></div>
         
-        <div class="toc-item" style="margin-left:20px" id="toc-item-asyncAwait"><a href="#asyncAwait"><strong>17.3.22</strong><span>Async/Await</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-graalTools"><a href="#graalTools"><strong>17.3.22</strong><span>GraalPy Tools</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioRuntime"><a href="#asyncioRuntime"><strong>17.3.22.1</strong><span>Netty-Backed Asyncio Runtime</span></a></div>
+        <div class="toc-item" style="margin-left:20px" id="toc-item-asyncAwait"><a href="#asyncAwait"><strong>17.3.23</strong><span>Async/Await</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioNetworking"><a href="#asyncioNetworking"><strong>17.3.22.2</strong><span>Asyncio Networking and TLS</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioRuntime"><a href="#asyncioRuntime"><strong>17.3.23.1</strong><span>Netty-Backed Asyncio Runtime</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioStreaming"><a href="#asyncioStreaming"><strong>17.3.22.3</strong><span>Python-Native Streaming</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioNetworking"><a href="#asyncioNetworking"><strong>17.3.23.2</strong><span>Asyncio Networking and TLS</span></a></div>
         
-        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioUnsupported"><a href="#asyncioUnsupported"><strong>17.3.22.4</strong><span>Unsupported Asyncio APIs</span></a></div>
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioStreaming"><a href="#asyncioStreaming"><strong>17.3.23.3</strong><span>Python-Native Streaming</span></a></div>
+        
+        <div class="toc-item" style="margin-left:30px" id="toc-item-asyncioUnsupported"><a href="#asyncioUnsupported"><strong>17.3.23.4</strong><span>Unsupported Asyncio APIs</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-kotlin"><a href="#kotlin"><strong>17.4</strong><span>Micronaut for Kotlin</span></a></div>
         
@@ -2515,6 +2519,288 @@ println vehicle.start()</code></pre>
 <p>The beans that are created, where they were created and how long was taken to create the bean.</p>
 </li>
 </ul>
+</div>
+
+<h2 id="beanResolutionTracers"><a class="anchor" href="#beanResolutionTracers"></a>3.3.1 Custom Bean Resolution Tracers</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/ioc/iocDebugging/beanResolutionTracers.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The injection trace mode is built on the experimental <a href="../api/io/micronaut/context/BeanResolutionTracer.html">BeanResolutionTracer</a> API, which you can implement to observe bean resolution yourself. For example, a tracer can record the creation of each bean as a span of a trace, so you can see what makes startup slow.</p>
+</div>
+<div class="paragraph">
+<p>A tracer receives a callback when the creation of a bean starts (<code>traceBeanCreation</code>) and one when it ends (<code>traceBeanCreated</code>, or <code>traceBeanCreationFailed</code> if it failed). It also receives a callback before and after each injection point is resolved (<code>traceInjectBean</code> and <code>traceInjectComplete</code>). These callbacks come in pairs, are invoked on the thread that resolves the bean and nest like a call stack. A bean created for an injection point is reported between the two callbacks of that injection point. So a tracer can keep its open spans on a per-thread stack. Each callback receives a <code>BeanResolutionTracer.Resolution</code>, a read-only view of the resolution in progress. Its <code>getBeansInCreation()</code> tells you which bean a bean is being created for, and <code>getInjectionPath()</code> lists the injection points being resolved. An injection point is a <code>BeanResolutionTracer.Injection</code>, which gives its kind (constructor, factory method, method, field, annotation or event listener), the bean that declares it, the member name, the argument and its qualifier. Beans created with <code>createBean</code> are traced too.</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A tracer that measures bean creation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.BeanResolutionTracer;
+import io.micronaut.core.type.Argument;
+import io.micronaut.inject.BeanDefinition;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class TimingTracer implements BeanResolutionTracer {
+
+    private final ThreadLocal&lt;Deque&lt;Long&gt;&gt; starts = ThreadLocal.withInitial(ArrayDeque::new); // <b class="conum">(1)</b>
+    private final Map&lt;String, Long&gt; timings = new ConcurrentHashMap&lt;&gt;();
+
+    @Override
+    public void traceBeanCreation(Resolution resolution, BeanDefinition&lt;?&gt; definition, Argument&lt;?&gt; beanType) {
+        starts.get().push(System.nanoTime()); // <b class="conum">(2)</b>
+    }
+
+    @Override
+    public void traceBeanCreated(Resolution resolution, BeanDefinition&lt;?&gt; definition) {
+        long took = System.nanoTime() - starts.get().pop(); // <b class="conum">(3)</b>
+        timings.put(definition.getBeanType().getName(), took);
+    }
+
+    @Override
+    public void traceBeanCreationFailed(Resolution resolution, BeanDefinition&lt;?&gt; definition, Throwable failure) {
+        starts.get().pop(); // <b class="conum">(4)</b>
+    }
+
+    @Override
+    public void traceInjectBean(Resolution resolution, Injection injection) {
+        // injection points are not timed
+    }
+
+    public Map&lt;String, Long&gt; getTimings() {
+        return timings;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A tracer that measures bean creation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.BeanResolutionTracer
+import io.micronaut.context.BeanResolutionTracer.Injection
+import io.micronaut.context.BeanResolutionTracer.Resolution
+import io.micronaut.core.type.Argument
+import io.micronaut.inject.BeanDefinition
+import java.util.ArrayDeque
+import java.util.concurrent.ConcurrentHashMap
+
+class TimingTracer : BeanResolutionTracer {
+
+    private val starts = ThreadLocal.withInitial { ArrayDeque&lt;Long&gt;() } // <b class="conum">(1)</b>
+    val timings: MutableMap&lt;String, Long&gt; = ConcurrentHashMap()
+
+    override fun traceBeanCreation(resolution: Resolution, definition: BeanDefinition&lt;*&gt;, beanType: Argument&lt;*&gt;) {
+        starts.get().push(System.nanoTime()) // <b class="conum">(2)</b>
+    }
+
+    override fun traceBeanCreated(resolution: Resolution, definition: BeanDefinition&lt;*&gt;) {
+        val took = System.nanoTime() - starts.get().pop() // <b class="conum">(3)</b>
+        timings[definition.beanType.name] = took
+    }
+
+    override fun traceBeanCreationFailed(resolution: Resolution, definition: BeanDefinition&lt;*&gt;, failure: Throwable) {
+        starts.get().pop() // <b class="conum">(4)</b>
+    }
+
+    override fun traceInjectBean(resolution: Resolution, injection: Injection) {
+        // injection points are not timed
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A tracer that measures bean creation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.BeanResolutionTracer
+import io.micronaut.core.type.Argument
+import io.micronaut.inject.BeanDefinition
+
+import java.util.concurrent.ConcurrentHashMap
+
+class TimingTracer implements BeanResolutionTracer {
+
+    private final ThreadLocal&lt;Deque&lt;Long&gt;&gt; starts = ThreadLocal.withInitial { new ArrayDeque&lt;Long&gt;() } // <b class="conum">(1)</b>
+    final Map&lt;String, Long&gt; timings = new ConcurrentHashMap&lt;&gt;()
+
+    @Override
+    void traceBeanCreation(Resolution resolution, BeanDefinition&lt;?&gt; definition, Argument&lt;?&gt; beanType) {
+        starts.get().push(System.nanoTime()) // <b class="conum">(2)</b>
+    }
+
+    @Override
+    void traceBeanCreated(Resolution resolution, BeanDefinition&lt;?&gt; definition) {
+        long took = System.nanoTime() - starts.get().pop() // <b class="conum">(3)</b>
+        timings.put(definition.beanType.name, took)
+    }
+
+    @Override
+    void traceBeanCreationFailed(Resolution resolution, BeanDefinition&lt;?&gt; definition, Throwable failure) {
+        starts.get().pop() // <b class="conum">(4)</b>
+    }
+
+    @Override
+    void traceInjectBean(Resolution resolution, Injection injection) {
+        // injection points are not timed
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The creations nest like a call stack on the thread that creates the beans, so the start times are kept on a per-thread stack</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The creation of a bean starts, which may create other beans for its injection points</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The creation of the bean ends, after the creations nested in it</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>A failed creation ends too, so that the stack stays balanced</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Tracers are active from the start of the context, before any bean exists, so a tracer cannot be a bean. Register a tracer with the <a href="../api/io/micronaut/context/ApplicationContextBuilder.html">ApplicationContextBuilder</a>:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Registering a tracer</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">TimingTracer tracer = new TimingTracer();
+try (ApplicationContext context = ApplicationContext.builder()
+    .properties(Map.of("spec.name", "TimingTracerSpec"))
+    .beanResolutionTracer(tracer) // <b class="conum">(1)</b>
+    .start()) {
+    context.getBean(Greeter.class);
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Registering a tracer</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val tracer = TimingTracer()
+ApplicationContext.builder()
+    .properties(mapOf("spec.name" to "TimingTracerSpec"))
+    .beanResolutionTracer(tracer) // <b class="conum">(1)</b>
+    .start().use { context -&gt;
+        context.getBean(Greeter::class.java)
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Registering a tracer</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">TimingTracer tracer = new TimingTracer()
+ApplicationContext context = ApplicationContext.builder()
+        .properties("spec.name": "TimingTracerSpec")
+        .beanResolutionTracer(tracer) // <b class="conum">(1)</b>
+        .start()
+context.getBean(Greeter)</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The tracer is active from the start of the context</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A library can also provide a tracer through <code>ServiceLoader</code>, with a <a href="../api/io/micronaut/context/BeanResolutionTracerProvider.html">BeanResolutionTracerProvider</a> listed in a <code>META-INF/services/io.micronaut.context.BeanResolutionTracerProvider</code> file. Every provider is instantiated when a context starts, so keep its constructor cheap. Its tracer is only created when the provider is enabled, which by default it is not, so a library on the classpath does not trace production applications by accident. Enable discovered tracers with the <code>micronaut.inject.trace.tracers</code> system property, the <code>MICRONAUT_INJECT_TRACE_TRACERS</code> environment variable or <code>ApplicationContextBuilder.beanResolutionTracerDiscovery(true)</code>. A provider can also decide for itself whether to enable its tracer, for example only in the <code>dev</code> environment:</p>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A tracer active in development</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.context.BeanResolutionTracer;
+import io.micronaut.context.BeanResolutionTracerProvider;
+import io.micronaut.context.env.Environment;
+
+public class TimingTracerProvider implements BeanResolutionTracerProvider {
+
+    @Override
+    public boolean isEnabled(Activation activation) {
+        return activation.isDiscoveryEnabled()
+            || activation.getEnvironmentNames().contains(Environment.DEVELOPMENT); // <b class="conum">(1)</b>
+    }
+
+    @Override
+    public BeanResolutionTracer createTracer(Activation activation) {
+        return new TimingTracer(); // <b class="conum">(2)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A tracer active in development</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.context.BeanResolutionTracer
+import io.micronaut.context.BeanResolutionTracerProvider
+import io.micronaut.context.BeanResolutionTracerProvider.Activation
+import io.micronaut.context.env.Environment
+
+class TimingTracerProvider : BeanResolutionTracerProvider {
+
+    override fun isEnabled(activation: Activation): Boolean =
+        activation.isDiscoveryEnabled ||
+            activation.environmentNames.contains(Environment.DEVELOPMENT) // <b class="conum">(1)</b>
+
+    override fun createTracer(activation: Activation): BeanResolutionTracer =
+        TimingTracer() // <b class="conum">(2)</b>
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">A tracer active in development</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.context.BeanResolutionTracer
+import io.micronaut.context.BeanResolutionTracerProvider
+import io.micronaut.context.env.Environment
+
+class TimingTracerProvider implements BeanResolutionTracerProvider {
+
+    @Override
+    boolean isEnabled(Activation activation) {
+        activation.discoveryEnabled ||
+            activation.environmentNames.contains(Environment.DEVELOPMENT) // <b class="conum">(1)</b>
+    }
+
+    @Override
+    BeanResolutionTracer createTracer(Activation activation) {
+        new TimingTracer() // <b class="conum">(2)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The tracer is enabled when discovery is, or in the <code>dev</code> environment</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The tracer is only created when it is enabled</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>All active tracers receive every callback together with the tracer of the injection trace mode. Discovered tracers are called in the order of their providers (see <code>Ordered</code>). The class patterns of <code>MICRONAUT_INJECT_TRACE</code> only restrict the trace mode&#8217;s output, not your tracers. When no tracer is active, bean resolution does no tracing work.</p>
+</div>
+<div class="paragraph">
+<p>Callbacks run on the path that resolves every bean, so keep them fast. Do not throw from a callback or create beans in one: an exception thrown by a tracer fails the resolution being traced. The exception is only added as suppressed to the original failure when it is thrown while a failed creation is traced.</p>
 </div>
 
 <h2 id="beanContext"><a class="anchor" href="#beanContext"></a>3.4 The BeanContext</h2>
@@ -71513,6 +71799,29 @@ class TaskNotFoundProblem(AbstractThrowableProblem):
 <div class="paragraph">
 <p>The call above resolves to the <code>(URI, String, StatusType, String)</code> constructor of the base: the second and last arguments are strings, the third is an <code>HttpStatusType</code>, and <code>TYPE</code> (a call of a static method) accepts any parameter.</p>
 </div>
+<div class="sect1">
+<h2 id="_python_exception_classes">Python exception classes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A Python class extending a builtin exception (<code>Exception</code>, <code>ValueError</code>, <code>KeyError</code>, <code>RuntimeError</code>, &#8230;&#8203; any builtin subclass of <code>Exception</code>) stays a plain Python exception at runtime, with its builtin ancestry. Its generated Java class extends <code>RuntimeException</code> and wraps the Python exception: when the exception reaches Java code, the runtime creates the generated class through its <code>Value</code> constructor, so Micronaut exception handlers and <code>@Error</code> methods declared for the Python type match it, and Java code catches it as a <code>RuntimeException</code>. The Java message is <code>str(exception)</code> (null for an exception raised without arguments), a Java exception given as the cause (<code>raise &#8230;&#8203; from e</code>) or handled when the exception was raised is the Java <code>getCause()</code>, and <code>asPolyglotValue()</code> returns the Python exception itself:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">class EmailAlreadyUsed(Exception):
+    """Raised when an email address is already registered."""
+
+
+@Singleton
+class UserService:
+    def create(self, data: UserCreate) -&gt; User:
+        if self.users.existsByEmail(data.email):
+            raise EmailAlreadyUsed(data.email)
+        ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The arguments the class is created with stay the <code>args</code> of the Python exception, whether it declares an <code><em>init</em></code> (a hinted <code><em>init</em></code> also gives the generated class a Java constructor taking its parameters) or takes those of its builtin base. A class extending a Python exception class of the compilation extends its generated class, as long as that class is its first base: the generated class extends one class only, so for <code>class E(Exception, Mixin)</code> or <code>class E(Other, Base)</code> it extends <code>RuntimeException</code> or the generated class of <code>Other</code>, and Java code does not see the other bases. A class extending only <code>BaseException</code> (or <code>KeyboardInterrupt</code>, <code>SystemExit</code>, &#8230;&#8203;) is not mapped to a <code>Throwable</code>.</p>
+</div>
 <div class="paragraph">
 <p>Once an exception has crossed into Java it is the generated Java class. Python code that calls back into Java, for example through an intercepted method, therefore catches the Java class rather than the Python class:</p>
 </div>
@@ -71526,6 +71835,8 @@ try:
     service.register(customer)
 except NotEligibleException as rejected:
     print(rejected.getMessage())</code></pre>
+</div>
+</div>
 </div>
 </div>
 
@@ -72521,7 +72832,537 @@ class OrderService:
 </div>
 </div>
 
-<h2 id="moduleScripts"><a class="anchor" href="#moduleScripts"></a>17.3.20 Module Scripts</h2>
+<h2 id="staticCompilation"><a class="anchor" href="#staticCompilation"></a>17.3.20 Static Compilation</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/staticCompilation.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The compiler can compile the body of a Python method to Java, inside the generated class the method is bridged on, when the type checker proves that every call, attribute read and operation in it resolves to a known target. A Java caller of such a method, which is every HTTP route, every injected service and every executable method, runs Java instead of entering the Python runtime to run the method; the body itself still crosses into Python where it must (an attribute of a class whose state lives in Python, a <code>@property</code>, a sibling the generated class cannot call directly), and the report counts those crossings. Python callers of an object the generated class created run the same Java body wherever it gives them the result the Python body would (see <a href="#staticCompilationOneImplementation">One Implementation</a>), so there is one implementation of the method, not two.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Static compilation is experimental and off by default. It changes how a Python body runs, not what it does: the compiler reproduces Python&#8217;s semantics for the subset it compiles and refuses the rest, but a compiled body is Java, and a difference in behaviour is a bug to report. A compilation with static compilation in use (a mode other than <code>off</code>, or a <code>CompileStatic</code> that compiles a function) prints one note saying so, naming the mode and the report; <code>@CompileStatic(False)</code> keeps a function in Python.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Static compilation builds on <a href="#typeChecking">type checking</a>: the checker&#8217;s inference decides what is statically dispatched, whether or not its diagnostics are reported. A body the checker flags is a body that will not compile.</p>
+</div>
+<div class="sect1">
+<h2 id="_enabling_static_compilation">Enabling Static Compilation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The annotation processor option <code>micronaut.python.compile.static</code> selects the mode:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Mode</th>
+<th class="tableblock halign-left valign-top">Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>off</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Nothing is compiled unless switched on by a decorator (the default).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>annotated</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The scopes carrying <code>CompileStatic</code> are compiled.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>all</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Every eligible method is compiled unless a decorator excludes it.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Option</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.compile.static.report</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A directory <code>decisions.jsonl</code> and <code>summary.txt</code> are written to, one record per function, each reason with a suggestion of what to change, see <a href="#staticCompilationReport">the report</a>. Unset, no files are written; the callback still receives every decision.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.compile.static.strict</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code> makes an explicit <code>CompileStatic</code> that cannot be honoured an error instead of a warning.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.compile.static.annotations</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The qualified names of the decorators accepted as the switch, comma separated; the default accepts <code>io.micronaut.context.python.annotation.CompileStatic</code> and <code>pyronaut.build.CompileStatic</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.python.compile.static.trace</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code> makes every compiled body count its entries in <code>PythonStatic.entries(key)</code>, the key being the qualified name of the class and the method, <code>shop.PricingService#total</code>, for tests and for anyone diagnosing what runs as Java.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Pass the options to <code>javac</code> as <code>-Amicronaut.python.compile.static=all</code>, or set them on the compiler API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">PyronautCompiler.builder()
+    .pythonSrc("src/main/python")
+    .typeCheck(TypeCheckMode.WARN)
+    .staticCompilation(StaticCompilationMode.ANNOTATED)
+    .staticCompilationReport(new File("build/reports/pyronaut/static-compilation"))
+    .staticCompilationDecisionCallback(decision -&gt; log.info(decision.toString()))
+    .build()
+    .compile();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_switching_compilation_on_or_off_for_a_scope">Switching Compilation On or Off for a Scope</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>CompileStatic</code> annotation switches compilation for a class, a function or, applied as a bare statement, a module, with the scope rules of <code>TypeChecked</code>: the nearest declaration wins.</p>
+</div>
+<div class="listingblock">
+<div class="title">shop/PricingService.py</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import inflect
+from jakarta.inject import Singleton
+from micronaut.context.python.annotation import CompileStatic
+
+@Singleton
+@CompileStatic                  <i class="conum" data-value="1"></i><b>(1)</b>
+class PricingService:
+    def __init__(self, rate: float):
+        self.rate = rate
+
+    def total(self, quantity: int, unit_price: float) -&gt; float:
+        return quantity * unit_price * self.rate
+
+    def discounted(self, prices: list[float]) -&gt; list[float]:
+        return [price * self.rate for price in prices]     <i class="conum" data-value="2"></i><b>(2)</b>
+
+    @CompileStatic(False)       <i class="conum" data-value="3"></i><b>(3)</b>
+    def describe(self, sku: str) -&gt; str:
+        return inflect.engine().plural(sku)</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Every eligible method of the class is compiled, in every mode</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A comprehension has no lowering: the method stays in Python and gets a warning</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The method stays in Python: it uses a third-party library</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A <code>CompileStatic</code> that switches a function on without the function being compiled gets a warning naming the first reason (an error when <code>micronaut.python.compile.static.strict</code> is <code>true</code>):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>on a function, the switch warns whenever the function is not compiled, in every mode, including a function that can never be compiled (a class method, an async or special method, or a <code>@property</code> getter, setter or deleter);</p>
+</li>
+<li>
+<p>on a class or a module, the switch warns once for each method of its scope that is skipped, except in mode <code>all</code>, where skipping is the expected common case and only function-level switches warn. Methods of the scope that are never candidates (a constructor, a dunder, a class method) are recorded as <code>NOT_CANDIDATE</code> in the report without a warning, so a class opt-in covering only such methods is silent: the report is the place to look. A class switch on a class that can never be compiled (an enum, a protocol, a pooled class, &#8230;&#8203;) warns once for the class, except in mode <code>all</code>; a module switch does not;</p>
+</li>
+<li>
+<p>the mode alone never warns.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The switch may also be imported from <code>pyronaut.build</code>, as <code>from pyronaut.build import CompileStatic</code> (aliased or not) or as a member of the module (<code>import pyronaut.build as pb</code>, then <code>@pb.CompileStatic</code>); <code>TypeChecked</code> likewise. The annotation is kept in the source only.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_what_is_compiled">What Is Compiled</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A method is compiled when it is a candidate, its signature has a Java layout, and every statement and expression of its body has a lowering with Python&#8217;s semantics. Each failing condition is a reason with a stable identifier in the report, and each reason comes with a suggestion of what to change (the third column below, sharpened in the report by what was found: a third-party module, a <code>dict.get</code> without a default, an <code>Optional</code> hint). The signature and the statement kinds are checked completely, so all of their reasons are listed; the lowering of the body reports a reason for every refused statement.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 50%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Reason</th>
+<th class="tableblock halign-left valign-top">Given when</th>
+<th class="tableblock halign-left valign-top">What to change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>class-not-eligible</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The function has no ordinary Java class to compile into: a function of a <code>MicronautTest</code> module (its tests), an enum, a protocol, an interface, a class served by a context pool, a class declaring <code><em>slots</em></code> or <code><em>getattr</em></code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Move the logic into a plain class or a module-level function of an ordinary module.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>pooled-module</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The function belongs to a module that declares no scope (a module-level <code>@Controller</code> or <code>@Requires</code> is no scope), which the runtime serves from a pool of Python contexts, and its body reaches a Python object (an attribute of a class of the compilation, a method the generated class does not declare), which no context is leased for. A pooled route that only calls Java and the generated classes of the compilation is compiled and runs without leasing a context at all.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Keep the function to Java calls and the generated classes of the compilation, pass the bean it needs as a parameter, or give the module a scope (a module-level <code>@Singleton</code>) so it is served as one object.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>special-method</code>, <code>async-function</code>, <code>generator-function</code>, <code>static-method</code>, <code>abstract-method</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The method is a dunder (<code><em>init</em></code> runs in Python so the instance keeps its Python semantics), an <code>async def</code>, a generator, a class method (a <code>@staticmethod</code> is compiled, into the static Java method the stub declares for it), or an abstract method or one whose body is a placeholder (<code>&#8230;&#8203;</code>): a call of it runs the implementation of the object.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Put the logic in a regular method the special method calls; move the synchronous work of an async function into a plain method it calls; build and return a list instead of yielding; make a class method a <code>@staticmethod</code> or an instance method. An abstract method needs no change: its implementations are compiled on their own.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>property-accessor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A <code>@property</code> getter, setter or deleter: Python calls it through the attribute protocol of the object, so there is no method to compile. Only a function-level <code>CompileStatic</code> on the accessor gets this decision, and warns; an accessor nothing switches on has no decision.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Remove the <code>CompileStatic</code> from the accessor and move the logic into a regular method it calls, which is compiled.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>overriding-java-method</code>, <code>intercepted-method</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The method implements a method of a Java base or interface whose signature the hints do not spell (a method implementing a Java method is compiled when each parameter is hinted with the Java parameter type, or a subtype of it the body reads the parameter as (<code>exception: ConstraintViolationException</code> where <code>ExceptionHandler.handle</code> takes a <code>Throwable</code>), and the return is unhinted, hinted <code>object</code>, or hinted with a type the Java method returns: <code>def intercept(self, context: MethodInvocationContext) &#8594; object</code> compiles into <code>Object intercept(MethodInvocationContext)</code>); or it is a concrete advised method of an introduction class, whose chain runs on the Python object; or it is an advised module-level function (an around binding on the function or its module, a validation constraint on a parameter or the return), since the generated class of a module does not run compiled advice yet. Other advised methods of a class (an around binding or a validation constraint on a method, its class or a parameter) are compiled: the Java method runs the interceptor chain the bean&#8217;s proxy binds before the body, as a proxy compiled for a Java bean does, so validation and around advice cost no crossing into Python.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spell the Java signature in the hints (each parameter with its Java type or a subtype the body needs, the return unhinted, <code>object</code> or a type the Java method returns); move the logic of an advised introduction method into a separate bean it calls.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>overridden-method</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A subclass of the compilation overrides the method with a signature its generated class cannot declare as a Java override of the method (another return hint, or another parameter list). A Java body in the class would also serve the subclass&#8217;s objects, where the bridge, which dispatches to the Python object, runs the override; the method stays in Python.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Give the override the signature of the method it overrides (the same parameter and return types, in the same order), so that its generated class overrides the Java method; or keep the method in Python.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>varargs-signature</code>, <code>unhinted-parameter</code>, <code>unhinted-return</code>, <code>java-reserved-name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The signature has no fixed Java layout: <code><strong>args</code>, <code></strong>*kwargs</code> or keyword-only parameters, a parameter without a hint, a parameter or return hint resolving to no Java type or class of the compilation, a method, parameter or local named with a Java keyword or a method of <code>Object</code>. A missing return hint is not a reason: the method returns <code>Object</code>, as its stub declares.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Replace <code><strong>args</code>, <code></strong>*kwargs</code> and keyword-only parameters with named positional parameters, each hinted with a Java type, a standard type or a class of the compilation; give an optional parameter a default; rename what a Java keyword or a method of <code>Object</code> names.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>unknown-type</code>, <code>unknown-self-attribute</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An expression has no static type (a value of a third-party module, a local assigned values of different types, a local assigned on some paths only and read after them), or <code>self.x</code> names nothing the class declares.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hint the parameter or attribute the value comes from, assign a local values of one type only and on every path before it is read, replace the call of a third-party module with a Java call, and assign <code>self.x</code> in <code><em>init</em></code> from a hinted value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dynamic-call</code>, <code>ambiguous-overload</code>, <code>kwargs-to-java</code>, <code>sibling-call</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A call resolves to no Java method or constructor (a module-level function that is not compiled, one in a cycle of calls with its caller, or one the running program may rebind), more than one overload fits the argument types equally well, keyword arguments are given to a Java method or a builtin, or a class, async or generator method of the class, or a static method a subclass may override, is called on <code>self</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Call a Java method, a method the generated class declares or a module-level function that compiles; hint or convert the arguments so that one overload fits best; pass the arguments positionally; break a cycle of calls, bind a module-level function once and without a wrapping decorator, call an overridable static method on its class, or keep one side in Python.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>python-builtin-not-lowered</code>, <code>unsupported-statement</code>, <code>unsupported-expression</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A builtin, a method of a Python value, a statement kind or an expression kind outside the supported subset below, or a form of a supported statement that is not (see the list after the table).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Rewrite with the supported subset below: a compiled builtin or the Java method of the value, the compiled statements and expressions; pass a default to <code>dict.get</code>; write the hint as `T</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">None` instead of <code>Optional[T]</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>unbounded-integer-op</code>, <code>equality-on-object</code>, <code>truthiness-of-java-object</code>, <code>python-exception</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An operation whose Python semantics the lowering does not reproduce: <code>**</code> on integers with an exponent that is not a non-negative integer literal, an integer literal outside <code>long</code>, <code>==</code> between Java objects, <code>if x:</code> on a Java object that is not a collection or a string, or on an object of a class of the compilation whose truthiness Python may take from elsewhere (the class, a Python base or a subclass of the compilation defines <code><em>bool</em></code> or <code><em>len</em></code>, has a Java base, or has a base the checker cannot see), raising or catching a Python exception that is neither a Java exception nor an exception class of the compilation (a builtin <code>ValueError</code> itself, a bare <code>except</code>), or an exception class of the compilation where the generated Java class would not behave as the Python exception does (see <code>raise OwnError(&#8230;&#8203;)</code> below).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Use a literal that fits a <code>long</code>, a literal exponent or float arithmetic; compare identifying fields, use <code>is</code> or call <code>equals</code>; test the value explicitly (<code>x is not None</code>, <code>len(x) &gt; 0</code>); raise and catch Java exceptions or an exception class of the compilation as described below, with no bare <code>except</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The rules of the <a href="#typeChecking">type checker</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A body the checker&#8217;s inference flags carries the checker&#8217;s rule (an unknown method, an argument of the wrong type, &#8230;&#8203;) as its reason.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>A <code>NOT_CANDIDATE</code> decision carries <code>class-not-eligible</code>, <code>special-method</code>, <code>async-function</code>, <code>generator-function</code>, <code>static-method</code>, <code>abstract-method</code>, <code>property-accessor</code>, <code>overriding-java-method</code>, <code>intercepted-method</code> or <code>overridden-method</code>; a <code>SKIPPED</code> one carries <code>pooled-module</code> or the reasons of the rows after <code>overridden-method</code>.</p>
+</div>
+<div class="sect2">
+<h3 id="_the_supported_subset">The Supported Subset</h3>
+<div class="paragraph">
+<p>Python integers are compiled as <code>long</code>, floats as <code>double</code>, strings as <code>String</code>, booleans as <code>boolean</code> and <code>None</code> as <code>null</code>. Where Python and Java differ, the generated code calls a helper of <code>io.micronaut.context.python.PythonStatic</code> instead of approximating: <code>//</code> and <code>%</code> floor, <code>/</code> always divides as floats, <code>str()</code> spells floats, booleans and <code>None</code> as Python does, a string is indexed by code point, <code>len()</code>, <code>in</code>, negative indexes and a missing key behave as in Python, <code>int()</code> of a NaN or an infinity raises, <code>strip()</code> and <code>split()</code> use Python&#8217;s whitespace, a tuple renders in parentheses and a literal mixing ints and floats keeps each element&#8217;s type.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Python</th>
+<th class="tableblock halign-left valign-top">Compiled as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Locals, <code>+=</code> and friends, <code>if</code>/<code>elif</code>/<code>else</code>, <code>return</code>, <code>pass</code>, docstrings, <code>assert</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Java locals declared once, with the type of the values assigned. A local first assigned inside a branch is declared at the top of the body when every path assigns it, and inside the branch when it is read there only; a local assigned in a <code>try</code> block whose handlers all return or raise is declared before the statement, so it can be read after it. <code>assert</code> raises <code>IllegalStateException</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>while</code>, <code>for x in range(&#8230;&#8203;)</code>, <code>for x in iterable</code>, <code>for k, v in mapping.items()</code>, <code>break</code>, <code>continue</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Java loops; a range with any step, a Java <code>Iterable</code> or a typed Python collection, a dict yielding its keys, the entries of a dict or a Java <code>Map</code> unpacked into the two loop variables. A local first assigned inside a loop (or a try block) is not visible after it.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>raise JavaException(&#8230;&#8203;)</code>, <code>try</code>/<code>except JavaType as e</code>/<code>finally</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>throw</code> and <code>try</code> with typed catches. A checked exception a Java call declares reaches the caller wrapped in <code>IllegalStateException</code>, as it does through the bridge.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>raise OwnError(&#8230;&#8203;)</code>, <code>raise OwnError</code>, <code>except OwnError as e</code>, <code>raise e</code>, for an exception class of the compilation (extending a builtin exception such as <code>Exception</code> or <code>ValueError</code>, or a Java <code>RuntimeException</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The representation of <a href="#pythonExceptions">Python exception classes</a>: a raise calls the Python class with the arguments, as Python does, and throws the Python exception wrapped in the generated Java class through its <code>Value</code> constructor, the Java exception the runtime creates when an exception raised in Python reaches Java; a clause catches the generated class. A Java caller of the compiled method gets what it gets from the Python body, and a Python caller the Python exception: the rewritten Python method raises the Python exception the Java one carries, when the compiled body calls no Java code outside the compilation. The arguments of a raise are positional <code>str</code>, <code>int</code>, <code>float</code>, <code>bool</code> or <code>None</code> values, which reach the Python class as themselves. A value of an exception class has no Java layout otherwise: it is constructed by the raise itself, an exception variable is only raised again by its own clause, and a parameter, a return or a construction elsewhere is refused. Refused too, as Python would behave otherwise: a raise inside an <code>except</code> or <code>finally</code> block (Python chains the exception being handled as its <code>__context__</code>), a nested exception class (the runtime does not find its generated class), a clause for a Python subclass reached through a base other than the one its generated class extends, clauses in an order Java refuses, a clause for a Java type the generated classes extend (<code>RuntimeException</code>, <code>Exception</code>, <code>Throwable</code>) while an exception class of the compilation could reach it, and a clause for an exception class around a try block calling Java code outside the compilation: an exception that crossed Java code (a Java method calling back into Python) is the Java class in Python too, which the Python clause does not catch.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>+</code>, <code>-</code>, <code><strong></code> on integers, <code></strong>*</code> with a non-negative integer literal exponent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Math.addExact</code> and friends: an overflow raises <code>ArithmeticException</code> where Python would promote to a big integer. This is the one accepted difference.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>==</code>, <code>!=</code>, <code>&lt;</code> and the rest, <code>is None</code>, <code>not</code>, <code>and</code>, <code>or</code>, <code>x if c else y</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Numeric comparisons, <code>equals</code> on strings, null checks, boolean operators; <code>and</code>/<code>or</code> yield a value when both sides share a type, or when they are two objects one of whose types takes the other (<code>pet.owner or self.find_owner(id)</code>), the left operand being a name, a literal or an attribute of a name, since it is evaluated twice; a <code>@property</code> of <code>self</code> as the left operand is refused, since its getter would run twice (read it into a local first).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">f-strings, <code>str(x)</code>, <code>"a" + b</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Concatenation through <code>PythonStatic.str</code>. A <code>UUID</code>, <code>LocalDate</code> or <code>LocalTime</code> is spelled as Java spells it, which is Python&#8217;s spelling too; another standard Java value (an <code>Instant</code>, a <code>BigDecimal</code>) is refused, since Python spells it differently. An object of a class of the compilation is spelled by its generated class&#8217;s <code>toString()</code>, which is Python&#8217;s <code>str()</code> only when the class or a Python base defines <code><em>str</em></code> or <code><em>repr</em></code> in its source: <code>str()</code> of any other (a dataclass, whose <code><em>repr</em></code> is generated, or a class defining a Python <code>toString</code>) is refused. Format specifications are not compiled.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[&#8230;&#8203;]</code>, <code>(&#8230;&#8203;)</code>, <code>{&#8230;&#8203;}</code>, <code>{k: v}</code>, <code>xs[i]</code>, <code>m[k]</code>, <code>xs[i] = v</code>, <code>m[k] = v</code>, <code>x in xs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ArrayList</code>, immutable <code>List</code>, <code>LinkedHashSet</code> and <code>LinkedHashMap</code> with the element types of the literal (an empty literal takes them from the hint of the local); a literal mixing strings, numbers and objects holds <code>Object</code> elements; <code>{k: v, **other}</code> builds the map in source order, later keys winning; helpers for the reads, stores and membership tests. A collection given to a parameter hinted <code>list</code>, <code>set</code> or <code>dict</code> is worked on as a copy, as the bridge hands Python a copy; a compiled sibling taking one is called through the shared entry of its compiled body, which works on the caller&#8217;s own collections, as Python does; a sibling that is not compiled, advised, private, overridden in the compilation or inherited is called through the Python object, which passes them too.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>len</code>, <code>int</code>, <code>float</code>, <code>bool</code>, <code>abs</code>, <code>min</code>, <code>max</code>, <code>list(xs)</code>, <code>set(xs)</code>, <code>tuple(xs)</code>, <code>str.strip/split/join/upper/lower/startswith/endswith/replace</code>, <code>list.append/clear</code>, <code>set.add</code>, <code>dict.get/keys/values</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The builtin table: each entry names a Java equivalent or a helper. <code>list(xs)</code>, <code>set(xs)</code> and <code>tuple(xs)</code> copy a Java collection or a typed Python one, a dict yielding its keys. <code>dict.get</code> without a default is refused when the values are numbers or booleans, since it may answer <code>None</code>, and so is a default of another numeric kind than the values (<code>d.get(k, 0)</code> of a <code>dict[str, float]</code>), since Python answers the default itself. <code>min</code> and <code>max</code> of an int and a float are refused, since Python answers the winning argument with its own type; of floats they keep the earlier argument unless a later one is strictly greater (smaller), as Python does with <code>NaN</code> and <code>-0.0</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unhinted returns</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code>, as the stub declares, every returned value boxed. A call of such a sibling has the one static type its body returns when the checker infers one, cast from the <code>Object</code> the Java method returns; a number or a boolean stays an <code>Object</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Java calls, constructors, static fields, enum constants, nested types</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Direct Java calls with the parameter types of the chosen overload: an argument whose type differs from its parameter&#8217;s is cast to the parameter type, and a <code>None</code> argument is passed through a local of the parameter&#8217;s type, so the generated code never depends on javac&#8217;s overload pick; an integer argument to an <code>int</code> parameter narrows exactly. A returned <code>List&lt;String&gt;</code> or <code>Map&lt;String, Integer&gt;</code> keeps its element types, so its elements are iterated, joined and compared with their static types.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Calls on an introduction (<code>self.repository.find(&#8230;&#8203;)</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A Java call on the generated type of the introduction: a protocol compiles to a Java interface whose proxy Micronaut generates, and the abstract methods of an abstract introduction class that compilation switches on (in mode <code>all</code>, or under a <code>CompileStatic</code>) run the introduction&#8217;s interceptors in the generated class, bound by the proxy. What an interceptor answers is converted to the return type as the bridge converts a Python result: an int to an <code>int</code> only when it fits, an integral float to an int, <code>None</code> to no primitive; an introduced method returning a type other than a primitive, its box, a string or an object keeps its bridge. With the interceptor&#8217;s own body compiled, a repository declared in Python, as Micronaut Data declares one, runs as Java from the caller to the interceptor.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Module-level functions, <code>helper(x)</code>, <code>from .mappers import user_public</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A plain function of a module (no route, <code>@Executable</code>, scope or bean decorator) compiles into a <code>public static</code> method of the module&#8217;s generated class, which a module gets when one of its functions compiles; a call of it from a compiled body, of the same module or importing it, is a static Java call, so a controller&#8217;s helpers run as Java from the route down. Python callers of the function, and of a compiled <code>@staticmethod</code>, run the Java method too, through the generated class, under the checks the methods of a class delegate with: every argument must have the exact Python type and range of its Java parameter, and only a body without side effects delegates, its failure running the Python body, so the caller sees Python&#8217;s result or exception; a body with side effects keeps the Python body for its Python callers. A call of a function that is not compiled keeps the caller in Python, and so does a call the running program may route elsewhere: a parameter or a local of the caller with the function&#8217;s name, a function the module binds more than once (a second <code>def</code>, <code>f = wrap(f)</code>), inside an <code>if</code> or a <code>try</code>, through a <code>global</code> declaration or after a star import, or one carrying a decorator other than <code>CompileStatic</code>, which may wrap it. A module-level function named like a builtin (<code>def len</code>) hides the builtin, as in Python. A function the module defines twice is not compiled. Replacing a compiled function or constant from outside its module while the program runs (<code>mock.patch("app.mappers.user_public")</code>, <code>mappers.RATE = 5</code>) is not seen by compiled callers, which call the static Java method or hold the inlined value; leave such a module out of static compilation.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@staticmethod</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Compiled into the static Java method the stub already declares; <code>Cls.helper(&#8230;&#8203;)</code> is a static Java call, and so is <code>self.helper(&#8230;&#8203;)</code> when no subclass of the compilation may override the method (Python looks it up on the class of <code>self</code>; <code>sibling-call</code> otherwise).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[e for x in xs if c]</code>, <code>{e for &#8230;&#8203;}</code>, <code>{k: v for &#8230;&#8203;}</code>, <code>any(c for x in xs)</code>, <code>all(&#8230;&#8203;)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A loop over the iterable filling a fresh local declared just before the statement, which the expression then reads; <code>any</code> and <code>all</code> fill a boolean and leave the loop early. One <code>for</code> clause, no walrus; a comprehension inside <code>and</code>, <code>or</code>, <code>x if c else y</code>, a <code>while</code> condition or an <code>assert</code> message, or after anything the statement evaluates before it that may run code or raise (a call, a subscript, arithmetic, a property; not a name, a literal, a plain attribute of <code>self</code>, <code>len()</code>, <code>str()</code> of a number or a string, or a string concatenation of those), is refused, since the hoisted loop would run out of order.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Injected attributes of a module</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A module-level function of the module&#8217;s generated class reads an attribute the module injects (<code>repository: Annotated[BookRepository, Inject]</code>) from a field of that class, set when the bean is injected, and calls the bean as a Java object.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Item(&#8230;&#8203;)</code>, <code>item.title</code>, <code>item.title = v</code>, <code>item.method(&#8230;&#8203;)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The generated class of a class of the compilation: its constructor, which mirrors the hinted <code><em>init</em></code> or the fields of a dataclass, with keyword arguments matched by name and an omitted parameter filled with its literal default, <code>None</code>, or an empty <code>field(default_factory=list)</code>, <code>dict</code> or <code>set</code>; the accessor of a hinted attribute, else the attribute of the Python object; the setter of a hinted attribute, refused on a frozen dataclass; the Java method the generated class declares for the call (keywords and defaults matched the same way), else the method of the Python object.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Module-level constants (<code>ROLE_USER = "user"</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inlined as literals, including a constant imported from another module of the compilation, when the defining module binds the name once, in a statement of its own body, and no function declares it <code>global</code>; a constant that may be rebound is refused (<code>unknown-type</code>).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>self.x</code>, <code>self.x = v</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Java field of an introspected class, else the attribute of the Python object; a <code>@property</code> always runs its Python getter or setter. An attribute <code><em>init</em></code> assigns a hinted parameter or a Java call or construction (<code>self._encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()</code>) has that type in every method.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>self.method(&#8230;&#8203;)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The generated class&#8217;s own Java method when it declares one for the call (a public method with a hinted signature the call fills exactly, that takes no <code>list</code>, <code>set</code> or <code>dict</code>, that no advice intercepts and no subclass of the compilation overrides), else the method of the Python object, which runs its interceptors, overrides and default arguments as Python would.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Not compiled: generator expressions outside <code>any</code> and <code>all</code>, nested comprehensions with several <code>for</code> clauses, lambdas and nested functions, <code>with</code>, <code>match</code>, <code>del</code>, <code>global</code>, <code>nonlocal</code>, <code>yield</code>, slices, starred arguments, chained comparisons, class methods, <code>isinstance</code>, <code>**</code> on floats, and <code>Optional</code> hints; nor the <code>else</code> clause of a <code>for</code>, <code>while</code> or <code>try</code> statement, unpacking in a <code>for</code> target other than <code>for k, v in mapping.items()</code> or in an assignment (<code>a, b = &#8230;&#8203;</code>), a chained assignment (<code>a = b = 0</code>) and a bare <code>except:</code>.</p>
+</div>
+<div class="paragraph">
+<p>Refused as well, where the Java code would behave differently: a <code>for</code> loop whose body may change the collection it iterates (appending to it, storing or deleting an item, passing it to a call; Python goes on iterating, the Java iterator throws <code>ConcurrentModificationException</code>), and a lookup, store or membership test of a dict or set, or a dict or set literal or comprehension, where Python&#8217;s numeric equality decides (<code>1</code>, <code>1.0</code> and <code>True</code> are one key in Python and three in Java): a numeric or <code>bool</code> key among keys of another or of any type.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="staticCompilationOneImplementation">One Implementation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Python object of a compiled class still exists: the generated class creates it, and Python code, the interceptor chains and the event loop call the Python class&#8217;s own functions. So that a Python caller runs the same code as a Java caller, the generated class binds every Python object it creates or wraps to the compiled bodies of each class of its MRO that has some, and the runtime tree of the module is rewritten before its bytecode is compiled: a compiled function runs the Java body of the class it is defined in when its object is bound, so <code>super().label(&#8230;&#8203;)</code> from a subclass runs the base&#8217;s body, not the override; otherwise it runs its original body, which keeps objects created in Python (<code>Calc().label(&#8230;&#8203;)</code>) on the Python implementation. The binding is kept outside the object: a copy of a bound object is not bound, and <code>vars()</code>, <code>copy</code> and <code>pickle</code> see the object&#8217;s own attributes only.</p>
+</div>
+<div class="paragraph">
+<p>A Python caller runs the Java body only when it gets what the Python body would give it:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>every argument has the exact Python type of its Java parameter and fits its range: an <code>int</code> within the range of the Java integer (a <code>bool</code> is not taken for an <code>int</code>, nor an <code>int</code> for a <code>float</code>), a <code>float</code>, a <code>bool</code>, a <code>str</code>, <code>None</code> for a parameter that may be <code>None</code>, or a Java object of the class of a parameter that takes one (an <code>Object</code> parameter takes any Java object, but no Python value, which the boundary would convert);</p>
+</li>
+<li>
+<p>a body without side effects (no write to <code>self</code>, no Java call) runs again in Python when the Java body fails, so an <code>int</code> that outgrows a <code>long</code>, which Python promotes, gives Python&#8217;s result, and any other failure Python&#8217;s exception;</p>
+</li>
+<li>
+<p>a body with side effects is not run twice: it runs as Java only when none of its operations can overflow where Python would promote.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A division by zero, a failed <code>assert</code> or <code>+</code> on <code>None</code> in a Java body reaches a Python caller as the <code>ZeroDivisionError</code>, <code>AssertionError</code> or <code>TypeError</code> Python raises, and a checked exception of a Java call as itself. A body that uses a construct this check does not analyse (a loop, a collection, exception handling, a call of a sibling method) keeps the Python body for its Python callers; its Java callers run the compiled body all the same.</p>
+</div>
+<div class="paragraph">
+<p>Introspected classes keep their ownership model: their state lives in Java fields, and a compiled body reads and writes those fields, which is what a Java caller of the accessors sees. Other classes keep their state in the Python object, and a compiled body reaches it through the same member access the generated accessors use; each such access crosses into the Python runtime, which the report counts as a bridge call, so a compiled body that touches many attributes of a plain class may not be faster than the bridge it replaces.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="staticCompilationAssumptions">Assumptions and Limitations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Static compilation makes three assumptions about the code it compiles, and does not check them at runtime.</p>
+</div>
+<div class="paragraph">
+<p><strong>Applications are compiled, not libraries.</strong> The planner sees every subclass of the compilation: a sibling that one of them overrides is called through the Python object, and the subclass&#8217;s generated class overrides the Java method. A subclass defined outside the compilation (in another module or library, inside a function, or created at runtime with <code>type(&#8230;&#8203;)</code>) is not seen, and there is no runtime guard for it: if it overrides a compiled method, Java callers (a route, an injected service, the generated class&#8217;s own compiled bodies calling the method on <code>self</code>) reach the compiled body of the base, not the override. So compile applications, not libraries meant to be subclassed by others, and keep every subclass that overrides a compiled method in the same compilation; a method that must stay overridable from outside is excluded with <code>@CompileStatic(False)</code>.</p>
+</div>
+<div class="paragraph">
+<p><strong>Return hints are trusted, and checked for <code>None</code>.</strong> A compiled body that calls a Python method (a sibling the generated class does not declare, or a method of another object of the compilation, called through the Python object) takes the method&#8217;s return hint as the type of the result, so a method hinted <code>&#8594; int</code> gives a <code>long</code>; an attribute of another object it reads through the Python object (a <code>@property</code>, a hinted class attribute, an attribute <code><em>init</em></code> assigns) has the type of its hint. The hint is not verified beyond <code>None</code>: a method hinted <code>int</code>, <code>float</code> or <code>bool</code> that returns <code>None</code> fails the compiled call with a <code>TypeError</code> naming the method and its hint (<code>Calc._maybe() returned None but is hinted to return int</code>; an <code>IllegalStateException</code> for a Java caller), and such an attribute that is <code>None</code> fails the read the same way (<code>Bag.weight is None but is hinted as float</code>), where the Python body would carry the <code>None</code> on until an operation rejects it. Hint a method that may return <code>None</code> with <code>int | None</code>, which compiles to a boxed <code>Long</code>.</p>
+</div>
+<div class="paragraph">
+<p><strong>Exceptions of the compilation are raised by the compilation.</strong> A Python exception raised in Python is the Python exception in Python code, and one that crossed Java code (a Java method calling back into Python) is its generated Java class. A compiled body sees both as the Java class. It refuses an except clause for an exception class around its own calls of Java code, and its Python callers keep the Python body when it calls both Java code and code of the compilation. What it cannot see is a Python method of the compilation it calls (compiled or not) letting through the Java class it received from a Java call of its own: a compiled clause catches it there, and a Python caller of the compiled method gets the Python exception, where Python would see the Java class.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="staticCompilationReport">The Report</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>One record per function of the compilation, delivered to the builder callback as <code>StaticCompilationDecision</code> and, when a report directory is configured, written to <code>decisions.jsonl</code> (a first record describing the plan, then one JSON object per decision, stable field names, merged incrementally across rounds) and <code>summary.txt</code>, with <code>decisions.properties</code> alongside them: the state an incremental build reads back to keep both files complete. Every reason carries a <code>hint</code>, what to change so that the function compiles (<code>StaticCompilationHints</code> answers the same question for a decision the callback receives); <code>summary.txt</code> prints it on a <code>fix:</code> line under the reason. A function is named by its class and its name; its location, the path of the source as the compiler read it, tells the module. The <code>summary.txt</code> of the example above, compiled in mode <code>annotated</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">COMPILED      PricingService.total  src/main/python/shop/PricingService.py:11:5
+              statements 1 · java calls 0 · bridge calls 1 · helpers 0
+SKIPPED       PricingService.discounted  src/main/python/shop/PricingService.py:14:5
+              [unsupported-expression] src/main/python/shop/PricingService.py:15:16  a list comprehension has no static lowering
+EXCLUDED      PricingService.describe  src/main/python/shop/PricingService.py:18:5
+NOT_CANDIDATE PricingService.__init__  src/main/python/shop/PricingService.py:8:5
+              [special-method] src/main/python/shop/PricingService.py:8:5  the constructor runs in Python so the instance keeps its Python semantics
+
+COMPILED      1
+CANDIDATE     0
+SKIPPED       1
+EXCLUDED      1
+NOT_CANDIDATE 1
+
+special-method                   1
+unsupported-expression           1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>self.rate</code> is one bridge call: <code>PricingService</code> is not introspected, so its state lives in the Python object. The matching record of <code>decisions.jsonl</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"record":"decision","name":"PricingService.discounted","source":"src/main/python/shop/PricingService.py","line":14,"column":5,"outcome":"SKIPPED","scope":"CLASS","reasons":[{"rule":"unsupported-expression","message":"a list comprehension has no static lowering","location":"src/main/python/shop/PricingService.py:15:16"}],"stats":{"statements":1,"javaCalls":0,"bridgeCalls":0,"helperCalls":0}}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>scope</code> names the declaration that decided whether the function is compiled: <code>FUNCTION</code>, <code>CLASS</code> or <code>MODULE</code> for the nearest <code>CompileStatic</code>, <code>MODE</code> when none applies. The outcomes are:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Outcome</th>
+<th class="tableblock halign-left valign-top">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>COMPILED</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The body is compiled to Java.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SKIPPED</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The function is switched on and could be compiled in principle, but its signature or body carries reasons.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EXCLUDED</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The function is not switched on: the nearest <code>CompileStatic</code> switches it, its class or its module off, or no declaration switches it on and the mode is not <code>all</code>. In modes <code>off</code> and <code>annotated</code> this is the outcome of every function no <code>CompileStatic</code> switches on, with the scope <code>MODE</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NOT_CANDIDATE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The function is switched on but can never be compiled, whatever its body: its reasons say why (an ineligible class, a special, static, async, generator or abstract method, an advised method, &#8230;&#8203;).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CANDIDATE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The function passes every check the planner made, but the planner had no syntax tree of it or no facts of the type checker, so its body was not lowered. A build rarely produces it.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The totals per reason at the end of <code>summary.txt</code> put the most common blocker one glance away.</p>
+</div>
+<div class="paragraph">
+<p><code>decisions.jsonl</code> is the input of a build tool&#8217;s own rendering of the report: its first record is the plan (<code>mode</code>, <code>coverage</code>), with no timestamp, so the report is the same for the same decisions and a build cache can reuse it; every other one a decision with its <code>name</code>, <code>source</code>, <code>line</code>, <code>column</code>, <code>outcome</code>, <code>scope</code>, <code>reasons</code> (<code>rule</code>, <code>message</code>, <code>location</code>, <code>hint</code>) and <code>stats</code>. Pyronaut renders it as a page in the design of its test report.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_running_the_existing_tests_with_compilation_on">Running the Existing Tests with Compilation On</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The tests of a project are the measure of semantic drift. <code>inject-python-test</code> runs its whole suite with every eligible body compiled:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./gradlew :micronaut-inject-python-test:test -Ppython-ci -Dmicronaut.python.compile.static=all</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>StaticCompilationParitySpec</code> compiles a fixture twice, in modes <code>off</code> and <code>all</code>, and calls every method through the generated class with a table of inputs: the results, and whether an exception was thrown, must agree.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_measuring_the_pipeline">Measuring the Pipeline</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The cost of type checking and static compilation is measured, not assumed. <code>PythonPipelineBenchmark</code> in the <code>benchmarks</code> module compiles a Python application in memory in three modes (<code>OFF</code>, <code>TYPECHECK</code>, <code>STATIC</code>), cold (a GraalPy context per compilation, as a build runs) and warm (a processing session reusing the context, as a watch or a daemon runs), and reports the time of every stage of the pipeline next to the whole compilation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./gradlew :benchmarks:jmh -Pjmh.includes=io.micronaut.python.compiler.PythonPipelineBenchmark \
+    -Pjmh.benchmarkParameters='mode=OFF|STATIC;warm=false|true;fixture=shop' \
+    -Pjmh.warmupIterations=3 -Pjmh.iterations=8</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The stages (<code>context</code>, <code>transform</code>, <code>parse</code>, <code>typecheck</code>, <code>plan</code>, <code>bytecode</code>, <code>stubs</code>, <code>processor</code>) are recorded by <code>PipelineTimings</code> when the system property <code>micronaut.python.timings</code> is set, which the benchmark does; JMH reports each as its sum over the measured iterations. To see where the Python side of a stage spends its time, <code>-Pjmh.pythonSampler=/path/to/histogram.txt</code> (the system property <code>micronaut.python.cpusampler</code>) turns on the Truffle CPU sampler of the parser&#8217;s context and writes a histogram of the Python functions when the context closes.</p>
+</div>
+<div class="paragraph">
+<p>On the <code>shop</code> fixture (five modules, thirty-odd functions, every one compiled), type checking and planning add about 150 ms to a cold compilation of one second and about 75 ms to a warm one of six hundred, most of it the inference and the lowering themselves; the caches of the Java lookups, one inference per function shared by the checker and the planner, and two stdlib imports fewer per context were the first savings the profile pointed at.</p>
+</div>
+</div>
+</div>
+
+<h2 id="moduleScripts"><a class="anchor" href="#moduleScripts"></a>17.3.21 Module Scripts</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/moduleScripts.adoc"'>
@@ -72555,7 +73396,7 @@ def module_root() -&gt; dict:
 <p>An explicit controller annotation takes precedence over the implicit controller added for modules containing HTTP routes. Explicit scope annotations also take precedence over the automatic <code>ContextPooled</code> scope used by otherwise unscoped route modules.</p>
 </div>
 
-<h2 id="testing"><a class="anchor" href="#testing"></a>17.3.20.1 JUnit 5 Module Tests</h2>
+<h2 id="testing"><a class="anchor" href="#testing"></a>17.3.21.1 JUnit 5 Module Tests</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/moduleScripts/testing.adoc"'>
@@ -72601,7 +73442,7 @@ def test_root():
 <p>The generated Java test class carries the runtime <code>MicronautTest</code> and <code>Test</code> annotations required by the JUnit 5 and Micronaut test extensions. The synthetic <code>self</code> parameter is omitted from the Java method signature and is supplied automatically when the Python function is invoked.</p>
 </div>
 
-<h2 id="graalTools"><a class="anchor" href="#graalTools"></a>17.3.21 GraalPy Tools</h2>
+<h2 id="graalTools"><a class="anchor" href="#graalTools"></a>17.3.22 GraalPy Tools</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/graalTools.adoc"'>
@@ -72707,7 +73548,7 @@ dap = true</code></pre>
 </div>
 </div>
 
-<h2 id="asyncAwait"><a class="anchor" href="#asyncAwait"></a>17.3.22 Async/Await</h2>
+<h2 id="asyncAwait"><a class="anchor" href="#asyncAwait"></a>17.3.23 Async/Await</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/asyncAwait.adoc"'>
@@ -72924,7 +73765,7 @@ async def task_group(self) -&gt; str:
 </div>
 </div>
 
-<h2 id="asyncioRuntime"><a class="anchor" href="#asyncioRuntime"></a>17.3.22.1 Netty-Backed Asyncio Runtime</h2>
+<h2 id="asyncioRuntime"><a class="anchor" href="#asyncioRuntime"></a>17.3.23.1 Netty-Backed Asyncio Runtime</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioRuntime.adoc"'>
@@ -72998,7 +73839,7 @@ runtime = [
 </ul>
 </div>
 
-<h2 id="asyncioNetworking"><a class="anchor" href="#asyncioNetworking"></a>17.3.22.2 Asyncio Networking and TLS</h2>
+<h2 id="asyncioNetworking"><a class="anchor" href="#asyncioNetworking"></a>17.3.23.2 Asyncio Networking and TLS</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioNetworking.adoc"'>
@@ -73218,7 +74059,7 @@ runtime = [
 </div>
 </div>
 
-<h2 id="asyncioStreaming"><a class="anchor" href="#asyncioStreaming"></a>17.3.22.3 Python-Native Streaming</h2>
+<h2 id="asyncioStreaming"><a class="anchor" href="#asyncioStreaming"></a>17.3.23.3 Python-Native Streaming</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioStreaming.adoc"'>
@@ -73386,7 +74227,7 @@ async def events(self) -&gt; AsyncIterator[Event[Tick]]:  # <b class="conum">(1)
 </div>
 </div>
 
-<h2 id="asyncioUnsupported"><a class="anchor" href="#asyncioUnsupported"></a>17.3.22.4 Unsupported Asyncio APIs</h2>
+<h2 id="asyncioUnsupported"><a class="anchor" href="#asyncioUnsupported"></a>17.3.23.4 Unsupported Asyncio APIs</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-core/edit/5.3.x/src/main/docs/guide/languageSupport/python/asyncAwait/asyncioUnsupported.adoc"'>

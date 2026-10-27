@@ -59,7 +59,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
-<li><a href="#%3Cinit%3E(java.lang.String,boolean,boolean,boolean,java.util.Map,java.util.List)" tabindex="0">AnnotationDescription(String, boolean, boolean, boolean, Map, List)</a></li>
+<li><a href="#%3Cinit%3E(java.lang.String,boolean,boolean,boolean,boolean,boolean,boolean,boolean,java.util.Map,java.util.List)" tabindex="0">AnnotationDescription(String, boolean, boolean, boolean, boolean, boolean, boolean, boolean, Map, List)</a></li>
 </ol>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
@@ -72,6 +72,10 @@ loadScripts(document, 'script');</script>
 <li><a href="#annotation()" tabindex="0">annotation()</a></li>
 <li><a href="#pythonDefined()" tabindex="0">pythonDefined()</a></li>
 <li><a href="#interceptorBinding()" tabindex="0">interceptorBinding()</a></li>
+<li><a href="#validationConstraint()" tabindex="0">validationConstraint()</a></li>
+<li><a href="#executable()" tabindex="0">executable()</a></li>
+<li><a href="#scope()" tabindex="0">scope()</a></li>
+<li><a href="#introduction()" tabindex="0">introduction()</a></li>
 <li><a href="#members()" tabindex="0">members()</a></li>
 <li><a href="#targets()" tabindex="0">targets()</a></li>
 </ol>
@@ -96,6 +100,12 @@ loadScripts(document, 'script');</script>
 <dd><code><span id="param-pythonDefined">pythonDefined</span></code> - Whether the type is generated from a Python definition</dd>
 <dd><code><span id="param-interceptorBinding">interceptorBinding</span></code> - Whether the annotation binds around or introduction advice, which a
                           class applies to all of its methods</dd>
+<dd><code><span id="param-validationConstraint">validationConstraint</span></code> - Whether the annotation is a validation constraint or <code>Valid</code>,
+                          which advises the method it is applied to with validation</dd>
+<dd><code><span id="param-executable">executable</span></code> - Whether the annotation makes a module-level function a method of the generated
+                  class: an executable, around, scope, bean or lifecycle annotation</dd>
+<dd><code><span id="param-scope">scope</span></code> - Whether the annotation is a scope</dd>
+<dd><code><span id="param-introduction">introduction</span></code> - Whether the annotation is an introduction binding</dd>
 <dd><code><span id="param-members">members</span></code> - The members by name</dd>
 <dd><code><span id="param-targets">targets</span></code> - The names of the <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/ElementType.html" title="class or interface in java.lang.annotation" class="external-link"><code>ElementType</code></a>s the annotation may be applied to;
                           empty when unknown</dd>
@@ -106,7 +116,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">TypeFacts.AnnotationDescription</span>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name, boolean&nbsp;annotation, boolean&nbsp;pythonDefined, boolean&nbsp;interceptorBinding, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="TypeFacts.MemberDescription.html" title="class in io.micronaut.python.processing.typecheck">TypeFacts.MemberDescription</a>&gt;&nbsp;members, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;targets)
+<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">TypeFacts.AnnotationDescription</span>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name, boolean&nbsp;annotation, boolean&nbsp;pythonDefined, boolean&nbsp;interceptorBinding, boolean&nbsp;validationConstraint, boolean&nbsp;executable, boolean&nbsp;scope, boolean&nbsp;introduction, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="TypeFacts.MemberDescription.html" title="class in io.micronaut.python.processing.typecheck">TypeFacts.MemberDescription</a>&gt;&nbsp;members, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;targets)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
 <div class="block">An annotation type as the checker sees it.</div>
 <dl class="notes">
@@ -125,10 +135,14 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,boolean,boolean,boolean,java.util.Map,java.util.List)" class="member-name-link">AnnotationDescription</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,boolean,boolean,boolean,boolean,boolean,boolean,boolean,java.util.Map,java.util.List)" class="member-name-link">AnnotationDescription</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  boolean&nbsp;annotation,
  boolean&nbsp;pythonDefined,
  boolean&nbsp;interceptorBinding,
+ boolean&nbsp;validationConstraint,
+ boolean&nbsp;executable,
+ boolean&nbsp;scope,
+ boolean&nbsp;introduction,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="TypeFacts.MemberDescription.html" title="class in io.micronaut.python.processing.typecheck">TypeFacts.MemberDescription</a>&gt;&nbsp;members,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;targets)</code></div>
 <div class="col-last even-row-color">
@@ -158,15 +172,25 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#executable()" class="member-name-link">executable</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-executable"><code>executable</code></a> record component.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a hash code value for this object.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#interceptorBinding()" class="member-name-link">interceptorBinding</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#interceptorBinding()" class="member-name-link">interceptorBinding</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-interceptorBinding"><code>interceptorBinding</code></a> record component.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#introduction()" class="member-name-link">introduction</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-introduction"><code>introduction</code></a> record component.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="TypeFacts.MemberDescription.html" title="class in io.micronaut.python.processing.typecheck">TypeFacts.MemberDescription</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#members()" class="member-name-link">members</a>()</code></div>
@@ -183,18 +207,28 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-pythonDefined"><code>pythonDefined</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#simpleName()" class="member-name-link">simpleName</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#targets()" class="member-name-link">targets</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#scope()" class="member-name-link">scope</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-scope"><code>scope</code></a> record component.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#simpleName()" class="member-name-link">simpleName</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#targets()" class="member-name-link">targets</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-targets"><code>targets</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a string representation of this record class.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#validationConstraint()" class="member-name-link">validationConstraint</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-validationConstraint"><code>validationConstraint</code></a> record component.</div>
 </div>
 </div>
 </div>
@@ -214,13 +248,17 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(java.lang.String,boolean,boolean,boolean,java.util.Map,java.util.List)">
+<section class="detail" id="&lt;init&gt;(java.lang.String,boolean,boolean,boolean,boolean,boolean,boolean,boolean,java.util.Map,java.util.List)">
 <h3>AnnotationDescription</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">AnnotationDescription</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  boolean&nbsp;annotation,
  boolean&nbsp;pythonDefined,
  boolean&nbsp;interceptorBinding,
+ boolean&nbsp;validationConstraint,
+ boolean&nbsp;executable,
+ boolean&nbsp;scope,
+ boolean&nbsp;introduction,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="TypeFacts.MemberDescription.html" title="class in io.micronaut.python.processing.typecheck">TypeFacts.MemberDescription</a>&gt;&nbsp;members,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;targets)</span></div>
 <div class="block">Creates an instance of a <code>AnnotationDescription</code> record class.</div>
@@ -230,6 +268,10 @@ loadScripts(document, 'script');</script>
 <dd><code>annotation</code> - the value for the <a href="#param-annotation"><code>annotation</code></a> record component</dd>
 <dd><code>pythonDefined</code> - the value for the <a href="#param-pythonDefined"><code>pythonDefined</code></a> record component</dd>
 <dd><code>interceptorBinding</code> - the value for the <a href="#param-interceptorBinding"><code>interceptorBinding</code></a> record component</dd>
+<dd><code>validationConstraint</code> - the value for the <a href="#param-validationConstraint"><code>validationConstraint</code></a> record component</dd>
+<dd><code>executable</code> - the value for the <a href="#param-executable"><code>executable</code></a> record component</dd>
+<dd><code>scope</code> - the value for the <a href="#param-scope"><code>scope</code></a> record component</dd>
+<dd><code>introduction</code> - the value for the <a href="#param-introduction"><code>introduction</code></a> record component</dd>
 <dd><code>members</code> - the value for the <a href="#param-members"><code>members</code></a> record component</dd>
 <dd><code>targets</code> - the value for the <a href="#param-targets"><code>targets</code></a> record component</dd>
 </dl>
@@ -351,6 +393,58 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the value of the <a href="#param-interceptorBinding"><code>interceptorBinding</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="validationConstraint()">
+<h3>validationConstraint</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">validationConstraint</span>()</div>
+<div class="block">Returns the value of the <a href="#param-validationConstraint"><code>validationConstraint</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-validationConstraint"><code>validationConstraint</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="executable()">
+<h3>executable</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">executable</span>()</div>
+<div class="block">Returns the value of the <a href="#param-executable"><code>executable</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-executable"><code>executable</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="scope()">
+<h3>scope</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">scope</span>()</div>
+<div class="block">Returns the value of the <a href="#param-scope"><code>scope</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-scope"><code>scope</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="introduction()">
+<h3>introduction</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">introduction</span>()</div>
+<div class="block">Returns the value of the <a href="#param-introduction"><code>introduction</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-introduction"><code>introduction</code></a> record component</dd>
 </dl>
 </div>
 </section>
