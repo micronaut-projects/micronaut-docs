@@ -82,7 +82,10 @@ loadScripts(document, 'script');</script>
 
 <p>A record is a class with a constructor and nothing else, which passes the type, its variables, its direct super
 types and <a href="../ast/ClassElement.html#getAllSuperTypes()"><code>all its super types</code></a>, built with the argument factories from class
-constants, to <a href="../../core/type/GeneratedTypeHierarchy.html" title="class in io.micronaut.core.type"><code>GeneratedTypeHierarchy</code></a>. It is written into the package of the first originating element; only
+constants, to <a href="../../core/type/GeneratedTypeHierarchy.html" title="class in io.micronaut.core.type"><code>GeneratedTypeHierarchy</code></a>. It is marked <a href="../../core/annotation/Generated.html" title="annotation interface in io.micronaut.core.annotation"><code>Generated</code></a>, so that the visitors of a compiler that
+hands the classes written in a round to the next one, as javac does, do not take it for a class of the application,
+and a record is never itself recorded. It is named after the top-level class of the first originating element,
+which owns it and its service entry, and written into the package of that element; only
 a type that is itself not public is recorded in its own package, the one package that can name it. A super type that
 the record cannot name, a class that is not public and of another package than the record or one whose arguments
 name such a class, is left out of the recorded closure with the types above it kept, and is recorded by the name of
@@ -148,9 +151,9 @@ can describe the type, which is then not written.</div>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../visitor/TypeHierarchyRecord.html" title="interface in io.micronaut.inject.visitor">TypeHierarchyRecord</a></span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../ast/ClassElement.html" title="interface in io.micronaut.inject.ast">ClassElement</a>&nbsp;type,
  <a href="../visitor/VisitorContext.html" title="interface in io.micronaut.inject.visitor">VisitorContext</a>&nbsp;context,
  <a href="../ast/Element.html" title="interface in io.micronaut.inject.ast">Element</a>...&nbsp;originatingElements)</span></div>
-<div class="block">Writes the record of a type, and reports what it says and leaves out. A type recorded several times into the
-same package is written once: a compiler that refuses a second write of the same class is taken at its word.
-A type recorded from several packages is written into each, see <a href="../../core/type/TypeHierarchies.html#find(java.lang.String,java.lang.ClassLoader)"><code>TypeHierarchies.find(String, ClassLoader)</code></a>.</div>
+<div class="block">Writes the record of a type, and reports what it says and leaves out. A type recorded several times from the
+same top-level class is written once: a compiler that refuses a second write of the same class is taken at its
+word. A type recorded from several classes is written for each, see <a href="../../core/type/TypeHierarchies.html#find(java.lang.String,java.lang.ClassLoader)"><code>TypeHierarchies.find(String, ClassLoader)</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>type</code> - The type, a declaration</dd>

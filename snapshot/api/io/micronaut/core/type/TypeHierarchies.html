@@ -68,6 +68,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#find(java.lang.String,java.lang.ClassLoader)" tabindex="0">find(String, ClassLoader)</a></li>
 <li><a href="#invalidate()" tabindex="0">invalidate()</a></li>
 <li><a href="#recordClassName(java.lang.String,java.lang.String)" tabindex="0">recordClassName(String, String)</a></li>
+<li><a href="#recordClassName(java.lang.String,java.lang.String,java.lang.String)" tabindex="0">recordClassName(String, String, String)</a></li>
 <li><a href="#recordedTypeName(java.lang.String)" tabindex="0">recordedTypeName(String)</a></li>
 </ol>
 </li>
@@ -89,14 +90,15 @@ loadScripts(document, 'script');</script>
 <div class="block">Finds the <a href="TypeHierarchy.html" title="interface in io.micronaut.core.type"><code>TypeHierarchy</code></a> records a compilation wrote.
 
 <p>A record is a generated class, registered as a <code>META-INF/micronaut</code> service of <a href="TypeHierarchy.html" title="interface in io.micronaut.core.type"><code>TypeHierarchy</code></a>,
-whose name says which type it describes. A lookup reads the names of the service entries of the class loader,
-which the service index of a packaged application already holds, and loads the record of the type asked for: no
-record of another type is loaded, and the class asked about is not read reflectively. A type recorded from several
-packages has a record in each, and a record written outside the package of the type can have left out super types
-it could not name (<a href="TypeHierarchy.html#getOmittedSuperTypeNames()"><code>TypeHierarchy.getOmittedSuperTypeNames()</code></a>): the record in the package of the type is
-preferred, otherwise the one that left out the fewest, the first by name among those, whatever order the class path
-lists them in. The record found is instantiated once: the lookups that follow in the class loader find the same
-instance, which does not keep the class loader of the record from being collected.</p></div>
+whose name says which type it describes and which top-level class of the compilation recorded it. A lookup reads
+the names of the service entries of the class loader, which the service index of a packaged application already
+holds, and loads the record of the type asked for: no record of another type is loaded, and the class asked about
+is not read reflectively. A type recorded from several classes has a record for each, and a record written outside
+the package of the type can have left out super types it could not name
+(<a href="TypeHierarchy.html#getOmittedSuperTypeNames()"><code>TypeHierarchy.getOmittedSuperTypeNames()</code></a>): a record in the package of the type is preferred, otherwise the
+one that left out the fewest, the first by name among those, whatever order the class path lists them in. Each
+record found is instantiated once: the lookups that follow in the class loader find the same instance, which does
+not keep the class loader of the record from being collected.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -162,12 +164,21 @@ thread has none, the class loader of this class.</div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#recordClassName(java.lang.String,java.lang.String)" class="member-name-link">recordClassName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeName,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;recordPackage)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">The name of the record of a type, as written before records were named after the class that recorded them,
+see <a href="#recordClassName(java.lang.String,java.lang.String,java.lang.String)"><code>recordClassName(String, String, String)</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#recordClassName(java.lang.String,java.lang.String,java.lang.String)" class="member-name-link">recordClassName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeName,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;recordPackage,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;originName)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">The name of the record of a type.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#recordedTypeName(java.lang.String)" class="member-name-link">recordedTypeName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;recordClassName)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">The name of the type a record describes, the inverse of <a href="#recordClassName(java.lang.String,java.lang.String)"><code>recordClassName(String, String)</code></a>.</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#recordedTypeName(java.lang.String)" class="member-name-link">recordedTypeName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;recordClassName)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">The name of the type a record describes, the inverse of <a href="#recordClassName(java.lang.String,java.lang.String,java.lang.String)"><code>recordClassName(String, String, String)</code></a>, for
+the names with and without the class that recorded the type.</div>
 </div>
 </div>
 </div>
@@ -279,16 +290,43 @@ publish what it read before the change; a caller that reloads classes invalidate
 <div class="member-signature"><span class="annotations"><a href="../annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
 </span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">recordClassName</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeName,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;recordPackage)</span></div>
+<div class="block">The name of the record of a type, as written before records were named after the class that recorded them,
+see <a href="#recordClassName(java.lang.String,java.lang.String,java.lang.String)"><code>recordClassName(String, String, String)</code></a>. A record of that name is still found.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>typeName</code> - The name of the type</dd>
+<dd><code>recordPackage</code> - The package the record is written into</dd>
+<dt>Returns:</dt>
+<dd>The name of the record</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="recordClassName(java.lang.String,java.lang.String,java.lang.String)">
+<h3>recordClassName</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">recordClassName</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeName,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;recordPackage,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;originName)</span></div>
 <div class="block">The name of the record of a type. A record written into the package of the type is named after the type,
 <code>com.example.$Foo$TypeHierarchy</code> for <code>com.example.Foo</code>. A record written into another package, as a
 record of a public class of a library or of the JDK is, goes into a sub-package of that package named after
 the package of the type, with <code>$$</code> in front of its first segment: <code>com.example.$$java.util.$ArrayList$TypeHierarchy</code>.
 Every segment stays a Java identifier, so no character of a type name is escaped and the type name reads back
-without ambiguity; a source package whose segment starts with <code>$$</code> is not expected.</div>
+without ambiguity; a source package whose segment starts with <code>$$</code> is not expected.
+
+<p>Each top-level class of a compilation that records a type writes a record of its own, named after it with
+<code>$$</code> in front: <code>com.example.$Foo$TypeHierarchy$$Origin</code>, its dollar signs replaced by underscores.
+The record and its service entry then belong to that class alone, and an incremental compilation that
+recompiles or deletes the class drops its record only, not one other classes still need.</p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>typeName</code> - The name of the type</dd>
 <dd><code>recordPackage</code> - The package the record is written into</dd>
+<dd><code>originName</code> - The simple name of the top-level class that records the type, or null for a record
+                     that belongs to no class</dd>
 <dt>Returns:</dt>
 <dd>The name of the record</dd>
 </dl>
@@ -301,7 +339,8 @@ without ambiguity; a source package whose segment starts with <code>$$</code> is
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
 </span><span class="modifiers">public static</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">recordedTypeName</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;recordClassName)</span></div>
-<div class="block">The name of the type a record describes, the inverse of <a href="#recordClassName(java.lang.String,java.lang.String)"><code>recordClassName(String, String)</code></a>.</div>
+<div class="block">The name of the type a record describes, the inverse of <a href="#recordClassName(java.lang.String,java.lang.String,java.lang.String)"><code>recordClassName(String, String, String)</code></a>, for
+the names with and without the class that recorded the type.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>recordClassName</code> - The name of the record</dd>
