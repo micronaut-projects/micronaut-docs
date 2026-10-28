@@ -65,6 +65,7 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#addArgumentBinder(io.micronaut.core.bind.ArgumentBinder)" tabindex="0">addArgumentBinder(ArgumentBinder)</a></li>
 <li><a href="#findArgumentBinder(io.micronaut.core.type.Argument)" tabindex="0">findArgumentBinder(Argument)</a></li>
+<li><a href="#bindsRequestAsIs(io.micronaut.core.type.Argument)" tabindex="0">bindsRequestAsIs(Argument)</a></li>
 </ol>
 </li>
 </ol>
@@ -134,9 +135,16 @@ implements <a href="../../bind/ServerRequestBinderRegistry.html" title="interfac
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Adds a request argument binder to the registry.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../../../core/bind/ArgumentBinder.html" title="interface in io.micronaut.core.bind">ArgumentBinder</a>&lt;T, <a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findArgumentBinder(io.micronaut.core.type.Argument)" class="member-name-link">findArgumentBinder</a><wbr>(<a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;T&gt;&nbsp;argument)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#bindsRequestAsIs(io.micronaut.core.type.Argument)" class="member-name-link">bindsRequestAsIs</a><wbr>(<a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&nbsp;argument)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether this registry binds the given argument, of the type <a href="../../HttpRequest.html" title="interface in io.micronaut.http"><code>HttpRequest</code></a>, to the
+request as is: with its default binder, without a body type to convert and without a
+binder that replaced it.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../../../core/bind/ArgumentBinder.html" title="interface in io.micronaut.core.bind">ArgumentBinder</a>&lt;T, <a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findArgumentBinder(io.micronaut.core.type.Argument)" class="member-name-link">findArgumentBinder</a><wbr>(<a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;T&gt;&nbsp;argument)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Locate an <a href="../../../core/bind/ArgumentBinder.html" title="interface in io.micronaut.core.bind"><code>ArgumentBinder</code></a> for the given argument.</div>
 </div>
 </div>
@@ -224,6 +232,28 @@ implements <a href="../../bind/ServerRequestBinderRegistry.html" title="interfac
 <dd><code>argument</code> - The argument</dd>
 <dt>Returns:</dt>
 <dd>An <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link"><code>Optional</code></a> of <a href="../../../core/bind/ArgumentBinder.html" title="interface in io.micronaut.core.bind"><code>ArgumentBinder</code></a></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="bindsRequestAsIs(io.micronaut.core.type.Argument)">
+<h3>bindsRequestAsIs</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">bindsRequestAsIs</span><wbr><span class="parameters">(<a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;&nbsp;argument)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../bind/RequestBinderRegistry.html#bindsRequestAsIs(io.micronaut.core.type.Argument)">RequestBinderRegistry</a></code></span></div>
+<div class="block">Whether this registry binds the given argument, of the type <a href="../../HttpRequest.html" title="interface in io.micronaut.http"><code>HttpRequest</code></a>, to the
+request as is: with its default binder, without a body type to convert and without a
+binder that replaced it. A route whose arguments are all bound this way may be fulfilled
+without its binders. A registry that does not know answers <code>false</code>.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../bind/RequestBinderRegistry.html#bindsRequestAsIs(io.micronaut.core.type.Argument)">bindsRequestAsIs</a></code>&nbsp;in interface&nbsp;<code><a href="../../bind/RequestBinderRegistry.html" title="interface in io.micronaut.http.bind">RequestBinderRegistry</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>argument</code> - The argument</dd>
+<dt>Returns:</dt>
+<dd>Whether the argument is the request as is</dd>
 </dl>
 </div>
 </section>
