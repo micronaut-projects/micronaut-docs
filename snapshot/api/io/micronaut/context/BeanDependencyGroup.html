@@ -83,11 +83,14 @@ order. Shared beans stay in their scopes. Closing is idempotent and attempts eve
 Use <a href="BeanContext.html#createDependencyGroup()"><code>BeanContext.createDependencyGroup()</code></a> for independent ownership or
 <a href="BeanDependencyResolver.html#createGroup()"><code>BeanDependencyResolver.createGroup()</code></a> to attach the group to a managed consumer.
 
-<p>A group follows the lookup rules of <a href="BeanDependencyResolver.html" title="interface in io.micronaut.context"><code>BeanDependencyResolver</code></a>: a group created before context shutdown
-remains usable by the <a href="event/ShutdownEvent.html" title="class in io.micronaut.context.event"><code>ShutdownEvent</code></a> listeners and destruction callbacks that
-run on the thread performing the shutdown. What such a lookup creates is destroyed before the shutdown
-completes, even when the group is independent and never closed; what the group held before shutdown remains
-the caller's to release.</p></div>
+<p>A group follows the lookup rules of <a href="BeanDependencyResolver.html" title="interface in io.micronaut.context"><code>BeanDependencyResolver</code></a>: during context shutdown it remains
+usable, and new groups can be created, while the <a href="event/ShutdownEvent.html" title="class in io.micronaut.context.event"><code>ShutdownEvent</code></a> listeners and
+the destruction callbacks run, see <a href="BeanContext.html#createDependencyGroup()"><code>BeanContext.createDependencyGroup()</code></a>. What such a lookup creates is
+destroyed before the shutdown completes, even when the group is independent and never closed; what the group held
+before shutdown remains the caller's to release.</p>
+
+<p>Closing a child group, one created by <a href="BeanDependencyResolver.html#createGroup()"><code>BeanDependencyResolver.createGroup()</code></a>, also detaches it from its
+parent, so a long-lived parent can create a child per operation without retaining the closed ones.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
