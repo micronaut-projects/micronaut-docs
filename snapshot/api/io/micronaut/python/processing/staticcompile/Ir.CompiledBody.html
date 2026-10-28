@@ -59,11 +59,13 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
-<li><a href="#%3Cinit%3E(java.lang.String,java.lang.String,java.util.List,java.util.List,java.lang.String,io.micronaut.python.processing.staticcompile.Ir.Body,io.micronaut.python.processing.model.SourceSpan,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Stats,boolean,boolean,boolean,boolean,io.micronaut.python.processing.staticcompile.Ir.ExceptionCrossing)" tabindex="0">CompiledBody(String, String, List, List, String, Ir.Body, SourceSpan, StaticCompilationDecision.Stats, boolean, boolean, boolean, boolean, Ir.ExceptionCrossing)</a></li>
+<li><a href="#%3Cinit%3E(java.lang.String,java.lang.String,java.util.List,java.util.List,java.lang.String,io.micronaut.python.processing.staticcompile.Ir.Body,io.micronaut.python.processing.model.SourceSpan,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Stats,boolean,boolean,boolean,boolean,io.micronaut.python.processing.staticcompile.Ir.ExceptionCrossing,java.util.List,boolean,io.micronaut.python.processing.staticcompile.Ir.PythonEntries)" tabindex="0">CompiledBody(String, String, List, List, String, Ir.Body, SourceSpan, StaticCompilationDecision.Stats, boolean, boolean, boolean, boolean, Ir.ExceptionCrossing, List, boolean, Ir.PythonEntries)</a></li>
 </ol>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
+<li><a href="#pythonParameter(int)" tabindex="0">pythonParameter(int)</a></li>
+<li><a href="#withPythonEntries(io.micronaut.python.processing.staticcompile.Ir.PythonEntries)" tabindex="0">withPythonEntries(Ir.PythonEntries)</a></li>
 <li><a href="#key()" tabindex="0">key()</a></li>
 <li><a href="#key(java.lang.String,java.lang.String)" tabindex="0">key(String, String)</a></li>
 <li><a href="#toString()" tabindex="0">toString()</a></li>
@@ -82,6 +84,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#staticMethod()" tabindex="0">staticMethod()</a></li>
 <li><a href="#moduleLevel()" tabindex="0">moduleLevel()</a></li>
 <li><a href="#exceptions()" tabindex="0">exceptions()</a></li>
+<li><a href="#pythonParameters()" tabindex="0">pythonParameters()</a></li>
+<li><a href="#callsCompiledCode()" tabindex="0">callsCompiledCode()</a></li>
+<li><a href="#pythonEntries()" tabindex="0">pythonEntries()</a></li>
 </ol>
 </li>
 </ol>
@@ -117,6 +122,15 @@ loadScripts(document, 'script');</script>
                       module's class</dd>
 <dd><code><span id="param-exceptions">exceptions</span></code> - How the Java exception of a Python exception class the body throws reaches a
                       Python caller of the rewritten function</dd>
+<dd><code><span id="param-pythonParameters">pythonParameters</span></code> - Per parameter, the Python name (<code>Outer.Inner</code>) of the plain class of the
+                      compilation whose generated class the parameter is, which wraps the Python object a
+                      Python caller passes, or an empty string</dd>
+<dd><code><span id="param-callsCompiledCode">callsCompiledCode</span></code> - Whether the body calls code of the compilation that computes a result of its
+                      own (a compiled function, a method of a Python class through its generated class),
+                      which may overflow where Python promotes</dd>
+<dd><code><span id="param-pythonEntries">pythonEntries</span></code> - What may make the body enter Python, which decides whether a route whose body
+                      it is runs on the event loop (see <a href="EventLoopSafety.html" title="class in io.micronaut.python.processing.staticcompile"><code>EventLoopSafety</code></a>); <code>null</code> when the
+                      planner did not find it out</dd>
 </dl>
 <dl class="notes">
 <dt>Enclosing interface:</dt>
@@ -124,7 +138,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">Ir.CompiledBody</span>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodName, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;parameterNames, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;parameterTypes, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;returnType, <a href="Ir.Body.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Body</a>&nbsp;body, @Nullable <a href="../model/SourceSpan.html" title="class in io.micronaut.python.processing.model">SourceSpan</a>&nbsp;span, <a href="StaticCompilationDecision.Stats.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Stats</a>&nbsp;stats, boolean&nbsp;wrapsCheckedExceptions, boolean&nbsp;advised, boolean&nbsp;staticMethod, boolean&nbsp;moduleLevel, <a href="Ir.ExceptionCrossing.html" title="enum class in io.micronaut.python.processing.staticcompile">Ir.ExceptionCrossing</a>&nbsp;exceptions)
+<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">Ir.CompiledBody</span>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodName, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;parameterNames, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;parameterTypes, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;returnType, <a href="Ir.Body.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Body</a>&nbsp;body, @Nullable <a href="../model/SourceSpan.html" title="class in io.micronaut.python.processing.model">SourceSpan</a>&nbsp;span, <a href="StaticCompilationDecision.Stats.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Stats</a>&nbsp;stats, boolean&nbsp;wrapsCheckedExceptions, boolean&nbsp;advised, boolean&nbsp;staticMethod, boolean&nbsp;moduleLevel, <a href="Ir.ExceptionCrossing.html" title="enum class in io.micronaut.python.processing.staticcompile">Ir.ExceptionCrossing</a>&nbsp;exceptions, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;pythonParameters, boolean&nbsp;callsCompiledCode, @Nullable <a href="Ir.PythonEntries.html" title="class in io.micronaut.python.processing.staticcompile">Ir.PythonEntries</a>&nbsp;pythonEntries)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
 <div class="block">A compiled function body with the Java signature it is generated into.</div>
 <dl class="notes">
@@ -145,7 +159,7 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,java.lang.String,java.util.List,java.util.List,java.lang.String,io.micronaut.python.processing.staticcompile.Ir.Body,io.micronaut.python.processing.model.SourceSpan,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Stats,boolean,boolean,boolean,boolean,io.micronaut.python.processing.staticcompile.Ir.ExceptionCrossing)" class="member-name-link">CompiledBody</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,java.lang.String,java.util.List,java.util.List,java.lang.String,io.micronaut.python.processing.staticcompile.Ir.Body,io.micronaut.python.processing.model.SourceSpan,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Stats,boolean,boolean,boolean,boolean,io.micronaut.python.processing.staticcompile.Ir.ExceptionCrossing,java.util.List,boolean,io.micronaut.python.processing.staticcompile.Ir.PythonEntries)" class="member-name-link">CompiledBody</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodName,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;parameterNames,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;parameterTypes,
@@ -157,7 +171,10 @@ loadScripts(document, 'script');</script>
  boolean&nbsp;advised,
  boolean&nbsp;staticMethod,
  boolean&nbsp;moduleLevel,
- <a href="Ir.ExceptionCrossing.html" title="enum class in io.micronaut.python.processing.staticcompile">Ir.ExceptionCrossing</a>&nbsp;exceptions)</code></div>
+ <a href="Ir.ExceptionCrossing.html" title="enum class in io.micronaut.python.processing.staticcompile">Ir.ExceptionCrossing</a>&nbsp;exceptions,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;pythonParameters,
+ boolean&nbsp;callsCompiledCode,
+ @Nullable <a href="Ir.PythonEntries.html" title="class in io.micronaut.python.processing.staticcompile">Ir.PythonEntries</a>&nbsp;pythonEntries)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Creates an instance of a <code>CompiledBody</code> record class.</div>
 </div>
@@ -185,52 +202,70 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-body"><code>body</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#className()" class="member-name-link">className</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#callsCompiledCode()" class="member-name-link">callsCompiledCode</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-callsCompiledCode"><code>callsCompiledCode</code></a> record component.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#className()" class="member-name-link">className</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-className"><code>className</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Ir.ExceptionCrossing.html" title="enum class in io.micronaut.python.processing.staticcompile">Ir.ExceptionCrossing</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exceptions()" class="member-name-link">exceptions</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Ir.ExceptionCrossing.html" title="enum class in io.micronaut.python.processing.staticcompile">Ir.ExceptionCrossing</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exceptions()" class="member-name-link">exceptions</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-exceptions"><code>exceptions</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a hash code value for this object.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#key()" class="member-name-link">key</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#key(java.lang.String,java.lang.String)" class="member-name-link">key</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#key()" class="member-name-link">key</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#key(java.lang.String,java.lang.String)" class="member-name-link">key</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodName)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#methodName()" class="member-name-link">methodName</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#methodName()" class="member-name-link">methodName</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-methodName"><code>methodName</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#moduleLevel()" class="member-name-link">moduleLevel</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#moduleLevel()" class="member-name-link">moduleLevel</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-moduleLevel"><code>moduleLevel</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parameterNames()" class="member-name-link">parameterNames</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parameterNames()" class="member-name-link">parameterNames</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-parameterNames"><code>parameterNames</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parameterTypes()" class="member-name-link">parameterTypes</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parameterTypes()" class="member-name-link">parameterTypes</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-parameterTypes"><code>parameterTypes</code></a> record component.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="Ir.PythonEntries.html" title="class in io.micronaut.python.processing.staticcompile">Ir.PythonEntries</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pythonEntries()" class="member-name-link">pythonEntries</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-pythonEntries"><code>pythonEntries</code></a> record component.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pythonParameter(int)" class="member-name-link">pythonParameter</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pythonParameters()" class="member-name-link">pythonParameters</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-pythonParameters"><code>pythonParameters</code></a> record component.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#returnType()" class="member-name-link">returnType</a>()</code></div>
@@ -257,9 +292,12 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a string representation of this record class.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#wrapsCheckedExceptions()" class="member-name-link">wrapsCheckedExceptions</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Ir.CompiledBody.html" title="class in io.micronaut.python.processing.staticcompile">Ir.CompiledBody</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withPythonEntries(io.micronaut.python.processing.staticcompile.Ir.PythonEntries)" class="member-name-link">withPythonEntries</a><wbr>(<a href="Ir.PythonEntries.html" title="class in io.micronaut.python.processing.staticcompile">Ir.PythonEntries</a>&nbsp;entries)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#wrapsCheckedExceptions()" class="member-name-link">wrapsCheckedExceptions</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-wrapsCheckedExceptions"><code>wrapsCheckedExceptions</code></a> record component.</div>
 </div>
 </div>
@@ -280,7 +318,7 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(java.lang.String,java.lang.String,java.util.List,java.util.List,java.lang.String,io.micronaut.python.processing.staticcompile.Ir.Body,io.micronaut.python.processing.model.SourceSpan,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Stats,boolean,boolean,boolean,boolean,io.micronaut.python.processing.staticcompile.Ir.ExceptionCrossing)">
+<section class="detail" id="&lt;init&gt;(java.lang.String,java.lang.String,java.util.List,java.util.List,java.lang.String,io.micronaut.python.processing.staticcompile.Ir.Body,io.micronaut.python.processing.model.SourceSpan,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Stats,boolean,boolean,boolean,boolean,io.micronaut.python.processing.staticcompile.Ir.ExceptionCrossing,java.util.List,boolean,io.micronaut.python.processing.staticcompile.Ir.PythonEntries)">
 <h3>CompiledBody</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CompiledBody</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className,
@@ -295,7 +333,10 @@ loadScripts(document, 'script');</script>
  boolean&nbsp;advised,
  boolean&nbsp;staticMethod,
  boolean&nbsp;moduleLevel,
- <a href="Ir.ExceptionCrossing.html" title="enum class in io.micronaut.python.processing.staticcompile">Ir.ExceptionCrossing</a>&nbsp;exceptions)</span></div>
+ <a href="Ir.ExceptionCrossing.html" title="enum class in io.micronaut.python.processing.staticcompile">Ir.ExceptionCrossing</a>&nbsp;exceptions,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;pythonParameters,
+ boolean&nbsp;callsCompiledCode,
+ @Nullable <a href="Ir.PythonEntries.html" title="class in io.micronaut.python.processing.staticcompile">Ir.PythonEntries</a>&nbsp;pythonEntries)</span></div>
 <div class="block">Creates an instance of a <code>CompiledBody</code> record class.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -312,6 +353,9 @@ loadScripts(document, 'script');</script>
 <dd><code>staticMethod</code> - the value for the <a href="#param-staticMethod"><code>staticMethod</code></a> record component</dd>
 <dd><code>moduleLevel</code> - the value for the <a href="#param-moduleLevel"><code>moduleLevel</code></a> record component</dd>
 <dd><code>exceptions</code> - the value for the <a href="#param-exceptions"><code>exceptions</code></a> record component</dd>
+<dd><code>pythonParameters</code> - the value for the <a href="#param-pythonParameters"><code>pythonParameters</code></a> record component</dd>
+<dd><code>callsCompiledCode</code> - the value for the <a href="#param-callsCompiledCode"><code>callsCompiledCode</code></a> record component</dd>
+<dd><code>pythonEntries</code> - the value for the <a href="#param-pythonEntries"><code>pythonEntries</code></a> record component</dd>
 </dl>
 </div>
 </section>
@@ -324,6 +368,34 @@ loadScripts(document, 'script');</script>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="pythonParameter(int)">
+<h3>pythonParameter</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">pythonParameter</span><wbr><span class="parameters">(int&nbsp;index)</span></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>index</code> - The position of a parameter</dd>
+<dt>Returns:</dt>
+<dd>The Python name of the plain class of the compilation the parameter takes, or an empty string</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="withPythonEntries(io.micronaut.python.processing.staticcompile.Ir.PythonEntries)">
+<h3>withPythonEntries</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Ir.CompiledBody.html" title="class in io.micronaut.python.processing.staticcompile">Ir.CompiledBody</a></span>&nbsp;<span class="element-name">withPythonEntries</span><wbr><span class="parameters">(<a href="Ir.PythonEntries.html" title="class in io.micronaut.python.processing.staticcompile">Ir.PythonEntries</a>&nbsp;entries)</span></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>entries</code> - What may make the body enter Python</dd>
+<dt>Returns:</dt>
+<dd>The body with them</dd>
+</dl>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="key()">
 <h3>key</h3>
@@ -564,6 +636,45 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the value of the <a href="#param-exceptions"><code>exceptions</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="pythonParameters()">
+<h3>pythonParameters</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">pythonParameters</span>()</div>
+<div class="block">Returns the value of the <a href="#param-pythonParameters"><code>pythonParameters</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-pythonParameters"><code>pythonParameters</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="callsCompiledCode()">
+<h3>callsCompiledCode</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">callsCompiledCode</span>()</div>
+<div class="block">Returns the value of the <a href="#param-callsCompiledCode"><code>callsCompiledCode</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-callsCompiledCode"><code>callsCompiledCode</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="pythonEntries()">
+<h3>pythonEntries</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="Ir.PythonEntries.html" title="class in io.micronaut.python.processing.staticcompile">Ir.PythonEntries</a></span>&nbsp;<span class="element-name">pythonEntries</span>()</div>
+<div class="block">Returns the value of the <a href="#param-pythonEntries"><code>pythonEntries</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-pythonEntries"><code>pythonEntries</code></a> record component</dd>
 </dl>
 </div>
 </section>

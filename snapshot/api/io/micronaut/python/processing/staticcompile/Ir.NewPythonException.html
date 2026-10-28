@@ -61,6 +61,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
+<li><a href="#%3Cinit%3E(java.lang.String,java.util.List,boolean)" tabindex="0">NewPythonException(String, List, boolean)</a></li>
 <li><a href="#%3Cinit%3E(java.lang.String,java.util.List)" tabindex="0">NewPythonException(String, List)</a></li>
 </ol>
 </li>
@@ -71,6 +72,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#equals(java.lang.Object)" tabindex="0">equals(Object)</a></li>
 <li><a href="#type()" tabindex="0">type()</a></li>
 <li><a href="#arguments()" tabindex="0">arguments()</a></li>
+<li><a href="#lazy()" tabindex="0">lazy()</a></li>
 </ol>
 </li>
 </ol>
@@ -90,6 +92,7 @@ loadScripts(document, 'script');</script>
 <dt>Record Components:</dt>
 <dd><code><span id="param-type">type</span></code> - The generated class, a RuntimeException</dd>
 <dd><code><span id="param-arguments">arguments</span></code> - The arguments of the Python class, boxed</dd>
+<dd><code><span id="param-lazy">lazy</span></code> - Whether the Python exception is created when it is first needed</dd>
 </dl>
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
@@ -101,13 +104,21 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">Ir.NewPythonException</span>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;type, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Ir.Expression.html" title="interface in io.micronaut.python.processing.staticcompile">Ir.Expression</a>&gt;&nbsp;arguments)
+<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">Ir.NewPythonException</span>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;type, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Ir.Expression.html" title="interface in io.micronaut.python.processing.staticcompile">Ir.Expression</a>&gt;&nbsp;arguments, boolean&nbsp;lazy)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a>
 implements <a href="Ir.Expression.html" title="interface in io.micronaut.python.processing.staticcompile">Ir.Expression</a></span></div>
 <div class="block">An exception of a Python exception class of the compilation, created as Python creates it:
 the Python class called with the arguments, the Python exception wrapped in the generated Java
 class through its <code>Value</code> constructor, as the runtime wraps a Python exception that
-reaches Java code. Its Java value is the <code>RuntimeException</code> a <code>raise</code> throws.</div>
+reaches Java code. Its Java value is the <code>RuntimeException</code> a <code>raise</code> throws.
+<p>
+A lazy exception is created as the Java exception alone, with the message
+<code>BaseException.__str__</code> gives the arguments: its generated class creates the Python
+exception from the class reference and the arguments the first time the Python object is
+needed (it reaches Python, or an exception handler converts it). The planner makes an
+exception lazy only when nothing of its class can tell the difference: neither the class
+nor a Python base defines <code>__new__</code>, <code>__init__</code>, <code>__str__</code>, <code>__repr__</code>
+or <code>args</code>, and its builtin base takes its arguments as <code>BaseException</code> does.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -124,7 +135,7 @@ reaches Java code. Its Java value is the <code>RuntimeException</code> a <code>r
 <h2>Nested Class Summary</h2>
 <div class="inherited-list">
 <h3 id="nested-classes-inherited-from-class-io.micronaut.python.processing.staticcompile.Ir">Nested classes/interfaces inherited from interface&nbsp;<a href="Ir.html#nested-class-summary" title="interface in io.micronaut.python.processing.staticcompile">Ir</a></h3>
-<code><a href="Ir.And.html" title="class in io.micronaut.python.processing.staticcompile">Ir.And</a>, <a href="Ir.Assign.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Assign</a>, <a href="Ir.Binary.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Binary</a>, <a href="Ir.Body.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Body</a>, <a href="Ir.Break.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Break</a>, <a href="Ir.Cast.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Cast</a>, <a href="Ir.Catch.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Catch</a>, <a href="Ir.Compare.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Compare</a>, <a href="Ir.CompiledBody.html" title="class in io.micronaut.python.processing.staticcompile">Ir.CompiledBody</a>, <a href="Ir.Conditional.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Conditional</a>, <a href="Ir.Const.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Const</a>, <a href="Ir.Continue.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Continue</a>, <a href="Ir.Eval.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Eval</a>, <a href="Ir.ExceptionCrossing.html" title="enum class in io.micronaut.python.processing.staticcompile">Ir.ExceptionCrossing</a>, <a href="Ir.Expression.html" title="interface in io.micronaut.python.processing.staticcompile">Ir.Expression</a>, <a href="Ir.Field.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Field</a>, <a href="Ir.ForEach.html" title="class in io.micronaut.python.processing.staticcompile">Ir.ForEach</a>, <a href="Ir.ForRange.html" title="class in io.micronaut.python.processing.staticcompile">Ir.ForRange</a>, <a href="Ir.Helper.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Helper</a>, <a href="Ir.If.html" title="class in io.micronaut.python.processing.staticcompile">Ir.If</a>, <a href="Ir.InvokeJava.html" title="class in io.micronaut.python.processing.staticcompile">Ir.InvokeJava</a>, <a href="Ir.InvokePython.html" title="class in io.micronaut.python.processing.staticcompile">Ir.InvokePython</a>, <a href="Ir.InvokeSibling.html" title="class in io.micronaut.python.processing.staticcompile">Ir.InvokeSibling</a>, <a href="Ir.Local.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Local</a>, <a href="Ir.LocalRef.html" title="class in io.micronaut.python.processing.staticcompile">Ir.LocalRef</a>, <a href="Ir.ModuleAttribute.html" title="class in io.micronaut.python.processing.staticcompile">Ir.ModuleAttribute</a>, <a href="Ir.NewJava.html" title="class in io.micronaut.python.processing.staticcompile">Ir.NewJava</a>, <a href="Ir.NewPythonException.html" title="class in io.micronaut.python.processing.staticcompile">Ir.NewPythonException</a>, <a href="Ir.Or.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Or</a>, <a href="Ir.Param.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Param</a>, <a href="Ir.PutSelf.html" title="class in io.micronaut.python.processing.staticcompile">Ir.PutSelf</a>, <a href="Ir.PythonMember.html" title="class in io.micronaut.python.processing.staticcompile">Ir.PythonMember</a>, <a href="Ir.Return.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Return</a>, <a href="Ir.SelfProperty.html" title="class in io.micronaut.python.processing.staticcompile">Ir.SelfProperty</a>, <a href="Ir.Statement.html" title="interface in io.micronaut.python.processing.staticcompile">Ir.Statement</a>, <a href="Ir.StaticField.html" title="class in io.micronaut.python.processing.staticcompile">Ir.StaticField</a>, <a href="Ir.StrJoin.html" title="class in io.micronaut.python.processing.staticcompile">Ir.StrJoin</a>, <a href="Ir.Throw.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Throw</a>, <a href="Ir.Truthy.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Truthy</a>, <a href="Ir.Try.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Try</a>, <a href="Ir.Unary.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Unary</a>, <a href="Ir.While.html" title="class in io.micronaut.python.processing.staticcompile">Ir.While</a></code></div>
+<code><a href="Ir.And.html" title="class in io.micronaut.python.processing.staticcompile">Ir.And</a>, <a href="Ir.Assign.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Assign</a>, <a href="Ir.Binary.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Binary</a>, <a href="Ir.Body.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Body</a>, <a href="Ir.Break.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Break</a>, <a href="Ir.Cast.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Cast</a>, <a href="Ir.Catch.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Catch</a>, <a href="Ir.Compare.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Compare</a>, <a href="Ir.CompiledBody.html" title="class in io.micronaut.python.processing.staticcompile">Ir.CompiledBody</a>, <a href="Ir.Conditional.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Conditional</a>, <a href="Ir.Const.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Const</a>, <a href="Ir.Continue.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Continue</a>, <a href="Ir.Eval.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Eval</a>, <a href="Ir.ExceptionCrossing.html" title="enum class in io.micronaut.python.processing.staticcompile">Ir.ExceptionCrossing</a>, <a href="Ir.Expression.html" title="interface in io.micronaut.python.processing.staticcompile">Ir.Expression</a>, <a href="Ir.Field.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Field</a>, <a href="Ir.ForEach.html" title="class in io.micronaut.python.processing.staticcompile">Ir.ForEach</a>, <a href="Ir.ForRange.html" title="class in io.micronaut.python.processing.staticcompile">Ir.ForRange</a>, <a href="Ir.Helper.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Helper</a>, <a href="Ir.If.html" title="class in io.micronaut.python.processing.staticcompile">Ir.If</a>, <a href="Ir.InvokeJava.html" title="class in io.micronaut.python.processing.staticcompile">Ir.InvokeJava</a>, <a href="Ir.InvokePython.html" title="class in io.micronaut.python.processing.staticcompile">Ir.InvokePython</a>, <a href="Ir.InvokeSibling.html" title="class in io.micronaut.python.processing.staticcompile">Ir.InvokeSibling</a>, <a href="Ir.Local.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Local</a>, <a href="Ir.LocalRef.html" title="class in io.micronaut.python.processing.staticcompile">Ir.LocalRef</a>, <a href="Ir.ModuleAttribute.html" title="class in io.micronaut.python.processing.staticcompile">Ir.ModuleAttribute</a>, <a href="Ir.NewJava.html" title="class in io.micronaut.python.processing.staticcompile">Ir.NewJava</a>, <a href="Ir.NewPythonException.html" title="class in io.micronaut.python.processing.staticcompile">Ir.NewPythonException</a>, <a href="Ir.Or.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Or</a>, <a href="Ir.Param.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Param</a>, <a href="Ir.PutSelf.html" title="class in io.micronaut.python.processing.staticcompile">Ir.PutSelf</a>, <a href="Ir.PythonEntries.html" title="class in io.micronaut.python.processing.staticcompile">Ir.PythonEntries</a>, <a href="Ir.PythonMember.html" title="class in io.micronaut.python.processing.staticcompile">Ir.PythonMember</a>, <a href="Ir.Return.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Return</a>, <a href="Ir.SelfProperty.html" title="class in io.micronaut.python.processing.staticcompile">Ir.SelfProperty</a>, <a href="Ir.Statement.html" title="interface in io.micronaut.python.processing.staticcompile">Ir.Statement</a>, <a href="Ir.StaticField.html" title="class in io.micronaut.python.processing.staticcompile">Ir.StaticField</a>, <a href="Ir.StrJoin.html" title="class in io.micronaut.python.processing.staticcompile">Ir.StrJoin</a>, <a href="Ir.Throw.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Throw</a>, <a href="Ir.Truthy.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Truthy</a>, <a href="Ir.Try.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Try</a>, <a href="Ir.Unary.html" title="class in io.micronaut.python.processing.staticcompile">Ir.Unary</a>, <a href="Ir.While.html" title="class in io.micronaut.python.processing.staticcompile">Ir.While</a></code></div>
 </section>
 </li>
 <!-- =========== FIELD SUMMARY =========== -->
@@ -147,6 +158,12 @@ reaches Java code. Its Java value is the <code>RuntimeException</code> a <code>r
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,java.util.List)" class="member-name-link">NewPythonException</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;type,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Ir.Expression.html" title="interface in io.micronaut.python.processing.staticcompile">Ir.Expression</a>&gt;&nbsp;arguments)</code></div>
 <div class="col-last even-row-color">
+<div class="block">An exception created through its Python class when it is raised.</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.String,java.util.List,boolean)" class="member-name-link">NewPythonException</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;type,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Ir.Expression.html" title="interface in io.micronaut.python.processing.staticcompile">Ir.Expression</a>&gt;&nbsp;arguments,
+ boolean&nbsp;lazy)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Creates an instance of a <code>NewPythonException</code> record class.</div>
 </div>
 </div>
@@ -178,14 +195,19 @@ reaches Java code. Its Java value is the <code>RuntimeException</code> a <code>r
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a hash code value for this object.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lazy()" class="member-name-link">lazy</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-lazy"><code>lazy</code></a> record component.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a string representation of this record class.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type()" class="member-name-link">type</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type()" class="member-name-link">type</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-type"><code>type</code></a> record component.</div>
 </div>
 </div>
@@ -206,16 +228,33 @@ reaches Java code. Its Java value is the <code>RuntimeException</code> a <code>r
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(java.lang.String,java.util.List)">
+<section class="detail" id="&lt;init&gt;(java.lang.String,java.util.List,boolean)">
 <h3>NewPythonException</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">NewPythonException</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;type,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Ir.Expression.html" title="interface in io.micronaut.python.processing.staticcompile">Ir.Expression</a>&gt;&nbsp;arguments)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Ir.Expression.html" title="interface in io.micronaut.python.processing.staticcompile">Ir.Expression</a>&gt;&nbsp;arguments,
+ boolean&nbsp;lazy)</span></div>
 <div class="block">Creates an instance of a <code>NewPythonException</code> record class.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>type</code> - the value for the <a href="#param-type"><code>type</code></a> record component</dd>
 <dd><code>arguments</code> - the value for the <a href="#param-arguments"><code>arguments</code></a> record component</dd>
+<dd><code>lazy</code> - the value for the <a href="#param-lazy"><code>lazy</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(java.lang.String,java.util.List)">
+<h3>NewPythonException</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">NewPythonException</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;type,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Ir.Expression.html" title="interface in io.micronaut.python.processing.staticcompile">Ir.Expression</a>&gt;&nbsp;arguments)</span></div>
+<div class="block">An exception created through its Python class when it is raised.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The generated class, a RuntimeException</dd>
+<dd><code>arguments</code> - The arguments of the Python class, boxed</dd>
 </dl>
 </div>
 </section>
@@ -263,7 +302,7 @@ reaches Java code. Its Java value is the <code>RuntimeException</code> a <code>r
 <h3>equals</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">equals</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</span></div>
-<div class="block">Indicates whether some other object is "equal to" this one. The objects are equal if the other object is of the same class and if all the record components are equal. All components in this record class are compared with <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Objects.html#equals(java.lang.Object,java.lang.Object)" title="class or interface in java.util" class="external-link"><code>Objects::equals(Object,Object)</code></a>.</div>
+<div class="block">Indicates whether some other object is "equal to" this one. The objects are equal if the other object is of the same class and if all the record components are equal. Reference components are compared with <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Objects.html#equals(java.lang.Object,java.lang.Object)" title="class or interface in java.util" class="external-link"><code>Objects::equals(Object,Object)</code></a>; primitive components are compared with the <code>compare</code> method from their corresponding wrapper classes.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></code></dd>
@@ -299,6 +338,19 @@ reaches Java code. Its Java value is the <code>RuntimeException</code> a <code>r
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the value of the <a href="#param-arguments"><code>arguments</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="lazy()">
+<h3>lazy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">lazy</span>()</div>
+<div class="block">Returns the value of the <a href="#param-lazy"><code>lazy</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-lazy"><code>lazy</code></a> record component</dd>
 </dl>
 </div>
 </section>

@@ -59,6 +59,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
+<li><a href="#%3Cinit%3E(java.lang.String,io.micronaut.python.processing.model.SourceSpan,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Outcome,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Scope,java.util.List,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Stats,java.lang.String)" tabindex="0">StaticCompilationDecision(String, SourceSpan, StaticCompilationDecision.Outcome, StaticCompilationDecision.Scope, List, StaticCompilationDecision.Stats, String)</a></li>
 <li><a href="#%3Cinit%3E(java.lang.String,io.micronaut.python.processing.model.SourceSpan,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Outcome,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Scope,java.util.List,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Stats)" tabindex="0">StaticCompilationDecision(String, SourceSpan, StaticCompilationDecision.Outcome, StaticCompilationDecision.Scope, List, StaticCompilationDecision.Stats)</a></li>
 </ol>
 </li>
@@ -77,6 +78,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#scope()" tabindex="0">scope()</a></li>
 <li><a href="#reasons()" tabindex="0">reasons()</a></li>
 <li><a href="#stats()" tabindex="0">stats()</a></li>
+<li><a href="#delegation()" tabindex="0">delegation()</a></li>
 </ol>
 </li>
 </ol>
@@ -100,10 +102,13 @@ loadScripts(document, 'script');</script>
 <dd><code><span id="param-scope">scope</span></code> - The declaration that decided whether compilation was attempted</dd>
 <dd><code><span id="param-reasons">reasons</span></code> - Why the body is not compiled; empty when it is</dd>
 <dd><code><span id="param-stats">stats</span></code> - What the body contains</dd>
+<dd><code><span id="param-delegation">delegation</span></code> - Whether the Python callers of a compiled body run its Java body, see
+                     <a href="StaticDelegation.html#status(io.micronaut.python.processing.staticcompile.Ir.CompiledBody)"><code>StaticDelegation.status(Ir.CompiledBody)</code></a>:
+                     <code>retry</code>, <code>once</code>, <code>static</code>, <code>static-once</code> or <code>none(&lt;why&gt;)</code>; <code>null</code> when it is not compiled</dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">StaticCompilationDecision</span>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;qualifiedName, @Nullable <a href="../model/SourceSpan.html" title="class in io.micronaut.python.processing.model">SourceSpan</a>&nbsp;span, <a href="StaticCompilationDecision.Outcome.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Outcome</a>&nbsp;outcome, <a href="StaticCompilationDecision.Scope.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Scope</a>&nbsp;scope, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="StaticCompilationDecision.Reason.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Reason</a>&gt;&nbsp;reasons, <a href="StaticCompilationDecision.Stats.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Stats</a>&nbsp;stats)
+<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">StaticCompilationDecision</span>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;qualifiedName, @Nullable <a href="../model/SourceSpan.html" title="class in io.micronaut.python.processing.model">SourceSpan</a>&nbsp;span, <a href="StaticCompilationDecision.Outcome.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Outcome</a>&nbsp;outcome, <a href="StaticCompilationDecision.Scope.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Scope</a>&nbsp;scope, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="StaticCompilationDecision.Reason.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Reason</a>&gt;&nbsp;reasons, <a href="StaticCompilationDecision.Stats.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Stats</a>&nbsp;stats, @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;delegation)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
 <div class="block">The decision taken for one candidate function: whether its body is compiled to Java, how the
 decision to attempt it was reached, and every reason it was not compiled.</div>
@@ -165,6 +170,16 @@ switch, or the compilation's mode when there is none.</div>
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="StaticCompilationDecision.Reason.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Reason</a>&gt;&nbsp;reasons,
  <a href="StaticCompilationDecision.Stats.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Stats</a>&nbsp;stats)</code></div>
 <div class="col-last even-row-color">
+<div class="block">A decision without a delegation status.</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.String,io.micronaut.python.processing.model.SourceSpan,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Outcome,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Scope,java.util.List,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Stats,java.lang.String)" class="member-name-link">StaticCompilationDecision</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;qualifiedName,
+ @Nullable <a href="../model/SourceSpan.html" title="class in io.micronaut.python.processing.model">SourceSpan</a>&nbsp;span,
+ <a href="StaticCompilationDecision.Outcome.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Outcome</a>&nbsp;outcome,
+ <a href="StaticCompilationDecision.Scope.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Scope</a>&nbsp;scope,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="StaticCompilationDecision.Reason.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Reason</a>&gt;&nbsp;reasons,
+ <a href="StaticCompilationDecision.Stats.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Stats</a>&nbsp;stats,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;delegation)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Creates an instance of a <code>StaticCompilationDecision</code> record class.</div>
 </div>
 </div>
@@ -181,67 +196,72 @@ switch, or the compilation's mode when there is none.</div>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#delegation()" class="member-name-link">delegation</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-delegation"><code>delegation</code></a> record component.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @Nullable <a href="StaticCompilationDecision.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#fromProperties(java.util.Properties,java.lang.String)" class="member-name-link">fromProperties</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Properties.html" title="class or interface in java.util" class="external-link">Properties</a>&nbsp;properties,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @Nullable <a href="StaticCompilationDecision.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#fromProperties(java.util.Properties,java.lang.String)" class="member-name-link">fromProperties</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Properties.html" title="class or interface in java.util" class="external-link">Properties</a>&nbsp;properties,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefix)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Reads a decision back from the properties <a href="#writeTo(java.util.Properties,java.lang.String)"><code>writeTo(Properties, String)</code></a> stored.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a hash code value for this object.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StaticCompilationDecision.Outcome.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Outcome</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#outcome()" class="member-name-link">outcome</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StaticCompilationDecision.Outcome.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Outcome</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#outcome()" class="member-name-link">outcome</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-outcome"><code>outcome</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#qualifiedName()" class="member-name-link">qualifiedName</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#qualifiedName()" class="member-name-link">qualifiedName</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-qualifiedName"><code>qualifiedName</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="StaticCompilationDecision.Reason.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Reason</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reasons()" class="member-name-link">reasons</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="StaticCompilationDecision.Reason.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Reason</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reasons()" class="member-name-link">reasons</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-reasons"><code>reasons</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StaticCompilationDecision.Scope.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Scope</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#scope()" class="member-name-link">scope</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StaticCompilationDecision.Scope.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Scope</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#scope()" class="member-name-link">scope</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-scope"><code>scope</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sourcePath()" class="member-name-link">sourcePath</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="../model/SourceSpan.html" title="class in io.micronaut.python.processing.model">SourceSpan</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#span()" class="member-name-link">span</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sourcePath()" class="member-name-link">sourcePath</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="../model/SourceSpan.html" title="class in io.micronaut.python.processing.model">SourceSpan</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#span()" class="member-name-link">span</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-span"><code>span</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StaticCompilationDecision.Stats.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Stats</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stats()" class="member-name-link">stats</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="StaticCompilationDecision.Stats.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Stats</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stats()" class="member-name-link">stats</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-stats"><code>stats</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toJson()" class="member-name-link">toJson</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toJson()" class="member-name-link">toJson</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a string representation of this record class.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTo(java.util.Properties,java.lang.String)" class="member-name-link">writeTo</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Properties.html" title="class or interface in java.util" class="external-link">Properties</a>&nbsp;properties,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTo(java.util.Properties,java.lang.String)" class="member-name-link">writeTo</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Properties.html" title="class or interface in java.util" class="external-link">Properties</a>&nbsp;properties,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefix)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Stores the decision as properties, the form an incremental build reads it back in.</div>
 </div>
 </div>
@@ -262,7 +282,7 @@ switch, or the compilation's mode when there is none.</div>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(java.lang.String,io.micronaut.python.processing.model.SourceSpan,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Outcome,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Scope,java.util.List,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Stats)">
+<section class="detail" id="&lt;init&gt;(java.lang.String,io.micronaut.python.processing.model.SourceSpan,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Outcome,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Scope,java.util.List,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Stats,java.lang.String)">
 <h3>StaticCompilationDecision</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StaticCompilationDecision</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;qualifiedName,
@@ -270,7 +290,8 @@ switch, or the compilation's mode when there is none.</div>
  <a href="StaticCompilationDecision.Outcome.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Outcome</a>&nbsp;outcome,
  <a href="StaticCompilationDecision.Scope.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Scope</a>&nbsp;scope,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="StaticCompilationDecision.Reason.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Reason</a>&gt;&nbsp;reasons,
- <a href="StaticCompilationDecision.Stats.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Stats</a>&nbsp;stats)</span></div>
+ <a href="StaticCompilationDecision.Stats.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Stats</a>&nbsp;stats,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;delegation)</span></div>
 <div class="block">Creates an instance of a <code>StaticCompilationDecision</code> record class.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -280,6 +301,30 @@ switch, or the compilation's mode when there is none.</div>
 <dd><code>scope</code> - the value for the <a href="#param-scope"><code>scope</code></a> record component</dd>
 <dd><code>reasons</code> - the value for the <a href="#param-reasons"><code>reasons</code></a> record component</dd>
 <dd><code>stats</code> - the value for the <a href="#param-stats"><code>stats</code></a> record component</dd>
+<dd><code>delegation</code> - the value for the <a href="#param-delegation"><code>delegation</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(java.lang.String,io.micronaut.python.processing.model.SourceSpan,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Outcome,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Scope,java.util.List,io.micronaut.python.processing.staticcompile.StaticCompilationDecision.Stats)">
+<h3>StaticCompilationDecision</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">StaticCompilationDecision</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;qualifiedName,
+ @Nullable <a href="../model/SourceSpan.html" title="class in io.micronaut.python.processing.model">SourceSpan</a>&nbsp;span,
+ <a href="StaticCompilationDecision.Outcome.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Outcome</a>&nbsp;outcome,
+ <a href="StaticCompilationDecision.Scope.html" title="enum class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Scope</a>&nbsp;scope,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="StaticCompilationDecision.Reason.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Reason</a>&gt;&nbsp;reasons,
+ <a href="StaticCompilationDecision.Stats.html" title="class in io.micronaut.python.processing.staticcompile">StaticCompilationDecision.Stats</a>&nbsp;stats)</span></div>
+<div class="block">A decision without a delegation status.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>qualifiedName</code> - The function</dd>
+<dd><code>span</code> - Where the function is declared, when known</dd>
+<dd><code>outcome</code> - The outcome</dd>
+<dd><code>scope</code> - The declaration that decided whether compilation was attempted</dd>
+<dd><code>reasons</code> - Why the body is not compiled</dd>
+<dd><code>stats</code> - What the body contains</dd>
 </dl>
 </div>
 </section>
@@ -471,6 +516,19 @@ switch, or the compilation's mode when there is none.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the value of the <a href="#param-stats"><code>stats</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="delegation()">
+<h3>delegation</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">delegation</span>()</div>
+<div class="block">Returns the value of the <a href="#param-delegation"><code>delegation</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-delegation"><code>delegation</code></a> record component</dd>
 </dl>
 </div>
 </section>
