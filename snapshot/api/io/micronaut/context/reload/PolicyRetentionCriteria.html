@@ -65,7 +65,9 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#retain(io.micronaut.context.BeanRegistration)" tabindex="0">retain(BeanRegistration)</a></li>
 <li><a href="#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)" tabindex="0">observedConfigurationPrefixes(BeanRegistration)</a></li>
+<li><a href="#touches(java.lang.String)" tabindex="0">touches(String)</a></li>
 <li><a href="#isReplaced(java.lang.Class)" tabindex="0">isReplaced(Class)</a></li>
+<li><a href="#refusedBy(io.micronaut.context.BeanRegistration)" tabindex="0">refusedBy(BeanRegistration)</a></li>
 </ol>
 </li>
 </ol>
@@ -90,10 +92,12 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="RetentionCriteria.html" title="interface in io.micronaut.context.reload">RetentionCriteria</a></span></div>
 <div class="block">What a restart retains according to <a href="BeanRetentionPolicy.html" title="interface in io.micronaut.context.reload"><code>BeanRetentionPolicy</code></a> beans: a singleton a policy
-<a href="BeanRetentionPolicy.html#retain(io.micronaut.context.BeanRegistration)"><code>retains</code></a>, unless the change behind the restart touched a
-configuration prefix that one of the policies retaining it <a href="BeanRetentionPolicy.html#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)"><code>observes</code></a>
-for it: a pool kept across a changed URL would be the old pool, so the next context creates it again from the
-changed configuration.</div>
+<a href="BeanRetentionPolicy.Decision.html#RETAIN"><code>retains</code></a>, unless a change touched a configuration prefix one of the
+policies that retain it declares for it, and unless a policy <a href="BeanRetentionPolicy.Decision.html#REFUSE"><code>refuses</code></a> it,
+whatever their order. The context that stops also releases it when the change touched the prefix of a configuration
+bean in its closure, such as the <code>@ConfigurationProperties</code> it or its factory received, which no policy has to
+declare. A refusal also keeps a bean that holds the refused one from being retained, and the context
+that stops logs which policy refused.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -144,11 +148,22 @@ prototype it owns of such a class is not retained.</div>
 <a href="BeanRetentionPolicy.html#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)"><code>BeanRetentionPolicy.observedConfigurationPrefixes(BeanRegistration)</code></a> declares them: a configuration bean
 under one of them that the singleton holds is not retained with it, nor does it keep it from being retained.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retain(io.micronaut.context.BeanRegistration)" class="member-name-link">retain</a><wbr>(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="BeanRetentionPolicy.html" title="interface in io.micronaut.context.reload">BeanRetentionPolicy</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#refusedBy(io.micronaut.context.BeanRegistration)" class="member-name-link">refusedBy</a><wbr>(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The first policy that refuses the singleton.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retain(io.micronaut.context.BeanRegistration)" class="member-name-link">retain</a><wbr>(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Whether a policy retains the singleton and the change touched none of the prefixes the policies that retain it
-observe for it.</div>
+declare for it: a pool kept across a changed URL would be the old pool.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#touches(java.lang.String)" class="member-name-link">touches</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefix)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the change behind the restart touched the prefix of a configuration bean in the closure of a retained
+singleton, which releases it although no policy declares the prefix.</div>
 </div>
 </div>
 </div>
@@ -197,7 +212,8 @@ observe for it.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">retain</span><wbr><span class="parameters">(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</span></div>
 <div class="block">Whether a policy retains the singleton and the change touched none of the prefixes the policies that retain it
-observe for it.</div>
+declare for it: a pool kept across a changed URL would be the old pool. A refusal is answered by
+<a href="#refusedBy(io.micronaut.context.BeanRegistration)"><code>refusedBy(BeanRegistration)</code></a>.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="RetentionCriteria.html#retain(io.micronaut.context.BeanRegistration)">retain</a></code>&nbsp;in interface&nbsp;<code><a href="RetentionCriteria.html" title="interface in io.micronaut.context.reload">RetentionCriteria</a></code></dd>
@@ -205,12 +221,6 @@ observe for it.</div>
 <dd><code>registration</code> - The singleton's registration</dd>
 <dt>Returns:</dt>
 <dd>True to retain it</dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list-long">
-<li><a href="../DefaultBeanContext.html#stopRetaining(io.micronaut.context.reload.RetentionCriteria)"><code>DefaultBeanContext.stopRetaining(RetentionCriteria)</code></a></li>
-</ul>
-</dd>
 </dl>
 </div>
 </section>
@@ -223,14 +233,35 @@ observe for it.</div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="RetentionCriteria.html#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)">RetentionCriteria</a></code></span></div>
 <div class="block">The configuration prefixes a change under which releases a singleton this retains, as
 <a href="BeanRetentionPolicy.html#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)"><code>BeanRetentionPolicy.observedConfigurationPrefixes(BeanRegistration)</code></a> declares them: a configuration bean
-under one of them that the singleton holds is not retained with it, nor does it keep it from being retained.</div>
+under one of them that the singleton holds is not retained with it, nor does it keep it from being retained.
+
+A configuration bean of its closure under another prefix is observed instead, by <a href="RetentionCriteria.html#touches(java.lang.String)"><code>RetentionCriteria.touches(String)</code></a>, so
+the prefixes only need to cover what the singleton reads outside configuration beans.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="RetentionCriteria.html#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)">observedConfigurationPrefixes</a></code>&nbsp;in interface&nbsp;<code><a href="RetentionCriteria.html" title="interface in io.micronaut.context.reload">RetentionCriteria</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>registration</code> - The retained singleton's registration</dd>
 <dt>Returns:</dt>
-<dd>The prefixes, empty when no configuration change releases it</dd>
+<dd>The prefixes, empty when only the configuration beans of its closure release it</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="touches(java.lang.String)">
+<h3>touches</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">touches</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefix)</span></div>
+<div class="block">Whether the change behind the restart touched the prefix of a configuration bean in the closure of a retained
+singleton, which releases it although no policy declares the prefix.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="RetentionCriteria.html#touches(java.lang.String)">touches</a></code>&nbsp;in interface&nbsp;<code><a href="RetentionCriteria.html" title="interface in io.micronaut.context.reload">RetentionCriteria</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>prefix</code> - The prefix</dd>
+<dt>Returns:</dt>
+<dd>True when the change touched it</dd>
 </dl>
 </div>
 </section>
@@ -251,6 +282,23 @@ prototype it owns of such a class is not retained.</div>
 <dd><code>type</code> - The class of a definition or an instance in the closure of a retained bean</dd>
 <dt>Returns:</dt>
 <dd>True when the class is replaced</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="refusedBy(io.micronaut.context.BeanRegistration)">
+<h3>refusedBy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="BeanRetentionPolicy.html" title="interface in io.micronaut.context.reload">BeanRetentionPolicy</a></span>&nbsp;<span class="element-name">refusedBy</span><wbr><span class="parameters">(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</span></div>
+<div class="block">The first policy that refuses the singleton.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="RetentionCriteria.html#refusedBy(io.micronaut.context.BeanRegistration)">refusedBy</a></code>&nbsp;in interface&nbsp;<code><a href="RetentionCriteria.html" title="interface in io.micronaut.context.reload">RetentionCriteria</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>registration</code> - The singleton's registration</dd>
+<dt>Returns:</dt>
+<dd>The policy, or null when none refuses it</dd>
 </dl>
 </div>
 </section>

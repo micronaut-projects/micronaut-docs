@@ -122,9 +122,9 @@ keep, as described above.</p></div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]</code></div>
 <div class="col-second even-row-color"><code><a href="#invalidatedBy()" class="member-name-link">invalidatedBy</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">The configuration prefixes a change under which releases the retained bean: the next context
-creates it again from the changed configuration, so that a changed connection URL produces a new
-pool.</div>
+<div class="block">The configuration prefixes a change under which releases the retained bean, besides those of its
+configuration beans: the next context creates it again from the changed configuration, so that a
+changed connection URL produces a new pool.</div>
 </div>
 </div>
 </section>
@@ -143,16 +143,24 @@ pool.</div>
 <h3>invalidatedBy</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]</span>&nbsp;<span class="element-name">invalidatedBy</span></div>
-<div class="block">The configuration prefixes a change under which releases the retained bean: the next context
-creates it again from the changed configuration, so that a changed connection URL produces a new
-pool. A data source would name <code>datasources</code>, for example.
+<div class="block">The configuration prefixes a change under which releases the retained bean, besides those of its
+configuration beans: the next context creates it again from the changed configuration, so that a
+changed connection URL produces a new pool.
 
-<p>A configuration bean the retained bean received under one of these prefixes, or under a prefix within one,
-does not keep it from being retained, and is not retained with it: each generation binds it again. The bean
-must therefore copy the values it needs, and not keep the configuration bean.</p></div>
+<p>The bean is also released by a change under the prefix of any configuration bean in its closure,
+without naming it here: a <a href="ConfigurationProperties.html" title="annotation interface in io.micronaut.context.annotation"><code>ConfigurationProperties</code></a>, an <a href="EachProperty.html" title="annotation interface in io.micronaut.context.annotation"><code>EachProperty</code></a> entry, whose own
+prefix counts, so that a change of one entry releases only the beans made from it, or another
+<a href="ConfigurationReader.html" title="annotation interface in io.micronaut.context.annotation"><code>ConfigurationReader</code></a>, that the bean, the factory that produced it or any singleton it holds
+received, nested configuration included. These prefixes therefore only need to name what the bean
+reads outside configuration beans, such as a raw <a href="Property.html" title="annotation interface in io.micronaut.context.annotation"><code>Property</code></a> or <a href="Value.html" title="annotation interface in io.micronaut.context.annotation"><code>Value</code></a>, and with none the
+bean is released by the configuration of its closure alone.</p>
+
+<p>A configuration bean in the closure is not retained with the bean, nor does it keep it from being
+retained: each generation binds it again. The bean must therefore copy the values it needs, and not
+keep the configuration bean.</p></div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The configuration prefixes, empty when no configuration change releases the bean</dd>
+<dd>The configuration prefixes, empty when only the configuration of its closure releases the bean</dd>
 </dl>
 <dl class="notes">
 <dt>Default:</dt>

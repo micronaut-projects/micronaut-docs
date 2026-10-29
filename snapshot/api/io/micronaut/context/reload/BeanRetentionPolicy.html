@@ -54,11 +54,12 @@ loadScripts(document, 'script');</script>
 <div class="toc-header">Contents&nbsp;<input type="text" class="filter-input" disabled placeholder="Filter contents (type .)" aria-label="Filter table of contents" autocomplete="off" spellcheck="false"><input type="reset" class="reset-filter" disabled tabindex="-1" value="Reset"></div>
 <ol class="toc-list" tabindex="-1">
 <li><a href="#" tabindex="0">Description</a></li>
+<li><a href="#nested-class-summary" tabindex="0">Nested Class Summary</a></li>
 <li><a href="#field-summary" tabindex="0">Field Summary</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
-<li><a href="#retain(io.micronaut.context.BeanRegistration)" tabindex="0">retain(BeanRegistration)</a></li>
+<li><a href="#decide(io.micronaut.context.BeanRegistration)" tabindex="0">decide(BeanRegistration)</a></li>
 <li><a href="#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)" tabindex="0">observedConfigurationPrefixes(BeanRegistration)</a></li>
 </ol>
 </li>
@@ -87,11 +88,22 @@ context: they are not destroyed with the old context and are adopted by the new 
 
 <p>Retaining a bean is for what is expensive to create and independent of the application's
 classes: a connection pool, a client, a script engine. Policies are beans, consulted in
-<a href="../../core/order/Ordered.html" title="interface in io.micronaut.core.order"><code>order</code></a>; a bean is retained when any policy says so, and the launcher then checks
-that the bean's own class is not stale and that, according to the <a href="../BeanDependencyGraph.html" title="interface in io.micronaut.context"><code>BeanDependencyGraph</code></a>,
-nothing it received is stale either. A retained bean is dropped, and created again by the new
-context, when configuration under one of the prefixes the policy
-<a href="#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)"><code>declares</code></a> changed.</p></div>
+<a href="../../core/order/Ordered.html" title="interface in io.micronaut.core.order"><code>order</code></a>, and each <a href="#decide(io.micronaut.context.BeanRegistration)"><code>decides</code></a> a singleton: it
+<a href="BeanRetentionPolicy.Decision.html#RETAIN"><code>retains</code></a> it, <a href="BeanRetentionPolicy.Decision.html#REFUSE"><code>refuses</code></a> it, or
+<a href="BeanRetentionPolicy.Decision.html#ABSTAIN"><code>abstains</code></a>. A bean is retained when a policy retains it and none refuses
+it, whatever their order, so that a module can veto what another policy, an
+<a href="../annotation/Retain.html" title="annotation interface in io.micronaut.context.annotation"><code>Retain</code></a> annotation or <code>micronaut.dev.retain</code> asks for:
+a client that would instantiate a class of the application named by its configuration, which the
+context cannot see. A refused bean is destroyed and created again by the new context, as any bean
+that is not retained, and so is a retained bean that holds a refused one.</p>
+
+<p>The launcher then checks that the bean's own class is not stale and that, according to the
+<a href="../BeanDependencyGraph.html" title="interface in io.micronaut.context"><code>BeanDependencyGraph</code></a>, nothing it received is stale either, and the context refuses a bean
+that holds state bound to it; a policy cannot override these checks. A retained bean is dropped,
+and created again by the new context, when configuration under one of the prefixes a policy that
+retains it <a href="#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)"><code>declares</code></a> changed, or under the prefix of a
+configuration bean in its closure: a <code>@ConfigurationProperties</code>, an <code>@EachProperty</code> entry or another
+configuration reader that it, the factory that produced it or any bean it holds received.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -102,6 +114,23 @@ context, when configuration under one of the prefixes the policy
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li>
+<section class="nested-class-summary" id="nested-class-summary">
+<h2>Nested Class Summary</h2>
+<div class="caption"><span>Nested Classes</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Interface</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static enum&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="BeanRetentionPolicy.Decision.html" class="type-name-link" title="enum class in io.micronaut.context.reload">BeanRetentionPolicy.Decision</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">What a policy decides for a singleton.</div>
+</div>
+</div>
+</section>
+</li>
 <!-- =========== FIELD SUMMARY =========== -->
 <li>
 <section class="field-summary" id="field-summary">
@@ -122,16 +151,16 @@ context, when configuration under one of the prefixes the policy
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)" class="member-name-link">observedConfigurationPrefixes</a><wbr>(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">The configuration prefixes a change under which invalidates a retained bean this policy
-retains, so that a changed connection URL produces a new pool.</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="BeanRetentionPolicy.Decision.html" title="enum class in io.micronaut.context.reload">BeanRetentionPolicy.Decision</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#decide(io.micronaut.context.BeanRegistration)" class="member-name-link">decide</a><wbr>(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Decides whether the given singleton survives a restart.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#retain(io.micronaut.context.BeanRegistration)" class="member-name-link">retain</a><wbr>(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Whether the given singleton survives a restart.</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)" class="member-name-link">observedConfigurationPrefixes</a><wbr>(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">The configuration prefixes a change under which invalidates a retained bean this policy
+<a href="BeanRetentionPolicy.Decision.html#RETAIN"><code>retains</code></a>, so that a changed connection URL produces a new pool.</div>
 </div>
 </div>
 </div>
@@ -151,16 +180,17 @@ retains, so that a changed connection URL produces a new pool.</div>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="retain(io.micronaut.context.BeanRegistration)">
-<h3>retain</h3>
+<section class="detail" id="decide(io.micronaut.context.BeanRegistration)">
+<h3>decide</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">retain</span><wbr><span class="parameters">(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</span></div>
-<div class="block">Whether the given singleton survives a restart.</div>
+<div class="member-signature"><span class="return-type"><a href="BeanRetentionPolicy.Decision.html" title="enum class in io.micronaut.context.reload">BeanRetentionPolicy.Decision</a></span>&nbsp;<span class="element-name">decide</span><wbr><span class="parameters">(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</span></div>
+<div class="block">Decides whether the given singleton survives a restart.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>registration</code> - The bean's registration</dd>
 <dt>Returns:</dt>
-<dd>True to retain it</dd>
+<dd><a href="BeanRetentionPolicy.Decision.html#RETAIN"><code>BeanRetentionPolicy.Decision.RETAIN</code></a> to retain it, <a href="BeanRetentionPolicy.Decision.html#REFUSE"><code>BeanRetentionPolicy.Decision.REFUSE</code></a> to keep it from being retained whatever
+another policy decides, or <a href="BeanRetentionPolicy.Decision.html#ABSTAIN"><code>BeanRetentionPolicy.Decision.ABSTAIN</code></a> to leave it to the other policies</dd>
 </dl>
 </div>
 </section>
@@ -171,12 +201,14 @@ retains, so that a changed connection URL produces a new pool.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">observedConfigurationPrefixes</span><wbr><span class="parameters">(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</span></div>
 <div class="block">The configuration prefixes a change under which invalidates a retained bean this policy
-retains, so that a changed connection URL produces a new pool.</div>
+<a href="BeanRetentionPolicy.Decision.html#RETAIN"><code>retains</code></a>, so that a changed connection URL produces a new pool. The prefixes of the
+configuration beans in the bean's closure are observed without being declared, so these only need to cover what
+the bean reads outside configuration beans, such as a raw property value.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>registration</code> - The retained bean's registration</dd>
 <dt>Returns:</dt>
-<dd>The prefixes, empty if no configuration change invalidates the bean</dd>
+<dd>The prefixes, empty if only the configuration beans of its closure invalidate the bean</dd>
 </dl>
 </div>
 </section>

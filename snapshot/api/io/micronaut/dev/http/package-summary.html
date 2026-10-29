@@ -101,11 +101,31 @@ and reports as sources and resources change.</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="DevGateFilter.html" title="class in io.micronaut.dev.http">DevGateFilter</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">Holds requests while a reload is in progress, and answers them with the diagnostics while the last
+<div class="block">Holds requests while a reload is in progress, up to <a href="../manifest/DevManifest.html#requestHoldTimeout()"><code>DevManifest.requestHoldTimeout()</code></a>
+and then answers them with a 503 and a <code>Retry-After</code>; answers them with the diagnostics while the last
 compilation failed: a page for a browser, a structured 503 for anything else.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="LiveReloadScriptFilter.html" title="class in io.micronaut.dev.http">LiveReloadScriptFilter</a></div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="DevRouter.html" title="class in io.micronaut.dev.http">DevRouter</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">The router of a context in development mode: it forwards to the application's router, the one the
+context would inject without it (<a href="../../web/router/DefaultRouter.html" title="class in io.micronaut.web.router"><code>DefaultRouter</code></a> unless the
+application replaced it), and swaps that router for a new one when the routes change within a
+generation.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="DevRouter.NoPrimaryApplicationRouter.html" title="class in io.micronaut.dev.http">DevRouter.NoPrimaryApplicationRouter</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">Holds unless the application declares a primary router of its own, which this router would compete with for
+every injection of a <a href="../../web/router/Router.html" title="interface in io.micronaut.web.router"><code>Router</code></a>: the routes then reload by restarting only.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="DevServerSockets.html" title="class in io.micronaut.dev.http">DevServerSockets</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">The listening sockets of the application's HTTP servers, bound once and kept for the life of the
+development runtime, so that the port stays bound across generations: a connection that arrives while
+one generation stops and the next starts waits in the socket's backlog, and the next generation's
+server accepts it, instead of being refused.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="LiveReloadScriptFilter.html" title="class in io.micronaut.dev.http">LiveReloadScriptFilter</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Adds the LiveReload client script to HTML pages, and a no-store cache header so that a refresh
 always reaches the server.</div>
 </div>

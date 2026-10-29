@@ -60,6 +60,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#retain(io.micronaut.context.BeanRegistration)" tabindex="0">retain(BeanRegistration)</a></li>
 <li><a href="#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)" tabindex="0">observedConfigurationPrefixes(BeanRegistration)</a></li>
 <li><a href="#isReplaced(java.lang.Class)" tabindex="0">isReplaced(Class)</a></li>
+<li><a href="#refusedBy(io.micronaut.context.BeanRegistration)" tabindex="0">refusedBy(BeanRegistration)</a></li>
+<li><a href="#touches(java.lang.String)" tabindex="0">touches(String)</a></li>
 </ol>
 </li>
 </ol>
@@ -116,10 +118,22 @@ prototype it owns of such a class is not retained.</div>
 <a href="BeanRetentionPolicy.html#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)"><code>BeanRetentionPolicy.observedConfigurationPrefixes(BeanRegistration)</code></a> declares them: a configuration bean
 under one of them that the singleton holds is not retained with it, nor does it keep it from being retained.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#retain(io.micronaut.context.BeanRegistration)" class="member-name-link">retain</a><wbr>(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#refusedBy(io.micronaut.context.BeanRegistration)" class="member-name-link">refusedBy</a><wbr>(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">What refuses a singleton, so that it is not retained whatever <a href="#retain(io.micronaut.context.BeanRegistration)"><code>retain(BeanRegistration)</code></a> answers for
+it, nor is a singleton that holds it: a <a href="BeanRetentionPolicy.html" title="interface in io.micronaut.context.reload"><code>BeanRetentionPolicy</code></a> that
+<a href="BeanRetentionPolicy.Decision.html#REFUSE"><code>refuses</code></a> it.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#retain(io.micronaut.context.BeanRegistration)" class="member-name-link">retain</a><wbr>(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Whether a singleton survives the restart, with what it holds.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#touches(java.lang.String)" class="member-name-link">touches</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefix)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Whether the change behind the restart touched configuration at or under the prefix.</div>
 </div>
 </div>
 </div>
@@ -157,12 +171,15 @@ under one of them that the singleton holds is not retained with it, nor does it 
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">observedConfigurationPrefixes</span><wbr><span class="parameters">(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</span></div>
 <div class="block">The configuration prefixes a change under which releases a singleton this retains, as
 <a href="BeanRetentionPolicy.html#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)"><code>BeanRetentionPolicy.observedConfigurationPrefixes(BeanRegistration)</code></a> declares them: a configuration bean
-under one of them that the singleton holds is not retained with it, nor does it keep it from being retained.</div>
+under one of them that the singleton holds is not retained with it, nor does it keep it from being retained.
+
+A configuration bean of its closure under another prefix is observed instead, by <a href="#touches(java.lang.String)"><code>touches(String)</code></a>, so
+the prefixes only need to cover what the singleton reads outside configuration beans.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>registration</code> - The retained singleton's registration</dd>
 <dt>Returns:</dt>
-<dd>The prefixes, empty when no configuration change releases it</dd>
+<dd>The prefixes, empty when only the configuration beans of its closure release it</dd>
 </dl>
 </div>
 </section>
@@ -180,6 +197,43 @@ prototype it owns of such a class is not retained.</div>
 <dd><code>type</code> - The class of a definition or an instance in the closure of a retained bean</dd>
 <dt>Returns:</dt>
 <dd>True when the class is replaced</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="refusedBy(io.micronaut.context.BeanRegistration)">
+<h3>refusedBy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">refusedBy</span><wbr><span class="parameters">(<a href="../BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;?&gt;&nbsp;registration)</span></div>
+<div class="block">What refuses a singleton, so that it is not retained whatever <a href="#retain(io.micronaut.context.BeanRegistration)"><code>retain(BeanRegistration)</code></a> answers for
+it, nor is a singleton that holds it: a <a href="BeanRetentionPolicy.html" title="interface in io.micronaut.context.reload"><code>BeanRetentionPolicy</code></a> that
+<a href="BeanRetentionPolicy.Decision.html#REFUSE"><code>refuses</code></a> it. It is asked about every singleton of the closure of a
+bean <a href="#retain(io.micronaut.context.BeanRegistration)"><code>retained</code></a>, and the log names it by its class.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>registration</code> - The singleton's registration</dd>
+<dt>Returns:</dt>
+<dd>What refuses it, or null when nothing does</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="touches(java.lang.String)">
+<h3>touches</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">touches</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;prefix)</span></div>
+<div class="block">Whether the change behind the restart touched configuration at or under the prefix. A retained singleton is
+released when a configuration bean in its closure, under a prefix that
+<a href="#observedConfigurationPrefixes(io.micronaut.context.BeanRegistration)"><code>observedConfigurationPrefixes(BeanRegistration)</code></a> does not cover, is under a touched prefix: the singleton
+was made from that configuration, which the next context binds again. It is asked about the prefix of each such
+configuration bean, the entry's own for an <a href="../annotation/EachProperty.html" title="annotation interface in io.micronaut.context.annotation"><code>EachProperty</code></a> entry.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>prefix</code> - The prefix of a configuration bean in the closure of a retained singleton</dd>
+<dt>Returns:</dt>
+<dd>True when the change touched it</dd>
 </dl>
 </div>
 </section>

@@ -62,6 +62,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#PREFIX" tabindex="0">PREFIX</a></li>
 <li><a href="#MANIFEST_PROPERTY" tabindex="0">MANIFEST_PROPERTY</a></li>
 <li><a href="#MAX_GENERATIONS" tabindex="0">MAX_GENERATIONS</a></li>
+<li><a href="#REQUESTS_HOLD_TIMEOUT" tabindex="0">REQUESTS_HOLD_TIMEOUT</a></li>
+<li><a href="#REQUESTS_DRAIN_TIMEOUT" tabindex="0">REQUESTS_DRAIN_TIMEOUT</a></li>
+<li><a href="#REQUESTS_RETAIN_SOCKETS" tabindex="0">REQUESTS_RETAIN_SOCKETS</a></li>
 <li><a href="#NATIVE_MAX_GENERATIONS" tabindex="0">NATIVE_MAX_GENERATIONS</a></li>
 </ol>
 </li>
@@ -92,6 +95,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#maxGenerations()" tabindex="0">maxGenerations()</a></li>
 <li><a href="#retain()" tabindex="0">retain()</a></li>
 <li><a href="#retainAnnotated()" tabindex="0">retainAnnotated()</a></li>
+<li><a href="#requestHoldTimeout()" tabindex="0">requestHoldTimeout()</a></li>
+<li><a href="#requestDrainTimeout()" tabindex="0">requestDrainTimeout()</a></li>
+<li><a href="#retainServerSockets()" tabindex="0">retainServerSockets()</a></li>
 <li><a href="#liveReload()" tabindex="0">liveReload()</a></li>
 <li><a href="#mode()" tabindex="0">mode()</a></li>
 <li><a href="#testSourceRoots()" tabindex="0">testSourceRoots()</a></li>
@@ -146,6 +152,9 @@ micronaut.dev.build-tool=gradle
 micronaut.dev.build-tool.trigger=build/micronaut-dev/reload
 micronaut.dev.retain=javax.sql.DataSource
 micronaut.dev.max-generations=10
+micronaut.dev.requests.hold-timeout=30s
+micronaut.dev.requests.drain-timeout=10s
+micronaut.dev.requests.retain-sockets=true
 </pre></div>
 <dl class="notes">
 <dt>Since:</dt>
@@ -205,6 +214,24 @@ the interpreter's data for them on the heap, for the life of the process.</div>
 <div class="col-second odd-row-color"><code><a href="#PREFIX" class="member-name-link">PREFIX</a></code></div>
 <div class="col-last odd-row-color">
 <div class="block">The prefix of every key.</div>
+</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#REQUESTS_DRAIN_TIMEOUT" class="member-name-link">REQUESTS_DRAIN_TIMEOUT</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">The key of how long a restart waits for the requests in flight on the stopping generation to finish before it
+stops it anyway.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#REQUESTS_HOLD_TIMEOUT" class="member-name-link">REQUESTS_HOLD_TIMEOUT</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">The key of how long a request that arrives while a batch is processed waits for it, before it is answered with a
+503 and a <code>Retry-After</code>.</div>
+</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#REQUESTS_RETAIN_SOCKETS" class="member-name-link">REQUESTS_RETAIN_SOCKETS</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">The key of whether the HTTP servers' listening sockets are kept bound across generations, so that a connection
+made during a restart waits for the next generation instead of being refused.</div>
 </div>
 </div>
 </section>
@@ -304,6 +331,19 @@ generation.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reloadableRoots()" class="member-name-link">reloadableRoots</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#requestDrainTimeout()" class="member-name-link">requestDrainTimeout</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">How long a restart waits for the requests in flight on the stopping generation, <a href="#REQUESTS_DRAIN_TIMEOUT">"micronaut.dev.requests.drain-timeout"</a>:
+they finish on the generation they started on.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#requestHoldTimeout()" class="member-name-link">requestHoldTimeout</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">How long a request that arrives while a batch is processed is held, <a href="#REQUESTS_HOLD_TIMEOUT">"micronaut.dev.requests.hold-timeout"</a>: it is
+served once the batch is done, by the generation that runs then, or answered with a 503 and a <code>Retry-After</code>
+when the batch takes longer.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="ResourceRoot.html" title="class in io.micronaut.dev.manifest">ResourceRoot</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resourceRoots()" class="member-name-link">resourceRoots</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -316,42 +356,47 @@ generation.</div>
 <div class="block">Whether the beans a module annotated with <a href="../../context/annotation/Retain.html" title="annotation interface in io.micronaut.context.annotation"><code>Retain</code></a> are retained too, as they
 are unless <code>micronaut.dev.retain-annotated=false</code>, which leaves only what <code>micronaut.dev.retain</code> names.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runtimeClasspath()" class="member-name-link">runtimeClasspath</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../compile/SourceRoot.html" title="class in io.micronaut.dev.compile">SourceRoot</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sourceRoots()" class="member-name-link">sourceRoots</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retainServerSockets()" class="member-name-link">retainServerSockets</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the HTTP servers' listening sockets are kept bound across generations, <a href="#REQUESTS_RETAIN_SOCKETS">"micronaut.dev.requests.retain-sockets"</a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runtimeClasspath()" class="member-name-link">runtimeClasspath</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../compile/SourceRoot.html" title="class in io.micronaut.dev.compile">SourceRoot</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sourceRoots(io.micronaut.dev.compile.SourceKind)" class="member-name-link">sourceRoots</a><wbr>(<a href="../compile/SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&nbsp;kind)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sourceRoots()" class="member-name-link">sourceRoots</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../compile/SourceRoot.html" title="class in io.micronaut.dev.compile">SourceRoot</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sourceRoots(io.micronaut.dev.compile.SourceKind)" class="member-name-link">sourceRoots</a><wbr>(<a href="../compile/SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&nbsp;kind)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The source roots of one language.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DevReloadStrategy.html" title="enum class in io.micronaut.dev.manifest">DevReloadStrategy</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#strategy()" class="member-name-link">strategy</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testClassOutput(io.micronaut.dev.compile.SourceKind)" class="member-name-link">testClassOutput</a><wbr>(<a href="../compile/SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&nbsp;kind)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DevReloadStrategy.html" title="enum class in io.micronaut.dev.manifest">DevReloadStrategy</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#strategy()" class="member-name-link">strategy</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testClassOutput(io.micronaut.dev.compile.SourceKind)" class="member-name-link">testClassOutput</a><wbr>(<a href="../compile/SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&nbsp;kind)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The class output of a test language: <code>micronaut.dev.test.compile.&lt;kind&gt;.output</code>, or else <code>&lt;output&gt;-test</code>
 beside the application's output of that language.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="ResourceRoot.html" title="class in io.micronaut.dev.manifest">ResourceRoot</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testResourceRoots()" class="member-name-link">testResourceRoots</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="ResourceRoot.html" title="class in io.micronaut.dev.manifest">ResourceRoot</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testResourceRoots()" class="member-name-link">testResourceRoots</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The test resource roots, read live ahead of the main ones in test mode.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TestSettings.html" title="class in io.micronaut.dev.manifest">TestSettings</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testSettings()" class="member-name-link">testSettings</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../compile/SourceRoot.html" title="class in io.micronaut.dev.compile">SourceRoot</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testSourceRoots()" class="member-name-link">testSourceRoots</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TestSettings.html" title="class in io.micronaut.dev.manifest">TestSettings</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testSettings()" class="member-name-link">testSettings</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../compile/SourceRoot.html" title="class in io.micronaut.dev.compile">SourceRoot</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testSourceRoots()" class="member-name-link">testSourceRoots</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The test source roots, compiled into the test class outputs against the main ones.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DevManifest.html" title="class in io.micronaut.dev.manifest">DevManifest</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testView()" class="member-name-link">testView</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DevManifest.html" title="class in io.micronaut.dev.manifest">DevManifest</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#testView()" class="member-name-link">testView</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The tests seen as a manifest of their own, so that they compile as the application does: its source roots are
 the test roots, its class outputs, generated sources and options are those of <code>micronaut.dev.test.compile.&lt;kind&gt;.*</code>,
 its compile classpath is <code>micronaut.dev.test.compile-classpath</code>, or else the application's, with the
@@ -421,6 +466,60 @@ relaunch it.</div>
 <dd>
 <ul class="tag-list">
 <li><a href="../../../../constant-values.html#io.micronaut.dev.manifest.DevManifest.MAX_GENERATIONS">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="REQUESTS_HOLD_TIMEOUT">
+<h3>REQUESTS_HOLD_TIMEOUT</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">REQUESTS_HOLD_TIMEOUT</span></div>
+<div class="block">The key of how long a request that arrives while a batch is processed waits for it, before it is answered with a
+503 and a <code>Retry-After</code>. A duration, such as <code>30s</code> or <code>500ms</code>; a bare number is seconds.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#io.micronaut.dev.manifest.DevManifest.REQUESTS_HOLD_TIMEOUT">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="REQUESTS_DRAIN_TIMEOUT">
+<h3>REQUESTS_DRAIN_TIMEOUT</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">REQUESTS_DRAIN_TIMEOUT</span></div>
+<div class="block">The key of how long a restart waits for the requests in flight on the stopping generation to finish before it
+stops it anyway.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#io.micronaut.dev.manifest.DevManifest.REQUESTS_DRAIN_TIMEOUT">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="REQUESTS_RETAIN_SOCKETS">
+<h3>REQUESTS_RETAIN_SOCKETS</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">REQUESTS_RETAIN_SOCKETS</span></div>
+<div class="block">The key of whether the HTTP servers' listening sockets are kept bound across generations, so that a connection
+made during a restart waits for the next generation instead of being refused. On by default.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#io.micronaut.dev.manifest.DevManifest.REQUESTS_RETAIN_SOCKETS">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
@@ -798,6 +897,49 @@ are unless <code>micronaut.dev.retain-annotated=false</code>, which leaves only 
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>True to retain them</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="requestHoldTimeout()">
+<h3>requestHoldTimeout</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">requestHoldTimeout</span>()</div>
+<div class="block">How long a request that arrives while a batch is processed is held, <a href="#REQUESTS_HOLD_TIMEOUT">"micronaut.dev.requests.hold-timeout"</a>: it is
+served once the batch is done, by the generation that runs then, or answered with a 503 and a <code>Retry-After</code>
+when the batch takes longer. 30 seconds by default.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The timeout</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="requestDrainTimeout()">
+<h3>requestDrainTimeout</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">requestDrainTimeout</span>()</div>
+<div class="block">How long a restart waits for the requests in flight on the stopping generation, <a href="#REQUESTS_DRAIN_TIMEOUT">"micronaut.dev.requests.drain-timeout"</a>:
+they finish on the generation they started on. 10 seconds by default: a connection that never finishes, such as a
+websocket or an event stream, holds each restart this long.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The timeout</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="retainServerSockets()">
+<h3>retainServerSockets</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">retainServerSockets</span>()</div>
+<div class="block">Whether the HTTP servers' listening sockets are kept bound across generations, <a href="#REQUESTS_RETAIN_SOCKETS">"micronaut.dev.requests.retain-sockets"</a>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>True unless turned off</dd>
 </dl>
 </div>
 </section>
