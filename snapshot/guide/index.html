@@ -42236,13 +42236,13 @@ multiple times:</p>
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-Functional routes are experimental. The API, in the package <a href="../api/io/micronaut/web/router/builder/package-summary.html">io.micronaut.web.router.builder</a> and the related types <a href="../api/io/micronaut/http/body/AsyncRequestBody.html">AsyncRequestBody</a>, <a href="../api/io/micronaut/http/body/BodyElements.html">BodyElements</a> and the package <a href="../api/io/micronaut/http/form/package-summary.html">io.micronaut.http.form</a>, is annotated with <a href="../api/io/micronaut/core/annotation/Experimental.html">@Experimental</a> and may change in a future release.
+Functional routes are experimental. The APIs in <a href="../api/io/micronaut/web/router/builder/package-summary.html">io.micronaut.web.router.builder</a>, <a href="../api/io/micronaut/http/body/AsyncRequestBody.html">AsyncRequestBody</a>, <a href="../api/io/micronaut/http/body/BodyElements.html">BodyElements</a> and <a href="../api/io/micronaut/http/form/package-summary.html">io.micronaut.http.form</a> may change in a future release.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Besides controllers, the Micronaut HTTP server routes requests to <strong>handler functions</strong> declared in code. A bean of type <a href="../api/io/micronaut/web/router/builder/HttpRoutes.html">HttpRoutes</a> receives an <a href="../api/io/micronaut/web/router/builder/HttpRouteBuilder.html">HttpRouteBuilder</a> and declares its routes with it:</p>
+<p>Functional routes let you handle HTTP requests with functions instead of controller methods. Define an <a href="../api/io/micronaut/web/router/builder/HttpRoutes.html">HttpRoutes</a> bean and use the <a href="../api/io/micronaut/web/router/builder/HttpRouteBuilder.html">HttpRouteBuilder</a> it receives to declare routes:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">A handler route</div>
@@ -42320,41 +42320,16 @@ class HelloRoutes implements HttpRoutes {
 </div>
 </div>
 <div class="paragraph">
-<p>A handler route is a route like the route of a controller method, not a separate request model. The router sees the handler as an executable method, so everything that applies to a controller route applies to a handler route:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>argument binding, the message body readers and writers, and content negotiation (the <code>405</code>, <code>415</code> and <code>406</code> answers);</p>
-</li>
-<li>
-<p>the application&#8217;s filters (<code>@ServerFilter</code> beans and <a href="../api/io/micronaut/http/filter/HttpServerFilter.html">HttpServerFilter</a> beans), CORS and the implicit <code>HEAD</code> route of a <code>GET</code> route;</p>
-</li>
-<li>
-<p>the error routes: <code>@Error</code> methods and <a href="../api/io/micronaut/http/server/exceptions/ExceptionHandler.html">ExceptionHandler</a> beans, which receive checked exceptions unwrapped;</p>
-</li>
-<li>
-<p>the executors (<code>@ExecuteOn</code>, <code>@NonBlocking</code> and the thread selection of the server), and the propagated context.</p>
-</li>
-</ul>
+<p>Handler routes use the same HTTP server pipeline as controller routes. They support argument binding, body readers and writers, content negotiation, application filters, CORS, error handling and executor selection. A <code>GET</code> route also gets an implicit <code>HEAD</code> route.</p>
 </div>
 <div class="paragraph">
-<p>Functional routes add what is natural to declare in code: groups of routes with a common path prefix and common filters, filters on a single route, request conditions, error routes local to a group, and routes to targets located at runtime.</p>
+<p>Use functional routes to organize handlers into groups, apply filters and conditions in code, or route requests to a target found at runtime. You can implement <code>HttpRoutes</code> in a class or return it as a lambda from a factory method.</p>
 </div>
 <div class="paragraph">
-<p>Every <code>HttpRoutes</code> bean adds its routes next to the controllers, under <code>micronaut.server.context-path</code> if one is configured. Declare an <code>HttpRoutes</code> bean as a class, as above, or return a lambda from a factory method, as in the next section. The order of the <code>HttpRoutes</code> beans only orders the beans: it never decides which route answers a request.</p>
+<p>Functional routes coexist with controllers and use <code>micronaut.server.context-path</code> when configured. Route matching determines which route handles a request; the order of the <code>HttpRoutes</code> beans does not give their routes priority.</p>
 </div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-The router reads the routes, their configuration and their filters when it is created: the routes cannot change while the application runs. A builder, group or route specification kept after <code>HttpRoutes.routes(&#8230;&#8203;)</code>, or after the lambda of its group, returned throws an <code>IllegalStateException</code> when it is used, and so does a filter of a group. The other specifications are not checked: a change to a filter declared with <code>serverFilter(&#8230;&#8203;)</code> on the builder, or to an error or status route, after <code>HttpRoutes.routes(&#8230;&#8203;)</code> returned is ignored.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>Declare routes and configure their builders inside <code>HttpRoutes.routes(&#8230;&#8203;)</code> and group callbacks. Routes are fixed when the router is created; retaining a builder does not let you change them at runtime.</p>
 </div>
 
 <h2 id="functionalRoutesDeclaring"><a class="anchor" href="#functionalRoutesDeclaring"></a>6.31.1 Declaring Routes</h2>
@@ -42367,39 +42342,26 @@ The router reads the routes, their configuration and their filters when it is cr
 
 
 <div class="paragraph">
-<p>A route is declared in four steps, in this order:</p>
+<p>Build a route in this order:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>a <strong>creator</strong> of the <a href="../api/io/micronaut/web/router/builder/HttpRouteBuilder.html">HttpRouteBuilder</a>, e.g. <code>POST("/items")</code>, starts the route and returns an <a href="../api/io/micronaut/web/router/builder/HttpRouteSpec.html">HttpRouteSpec</a>;</p>
+<p>Choose an HTTP method and URI, such as <code>POST("/items")</code>.</p>
 </li>
 <li>
-<p><strong>settings</strong>, e.g. the media types or the executor;</p>
+<p>Apply settings, such as media types or an executor.</p>
 </li>
 <li>
-<p>optionally, a <strong>body stage</strong>, e.g. <code>.body(Item.class)</code>, declares the body the handler receives;</p>
+<p>Optionally choose a body stage, such as <code>body(Item.class)</code>.</p>
 </li>
 <li>
-<p>a <strong>terminal</strong>, e.g. <code>.handle(&#8230;&#8203;)</code>, gives the handler or the response, and adds the route.</p>
-<div class="ulist">
-<ul>
-<li>
-<p>The creators: <code>GET(uri)</code>, <code>POST(uri)</code>, <code>PUT(uri)</code>, <code>PATCH(uri)</code> and <code>DELETE(uri)</code>, <code>route(HttpMethod, uri)</code> for any standard method, <code>route(Set&lt;HttpMethod&gt;, uri)</code> for several methods, <code>route(String, uri)</code> for a method by its name, custom methods included, and <code>any(uri)</code> for every method.</p>
-</li>
-<li>
-<p>The body stages: <code>body(Class)</code> or <code>body(Argument)</code> for the decoded body, <code>form()</code> for a submitted form and <code>body()</code> for the body the handler reads itself.</p>
-</li>
-<li>
-<p>The terminals: <code>handle(&#8230;&#8203;)</code> for a handler that returns the response, <code>handleAsync(&#8230;&#8203;)</code> for one that completes it later, and <code>respond(&#8230;&#8203;)</code> for a response without a handler, see <a href="#functionalRoutesRespond">Responses Without a Handler</a>.</p>
-</li>
-</ul>
-</div>
+<p>Finish with <code>handle(&#8230;&#8203;)</code>, <code>handleAsync(&#8230;&#8203;)</code> or <code>respond(&#8230;&#8203;)</code> to register the route.</p>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>A route without settings has a shortcut per method, <code>GET(uri, handler)</code>, <code>POST(uri, handler)</code>, <code>PUT(uri, handler)</code>, <code>PATCH(uri, handler)</code>, <code>DELETE(uri, handler)</code> and <code>any(uri, handler)</code>, the same as <code>GET(uri).handle(handler)</code>:</p>
+<p>For a simple route, <code>GET(uri, handler)</code> is a shortcut for <code>GET(uri).handle(handler)</code>.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Declaring handler routes</div>
@@ -42626,67 +42588,76 @@ class ItemRoutes {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>An <code>HttpRoutes</code> bean, here returned as a lambda by a factory method, which can inject the beans the handlers use.</td>
+<td>A factory method returns an <code>HttpRoutes</code> bean and injects the service used by its handlers.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>A shortcut: a <a href="../api/io/micronaut/web/router/builder/RequestHandler.html">RequestHandler</a> receives the request and the <a href="../api/io/micronaut/http/PathVariables.html">PathVariables</a> of the matched route. Their typed accessors (<code>getString</code>, <code>getInt</code>, <code>getLong</code>, <code>get(name, UUID.class)</code>, &#8230;&#8203; with a default value overload, and <code>findInt</code>, <code>findString</code>, &#8230;&#8203;, and the list accessors <code>getStrings</code>, <code>getList(name, Integer.class)</code> and <code>findList</code>, which split an exploded or comma separated value like a <code>List</code> controller argument) convert the values like controller arguments: a missing or unconvertible value is answered with <code>400</code>. An <a href="../api/io/micronaut/http/exceptions/HttpStatusException.html">HttpStatusException</a> thrown by the handler sets the status, here <code>404</code> for an unknown item.</td>
+<td>A handler receives the request and <a href="../api/io/micronaut/http/PathVariables.html">PathVariables</a>. Typed accessors such as <code>getLong</code> convert path values; missing or invalid values produce <code>400</code>. Throw an <a href="../api/io/micronaut/http/exceptions/HttpStatusException.html">HttpStatusException</a> to return a status such as <code>404</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>A creator declares the method and the URI template of a route, and returns the pending route.</td>
+<td>Start a route with its HTTP method and URI template.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td><code>body(Item.class)</code> declares the body the handler receives, decoded like a <code>@Body</code> argument of a controller method: with the message body readers of the content type, a <code>400</code> for an invalid body and a <code>415</code> for an unsupported content type. The route becomes an <a href="../api/io/micronaut/web/router/builder/HttpBodyRouteSpec.html">HttpBodyRouteSpec</a>, whose <code>handle</code> takes a <a href="../api/io/micronaut/web/router/builder/BodyRequestHandler.html">BodyRequestHandler</a>, <code>(request, pathVariables, item) &#8594; &#8230;&#8203;</code>. A generic type is given as an <code>Argument</code>, e.g. <code>body(Argument.listOf(Item.class))</code>.</td>
+<td><code>body(Item.class)</code> decodes the request body before calling the handler. Use <code>body(Argument.listOf(Item.class))</code> for a generic type. Invalid bodies produce <code>400</code>; unsupported content types produce <code>415</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td><code>produces</code> and <code>consumes</code> declare the media types of the route, like <code>@Produces</code> and <code>@Consumes</code>. <code>consumesAll()</code> accepts any content type. A route consumes and produces JSON by default.</td>
+<td><code>produces</code> and <code>consumes</code> set media types. Routes use JSON by default; <code>consumesAll()</code> accepts any content type.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td><code>executeOn</code> runs the handler on a named executor, like <code>@ExecuteOn</code>; <code>nonBlocking()</code> keeps it on the event loop, like <code>@NonBlocking</code>. Without either, the thread is selected like for a controller method.</td>
+<td><code>executeOn</code> selects a named executor. <code>nonBlocking()</code> marks the handler for event-loop execution. Otherwise, server thread selection applies as it does to a controller.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
-<td><code>route(Set&lt;HttpMethod&gt;, uri)</code> declares the route for several methods at once. Its settings apply to all of them.</td>
+<td><code>route(Set&lt;HttpMethod&gt;, uri)</code> shares a handler and settings across several methods.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="8"></i><b>8</b></td>
-<td><code>route(String, uri)</code> routes a custom HTTP method by its name, like <code>@CustomHttpMethod</code>.</td>
+<td><code>route(String, uri)</code> supports custom HTTP methods.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="9"></i><b>9</b></td>
-<td><code>handleAsync</code> takes an <a href="../api/io/micronaut/web/router/builder/AsyncRequestHandler.html">AsyncRequestHandler</a>, which returns a <code>CompletionStage</code> of the response, like a controller method returning a <code>CompletableFuture</code>. It does not read the body.</td>
+<td><code>handleAsync</code> returns a <code>CompletionStage</code> of the response. Without a body stage, it does not read the body.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="10"></i><b>10</b></td>
-<td>After a body stage, <code>handleAsync</code> takes an <a href="../api/io/micronaut/web/router/builder/AsyncBodyRequestHandler.html">AsyncBodyRequestHandler</a> of the body: here the decoded body, read before the handler runs. With <code>body()</code>, the handler receives the body as an <a href="../api/io/micronaut/http/body/AsyncRequestBody.html">AsyncRequestBody</a> and reads it itself, see <a href="#functionalRoutesBody">Reading the Request Body</a>.</td>
+<td>After a typed body stage, the asynchronous handler receives the decoded body. With <code>body()</code>, it receives an <a href="../api/io/micronaut/http/body/AsyncRequestBody.html">AsyncRequestBody</a> to read itself.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="11"></i><b>11</b></td>
-<td>A body type made with <code>HttpRouteBuilder.nullableBody(&#8230;&#8203;)</code> is <code>null</code> when the request has no body, instead of a <code>400</code>.</td>
+<td><code>HttpRouteBuilder.nullableBody(&#8230;&#8203;)</code> allows a missing body, passing <code>null</code> instead of returning <code>400</code>.</td>
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_choosing_a_method">Choosing a Method</h3>
 <div class="paragraph">
-<p>The settings of a route come before its terminal, which returns nothing: a route is declared by one statement, and a setting cannot follow the handler. A route whose declaration is not ended with a terminal is an error: the application fails to start with an <code>IllegalStateException</code> naming the route and its <code>HttpRoutes</code> bean, e.g. <code>The route GET /items/{id} declared by ItemRoutes has no handler: end it with handle, handleAsync or respond</code>. A route declared in a group is checked when the lambda of the group returns. A pending route ends with one terminal: a second one, or a setting after it, fails.</p>
+<p>Use <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code> or <code>DELETE</code> for common methods, or <code>route(HttpMethod, uri)</code> for another standard method. Use <code>any(uri)</code> to handle every method, including custom ones.</p>
 </div>
 <div class="paragraph">
-<p>A <code>GET</code> route gets an implicit <code>HEAD</code> route, and a request with another method is answered with <code>405</code> and an <code>Allow</code> header listing the methods of the path, as for a controller. <code>OPTIONS</code> requests and CORS preflight requests are answered for handler routes as for controllers, see <a href="#cors">Configuring CORS</a>.</p>
+<p>A specific-method route takes precedence over <code>any(&#8230;&#8203;)</code> when the routes otherwise match equally well. More specific paths still take precedence: <code>any("/files/special")</code> can win over <code>GET("/files/{name}")</code>.</p>
 </div>
 <div class="paragraph">
-<p><code>any(uri)</code> routes every HTTP method, standard or custom, to one handler, with the same stages and terminals as the other creators, e.g. <code>any(uri).body(Item.class).handle(&#8230;&#8203;)</code>, and the shortcut <code>any(uri, handler)</code>. A route of a specific method on the same path answers its method instead, and so does the implicit <code>HEAD</code> route of a <code>GET</code> route; the CORS filter still answers a preflight request, so <code>any</code> answers the other <code>OPTIONS</code> and <code>HEAD</code> requests. A path with an <code>any</code> route is never answered with <code>405</code>. The route of a specific method wins only when it matches as closely: a more specific <code>any</code> route, e.g. <code>/files/special</code>, answers before <code>GET /files/{name}</code>.</p>
+<p><code>GET</code> also handles <code>HEAD</code>. Method mismatches produce <code>405</code> with an <code>Allow</code> header, and <a href="#cors">CORS</a> works as it does for controllers. A path matched by <code>any(&#8230;&#8203;)</code> accepts every method and does not produce <code>405</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_returning_a_response">Returning a Response</h3>
+<div class="paragraph">
+<p>Return an <code>HttpResponse</code> from <code>handle</code>, or a <code>CompletionStage</code> of one from <code>handleAsync</code>. Exceptions go through the <a href="#functionalRoutesErrors">error routes</a>, including checked exceptions. A synchronous handler returning <code>null</code> behaves like a controller returning <code>null</code>.</p>
 </div>
 <div class="paragraph">
-<p>A handler that throws, a checked exception included, is answered by the error routes, see <a href="#functionalRoutesErrors">Error and Status Routes</a>. A synchronous handler that returns <code>null</code> is answered like a controller method returning <code>null</code>.</p>
+<p>By default, the response writer uses the body&#8217;s runtime type. Use <code>responseType(Class)</code> or <code>responseType(Argument)</code> when the writer needs a declared type, including generic information such as <code>Argument.listOf(Item.class)</code>.</p>
 </div>
 <div class="paragraph">
-<p>A handler returns an <code>HttpResponse</code> whose body is written in the runtime class of the body. The setting <code>responseType(Argument)</code> declares the type of the body, like the return type <code>HttpResponse&lt;R&gt;</code> of a controller method, so that the message body writer is selected for the declared type with its type arguments and annotations, e.g. <code>GET("/items").responseType(Argument.listOf(Item.class)).handle(&#8230;&#8203;)</code>, or <code>responseType(Class)</code> for a type without type arguments.</p>
+<p>A response may also contain a <code>Publisher</code> body. For streaming alternatives, see <a href="#functionalRoutesStreaming">Server-Sent Events and Streamed Responses</a>.</p>
 </div>
 <div class="paragraph">
-<p>A handler can also answer with a <code>Publisher</code> body, e.g. a stream of server-sent events with <code>.produces(MediaType.TEXT_EVENT_STREAM_TYPE)</code>, or of JSON objects written as a JSON array. The elements are written as they are emitted, as for a controller returning a <code>Publisher</code>. To stream without a <code>Publisher</code>, see <a href="#functionalRoutesStreaming">Server-Sent Events and Streamed Responses</a>.</p>
+<p>Finish each route with exactly one terminal call. An unfinished route fails application startup. Configure settings before the terminal, and complete grouped routes before the group callback returns.</p>
+</div>
 </div>
 
 <h2 id="functionalRoutesRespond"><a class="anchor" href="#functionalRoutesRespond"></a>6.31.2 Responses Without a Handler</h2>
@@ -42699,7 +42670,7 @@ class ItemRoutes {
 
 
 <div class="paragraph">
-<p>The terminal <code>respond(&#8230;&#8203;)</code> ends a route that answers with a fixed or computed response, without a handler function reading the request: a static body and status, a redirect, a constant health answer, or a response built from the path variables only.</p>
+<p>Use <code>respond(&#8230;&#8203;)</code> for a fixed response, a redirect, or an answer that depends only on path variables. Use a handler when you need headers, query parameters, cookies, the body or other request data.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Routes that respond without a handler</div>
@@ -42844,65 +42815,78 @@ class RespondRoutes implements HttpRoutes {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>A response given as a value, copied when the route is declared.</td>
+<td>Register a fixed response. Its response metadata is copied when the route is declared.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>A <code>respond</code> route is an ordinary route: the server filters, the filters of its groups and its own filters run, and so do its conditions, its constraints, the error routes and CORS.</td>
+<td>Conditions, constraints, filters, error handling and CORS still apply.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>A redirect is a response like any other.</td>
+<td>Return a redirect.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>A <code>Supplier</code> creates a new response for each request.</td>
+<td>A <code>Supplier</code> creates a response for each request.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>A <code>Function</code> creates the response from the <a href="../api/io/micronaut/http/PathVariables.html">PathVariables</a> of the matched route: it never receives the request.</td>
+<td>A <code>Function</code> creates a response from <a href="../api/io/micronaut/http/PathVariables.html">PathVariables</a>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>Any creator declares the route, here for another method.</td>
+<td><code>respond</code> works with other HTTP methods too.</td>
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_choosing_a_response_form">Choosing a Response Form</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Form</th>
+<th class="tableblock halign-left valign-top">Use for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>respond(HttpResponse)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A fixed status, headers and reusable body.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>respond(Supplier&lt;HttpResponse&gt;)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A fresh response for each request.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>respond(Function&lt;PathVariables, HttpResponse&gt;)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An answer computed from path variables.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="paragraph">
-<p>The terminal has three forms:</p>
+<p>Apply route settings and filters before <code>respond</code>, as you would before <code>handle</code>.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>respond(HttpResponse)</code> answers with a response given as a value;</p>
-</li>
-<li>
-<p><code>respond(Supplier&lt;HttpResponse&gt;)</code> answers with the response the supplier creates for each request;</p>
-</li>
-<li>
-<p><code>respond(Function&lt;PathVariables, HttpResponse&gt;)</code> answers with the response the function creates from the path variables of each request.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>They end a route declared like the other routes, by any creator, e.g. <code>GET(uri)</code> or <code>route(HttpMethod, uri)</code>, so <code>where(&#8230;&#8203;)</code>, <code>constrain(&#8230;&#8203;)</code>, <code>order(&#8230;&#8203;)</code>, <code>port(&#8230;&#8203;)</code>, <code>attribute(&#8230;&#8203;)</code>, <code>annotate(&#8230;&#8203;)</code> and the route filters apply to them, given before the terminal. A <code>GET</code> route has an implicit <code>HEAD</code> route, which answers <code>HEAD</code> requests with the headers of the response and no body, and a request with another method is answered with <code>405</code>, as for any route.</p>
 </div>
 <div class="sect2">
-<h3 id="_each_request_gets_its_own_response">Each request gets its own response</h3>
+<h3 id="_response_ownership">Response Ownership</h3>
 <div class="paragraph">
-<p>The server and the filters change the response they answer with, e.g. a filter adds a header. So a response given as a value is never shared between requests: the route copies its status, reason, headers and attributes when it is declared, and answers each request with a new response built from the copy. The body object is the one exception: the responses share it, so it must not change, e.g. a <code>String</code>, a <code>byte[]</code> that is not modified, or a record. A body that is consumed when it is written, such as a Netty <code>ByteBuf</code> or a <code>Publisher</code> that can be subscribed to once, cannot be shared: use a <code>Supplier</code> that creates it for each request. A <code>Supplier</code> or a <code>Function</code> must also return a new response for each request.</p>
+<p>A fixed response gets a fresh response object for every request, so filters can safely change its headers. Its <strong>body object is shared</strong>: use an immutable or otherwise reusable body. For a body consumed during writing, such as a buffer or single-use publisher, use a supplier that creates it for each request.</p>
+</div>
+<div class="paragraph">
+<p>Suppliers and functions must return a fresh response each time.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_media_types_threads_and_errors">Media types, threads and errors</h3>
+<h3 id="_media_types_and_execution">Media Types and Execution</h3>
 <div class="paragraph">
-<p>A <code>respond</code> route never reads the body of the request, so it consumes any content type, whatever its group consumes, and the content type of a response given as a value is what the route produces; a response without a content type produces what its group produces: a request that accepts only <code>text/plain</code> is answered by a route whose response is <code>text/plain</code>. The body is written by the message body writers, as for a handler route. A response given as a value runs no code of the application: it is answered on the event loop, like a route with <code>nonBlocking()</code>, whatever the executor of its group. A <code>Supplier</code> or a <code>Function</code> runs on the executor of the route, given with <code>executeOn(&#8230;&#8203;)</code>, or else of its group, and on the event loop when neither has one: then it must not block. A <code>Supplier</code> or a <code>Function</code> that throws is answered by the error routes, and one that returns <code>null</code> like a handler that returns <code>null</code>.</p>
+<p>These routes do not read the request body and accept any request content type. A fixed response with a content type uses that as the route&#8217;s produced type; otherwise, the group&#8217;s produced types apply.</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_when_to_use_a_handler_instead">When to use a handler instead</h3>
 <div class="paragraph">
-<p>Use <code>respond</code> when the answer does not depend on the request, or only on its path variables: it documents that the request is not read, and it skips the argument binding of a handler. Use a handler function, see <a href="#functionalRoutesDeclaring">Declaring Routes</a>, as soon as the answer needs the request: its headers, query parameters, cookies, body or attributes, or the principal of Micronaut Security. A <code>respond</code> route still goes through the filters and the router like any route.</p>
+<p>Fixed responses default to event-loop execution rather than inheriting the group&#8217;s executor. Suppliers and functions use the route&#8217;s or group&#8217;s executor, or the event loop if none is selected. Use <code>executeOn(&#8230;&#8203;)</code> if computing the response blocks. Exceptions use the normal error routes.</p>
 </div>
 </div>
 
@@ -42916,10 +42900,40 @@ class RespondRoutes implements HttpRoutes {
 
 
 <div class="paragraph">
-<p>The body stage of a route declares the body its handler receives, see <a href="#functionalRoutesDeclaring">Declaring Routes</a>. A handler of a decoded body, <code>body(Class)</code> or <code>body(Argument)</code>, or of a form, <code>form()</code>, is called once the whole body has arrived and has been decoded, like a controller method with a <code>@Body</code> argument, whether it returns the response, <code>handle(&#8230;&#8203;)</code>, or completes it later, <code>handleAsync(&#8230;&#8203;)</code>.</p>
+<p>Choose a body stage according to how the handler needs to read the request:</p>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Stage</th>
+<th class="tableblock halign-left valign-top">Handler receives</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>body(Class)</code> or <code>body(Argument)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A decoded body, once it has fully arrived, like a controller&#8217;s <code>@Body</code> argument.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>form()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A collected <a href="../api/io/micronaut/http/form/FormData.html">FormData</a>. See <a href="#functionalRoutesForms">Forms and File Uploads</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>body()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An <a href="../api/io/micronaut/http/body/AsyncRequestBody.html">AsyncRequestBody</a> that the asynchronous handler reads as needed.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No body stage</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Only the request and path variables. The handler does not read the body.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="paragraph">
-<p>After <code>body()</code>, the handler receives the body as an <a href="../api/io/micronaut/http/body/AsyncRequestBody.html">AsyncRequestBody</a> instead, and reads it when and how it needs to, without a <code>Publisher</code>: an <a href="../api/io/micronaut/web/router/builder/AsyncBodyRequestHandler.html">AsyncBodyRequestHandler</a>, <code>(request, pathVariables, body) &#8594; &#8230;&#8203;</code>, given to <code>handleAsync</code>, completes the response once it has read the body. A route without a body stage never reads the body: its handler, a <a href="../api/io/micronaut/web/router/builder/RequestHandler.html">RequestHandler</a> or an <a href="../api/io/micronaut/web/router/builder/AsyncRequestHandler.html">AsyncRequestHandler</a>, receives the request and the path variables only.</p>
+<p>Returning a <code>CompletionStage</code> does not make a typed body stream: both <code>handle</code> and <code>handleAsync</code> receive the decoded body after it has arrived.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Reading the body in asynchronous handlers</div>
@@ -43152,56 +43166,52 @@ class BodyRoutes implements HttpRoutes {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><code>body(Class)</code> or <code>body(Argument)</code> decodes the whole body like a <code>@Body</code> argument of a controller: the same readers, content negotiation, errors and limits. Reactive and asynchronous types and <code>InputStream</code> are rejected, use <code>elements</code> or <code>takeBody()</code> instead.</td>
+<td>Decode the whole body with the normal message body readers and limits. Reactive types, asynchronous types and <code>InputStream</code> are not valid decoded body types; use <code>elements(&#8230;&#8203;)</code> or <code>takeBody()</code> instead.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td><code>elements(Class)</code> reads a JSON array, or a stream of JSON documents, one element at a time: <code>forEach</code> calls the consumer for each element and waits for the stage it returns before reading the next one. <code>BodyElements.next()</code> is the pull alternative. The elements can also be the body of the response, <code>HttpResponse.ok(body.elements(Item.class))</code>: they are read as the response is written, and the body is released when the response ends, see <a href="#functionalRoutesStreaming">Server-Sent Events and Streamed Responses</a>.</td>
+<td><code>elements(Class)</code> reads a JSON array or stream of JSON documents incrementally. <code>forEach</code> waits for the consumer&#8217;s stage before reading the next element; <code>next()</code> provides pull-based access. Elements can also be returned as a <a href="#functionalRoutesStreaming">streamed response body</a>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td><code>text()</code> and <code>bytes(int)</code> read the whole body into memory. <code>text()</code> is bounded by <code>micronaut.server.max-request-buffer-size</code>, and <code>text(int)</code> and <code>bytes(int)</code> by the smaller of the given number of bytes and <code>micronaut.server.max-request-buffer-size</code>: a larger body is answered with <code>413</code>.</td>
+<td><code>text()</code> and <code>bytes(int)</code> collect the body in memory. The server buffer limit applies; an explicit byte limit can lower it. Exceeding the limit produces <code>413</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td><code>transferTo(Path)</code> streams the body into a new file, without holding it in memory. An existing file is never replaced.</td>
+<td><code>transferTo(Path)</code> streams into a new file without buffering the entire body. It never replaces an existing file.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>A handler that answers without reading the body never receives it: when the client asked for <code>Expect: 100-continue</code>, the <code>100 Continue</code> answer is only sent on the first read.</td>
+<td>Answering without reading the body avoids receiving it. For <code>Expect: 100-continue</code>, the server sends <code>100 Continue</code> only when reading begins.</td>
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_reading_and_releasing_the_body">Reading and Releasing the Body</h3>
 <div class="paragraph">
-<p>The rules of an <code>AsyncRequestBody</code>:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>One read.</strong> The first of <code>body</code>, <code>text</code>, <code>bytes</code>, <code>elements</code>, <code>transferTo</code>, <code>form</code>, <code>parts</code>, <code>takeBody</code> and <code>discardBody</code> owns the body. A second one fails with an <code>IllegalStateException</code> that names the first.</p>
-</li>
-<li>
-<p><strong>Limits apply to what is held in memory.</strong> <code>body</code> and <code>text()</code> have <code>micronaut.server.max-request-buffer-size</code>; <code>text(int)</code> and <code>bytes(int)</code> the smaller of the given limit and <code>micronaut.server.max-request-buffer-size</code>. <code>transferTo</code>, <code>elements</code>, <code>parts</code> and <code>takeBody</code> stream the body: only what is decoded in memory at once, one element or one text field, is held to the buffer limit, and the whole body, like any request body, to <code>micronaut.server.max-request-size</code>.</p>
-</li>
-<li>
-<p><strong>The unread body is discarded</strong> when the request ends. What a read leaves open, such as form parts, body elements or a running transfer, is released when the stage returned by the handler completes.</p>
-</li>
-<li>
-<p><code>takeBody()</code> moves the body, unread and undecoded, to the caller, e.g. to forward it to another server with the raw HTTP client. The caller must close it. <code>discardBody()</code> drops it.</p>
-</li>
-<li>
-<p>It reads the body of the request as the filters left it. Reading it decodes no body for the request: <code>getBody()</code> of the request does not change, and <code>byteBody()</code> keeps its <code>ServerHttpRequest</code> contract, see <a href="#byteBody">Advanced body access</a>.</p>
-</li>
-<li>
-<p>A read that completes when the rest of the body arrives completes on the event loop thread that delivers it. As for a controller argument of type <code>CompletableFuture</code>, the propagated context of the request is not in scope in its continuation: continue on an executor that propagates the context, or declare the decoded body or the form, whose handler is called once the body has arrived.</p>
-</li>
-</ul>
+<p>An <code>AsyncRequestBody</code> supports <strong>one read</strong>. Choose one of <code>body</code>, <code>text</code>, <code>bytes</code>, <code>elements</code>, <code>transferTo</code>, <code>form</code>, <code>parts</code>, <code>takeBody</code> or <code>discardBody</code>. A second read fails with <code>IllegalStateException</code>.</p>
 </div>
 <div class="paragraph">
-<p>An error route receives the request without its <code>AsyncRequestBody</code>: the error can happen after the body was read, or while it was read.</p>
+<p>The server discards unread content and releases resources when the handler&#8217;s stage completes. Keep that stage pending until your body processing finishes. If you call <code>takeBody()</code>, ownership transfers to you: close the returned body yourself. Use <code>discardBody()</code> when you want to drop it explicitly.</p>
 </div>
 <div class="paragraph">
-<p>In the <a href="../api/io/micronaut/web/router/builder/LocatedRoutes.html">LocatedRoutes</a> of a <a href="#functionalRoutesLocators">located target</a>, the handlers of the body stages also take the target: <code>(request, pathVariables, target, body) &#8594; &#8230;&#8203;</code>, a <a href="../api/io/micronaut/web/router/builder/LocatedBodyRequestHandler.html">LocatedBodyRequestHandler</a> or a <a href="../api/io/micronaut/web/router/builder/LocatedAsyncBodyRequestHandler.html">LocatedAsyncBodyRequestHandler</a>. Without a body stage, a <a href="../api/io/micronaut/web/router/builder/LocatedAsyncRequestHandler.html">LocatedAsyncRequestHandler</a>, <code>(request, pathVariables, target) &#8594; &#8230;&#8203;</code>, does not read the body, like an <code>AsyncRequestHandler</code>.</p>
+<p>Reads see the body left by filters. They do not populate <code>request.getBody()</code> or change the <a href="#byteBody">byte-body access contract</a>. Error routes do not receive an <code>AsyncRequestBody</code>, because a failure may occur after it has been consumed.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_limits_and_threads">Limits and Threads</h3>
+<div class="paragraph">
+<p>Collected bodies are bounded by <code>micronaut.server.max-request-buffer-size</code>. <code>text(int)</code> and <code>bytes(int)</code> use the smaller of that setting and the supplied limit.</p>
+</div>
+<div class="paragraph">
+<p>Streaming methods avoid buffering the whole body, but individual decoded elements and text fields still have buffer limits. The overall request remains subject to <code>micronaut.server.max-request-size</code>.</p>
+</div>
+<div class="paragraph">
+<p>An asynchronous read may complete on the event loop. Do not block its continuation. Propagated request context is not automatically in scope there; use a context-propagating executor if needed, or a typed body stage whose handler runs after decoding.</p>
+</div>
+<div class="paragraph">
+<p>In <a href="#functionalRoutesLocators">located routes</a>, body handlers also receive the target: <code>(request, pathVariables, target, body) &#8594; &#8230;&#8203;</code>.</p>
+</div>
 </div>
 
 <h2 id="functionalRoutesForms"><a class="anchor" href="#functionalRoutesForms"></a>6.31.4 Forms and File Uploads</h2>
@@ -43214,7 +43224,7 @@ class BodyRoutes implements HttpRoutes {
 
 
 <div class="paragraph">
-<p>Handler routes read <code>application/x-www-form-urlencoded</code> and <code>multipart/form-data</code> forms in three ways: collected before the handler runs, collected by a handler that reads the body itself, or streamed part by part.</p>
+<p>Functional routes support both <code>application/x-www-form-urlencoded</code> and <code>multipart/form-data</code>. Use <code>form()</code> to collect a form before the handler runs, or <code>body()</code> to read it yourself, including streaming parts as they arrive.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Forms and file uploads</div>
@@ -43414,28 +43424,33 @@ class FormRoutes implements HttpRoutes {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>After the body stage <code>form()</code>, the handler receives the whole form as <a href="../api/io/micronaut/http/form/FormData.html">FormData</a>, collected before it is called, whether it is given to <code>handle</code> or to <code>handleAsync</code>. Its accessors convert the text fields (<code>getString</code>, <code>getInt</code>, <code>getInt(name, defaultValue)</code>, <code>findInt</code>, <code>getValues</code>, &#8230;&#8203;). A missing or unconvertible field is answered with <code>400</code>, see <a href="../api/io/micronaut/http/form/FormFieldException.html">FormFieldException</a>. The route consumes both form media types.</td>
+<td><code>form()</code> supplies a collected <a href="../api/io/micronaut/http/form/FormData.html">FormData</a> to <code>handle</code> or <code>handleAsync</code>. Typed accessors convert text fields; missing or invalid values produce <code>400</code>. The route consumes both form media types.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>An asynchronous handler that reads the body itself, after the body stage <code>body()</code>, collects the form with <code>body.form()</code>.</td>
+<td>With <code>body()</code>, call <code>body.form()</code> to collect the form asynchronously.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The uploaded files of a collected form are <a href="../api/io/micronaut/http/form/FileUpload.html">FileUpload</a> handles, read once and never in a blocking way: <code>bytes(int)</code> and <code>text(int)</code> complete with the content, up to a maximum number of bytes, <code>transferTo(Path)</code> and <code>transferTo(OutputStream)</code> complete when the content is written, and <code>takeBody()</code> hands over the body as a <a href="../api/io/micronaut/http/body/CloseableByteBody.html">CloseableByteBody</a>. <code>getFile</code> answers <code>400</code> when the file is missing or the field is a text field.</td>
+<td>Collected files are <a href="../api/io/micronaut/http/form/FileUpload.html">FileUpload</a> handles. Read them once with <code>bytes(int)</code>, <code>text(int)</code>, <code>transferTo(&#8230;&#8203;)</code> or <code>takeBody()</code>. A missing file or text field passed to <code>getFile</code> produces <code>400</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td><code>body.parts()</code> streams the form: <a href="../api/io/micronaut/http/form/FormParts.html">FormParts</a> hands each <a href="../api/io/micronaut/http/form/FormPart.html">FormPart</a> to a consumer as it arrives, without collecting the form. <code>forEach</code> visits every part; <code>part(name, consumer)</code> skips to the named part and completes with <code>false</code> when the form has none.</td>
+<td><code>body.parts()</code> provides <a href="../api/io/micronaut/http/form/FormParts.html">FormParts</a> for streaming. <code>forEach</code> visits every part; <code>part(name, consumer)</code> skips to a named part and returns <code>false</code> if it is absent.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>A file part is read like a collected file, here streamed to a new file. The part belongs to the consumer until the stage it returns completes; then it is closed, and what the consumer did not read is discarded.</td>
+<td>A streamed part stays open until its consumer&#8217;s stage completes. Afterwards it is closed and unread content is discarded.</td>
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_upload_limits_and_cleanup">Upload Limits and Cleanup</h3>
 <div class="paragraph">
-<p>Uploads are limited like the uploads of controllers: <code>micronaut.server.multipart.max-file-size</code> for each file, and <code>micronaut.server.max-request-buffer-size</code> for the text fields a collected form holds in memory. A collected form stores large files on disk according to the multipart configuration, and the files it still owns are deleted when the request ends, or when <code>FormData.close()</code> is called. <code>transferTo(Path)</code> writes a temporary file next to the destination and moves it into place, so a failed or aborted transfer leaves no file behind, and an existing file is never replaced.</p>
+<p>The normal multipart configuration applies. <code>micronaut.server.multipart.max-file-size</code> limits each file, and <code>micronaut.server.max-request-buffer-size</code> limits collected text fields. Large files can be stored on disk according to the multipart settings.</p>
+</div>
+<div class="paragraph">
+<p>The server deletes temporary files still owned by the form when the request ends. Call <code>FormData.close()</code> to release them earlier. <code>transferTo(Path)</code> never replaces an existing file, and a failed or aborted transfer leaves no partial destination file.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -43444,13 +43459,14 @@ class FormRoutes implements HttpRoutes {
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Never use the file name sent by the client as a path on the server: generate the name, as in the example, or sanitize it.
+Generate or sanitize server-side file names. Never use an uploaded file name directly as a destination path.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p><code>FormData</code> and <code>FormParts</code> are also bound as arguments of controller methods.</p>
+<p><code>FormData</code> and <code>FormParts</code> can also be bound as controller method arguments.</p>
+</div>
 </div>
 
 <h2 id="functionalRoutesStreaming"><a class="anchor" href="#functionalRoutesStreaming"></a>6.31.5 Server-Sent Events and Streamed Responses</h2>
@@ -43463,10 +43479,20 @@ Never use the file name sent by the client as a path on the server: generate the
 
 
 <div class="paragraph">
-<p>A route streams its response without a <code>Publisher</code> in two ways: with the <code>sse</code> terminal, whose handler pushes server-sent events, or with a <a href="../api/io/micronaut/http/body/BodyElements.html">BodyElements</a> body, whose elements the server pulls one at a time. <code>BodyElements</code> is the same type a handler reads the elements of a request body with, so elements read from a request, or from another server with the HTTP client, can be returned as they are.</p>
+<p>Functional routes support two streaming styles without a <code>Publisher</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>sse(&#8230;&#8203;)</code> supplies an <a href="../api/io/micronaut/http/sse/SseEmitter.html">SseEmitter</a> for pushing server-sent events.</p>
+</li>
+<li>
+<p>An <a href="../api/io/micronaut/http/body/BodyElements.html">BodyElements</a> response body supplies elements that the server pulls as the client is ready for them.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>The handler of <code>sse(&#8230;&#8203;)</code>, an <a href="../api/io/micronaut/web/router/builder/SseHandler.html">SseHandler</a>, <code>(request, pathVariables, events) &#8594; &#8230;&#8203;</code>, sends events with the <a href="../api/io/micronaut/http/sse/SseEmitter.html">SseEmitter</a> it receives. The stream ends when the handler returns, unless the handler calls <code>keepOpen()</code> to send its events later. The response, <code>200</code> with <code>text/event-stream</code> and <code>Cache-Control: no-cache</code>, is sent with the first event, comment or heartbeat. Until then, an exception of the handler is answered by the error routes like the exception of any route, <code>events.header(&#8230;&#8203;)</code> adds headers to the response, e.g. <code>X-Accel-Buffering: no</code> for a proxy that buffers responses, and <code>events.respond(&#8230;&#8203;)</code> answers with another response instead of the event stream. An event stream is never compressed.</p>
+<p>You can return <code>BodyElements</code> read from a request or HTTP client directly as a response body.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Server-sent events and streamed responses</div>
@@ -43876,96 +43902,85 @@ class StreamRoutes implements HttpRoutes {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The stream ends when the handler returns. On an executor the handler may block: the response is sent with the first event while the handler still runs. An exception after the first event ends the stream abruptly, since the status was sent.</td>
+<td>An SSE stream ends when the handler returns unless it calls <code>keepOpen()</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td><code>send</code> returns a stage that completes once the client took the event, give or take the high-water mark. Waiting for it before the next send, here with <code>join()</code> on the thread of the blocking executor the handler runs on, paces the sender to a slow client instead of filling the memory. On an event loop, continue in the stage instead of waiting for it.</td>
+<td>Wait for each <code>send</code> stage to pace output to a slow client. <code>join()</code> is suitable here because the handler uses the blocking executor; never wait this way on an event loop.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td><code>keepOpen()</code> keeps the stream open after the handler returns: the events are sent later, from callbacks or another thread. A heartbeat sends a comment when no event was sent for the period, which also sends the response before the first event.</td>
+<td>Call <code>keepOpen()</code> to send from callbacks after the handler returns. A heartbeat sends a comment during idle periods.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td><code>complete()</code> ends the stream, and <code>fail(&#8230;&#8203;)</code> fails it.</td>
+<td>Use <code>complete()</code> to end the stream or <code>fail(&#8230;&#8203;)</code> to fail it.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td><code>isWritable()</code> tells whether a send would wait: a sender that would rather drop events, e.g. a broadcast to many clients, checks it.</td>
+<td>Check <code>isWritable()</code> when you prefer to drop or combine events rather than wait.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td><code>onClose</code> runs when the stream ends: completed, failed, or because the client disconnected.</td>
+<td>Use <code>onClose</code> to release resources when the stream ends or the client disconnects.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>A route with a body stage streams events back, e.g. the answer to a prompt. What the body stage bound, here a decoded <code>String</code>, is released when the stream ends, not when the response is sent.</td>
+<td>A body stage can supply input to an SSE handler. Its resources remain available until the stream ends.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="8"></i><b>8</b></td>
-<td>A <a href="../api/io/micronaut/http/body/BodyElements.html">BodyElements</a> body is pulled one element at a time while the client keeps up, and written like the elements of a <code>Publisher</code> body: a JSON array for JSON. <code>BodyElements.of(next)</code> makes elements of a function, and <code>BodyElements.of(next, close)</code> also releases resources, e.g. closes a cursor; both follow the rules of <code>BodyElements</code>, e.g. one read at a time. A plain lambda is elements too.</td>
+<td>Return <code>BodyElements</code> to stream values, such as a JSON array. <code>BodyElements.of(next, close)</code> also registers cleanup.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="9"></i><b>9</b></td>
-<td><code>header(&#8230;&#8203;)</code> adds a header to the response before the first event, whichever response is sent: the event stream, or the response given to <code>respond(&#8230;&#8203;)</code>.</td>
+<td>Add headers before the response is sent.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="10"></i><b>10</b></td>
-<td><code>respond(&#8230;&#8203;)</code> answers with another response instead of the event stream, before the first event: here <code>202 Accepted</code> without a body for a notification, and a single JSON message for a request. This is how a protocol in which the server decides per request whether to stream works, such as the <a href="https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#streamable-http">MCP Streamable HTTP transport</a>. A body without a content type is written as JSON, and the stream ends normally.</td>
+<td>Before streaming begins, <code>respond(&#8230;&#8203;)</code> can return an ordinary response instead, such as <code>202 Accepted</code> or a JSON result.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="11"></i><b>11</b></td>
-<td>An event stream route produces <code>text/event-stream</code>. It may declare other media types besides, for the responses given to <code>respond(&#8230;&#8203;)</code>, so that a client that accepts only JSON reaches the handler. A route that declares media types without <code>text/event-stream</code> fails.</td>
+<td>SSE routes produce <code>text/event-stream</code>. Include it in any explicit <code>produces(&#8230;&#8203;)</code> declaration; add other media types if <code>respond(&#8230;&#8203;)</code> can return them.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="12"></i><b>12</b></td>
-<td>An exception before the first event is answered by the error routes, here with <code>404</code>: check what the stream needs, e.g. that the resource exists or the user may see it, before sending anything. <code>events.fail(&#8230;&#8203;)</code> does the same from another thread.</td>
+<td>Before streaming begins, exceptions use normal error routes.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="13"></i><b>13</b></td>
-<td>After the first event the status was sent: an exception, or <code>fail(&#8230;&#8203;)</code>, ends the stream abruptly, which a client sees as a broken connection and usually answers by reconnecting. An error the client should act on is better sent as an event, here named <code>error</code>, before completing the stream.</td>
+<td>After streaming begins, failures end the connection. Send an error event before completing if the client needs a meaningful error message.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="14"></i><b>14</b></td>
-<td>A client that reconnects, e.g. a browser <code>EventSource</code> after a broken connection, sends the id of the last event it received as the <code>Last-Event-ID</code> header: <code>events.lastEventId()</code> resumes after it. The events need ids for this, and the source must be able to replay the events after an id.</td>
+<td><code>lastEventId()</code> reads the reconnecting client&#8217;s <code>Last-Event-ID</code>. Give events IDs and retain a replayable source to support resuming.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="15"></i><b>15</b></td>
-<td><code>retry</code> tells the client how long to wait before it reconnects.</td>
+<td><code>retry</code> sets the client&#8217;s reconnection delay.</td>
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_starting_and_ending_an_event_stream">Starting and Ending an Event Stream</h3>
 <div class="paragraph">
-<p>The rules of a stream:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Backpressure.</strong> The stream counts the bytes the connection has not taken yet. A send completes, and the next element is pulled, once they are below the high-water mark, 64 KiB by default. An event stream with sixteen times as many queued fails with a <code>StreamOverflowException</code>, a <code>ConnectionClosedException</code>: a sender that waits never reaches it. A sender that does not wait, e.g. one that calls <code>send(&#8230;&#8203;)</code> for every message of a source it cannot pause, fails a client that reads slower than it sends once 1 MiB is queued with the default high-water mark: it checks <code>isWritable()</code> and drops or coalesces events, or raises the high-water mark of the stream (<code>events.highWaterMark(&#8230;&#8203;)</code>) or of the server if its bursts are bounded.</p>
-</li>
-<li>
-<p><strong>The end of the handler.</strong> A send after the handler returned without <code>keepOpen()</code> fails, since the stream ended, and the first one is logged as a warning: an event-driven handler that forgot <code>keepOpen()</code> answers with an empty stream.</p>
-</li>
-<li>
-<p><strong>Disconnects.</strong> When the client disconnects, the pending and the later sends fail with a <code>ConnectionClosedException</code>, and <code>onClose</code> runs with it. Before the response is sent, a disconnect is noticed only by the next send: a stream that waits for its first event sends a comment or a heartbeat first.</p>
-</li>
-<li>
-<p><strong>Threads.</strong> The stages complete, and <code>onClose</code> runs, on a thread of the server, usually an event loop, with the propagated context of the handler: a continuation must not block.</p>
-</li>
-<li>
-<p><strong>Reconnections.</strong> <code>events.lastEventId()</code> is the <code>Last-Event-ID</code> header of a reconnecting client.</p>
-</li>
-<li>
-<p><strong>HEAD.</strong> A <code>HEAD</code> request runs the handler, and sends the headers of the stream without its events.</p>
-</li>
-<li>
-<p><strong>Elements.</strong> <code>next()</code> is called again only once the stage it returned completed, and only while the connection keeps up. An element is written like the element of a <code>Publisher</code> body: with the writer of its type, on a worker thread if the writer is blocking, and the bytes of a <code>ByteBody</code> element as they arrive. <code>close()</code> is called once: at the end, on a failure, on a disconnect, for a <code>HEAD</code> request, and when a filter replaces the response or its body. A failure of the first element is answered by the error routes.</p>
-</li>
-</ul>
+<p>The first event, comment or heartbeat sends the response headers: <code>200</code>, <code>text/event-stream</code> and <code>Cache-Control: no-cache</code>. Until then, you can add headers, use <code>respond(&#8230;&#8203;)</code>, or fail through the normal error routes. Event streams are not compressed.</p>
 </div>
 <div class="paragraph">
-<p>The high-water mark, and a heartbeat for every event stream, are configured for the server. The configured heartbeat starts once the response is sent, so that the handler can still answer with an error or <code>respond(&#8230;&#8203;)</code>, however long it takes; a stream that needs bytes on the wire before its first event sends a comment or sets its own heartbeat:</p>
+<p>For callback-driven output, call <code>keepOpen()</code> before the handler returns and arrange to call <code>complete()</code> or <code>fail(&#8230;&#8203;)</code> later. Use <code>onClose</code> to stop upstream work. A comment or per-stream heartbeat can send headers early while waiting for the first event.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_slow_clients_and_threads">Slow Clients and Threads</h3>
+<div class="paragraph">
+<p>Each send returns a stage that reflects the connection&#8217;s capacity, allowing for buffered bytes up to a high-water mark. Chain sends or wait on a worker executor. Sending indefinitely without waiting can overflow the buffer and fail the stream; <code>isWritable()</code> lets you drop or coalesce events instead.</p>
+</div>
+<div class="paragraph">
+<p>Disconnects fail pending and later sends with <code>ConnectionClosedException</code>. Send continuations and <code>onClose</code> usually run on a server event loop, with propagated context. Keep them non-blocking.</p>
+</div>
+<div class="paragraph">
+<p>Configure the high-water mark and a default SSE heartbeat with:</p>
 </div>
 <div class="openblock">
 <div class="content">
@@ -44039,8 +44054,20 @@ micronaut.server.responses.stream.sse-heartbeat=15s</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In Kotlin, the streams work with coroutines:</p>
+<p>The configured heartbeat starts after the response has been sent. To start an idle stream before its first event, send a comment or set a heartbeat on the emitter itself.</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_streaming_elements">Streaming Elements</h3>
+<div class="paragraph">
+<p>The server reads <code>BodyElements</code> one element at a time, writes them with the normal body writers and closes them when the response ends or is abandoned. This includes disconnects and responses replaced by filters. A <code>HEAD</code> request sends headers without streaming the body; for SSE, the handler still runs.</p>
+</div>
+<div class="paragraph">
+<p>For asynchronous cleanup, use <code>BodyElements.ofAsync(cursor::nextAsync, cursor::closeAsync)</code>. <code>closeAsync()</code> lets an owner await cleanup; <code>close()</code> starts it without waiting. If you consume elements yourself, close them when finished, including after the final empty element. When returned as a response body, the server manages cleanup.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_kotlin_coroutines">Kotlin Coroutines</h3>
 <div class="listingblock">
 <div class="title">Server-sent events and streamed responses with coroutines</div>
 <div class="content">
@@ -44067,24 +44094,22 @@ routes.GET("/coroutine/numbers") { _, _ -&gt;
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><code>events.launch { &#8230;&#8203; }</code> runs the stream in a coroutine, on <code>Dispatchers.Default</code> unless given another context, with the propagated context of the request. The stream ends when the coroutine returns, and the coroutine is cancelled when the stream closes, e.g. when the client disconnects.</td>
+<td><code>events.launch { &#8230;&#8203; }</code> runs a coroutine with propagated request context, on <code>Dispatchers.Default</code> unless another context is given. It ends the stream on return and is cancelled when the stream closes.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td><code>sendAwait(&#8230;&#8203;)</code> suspends until the client took the event, give or take the high-water mark, instead of blocking a thread.</td>
+<td><code>sendAwait(&#8230;&#8203;)</code> suspends while waiting for output capacity, without blocking a thread.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>An exception of the coroutine fails the stream: before the first event it is answered by the error routes, here with <code>404</code>, after it the stream ends abruptly.</td>
+<td>Coroutine failures use error routes before streaming begins, or terminate an already-started stream.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td><code>Flow.asBodyElements()</code> streams a <code>Flow</code> as a <a href="../api/io/micronaut/http/body/BodyElements.html">BodyElements</a> body: the flow is collected one element at a time as the client keeps up, and cancelled when the response ends or the client disconnects.</td>
+<td><code>Flow.asBodyElements()</code> streams a flow as response elements and cancels collection when the response ends or the client disconnects.</td>
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>For a cursor whose cleanup is asynchronous, use <code>BodyElements.ofAsync(cursor::nextAsync, cursor::closeAsync)</code>. The cleanup supplier starts once. <code>close()</code> initiates cleanup without waiting; <code>closeAsync()</code> completes when cleanup finishes and reports cleanup failures. Cancelling a future obtained from the cleanup stage cancels only that wait, so cleanup continues and another caller can still await it. Reading the final empty element does not itself close a supplier-backed cursor: its owner must close it. When returned as a response body, the server initiates cleanup when the response ends or is abandoned.</p>
 </div>
 
 <h2 id="functionalRoutesGroups"><a class="anchor" href="#functionalRoutesGroups"></a>6.31.6 Route Groups and Path Prefixes</h2>
@@ -44097,7 +44122,7 @@ routes.GET("/coroutine/numbers") { _, _ -&gt;
 
 
 <div class="paragraph">
-<p><code>routes.path(prefix, group &#8594; &#8230;&#8203;)</code> declares a group of routes under a path prefix, and <code>routes.group(group &#8594; &#8230;&#8203;)</code> a group without one. An <a href="../api/io/micronaut/web/router/builder/HttpRouteGroup.html">HttpRouteGroup</a> is a builder itself, so groups nest, and it declares filters, error routes, media types, an executor, annotations, conditions, a port, an order and attributes for all of its routes.</p>
+<p>Use <code>routes.path(prefix, group &#8594; &#8230;&#8203;)</code> to group routes under a path prefix, or <code>routes.group(group &#8594; &#8230;&#8203;)</code> to share settings without adding a prefix. Groups can contain nested groups.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">A group with a prefix and filters</div>
@@ -44264,36 +44289,38 @@ routes.path("/api", api_routes)</code></pre>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Every route declared in the group is under <code>/api</code>: <code>GET /api/orders</code>. The prefix and the URI of a route are joined like the URI of a controller and the URI of its methods; a prefix may have path variables (<code>/tenants/{tenant}</code>), but no query or fragment.</td>
+<td>The prefix places the orders route at <code>/api/orders</code>. Prefixes can include path variables, such as <code>/tenants/{tenant}</code>, but cannot contain a query or fragment.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>A request filter of the group runs for every route of the group, including the routes of nested groups. Here it answers <code>400</code> when a header is missing, and otherwise adds an element to the propagated context, which the handler reads. See <a href="#functionalRoutesFilters">Filters</a>.</td>
+<td>A group request filter applies to its routes and nested groups. Here it rejects a missing header or adds propagated context for the handler.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>A response filter of the group, which also filters the answers of the request filters.</td>
+<td>A group response filter also sees responses returned by its request filters.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>A nested group adds its prefix and its filters.</td>
+<td>A nested group adds another prefix and its own filters.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>Filters of a single route, see the next section.</td>
+<td>Individual routes can add filters too.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>A response filter that replaces the response.</td>
+<td>A response filter can replace the response.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>A route at <code>/</code> is at the prefix of the group, <code>GET /api</code>, like a controller method mapped without a URI, e.g. <code>@Get</code>, is at the URI of its controller. Outside of a group, it is at <code>/</code>, under the context path, and at the prefix of the locator in the routes of a <a href="#functionalRoutesLocators">located target</a>.</td>
+<td>A route at <code>/</code> maps to the group&#8217;s prefix: here <code>GET /api</code>.</td>
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_shared_settings">Shared Settings</h3>
 <div class="paragraph">
-<p>A group declares what its routes consume and produce, and the executor they run on, like <code>@Consumes</code>, <code>@Produces</code> and <code>@ExecuteOn</code> on a controller apply to its methods:</p>
+<p>Group settings provide defaults for all routes in the callback, including nested groups. A route or nested group overrides the settings it declares itself.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">The media types and the executor of a group</div>
@@ -44384,50 +44411,41 @@ routes.path("/notes", notes_routes)</code></pre>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The routes of the group consume and produce <code>text/plain</code> instead of <code>application/json</code>: a request with another content type is answered with <code>415</code>, and one that accepts another media type only with <code>406</code>. <code>consumesAll()</code> accepts any content type.</td>
+<td>These routes consume and produce <code>text/plain</code>. Other request content types produce <code>415</code>; incompatible accepted types produce <code>406</code>. Use <code>consumesAll()</code> to accept any content type.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The routes of the group run on the blocking executor, like <code>@ExecuteOn(TaskExecutors.BLOCKING)</code> on a controller. <code>nonBlocking()</code> runs them on the event loop instead, when the server selects threads automatically; the last of the two declared on the group wins.</td>
+<td>Run the group&#8217;s handlers on the blocking executor. <code>nonBlocking()</code> selects event-loop execution instead when automatic thread selection applies; the last setting wins.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>A route that declares what it consumes, or produces, replaces the media types of its group, like <code>@Consumes</code> on a controller method replaces the one of its class.</td>
+<td>A route can replace the group&#8217;s media types.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>A route that chooses its thread, with <code>executeOn(&#8230;&#8203;)</code> or <code>nonBlocking()</code>, overrides the executor of its group.</td>
+<td>A route can choose its own executor.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>A nested group overrides the settings of the groups around it that it sets, here what its routes produce: they still consume <code>text/plain</code> and run on the blocking executor. Like the other settings of a group, it applies to every route of the lambda, wherever it is declared in it.</td>
+<td>A nested group changes what it produces while retaining the outer group&#8217;s consumed type and executor.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p><code>annotate(&#8230;&#8203;)</code> on a group annotates its routes, see <a href="#functionalRoutesAnnotations">Annotations on Handler Routes</a>, and <code>where(&#8230;&#8203;)</code>, <code>order(&#8230;&#8203;)</code>, <code>attribute(&#8230;&#8203;)</code> and <code>port(&#8230;&#8203;)</code> give them conditions, an order, attributes and a port, see <a href="#functionalRoutesConditions">Conditions, Order, Ports and Attributes</a>.</p>
+<p>Settings and filters apply throughout a group, even to routes declared earlier in its callback. Groups can also provide <a href="#functionalRoutesAnnotations">annotations</a>, <a href="#functionalRoutesConditions">conditions, order, attributes and a port</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_scope_and_exceptions">Scope and Exceptions</h3>
+<div class="paragraph">
+<p>Group filters run only after one of the group&#8217;s routes matches. They do not cover unmatched requests under the prefix, including <code>404</code>, <code>405</code>, <code>415</code> and <code>406</code> responses. Use a <a href="#functionalRoutesFilters">server filter</a> for those requests.</p>
 </div>
 <div class="paragraph">
-<p>The rules of a group:</p>
+<p>A form route consumes the form media types regardless of its group&#8217;s consumed types. Error and status routes do not inherit group media types or executors. <a href="#functionalRoutesLocators">Located routes</a> inherit group defaults and can override them.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>A filter of a group applies to every route declared in the lambda of the group, wherever it is declared in the lambda: before the routes, after them or in between. This includes the implicit <code>HEAD</code> routes, the routes declared for several methods and the routes located by a <a href="#functionalRoutesLocators">locator route</a> of the group.</p>
-</li>
-<li>
-<p>The filters of a group, the <code>before</code> and <code>after</code> families, run only when a route of the group matched the request: as with the filter methods of a controller, route filters need a matched route. A request under the prefix of the group that no route answers (<code>404</code>), or that a route would answer with another method or media type (<code>405</code>, <code>415</code>, <code>406</code>), does not run them. The server filters see those responses: the <code>@ServerFilter</code> beans and the filters declared with <code>routes.filter(patterns&#8230;&#8203;)</code>, pre-matching ones (<code>routes.filter(patterns&#8230;&#8203;).preMatching()</code>) included. Use a <a href="#functionalRoutesFilters">server filter</a> to filter every request under a path.</p>
-</li>
-<li>
-<p>The media types and the executor of a group apply to every route to a handler declared in the lambda of the group and of its nested groups, wherever they are declared in the lambda, like its filters: the implicit <code>HEAD</code> routes, the routes declared for several methods or by the name of their method, and the routes at the prefix of the group. A route, or a nested group, with its own value replaces the value of the group. A form route, declared with the body stage <code>form()</code>, consumes the form media types whatever the group consumes, since its handler reads a form, but produces what the group produces. The media types and the executor of a group do not apply to its error and status routes. The routes its <a href="#functionalRoutesLocators">locator routes</a> locate inherit them, with its annotations and attributes, unless they, or a group of their <code>LocatedRoutes</code>, set their own.</p>
-</li>
-<li>
-<p>The group is closed when its lambda returns: declaring a route, a filter or a setting on it afterwards throws an <code>IllegalStateException</code>. A route declared in the lambda is ended with a terminal before the lambda returns: the group fails with an <code>IllegalStateException</code> naming a route that was not.</p>
-</li>
-<li>
-<p>The builder of an <code>HttpRoutes</code> bean has no filter methods of its own. It is shared by the <code>HttpRoutes</code> beans of the application, so wrap the routes of a bean in <code>routes.group(all &#8594; &#8230;&#8203;)</code> to filter all of them.</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>Complete group configuration inside its callback. To apply route filters to every route of an <code>HttpRoutes</code> bean, wrap those routes in <code>routes.group(&#8230;&#8203;)</code>.</p>
+</div>
 </div>
 
 <h2 id="functionalRoutesFilters"><a class="anchor" href="#functionalRoutesFilters"></a>6.31.7 Route, Group and Server Filters</h2>
@@ -44440,20 +44458,23 @@ routes.path("/notes", notes_routes)</code></pre>
 
 
 <div class="paragraph">
-<p>Functional routes declare filters at three levels, with the same methods, from <a href="../api/io/micronaut/web/router/builder/RouteFilterSpec.html">RouteFilterSpec</a>:</p>
+<p>Choose the filter scope according to the requests it should cover:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>route filters</strong>, on the <a href="../api/io/micronaut/web/router/builder/HttpRouteSpec.html">HttpRouteSpec</a> of a route, before its terminal: <code>routes.GET(uri).before(&#8230;&#8203;).and().handle(&#8230;&#8203;)</code>;</p>
+<p><strong>Route filters</strong> apply to one matched route: <code>routes.GET(uri).before(&#8230;&#8203;).and().handle(&#8230;&#8203;)</code>.</p>
 </li>
 <li>
-<p><strong>group filters</strong>, on an <a href="../api/io/micronaut/web/router/builder/HttpRouteGroup.html">HttpRouteGroup</a>, for the routes of the group only;</p>
+<p><strong>Group filters</strong> apply to matched routes in a group and its nested groups.</p>
 </li>
 <li>
-<p><strong>server filters</strong>, declared with <code>routes.serverFilter(patterns&#8230;&#8203;)</code> on the <a href="../api/io/micronaut/web/router/builder/HttpRouteBuilder.html">HttpRouteBuilder</a> of an <code>HttpRoutes</code> bean only, never on a group: the functional form of a <code>@ServerFilter</code> bean, see <a href="../api/io/micronaut/web/router/builder/ServerFilterSpec.html">ServerFilterSpec</a>.</p>
+<p><strong>Server filters</strong>, declared with <code>routes.serverFilter(patterns&#8230;&#8203;)</code>, apply to all matching request paths, including controller routes, static resources and unmatched requests.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>Use a server filter when you need to cover responses such as <code>404</code>, <code>405</code>, <code>415</code> or <code>406</code> that occur before a route is selected. Only the top-level builder declares server filters.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Server filters</div>
@@ -44502,22 +44523,16 @@ routes.serverFilter("/v1/**").preMatching() // <b class="conum">(2)</b>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>A server filter filters every request whose path matches one of its patterns, whatever answers it: a controller, a handler route, a static resource, or no route at all (<code>404</code>, <code>405</code>, &#8230;&#8203;). <code>methods(&#8230;&#8203;)</code>, <code>order(int)</code>, <code>patternStyle(&#8230;&#8203;)</code> and <code>appendContextPath(boolean)</code> correspond to the members of <code>@ServerFilter</code> and to <code>@Order</code>. A server filter is global: only the builder declares one, and a group has no <code>serverFilter</code> method.</td>
+<td>Configure path patterns, HTTP methods and order as you would for a <code>@ServerFilter</code> bean.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>A pre-matching server filter, like a <code>@PreMatching</code> filter bean, runs before the route is matched, and the route is matched with the request it continues with: here a URI rewritten in place.</td>
+<td><code>preMatching()</code> runs before routing, allowing the filter to rewrite the URI used for route selection.</td>
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>The filters of a route and of its groups are route filters: as with the filter methods of a controller, they need a matched route. A request under the prefix of a group that no route answers (<code>404</code>), or that a route of the group would answer with another method or media type (<code>405</code>, <code>415</code>, <code>406</code>), runs the server filters only: the <code>@ServerFilter</code> beans and the filters declared with <code>routes.serverFilter(patterns&#8230;&#8203;)</code>, pre-matching ones (<code>routes.serverFilter(patterns&#8230;&#8203;).preMatching()</code>) included.</p>
-</div>
 <div class="sect2">
-<h3 id="_filter_methods">Filter methods</h3>
-<div class="paragraph">
-<p>The request and the response filters come in the same four families, so that their lambdas are never ambiguous:</p>
-</div>
+<h3 id="_filter_methods">Filter Methods</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -44526,40 +44541,39 @@ routes.serverFilter("/v1/**").preMatching() // <b class="conum">(2)</b>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Method</th>
-<th class="tableblock halign-left valign-top">Filter</th>
+<th class="tableblock halign-left valign-top">Behaviour</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>before(RouteRequestFilter)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A request filter that changes the request in place and returns nothing: the request continues.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>before(&#8230;&#8203;)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Change the request in place and continue.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>beforeReplacing(ReplacingRouteRequestFilter)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A request filter that returns a response to answer instead of the route, a request to continue with, or <code>null</code> to continue with the request.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>beforeReplacing(&#8230;&#8203;)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Return a response to stop processing, a replacement request to continue, or <code>null</code> to keep the current request.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>after(RouteResponseFilter)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A response filter that changes the response in place.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>after(&#8230;&#8203;)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Change the response in place.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>afterReplacing(ReplacingRouteResponseFilter)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A response filter that returns a replacement response, or <code>null</code> to keep the response.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>beforeAsync(&#8230;&#8203;)</code>, <code>beforeReplacingAsync(&#8230;&#8203;)</code>, <code>afterAsync(&#8230;&#8203;)</code>, <code>afterReplacingAsync(&#8230;&#8203;)</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The same, returning a <code>CompletionStage</code>: the filter chain continues when it completes, for the replacing filters with what it completes with.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>afterReplacing(&#8230;&#8203;)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Return a replacement response, or <code>null</code> to keep the current response.</p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
-<p>Each method has a variant whose lambda also receives a <a href="../api/io/micronaut/core/propagation/MutablePropagatedContext.html">MutablePropagatedContext</a>, selected by the number of parameters: <code>before((request, propagatedContext) &#8594; &#8230;&#8203;)</code>. An element the filter adds is in scope for the filters after it, the handler and the error routes, as for a filter method with a <code>MutablePropagatedContext</code> parameter. An asynchronous filter&#8217;s changes are taken when its stage completes.</p>
+<p>Each method has an asynchronous variant, such as <code>beforeAsync</code> or <code>afterReplacingAsync</code>, that returns a <code>CompletionStage</code>. The chain continues when that stage completes.</p>
+</div>
+<div class="paragraph">
+<p>Overloads can receive <a href="../api/io/micronaut/core/propagation/MutablePropagatedContext.html">MutablePropagatedContext</a>, for example <code>before((request, context) &#8594; &#8230;&#8203;)</code>. Added context is available to subsequent filters, the handler and error routes. Asynchronous context changes take effect when the stage completes.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_filter_executors">Filter executors</h3>
+<h3 id="_choosing_an_executor">Choosing an Executor</h3>
 <div class="paragraph">
-<p>Every filter method returns the <a href="../api/io/micronaut/web/router/builder/FilterSpec.html">FilterSpec</a> of the filter it added. A filter runs on the thread of the filter chain, like a filter method; <code>executeOn(executorName)</code> runs it on a named executor instead, like <code>@ExecuteOn</code> on a filter method, and <code>and()</code> goes back to the route, the group or the server filter to continue its declaration:</p>
+<p>Filters normally run on the filter-chain thread. Use <code>executeOn(&#8230;&#8203;)</code> for blocking work, then <code>and()</code> to continue configuring the route or group:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">A filter on an executor</div>
@@ -44626,15 +44640,15 @@ routes.serverFilter("/v1/**").preMatching() // <b class="conum">(2)</b>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>A filter that blocks, e.g. on a database.</td>
+<td>This filter performs blocking work.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The filter runs on the blocking executor, and the filter chain continues on it. <code>nonBlocking()</code> keeps the filter on the thread of the filter chain, the default; the last of the two called wins. An asynchronous filter given an executor is called on it, and the chain continues where its stage completes.</td>
+<td>Run it on the blocking executor. <code>nonBlocking()</code> restores execution on the filter-chain thread. An asynchronous filter&#8217;s chain continues where its stage completes.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td><code>and()</code> returns the route, to declare its next filters, its settings and its terminal.</td>
+<td><code>and()</code> returns to the route declaration.</td>
 </tr>
 </table>
 </div>
@@ -44645,63 +44659,50 @@ routes.serverFilter("/v1/**").preMatching() // <b class="conum">(2)</b>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-In Python, a Java method named after a Python keyword takes a trailing underscore: <code>and()</code> is <code>and_()</code>, and <code>or(&#8230;&#8203;)</code> of a condition is <code>or_(&#8230;&#8203;)</code>.
+Python uses trailing underscores for Java methods named after keywords: <code>and_()</code> and <code>or_(&#8230;&#8203;)</code>.
 </td>
 </tr>
 </table>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_changing_requests_and_responses">Changing Requests and Responses</h3>
 <div class="paragraph">
-<p>A filter chooses its thread with the same methods as a route and a group, from <a href="../api/io/micronaut/web/router/builder/ExecutionSpec.html">ExecutionSpec</a>. Group filters and server filters have them too. The executor of a filter is fixed once the routes are built, or when the lambda of the group that declares the filter returns.</p>
+<p>Use <code>before</code> for in-place changes to headers, attributes or the URI. Use <code>beforeReplacing</code> to supply a replacement request, including one with a different method or body. Replacing the raw body requires a <code>ServerHttpRequest</code> with the replacement <code>byteBody()</code>.</p>
+</div>
+<div class="paragraph">
+<p>Only a <strong>pre-matching server filter</strong> can change which route is selected. A later URI or method change does not trigger routing again.</p>
+</div>
+<div class="paragraph">
+<p>Use <code>after</code> to update response headers or other mutable properties, and <code>afterReplacing</code> to return an entirely different response.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_changing_the_request_and_the_response">Changing the request and the response</h3>
+<h3 id="_filter_order">Filter Order</h3>
 <div class="paragraph">
-<p>A request filter receives a <code>MutableHttpRequest</code>:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Headers and attributes changed in place, and a URI set with <code>uri(&#8230;&#8203;)</code>, are seen by the rest of the chain: a <code>before</code> filter is enough. Other changes, such as a new body, need a request to be returned by a <code>beforeReplacing</code> filter.</p>
-</li>
-<li>
-<p>To answer the request instead of the route, a <code>beforeReplacing</code> filter returns a response. To continue with another request, it returns the request: an <code>HttpRequestWrapper</code> that overrides <code>getMethod()</code> changes the method, and a <code>ServerHttpRequest</code> with another <code>byteBody()</code> changes the body, which <code>@Body</code> arguments, body handlers and the <code>AsyncRequestBody</code> read.</p>
-</li>
-<li>
-<p>A new URI or method only changes the matched route in a pre-matching server filter. The other filters run after the route was matched.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>A response filter declared with <code>after</code> changes the response in place; one declared with <code>afterReplacing</code> can return a new response, which the response filters after it and the client see.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_order">Order</h3>
-<div class="paragraph">
-<p>Request filters run in this order, and response filters in the reverse order:</p>
+<p>Request processing proceeds through:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>the server filters: <code>@ServerFilter</code> beans and the filters declared with <code>routes.serverFilter(&#8230;&#8203;)</code>, sorted together by their order (<code>0</code> by default); pre-matching filters run before the route is matched;</p>
+<p>Server filters, including <code>@ServerFilter</code> beans, sorted together by order. Pre-matching filters run before routing.</p>
 </li>
 <li>
-<p>the filters of the outer group, then those of the inner groups;</p>
+<p>Outer group filters, then nested group filters.</p>
 </li>
 <li>
-<p>the filters of the route;</p>
+<p>Route filters.</p>
 </li>
 <li>
-<p>the handler.</p>
+<p>The handler.</p>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>Within a group or a route, request filters and response filters each run in the order they are declared. A response filter also sees the answer of a request filter of its own level or of an inner level.</p>
+<p>Responses pass back through the scopes in reverse order. Within each route or group, request filters and response filters each retain declaration order. Response filters also see responses returned early by request filters at their own or an inner scope.</p>
 </div>
 <div class="paragraph">
-<p>Exceptions thrown by a filter, or failed stages of an asynchronous filter, are handled like the exceptions of a filter method: by the error routes, the exception handlers, or with <code>500</code>.</p>
+<p>Filter failures use the normal error routes and exception handlers.</p>
 </div>
 </div>
 
@@ -44715,9 +44716,9 @@ In Python, a Java method named after a Python keyword takes a trailing underscor
 
 
 <div class="sect2">
-<h3 id="_conditions_and_order">Conditions and order</h3>
+<h3 id="_request_conditions">Request Conditions</h3>
 <div class="paragraph">
-<p><code>where(RequestCondition)</code>, on a route or a group, matches only the requests that meet the condition, like <code>@RouteCondition</code> on a controller method. <a href="../api/io/micronaut/web/router/builder/RequestCondition.html">RequestCondition</a> builds declarative conditions on the headers, query parameters, cookies and method of a request, its host and client address, and the time it arrives, and combines them with <code>all</code>, <code>any</code>, <code>not</code>, <code>and</code>, <code>or</code> and <code>negate</code>.</p>
+<p>Use <code>where(&#8230;&#8203;)</code> on a route or group to match requests by headers, query parameters, cookies, method, host, address or time. Combine <a href="../api/io/micronaut/web/router/builder/RequestCondition.html">RequestCondition</a> values with <code>all</code>, <code>any</code>, <code>and</code>, <code>or</code> and <code>not</code>.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">A route for the requests that meet a condition</div>
@@ -44771,23 +44772,23 @@ routes.GET("/search") { request, pathVariables -&gt; text("search") } // <b clas
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The route matches the requests with an <code>X-Beta</code> header or a <code>beta=true</code> query parameter. The conditions of the groups of a route and those of the route must all be met, and so must several conditions of a route or a group.</td>
+<td>Match a request with an <code>X-Beta</code> header or <code>beta=true</code> query parameter. Conditions inherited from groups and added to the route must all pass.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>A request both routes match is ambiguous: they have the same URI template. The route with the lowest order wins.</td>
+<td>Use a lower order for the specialized route when both routes match equally well.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The route for the other requests, with the default order <code>0</code>, the order of controller routes.</td>
+<td>The fallback uses the default order, <code>0</code>, as controller routes do.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>A request that the conditions of a route reject is answered as if the route did not exist: by another route, or with <code>404</code>, never with a <code>405</code>, <code>415</code> or <code>406</code> of the rejected route. The conditions run while the request is matched, for every request to the path of the route, so they must be fast, must not block and must not read the body.</p>
+<p>A rejected condition removes the route from consideration. Another route can handle the request; if none matches, the response is <code>404</code>. Conditions run during routing, so keep them fast, non-blocking and free of side effects. Use the dedicated body conditions below to inspect a body.</p>
 </div>
 <div class="paragraph">
-<p>A condition compares a value with a <a href="../api/io/micronaut/web/router/builder/ValueMatcher.html">ValueMatcher</a>: <code>equalTo</code>, <code>startsWith</code>, <code>endsWith</code>, <code>contains</code>, <code>oneOf</code>, <code>regex</code>, which matches the whole value, and <code>present</code>, each case-sensitive unless made to <code>ignoringCase()</code>, and combined with <code>and</code>, <code>or</code> and <code>negate</code>. A matcher compares the value in place, without decoding or copying it: a cookie is found in the <code>Cookie</code> header without decoding the other cookies. An absent value, e.g. a request without the header, is given to the matcher as absent: only a negated matcher, like <code>present().negate()</code>, matches it.</p>
+<p><a href="../api/io/micronaut/web/router/builder/ValueMatcher.html">ValueMatcher</a> provides comparisons such as <code>equalTo</code>, <code>startsWith</code>, <code>oneOf</code>, <code>regex</code> and <code>present</code>. Matching is case-sensitive unless you use <code>ignoringCase()</code>, and <code>regex</code> matches the whole value. To test for a missing value, use <code>present().negate()</code>.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Conditions with matchers</div>
@@ -44841,42 +44842,51 @@ routes.GET("/search") { request, pathVariables -&gt; text("search") } // <b clas
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>A header of one of the values, ignoring case, or a cookie of the value.</td>
+<td>Match header values ignoring case, or a cookie value.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The address of the peer of the connection in one of the IPv4 or IPv6 ranges, in CIDR notation: <code>peerAddress(&#8230;&#8203;)</code> never reads a forwarded address, so a client cannot spoof it. An address is never looked up by name.</td>
+<td>Match the connection&#8217;s peer address against IPv4 or IPv6 CIDR ranges.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>A request from an instant on: <code>before(instant)</code>, <code>after(instant)</code> and <code>between(start, end)</code> read the <code>java.time.Clock</code> bean if there is one, otherwise the system clock.</td>
+<td>Time conditions use the application&#8217;s <code>Clock</code> bean, or the system clock if none exists.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>A path variable constrained with a matcher, see below.</td>
+<td>Apply a matcher to a path variable.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The host of <code>host(&#8230;&#8203;)</code>, compared ignoring case and without the port and a final dot, is the host as the <a href="../api/io/micronaut/http/server/util/HttpHostResolver.html">HttpHostResolver</a> of the server resolves it, which reads a forwarded host only as <code>micronaut.server.host-resolution</code> configures it.</p>
+<p><code>host(&#8230;&#8203;)</code> uses the server&#8217;s <a href="../api/io/micronaut/http/server/util/HttpHostResolver.html">HttpHostResolver</a>, including its forwarded-host configuration. For custom checks, use <code>where(request &#8594; &#8230;&#8203;)</code> or <code>RequestCondition.custom(&#8230;&#8203;)</code>.</p>
 </div>
-<div class="paragraph">
-<p>There are two conditions on the address of a client. <code>peerAddress(&#8230;&#8203;)</code> reads the address of the peer of the connection only, never a header: use it for access control, e.g. an allow or a deny list. <code>remoteAddress(&#8230;&#8203;)</code> reads the address as the <a href="../api/io/micronaut/http/server/util/HttpClientAddressResolver.html">HttpClientAddressResolver</a> resolves it: from the header that <code>micronaut.server.client-address-header</code> names, or else from the <code>Forwarded</code> and <code>X-Forwarded-For</code> headers of the request, or else the peer of the connection. Without that property any client can send those headers and choose its address, so <code>remoteAddress(&#8230;&#8203;)</code> is right only behind a trusted proxy that sets the configured header, where the peer is the proxy and the header is the client.</p>
-</div>
-<div class="paragraph">
-<p>The router normalizes the conditions of a route when it builds the route: the conditions of its groups and its own become one condition, nested <code>all</code> and <code>any</code> are flattened, double negations and duplicates are removed, and the parts are ordered cheapest first: the methods, then the lookups of a value and the time, then the prefixes, suffixes and parts, then the regular expressions and the host and the client and peer addresses, which cost the same and keep the order they were declared in, and last the conditions of lambdas, in the order they were declared, outer group first. The evaluation stops at the first part that decides. A condition is data that only the router evaluates, with the host and client address resolvers of the server and the clock of the application: it is not a <code>Predicate</code>. <code>RequestCondition.custom(predicate)</code>, or <code>where(Predicate&lt;HttpRequest&lt;?&gt;&gt;)</code>, takes a lambda for what the other conditions do not express; the lambda is given the request as it is, e.g. its <code>Host</code> header rather than the host the server resolves, and <code>RequestCondition.custom(&#8230;&#8203;)</code> makes a lambda a condition to combine with <code>and</code>, <code>or</code>, <code>all</code> and <code>any</code>. <a href="../api/io/micronaut/web/router/builder/RequestPredicates.html">RequestPredicates</a> has shorthands of these conditions, and <code>accept(&#8230;&#8203;)</code> and <code>contentType(&#8230;&#8203;)</code>, which compare media types with their wildcards and are conditions of lambdas.</p>
-</div>
-<div class="paragraph">
-<p>The order only breaks a tie between routes that are equally good for a request. Among the routes that match a request, the router first keeps the routes that explicitly produce the media type the request accepts first, then, for a request with a body, the routes that explicitly consume its <code>Content-Type</code>, then the routes with the most specific URI template. It then prefers a route of the request&#8217;s method over a route of <code>any(&#8230;&#8203;)</code>, and an explicit <code>HEAD</code> route over an implicit one, and only then compares the orders: the order never makes a less specific route win, and an <code>any(&#8230;&#8203;)</code> route never wins over a route of the request&#8217;s method, whatever their orders. Routes left with the same order still make the request ambiguous, which is answered with <code>400</code>. A group&#8217;s order applies to its routes, and a route&#8217;s own order overrides it.</p>
-</div>
-<div class="paragraph">
-<p>The order is global: it is compared between any routes left for a request, controller routes and the routes of every <code>HttpRoutes</code> bean and group alike, and the lower order wins. Controller routes have the order <code>0</code>, so a handler route with a negative order wins a tie with a controller route, and one with a positive order loses it. The order of an <code>HttpRoutes</code> bean, e.g. <code>@Order</code> on the bean, orders the beans, not their routes.</p>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Use <code>peerAddress(&#8230;&#8203;)</code> for checks against the actual connection address. <code>remoteAddress(&#8230;&#8203;)</code> uses the server&#8217;s client-address resolver and can read forwarded headers. Use it for access control only behind a trusted proxy that sets the configured client-address header.
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_conditions_on_the_body">Conditions on the body</h3>
+<h3 id="_route_order">Route Order</h3>
 <div class="paragraph">
-<p><code>RequestCondition.body(&#8230;&#8203;)</code>, <code>bodyText(&#8230;&#8203;)</code> and <code>bodyBytes(&#8230;&#8203;)</code> are conditions on the body of the request, so that routes on the same path can be chosen by the body. A request whose body does not meet them is answered as if the route did not exist: by the next route the request matches, or with <code>404</code>.</p>
+<p><code>order(int)</code> breaks ties between otherwise equally suitable routes. Lower values win; the default is <code>0</code>. It does not override media-type matching or URI specificity. Among equally specific matches, a method-specific route wins over <code>any(&#8230;&#8203;)</code>, and an explicit <code>HEAD</code> route wins over an implicit one before order is considered.</p>
+</div>
+<div class="paragraph">
+<p>Order applies across groups, <code>HttpRoutes</code> beans and controllers. A route&#8217;s order overrides its group&#8217;s default. Ordering an <code>HttpRoutes</code> bean itself does not give its routes priority. If multiple routes remain tied, the request is ambiguous and produces <code>400</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_body_conditions">Body Conditions</h3>
+<div class="paragraph">
+<p>Use <code>RequestCondition.body(&#8230;&#8203;)</code>, <code>bodyText(&#8230;&#8203;)</code> or <code>bodyBytes(&#8230;&#8203;)</code> to choose between routes based on body content.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Routes chosen by the body of the request</div>
@@ -44958,46 +44968,55 @@ routes.POST("/payments")
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The body decoded to a type, like a <code>@Body</code> argument, by the message body reader of the type and of the <code>Content-Type</code> of the request, meets the predicate. <code>body(Class, Predicate)</code> takes a class instead of an <code>Argument</code>.</td>
+<td>Decode a body and test it with a predicate. Both <code>Class</code> and <code>Argument</code> forms are available.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>A body condition gives a route no priority: the order ranks the routes of the same URI template, here before the fallback. Two routes of the same rank that the body both matches make the request ambiguous, answered with <code>400</code>.</td>
+<td>Give the specialized route a lower order than the fallback. Body conditions do not give it priority on their own; equally ranked matches remain ambiguous.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The route for the other bodies, which reads the same body.</td>
+<td>The fallback can still read the request body.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>A condition on the text of the body, decoded with the charset of the request, with a limit of the bytes it reads.</td>
+<td>Test the decoded text with an explicit byte limit.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>A condition decided later: <code>bodyAsync(&#8230;&#8203;)</code> returns a <code>CompletionStage&lt;Boolean&gt;</code>, e.g. of a lookup in a database, and the route is chosen when it completes, without blocking.</td>
+<td><code>bodyAsync(&#8230;&#8203;)</code> waits for a <code>CompletionStage&lt;Boolean&gt;</code> without blocking.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p><code>RequestCondition.bodyAsync(type, condition)</code> decides later: its condition returns a <code>CompletionStage&lt;Boolean&gt;</code>, e.g. of a lookup in a database, and the route is chosen when the stage completes, without blocking. A stage that fails does not meet the condition, which is logged as a warning. A request whose client goes away while a stage is pending stops waiting for it; the stage is not cancelled, since it may be shared. The conditions of the routes are evaluated one after the other, so a slow stage delays the choice of the route of every request to the path: keep such lookups fast, e.g. cached.</p>
+<p>The server first matches the path, method, media types and other conditions. It then checks body conditions in route-preference order. Multiple equally preferred matches remain ambiguous. A failed asynchronous condition counts as a non-match and is logged. Keep predicates and asynchronous lookups fast.</p>
 </div>
 <div class="paragraph">
-<p>A body condition is a part that every request of the route meets: a condition of a route or a group, or a part of <code>all(&#8230;&#8203;)</code> or <code>and(&#8230;&#8203;)</code>. It cannot be a part of <code>any(&#8230;&#8203;)</code>, <code>or(&#8230;&#8203;)</code> or <code>not(&#8230;&#8203;)</code>, which fail with an <code>IllegalArgumentException</code>. The body conditions of the groups of a route, outer group first, and of the route must all be met. The routes of a located target can have body conditions too: the target is located without the body, and its routes are then chosen by the body like the other routes. The body decides within the target: a request whose body meets the conditions of none of its routes is not found, it does not fall through to the routes outside the locator, like a request that no route of the target matches. Their limits are not known when the server starts: a limit above <code>micronaut.server.max-request-buffer-size</code> reads up to that limit.</p>
+<p>Body conditions can be combined with <code>all(&#8230;&#8203;)</code> or <code>and(&#8230;&#8203;)</code>, but cannot appear inside <code>any(&#8230;&#8203;)</code>, <code>or(&#8230;&#8203;)</code> or <code>not(&#8230;&#8203;)</code>. They cannot be combined with a custom route selector.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Body conditions buffer the body, even if the selected handler would otherwise stream it. The handler can read that body afterwards. Use these conditions for bounded request bodies.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>A request is first matched without its body, like any other: its URI, method, other conditions, constraints and media types. The <code>405</code>, <code>415</code> and <code>406</code> responses and CORS preflight requests are decided without reading the body. When a route with a body condition is among the routes left, the server reads the body once, asynchronously and without blocking, after the pre-matching filters ran, so a condition sees the body as those filters left it. It reads the body from a copy of the <code>AsyncRequestBody</code> of the request, and then tries the routes in the order the router ranks them: by the specificity of the URI template, the media types, then the order. The first route whose body conditions the body meets, or that has none, answers the request. The body is read once for the routes the request matched, and each type is decoded once for them; the routes of a located target the body chose read it again. The predicates must be fast and must not block.</p>
+<p><code>maxBytes(&#8230;&#8203;)</code> limits a condition&#8217;s read; the default is <code>micronaut.server.max-request-buffer-size</code>. For routes known at startup, an explicit limit above that server setting fails startup. Configure limits on dynamically located routes carefully, since those routes are built later.</p>
 </div>
 <div class="paragraph">
-<p>The route that answers reads the same body, as a typed body, a form, an <code>AsyncRequestBody</code> or a <code>@Body</code> argument. Routes with body conditions therefore leave the streaming path: the body is buffered, up to the largest limit of the conditions of the routes the request matched, <code>maxBytes(&#8230;&#8203;)</code>, which is <code>micronaut.server.max-request-buffer-size</code> by default. A limit lowers the limit of the server and cannot raise it: a route with a condition whose limit is above <code>micronaut.server.max-request-buffer-size</code> fails the startup of the server. A body larger than the limit of a condition and a body that does not decode do not meet the condition, which is logged at <code>DEBUG</code> level. The limit of a body a pre-matching filter set is its length in bytes for a string or a byte array; another object has no size of its own. A body larger than <code>micronaut.server.max-request-buffer-size</code> cannot be kept for another route once it is read: when its length is not known in advance, e.g. a chunked body, the request fails with <code>413</code>, like a <code>@Body</code> argument would, also when a less preferred route would stream it, and when its <code>Content-Length</code> is larger, it is not read: it does not meet the body conditions and goes to the next route. Set <code>micronaut.server.max-request-buffer-size</code>, or a lower <code>maxBytes(&#8230;&#8203;)</code>, accordingly. A request whose body matches none of its routes is answered with <code>404</code>, also when a static resource is on its path.</p>
-</div>
-<div class="paragraph">
-<p>An implicit <code>HEAD</code> route has the body conditions of its <code>GET</code> route, which see the empty body of the <code>HEAD</code> request. A request whose routes have no body condition is matched exactly as without them: its body is not read, and nothing is buffered for it.</p>
+<p>A body that cannot be decoded or exceeds a condition&#8217;s limit does not match it. If buffering itself exceeds the server limit, the request can fail with <code>413</code>; do not rely on a streaming fallback to accept an oversized body. If no route&#8217;s body conditions match, the response is <code>404</code>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_path_variable_constraints">Path variable constraints</h3>
+<h3 id="_path_variable_constraints">Path Variable Constraints</h3>
 <div class="paragraph">
-<p><code>constrain(&#8230;&#8203;)</code>, on a route or a group, matches only the requests whose path variables the constraint accepts. A request the constraint rejects is not a match of the route, as if its URI template did not match: another route on the same path answers it, or it is answered with <code>404</code>.</p>
+<p>Use <code>constrain(&#8230;&#8203;)</code> to restrict path variables before a route is selected:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Routes for some values of a path variable</div>
@@ -45060,29 +45079,26 @@ routes.GET("/items/{name}") { request, pathVariables -&gt; text("item named " + 
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The routes of the group match the known shops only, the values of the <code>SHOPS</code> set: <code>/shops/west/stock</code> is answered with <code>404</code>.</td>
+<td>Accept only shops in the <code>SHOPS</code> set; <code>/shops/west/stock</code> produces <code>404</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The variable converted to a type: a value that does not convert, like <code>lamp</code>, or that the predicate rejects, like <code>-1</code>, is not a match. The order breaks the tie with the other route for the values both accept.</td>
+<td>Convert the variable and test it. Neither <code>lamp</code> nor <code>-1</code> matches this constraint.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The route for the other values.</td>
+<td>A fallback handles other values.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The forms are <code>constrain(Predicate&lt;PathVariables&gt;)</code>, <code>constrain(variable, Predicate&lt;String&gt;)</code>, <code>constrain(variable, type, Predicate&lt;T&gt;)</code>, <code>constrain(variable, Collection&lt;String&gt;)</code>, <code>constrain(variable, ValueMatcher)</code> and <code>constrain(Map&lt;String, ValueMatcher&gt;)</code>. A variable without a value, a value that does not convert and a predicate that throws all reject the request; the exception is logged at <code>DEBUG</code> level. A matcher is given a variable without a value as an absent value, which only a negated matcher accepts.</p>
-</div>
-<div class="paragraph">
-<p>The constraints run while the request is matched, right after the URI template of the route matched, before the media types, the conditions of <code>where</code> and the ambiguity between routes. The methods allowed for a <code>405</code>, the media types for a <code>415</code> or <code>406</code>, CORS preflight requests and implicit <code>HEAD</code> routes consider only the routes whose constraints pass, so a rejected value never produces a <code>405</code>. The constraints of the groups of a route, outer group first, and of the route must all pass. Like conditions, constraints must be fast and must not block; a route without constraints costs nothing more to match.</p>
+<p>Constraints accept predicates, collections of allowed strings or <code>ValueMatcher</code> values. A missing or unconvertible value, or a predicate that throws, rejects the route. Group and route constraints must all pass. Keep them fast and non-blocking.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_attributes">Attributes</h3>
+<h3 id="_route_attributes">Route Attributes</h3>
 <div class="paragraph">
-<p><code>attribute(name, value)</code> gives a route, or every route of a group, metadata that the code handling its requests reads from the matched route: the handler, route filters, server filters and <code>@ServerFilter</code> beans (with a <a href="../api/io/micronaut/web/router/RouteInfo.html">RouteInfo</a> parameter, or with <code>RouteAttributes.getRouteInfo(request)</code>).</p>
+<p><code>attribute(name, value)</code> adds metadata to a route or every route of a group. Handlers and filters read it from the matched <a href="../api/io/micronaut/web/router/RouteInfo.html">RouteInfo</a>, available through <code>RouteAttributes.getRouteInfo(request)</code> or a filter&#8217;s <code>RouteInfo</code> parameter.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Route attributes</div>
@@ -45163,26 +45179,26 @@ routes.path("/reports", report_routes)</code></pre>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Every route of the group has the attribute.</td>
+<td>Add an attribute to every route in the group.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>A filter reads the attribute of the matched route.</td>
+<td>Read the matched route&#8217;s attribute in a filter.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>An attribute of a route overrides the attribute of its group.</td>
+<td>Override it on one route.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The attributes are the attributes of the route, not of the request. The map is read-only and its values are never <code>null</code>.</p>
+<p>These are route attributes, separate from request attributes. Their map is read-only and does not allow <code>null</code> values.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_ports">Ports</h3>
 <div class="paragraph">
-<p><code>port(int)</code>, on a route or a group, routes the requests on that port only, like <code>@Controller(port = &#8230;&#8203;)</code>: the server opens the port when it starts, and a request on another port is answered as if the route did not exist, with <code>404</code>.</p>
+<p><code>port(&#8230;&#8203;)</code> restricts a route or group to a port and causes the server to open that port:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Routes on another port</div>
@@ -45225,15 +45241,15 @@ routes.path("/management", management_routes)</code></pre>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The routes of the group match the requests on the management port only.</td>
+<td>Match requests on the management port only.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p><code>port(String)</code> takes the port like the <code>port</code> member of <code>@Controller</code>: a number, or property placeholders with defaults, e.g. <code>port("${my.admin.port:8081}")</code>, resolved with the environment of the application when the routes are declared. A placeholder that cannot be resolved fails the startup, like for a controller, and a port that is not a number between <code>1</code> and <code>65535</code> is rejected.</p>
+<p>Use an integer or a property expression, such as <code>port("${my.admin.port:8081}")</code>. Values must resolve to a port from <code>1</code> to <code>65535</code>; invalid values fail startup.</p>
 </div>
 <div class="paragraph">
-<p>Once a route of the application has a port, the routes without one match the requests on the default ports of the server only.</p>
+<p>Once routes declare dedicated ports, routes without a port match only the server&#8217;s default ports.</p>
 </div>
 </div>
 
@@ -45247,35 +45263,13 @@ routes.path("/management", management_routes)</code></pre>
 
 
 <div class="paragraph">
-<p>A lambda has no annotations. The features that read the annotations of the matched route, such as filter binding with a <a href="../api/io/micronaut/http/annotation/FilterMatcher.html">@FilterMatcher</a> annotation, route versioning with <code>@Version</code>, <code>@CrossOrigin</code>, <code>@RouteCondition</code>, the message body writers, and security rules such as <code>@Secured</code> from Micronaut Security, need the route to carry them.</p>
+<p>A lambda has no method annotations. Use <code>annotate(&#8230;&#8203;)</code> when a route needs metadata for features such as filter matching, API versioning, CORS, executor selection or Micronaut Security.</p>
 </div>
 <div class="paragraph">
-<p><code>annotate(&#8230;&#8203;)</code> puts annotations on a route, or on the routes of a group, like annotations on a controller method, with the same methods as the <code>annotate</code> methods of the compile-time elements (<code>io.micronaut.inject.ast.Element</code>): <code>annotate(Audited.class)</code> for an annotation without members, <code>annotate(Version.class, version &#8594; version.value("2"))</code> for one with members, <code>annotate(AnnotationValue)</code> for a built value, and the variants taking the name of the annotation type. Several annotations are chained calls. The members of an annotation given again are merged with, and override, the ones given before; the annotations of a group apply to its routes and nested groups, which override the members they set, like the annotations of a controller method override those of its class.</p>
+<p>For example, <code>annotate(Audited.class)</code> adds an annotation without members, and <code>annotate(Version.class, version &#8594; version.value("2"))</code> supplies a value. You can also pass an <code>AnnotationValue</code> and chain calls to add more annotations.</p>
 </div>
 <div class="paragraph">
-<p>The meta-annotations of an annotation type are not known at runtime. The features that look up an annotation by its own type see it, such as the binding of a <a href="../api/io/micronaut/http/annotation/FilterMatcher.html">@FilterMatcher</a> annotation, <code>@Version</code>, <code>@CrossOrigin</code>, <code>@ExecuteOn</code> and security annotations. A feature that looks up a stereotype needs it in the annotation value, see <code>AnnotationValueBuilder.stereotype(&#8230;&#8203;)</code>. The expressions of an annotation, e.g. of <code>@RouteCondition</code>, are compiled with the annotated code: declare a condition of a handler route with <code>where(&#8230;&#8203;)</code>.</p>
-</div>
-<div class="paragraph">
-<p><code>annotationMetadata(AnnotationMetadataProvider)</code> gives a handler route the annotations of an annotated element, under the annotations given with <code>annotate(&#8230;&#8203;)</code>, and what else the route gets depends on the element:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>an <code>ExecutableMethod</code> makes the route implement that bean method: the route has the annotations of the method, and its target method, declaring type and method name are those of the bean method, e.g. for the local <code>@Error</code> methods of the bean class. The arguments of the route stay those of the handler;</p>
-</li>
-<li>
-<p>any other element, e.g. a <code>BeanDefinition</code>, gives the route its annotations only.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>The route keeps the element: <code>MethodBasedRouteInfo.getAnnotationMetadataProvider()</code> returns it for the matched route, the bean method of a controller route, or nothing for a handler route that was given no element with <code>annotationMetadata(&#8230;&#8203;)</code>, by itself or by a group, even if it has annotations from <code>annotate(&#8230;&#8203;)</code>, so an integration finds the bean method of a route with <code>instanceof ExecutableMethod</code>.</p>
-</div>
-<div class="paragraph">
-<p>A handler object can carry its bean method itself: a handler that also implements <code>RouteMethodProvider</code> gives its route the method returned by <code>routeMethod()</code>, as if it were given with <code>annotationMetadata(&#8230;&#8203;)</code>. The route reads it once, when it is added, and keeps it for its implicit <code>HEAD</code> route and its located copies. The method only tells where the route comes from: the route binds the arguments of the handler, calls the handler and answers with its result, so a synchronous method given to an asynchronous handler does not make the route synchronous. An element given to the route with <code>annotationMetadata(&#8230;&#8203;)</code> replaces the method, which replaces the element of the groups of the route. A lambda gives no method, its origin is not inferred. Integrations that look up a route by its method, e.g. the sensitivity of the management endpoints, find the method of such a route.</p>
-</div>
-<div class="paragraph">
-<p>A group has the same settings as a route, those of <code>RouteSpec</code>: its media types, executor, annotations, annotated element, attributes, conditions, order and port are the defaults of the routes declared in its lambda and in its nested groups, wherever they are declared in the lambda. A route, or a nested group, with its own value overrides the one of the group. The element given to a group with <code>annotationMetadata(&#8230;&#8203;)</code> is the element of its routes that have none of their own, e.g. the <code>BeanDefinition</code> of a resource for every route of the resource.</p>
+<p>Annotations on a group apply to its routes and nested groups. More specific declarations override the annotation members they set.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">An annotation that binds a filter</div>
@@ -45393,15 +45387,15 @@ static class Payments {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>A filter matcher annotation.</td>
+<td>Define a filter matcher annotation.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>A filter bean that only filters the routes annotated with <code>@Audited</code>.</td>
+<td>This filter applies only to routes annotated with <code>@Audited</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>A bean method with the annotation. It must be executable to be looked up.</td>
+<td>Mark the bean method executable so its metadata can be looked up.</td>
 </tr>
 </table>
 </div>
@@ -45550,35 +45544,53 @@ routes.GET("/prices") { request, pathVariables -&gt; HttpResponse.ok("prices").c
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>A group has the settings of a route, see <code>RouteSpec</code>: its routes run on the blocking executor, like the methods of a controller annotated <code>@ExecuteOn(TaskExecutors.BLOCKING)</code>.</td>
+<td>The group&#8217;s routes run on the blocking executor.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The routes of the group have the annotations of the group, wherever they are declared in its lambda: the filter applies to them, and they answer the version <code>2</code> of the API, see <a href="#apiVersioning">API Versioning</a>.</td>
+<td>The group applies the filter annotation and API version <code>2</code> to all its routes. See <a href="#apiVersioning">API Versioning</a>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The route implements the bean method and has its annotations: the filter applies.</td>
+<td>This route represents a bean method and uses its annotations.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>The route has the annotation: the filter applies too.</td>
+<td>Adding the annotation directly also enables the filter.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>A route with a version.</td>
+<td>Add a version to one route.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>Several annotations are chained calls: the version and the annotation that binds the filter.</td>
+<td>Chain calls to add both a version and a filter matcher annotation.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The route of <code>/prices</code> has no annotation, and the filter does not apply to it.</p>
+<p>The <code>/prices</code> route has no filter annotation, so the filter does not apply to it.</p>
+</div>
+<div class="sect2">
+<h3 id="_reusing_bean_metadata">Reusing Bean Metadata</h3>
+<div class="paragraph">
+<p>Use <code>annotationMetadata(provider)</code> to reuse an annotated element&#8217;s metadata. An <code>ExecutableMethod</code> also identifies the bean method represented by the route, enabling integrations such as local <code>@Error</code> handlers. A bean definition supplies annotations only.</p>
 </div>
 <div class="paragraph">
-<p>This is mostly meant for framework integrations that route the methods of their own resource classes with handler functions, e.g. a JAX-RS implementation, and for generated code.</p>
+<p>The handler still determines the arguments, execution and result. Supplying metadata does not invoke the bean method in place of the handler.</p>
+</div>
+<div class="paragraph">
+<p>For framework integrations, a handler can implement <a href="../api/io/micronaut/web/router/builder/RouteMethodProvider.html">RouteMethodProvider</a> to supply its <code>ExecutableMethod</code>. An explicit <code>annotationMetadata(&#8230;&#8203;)</code> on the route takes precedence. Lambdas do not infer a bean method automatically.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_runtime_metadata_limitations">Runtime Metadata Limitations</h3>
+<div class="paragraph">
+<p>Annotations added at runtime do not automatically include their meta-annotations. Features that look up the annotation directly can use it; features that depend on a stereotype need that stereotype supplied through <code>AnnotationValueBuilder.stereotype(&#8230;&#8203;)</code>.</p>
+</div>
+<div class="paragraph">
+<p>Annotation expressions require compile-time processing. Use <code>where(&#8230;&#8203;)</code> for handler-route conditions instead of adding <code>@RouteCondition</code> dynamically.</p>
+</div>
 </div>
 
 <h2 id="functionalRoutesErrors"><a class="anchor" href="#functionalRoutesErrors"></a>6.31.10 Error and Status Routes</h2>
@@ -45591,15 +45603,18 @@ routes.GET("/prices") { request, pathVariables -&gt; HttpResponse.ok("prices").c
 
 
 <div class="paragraph">
-<p><code>error(type, handler)</code> handles the exceptions of a type and of its subtypes, and <code>status(status, handler)</code> the responses of a status, like the <code>@Error</code> methods of a controller. <code>errorAsync</code> and <code>statusAsync</code> are the variants whose handlers return a <code>CompletionStage</code>. Where they are declared decides which routes they answer for:</p>
+<p>Use <code>error(type, handler)</code> to handle an exception type and its subtypes, and <code>status(status, handler)</code> to handle a response status. The asynchronous variants, <code>errorAsync</code> and <code>statusAsync</code>, return a <code>CompletionStage</code>.</p>
+</div>
+<div class="paragraph">
+<p>The declaration determines the scope:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>declared on the builder of an <code>HttpRoutes</code> bean, they are <strong>global</strong>, like <code>@Error(global = true)</code>: they answer for the controllers and the handler routes of the application;</p>
+<p>On the top-level builder, handlers are <strong>global</strong>: they apply to controllers and functional routes, like <code>@Error(global = true)</code>.</p>
 </li>
 <li>
-<p>declared in a group, they are <strong>local</strong> to the routes of the group and of its nested groups, like the <code>@Error</code> methods of a controller that are not global.</p>
+<p>Inside a group, handlers are <strong>local</strong>: they apply to that group&#8217;s routes and nested groups.</p>
 </li>
 </ul>
 </div>
@@ -45859,43 +45874,46 @@ class ErrorRoutes implements HttpRoutes {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>A global status route, which also answers the requests no route matches.</td>
+<td>A global status route also handles requests that match no route.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>An error route local to the routes of the group.</td>
+<td>An error route local to a group.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>An asynchronous error route, local to the group too.</td>
+<td>An asynchronous error route in the same group.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>A route outside of the group: the error routes of the group do not answer for it, and its <code>IllegalArgumentException</code> is a <code>500</code>.</td>
+<td>A route outside the group does not use its local handlers; here, <code>IllegalArgumentException</code> produces <code>500</code>.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The error route of a failed handler route is looked up:</p>
+<p>For a failed handler route, the server looks for an error handler in this order:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>in the local error routes of the bean class, when the route <a href="#functionalRoutesAnnotations">implements</a> a bean method;</p>
+<p>Local <code>@Error</code> methods of the bean, if the route <a href="#functionalRoutesAnnotations">represents a bean method</a>.</p>
 </li>
 <li>
-<p>in the innermost group of the route, then in the groups around it, then in the groups of the locator routes that located it;</p>
+<p>The innermost route group, then enclosing groups, including locator groups.</p>
 </li>
 <li>
-<p>among the global error routes, functional ones and <code>@Error(global = true)</code> methods.</p>
+<p>Global functional error routes and <code>@Error(global = true)</code> methods.</p>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>Within each level, the error route of the closest exception type answers, so a group&#8217;s error route for a supertype wins over a global one for the exact type. Status routes are looked up in the same order, for a response of that status or an <a href="../api/io/micronaut/http/exceptions/HttpStatusException.html">HttpStatusException</a> of a route. A request that no route matched, e.g. a <code>404</code> or a <code>405</code> under the prefix of a group, is answered by the global error and status routes only.</p>
+<p>Within each level, the closest exception type wins. Local scope takes precedence over a more exact global match. Status routes use the same scope order, including for <a href="../api/io/micronaut/http/exceptions/HttpStatusException.html">HttpStatusException</a>.</p>
 </div>
 <div class="paragraph">
-<p>The response filters of the route and of its groups filter the response of the error route. An error route receives the request as an <code>HttpRequest</code>, and it runs with the propagated context of the filters. An error route that fails is answered with the default error response.</p>
+<p>Requests that match no route use only global handlers. A group&#8217;s local status route therefore does not handle every <code>404</code> under its prefix.</p>
+</div>
+<div class="paragraph">
+<p>Error handlers receive the request and the filters' propagated context. Route and group response filters also apply to their responses. If an error handler fails, the server returns its default error response.</p>
 </div>
 
 <h2 id="functionalRoutesLocators"><a class="anchor" href="#functionalRoutesLocators"></a>6.31.11 Locator Routes</h2>
@@ -45908,7 +45926,7 @@ class ErrorRoutes implements HttpRoutes {
 
 
 <div class="paragraph">
-<p>A locator route routes the requests under a prefix to the routes of a target located at runtime, like a JAX-RS sub-resource locator. The routes of the target are declared by an <a href="../api/io/micronaut/web/router/builder/LocatedRoutes.html">LocatedRoutes</a>, whose URIs are relative to the prefix and whose handlers receive the located target.</p>
+<p>A locator routes a path prefix to a target found at request time, such as a shop selected by a path variable. An <a href="../api/io/micronaut/web/router/builder/LocatedRoutes.html">LocatedRoutes</a> declares that target&#8217;s routes relative to the prefix. Its handlers receive the target as an additional argument.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Locator routes</div>
@@ -46226,50 +46244,59 @@ class LocatorRoutes implements HttpRoutes {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>One <code>LocatedRoutes</code> instance for the routes of every located shop, kept in a field: the router declares its routes once, when the first shop is located, and every locator route that returns the same instance shares them.</td>
+<td>Reuse one <code>LocatedRoutes</code> instance for a target type. Its route definitions are built once and shared across targets.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td><code>locate(prefix, locator, routes)</code>: the locator finds the target of the request, here from a path variable of the prefix. <code>GET /shops/north/items/1</code> is answered by the route <code>/items/{index}</code> of the located routes, with the path variables of the prefix and of the route.</td>
+<td><code>locate(prefix, locator, routes)</code> finds the target. Here <code>/shops/north/items/1</code> reaches <code>/items/{index}</code> with both prefix and route variables available.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td><code>locateAsync</code> takes a locator that returns a <code>CompletionStage</code> of the target, e.g. loaded from a database: the request is matched with the located routes when the stage completes, without blocking the thread that matched it.</td>
+<td>Use <code>locateAsync</code> when finding the target returns a <code>CompletionStage</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td><code>locate(prefix, locator, routesOf)</code>: a function selects the <code>LocatedRoutes</code> of each target, e.g. by its type or its state.</td>
+<td>A function can choose the <code>LocatedRoutes</code> for each target, for example according to its type.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td><code>targetType()</code> is the type of the located targets: the handlers receive the target of that type, and a located target of another type fails the request.</td>
+<td><code>targetType()</code> declares the target type expected by the handlers.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td><code>routes(&#8230;&#8203;)</code> declares the routes of a located shop on a <a href="../api/io/micronaut/web/router/builder/LocatedHttpRouteBuilder.html">LocatedHttpRouteBuilder</a>, relative to the prefix. Its route methods, such as <code>GET(uri)</code>, return a <a href="../api/io/micronaut/web/router/builder/LocatedHttpRouteSpec.html">LocatedHttpRouteSpec</a>, whose terminals, and those of its body stages, also take a handler that receives the target, e.g. <code>(request, pathVariables, shop) &#8594; &#8230;&#8203;</code>. A route at <code>/</code> is at the prefix itself. Its groups, declared with <code>group(&#8230;&#8203;)</code> or <code>path(&#8230;&#8203;)</code>, are of type <a href="../api/io/micronaut/web/router/builder/LocatedHttpRouteGroup.html">LocatedHttpRouteGroup</a>: their routes and locators receive the target too, and their error and status routes are local to their routes.</td>
+<td>Declare relative routes with handlers such as <code>(request, pathVariables, shop) &#8594; &#8230;&#8203;</code>. A route at <code>/</code> matches the locator&#8217;s prefix. Nested groups and local error routes are supported.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>The handlers that do not take the target as an argument, e.g. the shortcuts such as <code>GET(uri, handler)</code>, read it from their path variables with <code>LocatedRoutes.locatedTarget(pathVariables, type)</code>.</td>
+<td>Handlers without a target parameter can retrieve it with <code>LocatedRoutes.locatedTarget(pathVariables, type)</code>.</td>
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_matching_and_execution">Matching and Execution</h3>
 <div class="paragraph">
-<p>A locator that returns <code>null</code>, or a stage that completes with <code>null</code>, is a <code>404</code>. A locator that throws, or a failed stage, is handled by the error routes, those of the groups of the locator route first. When the located routes have no route for the rest of the path, the request is answered like a request that no route matches: <code>404</code>, or <code>405</code>, <code>415</code> or <code>406</code> if a located route matches the path with another method or media type. No other route of the application is tried.</p>
+<p>The locator runs at most once per request. A <code>null</code> target produces <code>404</code>; exceptions use normal error handling, starting with the locator&#8217;s groups.</p>
 </div>
 <div class="paragraph">
-<p>The filters of the matched located route apply, after the filters of the groups of the locator route, and the server filters apply to the full path. A located route inherits from the groups enclosing its locator route what a route declared in those groups has, and its own settings, and those of the groups of its <code>LocatedRoutes</code>, take precedence: the annotations given with <code>annotate(&#8230;&#8203;)</code>, so a filter bound to a <code>@FilterMatcher</code> annotation of such a group runs for it and the <code>@Produces</code>, <code>@Consumes</code>, <code>@Status</code> and <code>@ExecuteOn</code> of the group apply to it; the attributes; and the media types and the executor, given with <code>consumes(&#8230;&#8203;)</code>, <code>produces(&#8230;&#8203;)</code>, <code>executeOn(&#8230;&#8203;)</code> or <code>nonBlocking()</code>, including when the request is matched by its media types. Located routes may declare locator routes of their own, which locate again from the rest of the path, and error routes in their groups. They cannot declare global error or status routes or ports, and have no <code>serverFilter</code>: those belong to the application routes, and declaring a global error or status route or a port fails when the routes are declared. Routes that fail to declare fail every request routed to them, and are declared again for the next one. The URI template of a request routed to a located route, e.g. the <code>uri</code> of the HTTP server metrics, is the template of the route under the prefixes of its locator routes, such as <code>/shops/{shop}/items/{index}</code>.</p>
+<p>Once a target is selected, routing continues within its routes. If none matches, the response is <code>404</code>, <code>405</code>, <code>415</code> or <code>406</code> as appropriate. The request does not fall back to unrelated application routes.</p>
 </div>
 <div class="paragraph">
-<p>A synchronous locator runs while the request is matched, on the thread that matches it, typically an event loop thread, and must not block. The target is located once per request and kept for the rest of the request: a locator, synchronous or asynchronous, runs at most once per request, also when the request is answered with a <code>405</code> whose allowed methods are those of the located routes. A request with a custom HTTP method, such as <code>PROPFIND</code>, is located like any other: it is answered by the located route of that method, or by a located route declared with <code>any(&#8230;&#8203;)</code>, and otherwise with a <code>405</code> whose allowed methods are those of the located routes. The constraints of a located route see the path variables of the prefixes, as its handler does.</p>
+<p>Synchronous locators run during route matching, typically on the event loop, and must not block. Use <code>locateAsync</code> for asynchronous work. The server stops waiting if the client disconnects, without cancelling the returned stage, which may be shared.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_groups_and_settings">Groups and Settings</h3>
+<div class="paragraph">
+<p>Located routes inherit filters, annotations, attributes, media types and executors from the groups enclosing the locator. Their own settings and groups can override these defaults. Filters run from the enclosing locator groups inward to the matched route.</p>
 </div>
 <div class="paragraph">
-<p>The server waits for the stage of an asynchronous locator without blocking. When the client goes away before the stage completes, the Netty server stops waiting for it, when the connection closes or the HTTP/2 stream is reset, without cancelling it: a locator may return a stage it shares with other requests, e.g. of a cache. A CORS preflight request for a path under the prefix of an asynchronous locator is answered once the locator has located its target, with the methods of its located routes, before the filters that run after the routes are matched.</p>
+<p>Located routes can contain further locators. They cannot declare server filters, global error or status routes, dedicated ports, WebSocket routes or static resource routes. Declare those on the application builder instead.</p>
 </div>
-<div class="sect3">
-<h4 id="_locators_that_read_the_body">Locators that read the body</h4>
+</div>
+<div class="sect2">
+<h3 id="_locators_that_read_the_body">Locators That Read the Body</h3>
 <div class="paragraph">
-<p>A locator that needs the body of the request to locate its target, e.g. a JAX-RS resource that reads <code>@FormParam</code> fields before its sub-resource locator runs, is declared with <code>locator(prefix)</code>, followed by a body stage, like the body stages of a route, and <code>locate</code> or <code>locateAsync</code>:</p>
+<p>Use <code>locator(prefix)</code> followed by a body stage when finding the target requires request data:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">A locator that reads the form</div>
@@ -46431,25 +46458,28 @@ class FormLocatorRoutes implements HttpRoutes {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><code>locator(prefix)</code> declares a locator route whose locator reads the body. It matches every request under the prefix, like <code>locate(&#8230;&#8203;)</code>.</td>
+<td>Start a locator that reads the body.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The body stage: <code>form()</code> for the submitted form, <code>body(type)</code> for the body decoded to a type, like a <code>@Body</code> argument, or <code>body()</code> for an <a href="../api/io/micronaut/http/body/AsyncRequestBody.html">AsyncRequestBody</a> the locator reads itself.</td>
+<td>Choose <code>form()</code>, a decoded <code>body(type)</code>, or <code>body()</code> for an <a href="../api/io/micronaut/http/body/AsyncRequestBody.html">AsyncRequestBody</a>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The locator receives the body once it was read. It runs on the thread that completed the read, typically an event loop thread, and must not block: use <code>locateAsync</code> for a target that is loaded later.</td>
+<td>The locator runs when the body is ready, usually on the event loop. Use <code>locateAsync</code> for work that completes later.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>The located route reads the body again. The form is read once: the locator and the located route receive the same form, with its files.</td>
+<td>The located route can read the form too; it receives the same collected form and files.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>A request whose content type is not a form, such as this <code>GET</code>, a <code>HEAD</code>, a CORS preflight or a JSON body for a located route, is located with the empty form, see <a href="../api/io/micronaut/http/form/.html#FormData#empty--">form.FormData#empty()</a>, without reading its body, like a JAX-RS <code>@FormParam</code> without a form entity. A form that fails to read fails the request.</td>
+<td>A form locator receives <code>FormData.empty()</code> for a non-form request without reading its body. A malformed form fails the request.</td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>Body-reading locators use a copy of the body and buffer it within <code>micronaut.server.max-request-buffer-size</code>. Larger bodies produce <code>413</code>. A decoded body is required unless its type is nullable.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -46458,13 +46488,10 @@ class FormLocatorRoutes implements HttpRoutes {
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-A <code>form()</code> locator reads the form from a copy of the body, which needs a server that decodes a form from a split of the bytes of the request, as the Netty server does. On a server that does not, e.g. a servlet container, a form request under such a locator fails.
+Form locators require a server that supports decoding forms from a copy of the request bytes, such as Netty. They are not supported on servers without that capability, such as servlet containers.
 </td>
 </tr>
 </table>
-</div>
-<div class="paragraph">
-<p>The locator reads a copy of the body, see <a href="../api/io/micronaut/http/body/.html#AsyncRequestBody#copy--">body.AsyncRequestBody#copy()</a>, so the body is held to <code>micronaut.server.max-request-buffer-size</code> as a whole, with a <code>413</code> for a larger body. With <code>body(type)</code>, a request without a body is a <code>400</code>, unless the type is nullable. What the read of the locator left open is released before the request is matched with the located routes, and when the client goes away, while the body is read or while the locator waits for its stage. Otherwise the locator is an asynchronous locator: it runs once per request, and its failures are answered by the error routes.</p>
 </div>
 </div>
 
@@ -46478,29 +46505,31 @@ A <code>form()</code> locator reads the form from a copy of the body, which need
 
 
 <div class="paragraph">
-<p>The <code>String</code> templates of the routes are URI templates, unless a group parses them with another template language: <code>templates(parser)</code> on a group takes a <a href="../api/io/micronaut/http/uri/RouteTemplateParser.html">RouteTemplateParser</a>, which parses the templates of the routes and of the locator prefixes of the group into <a href="../api/io/micronaut/http/uri/RouteTemplate.html">RouteTemplate</a> instances, e.g. the templates of a JAX-RS application. These are experimental SPIs for the integrations of other web frameworks.</p>
+<p>Most applications should use the default URI templates and route selection. The experimental APIs in this section support integrations with other web frameworks that need different matching rules.</p>
+</div>
+<div class="sect2">
+<h3 id="_custom_template_languages">Custom Template Languages</h3>
+<div class="paragraph">
+<p>Call <code>templates(parser)</code> on a group to provide an <a href="../api/io/micronaut/http/uri/RouteTemplateParser.html">RouteTemplateParser</a>. It parses route paths and locator prefixes into <a href="../api/io/micronaut/http/uri/RouteTemplate.html">RouteTemplate</a> instances.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_custom_route_selection">Custom Route Selection</h3>
+<div class="paragraph">
+<p>Use <code>selectedBy(selector)</code> on a group or route to provide an <a href="../api/io/micronaut/web/router/spi/RouteMatchSelector.html">RouteMatchSelector</a>. The selector runs when all matching candidates share the same selector instance. Otherwise, Micronaut&#8217;s normal matching policy applies.</p>
 </div>
 <div class="paragraph">
-<p>The routes of a template language usually also share a <a href="../api/io/micronaut/web/router/spi/RouteMatchSelector.html">RouteMatchSelector</a>, given with <code>selectedBy(selector)</code> on a group or a route. When every route that matches a request has the same selector, the selector chooses among their matches, instead of the Micronaut policy, and may negotiate the media type of the response, which the handler reads with <code>RouteMatchSelector.selectedMediaType(pathVariables)</code>. Its <code>order()</code> ranks the routes where no selection runs, e.g. among locator routes. When the routes that match have different selectors, or none, the Micronaut policy applies, as it does for every route without a selector.</p>
+<p>A selector can also negotiate the response media type. Handlers can read it with <code>RouteMatchSelector.selectedMediaType(pathVariables)</code>.</p>
 </div>
 <div class="paragraph">
-<p>By default the router gives a selector only the routes whose consumed and produced types are compatible with the content type and the accepted types of the request. A selector that ranks the routes by the path first, as JAX-RS does (section 3.7.2), overrides <code>selectsMediaTypes()</code> to return <code>true</code>:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>The selector is given the matching routes of the method of the request whatever their media types, so it can choose the route of the most specific template first. When that route cannot serve the media types of the request, it returns <code>Selection.notAcceptable(match)</code> or <code>Selection.unsupportedMediaType(match)</code>: the request is answered with <code>406</code> or <code>415</code>, with the produced or consumed types of that route, as a failure of that route: the status and error routes of its groups, and of the groups of its locator routes, answer before the global ones, and a static file of the same path is not served. An empty selection is still answered as when no route matches, with <code>404</code> or <code>405</code>.</p>
-</li>
-<li>
-<p>For example, with <code>/r/fixed</code> producing <code>application/json</code> and <code>/r/{x}</code> producing <code>text/plain</code>, <code>GET /r/fixed</code> with <code>Accept: text/plain</code> is answered with <code>406</code> by <code>/r/fixed</code>, instead of being routed to <code>/r/{x}</code>.</p>
-</li>
-<li>
-<p>When the routes matching a request do not all have that selector, the routes whose media types are not compatible are dropped first, as for other routes.</p>
-</li>
-</ul>
+<p>By default, the router removes candidates with incompatible media types before invoking the selector. An integration that must choose by path first can return <code>true</code> from <code>selectsMediaTypes()</code> and report <code>Selection.notAcceptable(match)</code> or <code>Selection.unsupportedMediaType(match)</code> for <code>406</code> or <code>415</code>. Returning no selection instead means no route was found.</p>
 </div>
 <div class="paragraph">
-<p>A locator route accepts every HTTP method. When its selector has an <code>order()</code>, the router drops a locator route that a route of the same selector, which is not a locator route, is more specific than for any HTTP method: the request is then routed as if the locator route did not match the path. With a route <code>GET /items/sub</code> and a locator route <code>/items/{id}</code>, <code>OPTIONS /items/sub</code> is answered by the automatic <code>OPTIONS</code> response with <code>Allow: GET, HEAD, OPTIONS</code> (with <code>micronaut.server.dispatch-options-requests</code> enabled) and <code>POST /items/sub</code> with <code>405</code>, instead of running the locator with <code>sub</code> as its id. A path that the more specific route does not match, such as <code>/items/5/details</code>, is still located.</p>
+<p>For locator precedence, a selector can provide an <code>order()</code> comparator. It lets a more specific route take precedence over a locator of the same selector, including when determining allowed methods.</p>
+</div>
+<div class="paragraph">
+<p>See the API documentation for the full selection contract. Custom selectors cannot be combined with request-body conditions.</p>
+</div>
 </div>
 
 <h2 id="functionalRoutesWebSocket"><a class="anchor" href="#functionalRoutesWebSocket"></a>6.31.13 WebSocket Routes</h2>
@@ -46513,7 +46542,10 @@ A <code>form()</code> locator reads the form from a copy of the body, which need
 
 
 <div class="paragraph">
-<p>A <code>GET</code> route ends with <code>webSocket(&#8230;&#8203;)</code> instead of a handler: the server upgrades the requests to the route to WebSocket connections and calls the handler functions the lambda declares, the functional counterpart of a <a href="../api/io/micronaut/websocket/annotation/ServerWebSocket.html">@ServerWebSocket</a> bean. The route stays a route of the route builder: its path variables, groups, filters, conditions, order, port and attributes apply to the upgrade request. WebSocket routes need the <code>micronaut-websocket</code> dependency:</p>
+<p>Finish a <code>GET</code> route with <code>webSocket(&#8230;&#8203;)</code> to declare WebSocket handlers instead of an HTTP response handler. Route groups, filters, conditions, order, ports and attributes apply to the upgrade request.</p>
+</div>
+<div class="paragraph">
+<p>Add the WebSocket dependency:</p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -46542,7 +46574,7 @@ runtime = [
 </p>
 </div>
 <div class="paragraph">
-<p>The types of the WebSocket routes are in the package <a href="../api/io/micronaut/web/router/websocket/package-summary.html">io.micronaut.web.router.websocket</a>, experimental like the other functional routes.</p>
+<p>The functional WebSocket APIs are in <a href="../api/io/micronaut/web/router/websocket/package-summary.html">io.micronaut.web.router.websocket</a> and are experimental.</p>
 </div>
 <div class="sect2">
 <h3 id="_handlers">Handlers</h3>
@@ -46598,40 +46630,40 @@ runtime = [
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>A <code>GET</code> route ends with <code>webSocket(&#8230;&#8203;)</code>: the lambda declares the handlers of its connections, each at most once.</td>
+<td>Declare each connection handler at most once inside <code>webSocket(&#8230;&#8203;)</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The open handler receives the <a href="../api/io/micronaut/websocket/WebSocketSession.html">WebSocketSession</a> and the upgrade request. The path variables of the route are the URI variables of the session.</td>
+<td>The open handler receives the <a href="../api/io/micronaut/websocket/WebSocketSession.html">WebSocketSession</a> and upgrade request. Path variables are available as session URI variables.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The message handler receives each message decoded to the type it declares: <code>String</code> and <code>byte[]</code> as they are, other types from JSON, like the message parameter of an <code>@OnMessage</code> method.</td>
+<td>Declare the message type. Strings and bytes are read directly; other types are decoded from JSON.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>The error handler receives the error of a handler, or of a message that cannot be decoded. Without one, the connection is closed with <code>1011</code>.</td>
+<td>Handle handler failures and decoding errors with <code>onError</code>. Without it, the connection closes with <code>1011</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>A handler with nothing to wait for returns <code>null</code>: it is done.</td>
+<td>Return <code>null</code> when a handler finishes immediately.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Each handler receives the session first, like the JDK <code>java.net.http.WebSocket.Listener</code>, and returns a <code>CompletionStage</code> that completes when it is done, or <code>null</code> when it is done at once: it sends with <code>session.sendAsync(&#8230;&#8203;)</code> and returns the stage of the send. The handlers are <code>onOpen</code>, <code>onMessage</code>, <code>onMessageStream</code> (see below), <code>onPing</code>, <code>onPong</code>, <code>onClose</code> and <code>onError</code>; <code>subprotocols(&#8230;&#8203;)</code> and <code>maxPayloadLength(&#8230;&#8203;)</code> are like the members of <code>@ServerWebSocket</code> and <code>@OnMessage</code>. A message handler may be declared for a supertype of the messages, e.g. a <code>WebSocketMessageHandler&lt;Object&gt;</code> for <code>String</code> messages.</p>
+<p>Handlers receive the session first and return a <code>CompletionStage</code> when work completes later. For example, return the stage from <code>session.sendAsync(&#8230;&#8203;)</code>. Available callbacks include <code>onOpen</code>, <code>onMessage</code>, <code>onMessageStream</code>, <code>onPing</code>, <code>onPong</code>, <code>onClose</code> and <code>onError</code>.</p>
 </div>
 <div class="paragraph">
-<p>The handlers run on the event loop by default, like a controller method that returns a stage: a handler must not block. A route whose handlers block, e.g. on I/O, runs them on another executor with <code>executeOn(&#8230;&#8203;)</code>, e.g. <code>executeOn(TaskExecutors.BLOCKING)</code>, see below.</p>
+<p>Handlers run on the event loop by default. Use <code>executeOn(TaskExecutors.BLOCKING)</code> for blocking work. Store per-connection state in session attributes, since handler instances are shared.</p>
 </div>
 <div class="paragraph">
-<p>The sessions are the sessions of the <code>@ServerWebSocket</code> beans: <code>session.getOpenSessions()</code> and the <a href="../api/io/micronaut/websocket/WebSocketBroadcaster.html">WebSocketBroadcaster</a> reach both, and the upgrade request is the current request in the handlers. The handlers are shared by the connections of the route: the state of a connection belongs in the attributes of its session. A bean that declares routes injects the broadcaster as a <code>BeanProvider&lt;WebSocketBroadcaster&gt;</code>, since the broadcaster depends on the server, which depends on the routes.</p>
+<p>Sessions work with <code>session.getOpenSessions()</code> and <a href="../api/io/micronaut/websocket/WebSocketBroadcaster.html">WebSocketBroadcaster</a> alongside annotated WebSockets. Inject the broadcaster through <code>BeanProvider&lt;WebSocketBroadcaster&gt;</code> to avoid a startup dependency cycle.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_the_upgrade_request">The upgrade request</h3>
+<h3 id="_upgrade_requests">Upgrade Requests</h3>
 <div class="paragraph">
-<p>The filters of the route and of its groups, and the application&#8217;s filters, run on the upgrade request: a filter that answers with a response rejects the upgrade.</p>
+<p>Application, group and route filters run on the upgrade request. Returning an HTTP response rejects the upgrade:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">A filter that rejects the upgrade</div>
@@ -46687,24 +46719,24 @@ runtime = [
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>A request without the header is answered with <code>403</code>, and the connection is not upgraded.</td>
+<td>Reject a missing header with <code>403</code> before opening the connection.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The conditions of <code>where(&#8230;&#8203;)</code>, the order and the port select the route like for any other request: of the WebSocket routes that match an upgrade request, the closest one is upgraded, then the one of the lowest order. A WebSocket route of the route builder is preferred to a <code>@ServerWebSocket</code> bean, whose routes are selected as before: the first one whose URI template matches the path. A <code>GET</code> request to a WebSocket route that is not an upgrade is answered with <code>400</code>.</p>
+<p>Conditions and route order also apply. Among functional WebSocket matches, the most specific route wins, then the lowest order. Functional WebSocket routes take precedence over <code>@ServerWebSocket</code> beans.</p>
 </div>
 <div class="paragraph">
-<p>A WebSocket route is a route of an <code>HttpRoutes</code> bean: the server finds the route of an upgrade request among the routes it knows when it starts, so a located route, see <a href="#functionalRoutesLocators">Locator Routes</a>, cannot be a WebSocket route, and declaring one fails with an <code>IllegalStateException</code>.</p>
-</div>
-<div class="paragraph">
-<p>A WebSocket route has no media types and no response type: the media types of its groups do not apply to it, and <code>consumes(&#8230;&#8203;)</code>, <code>produces(&#8230;&#8203;)</code> or <code>responseType(&#8230;&#8203;)</code> on the route itself fail with an <code>IllegalStateException</code>. A message handler declares the type of its messages instead.</p>
+<p>Declare WebSocket routes on the application builder, not in located routes. They have no HTTP body media types or response type: group media types are ignored, and <code>consumes</code>, <code>produces</code> and <code>responseType</code> are not supported. Set the message type on the message handler instead.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_streams">Streams</h3>
+<h3 id="_message_streams">Message Streams</h3>
 <div class="paragraph">
-<p><code>session.sendAllAsync(publisher)</code> sends the messages of a Reactive Streams <code>Publisher</code>, no faster than the connection writes them. Its stage completes with <code>true</code> when the publisher completed and its messages were sent, and with <code>false</code> when the session closed first: the session closing cancels the publisher. <code>onMessageStream(&#8230;&#8203;)</code> receives the messages of a connection as a <code>Publisher</code>, at the pace its subscriber requests them.</p>
+<p><code>session.sendAllAsync(publisher)</code> sends a publisher&#8217;s messages at the connection&#8217;s pace. Its stage completes with <code>true</code> after all messages are sent, or <code>false</code> if the session closes first; closing cancels the publisher.</p>
+</div>
+<div class="paragraph">
+<p>Use <code>onMessageStream(&#8230;&#8203;)</code> to receive a publisher of incoming messages:</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Streams of messages</div>
@@ -46756,26 +46788,26 @@ routes.GET("/upper").webSocket { ws -&gt; ws
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The open handler sends a stream of messages.</td>
+<td>Start an outgoing message stream when the connection opens.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The message stream handler is called once for each connection, after the open handler, with the messages of the connection in the order they are read. It subscribes to them before it is done: the messages of a handler that is done without a subscriber, or that fails, are discarded.</td>
+<td>The stream handler runs once per connection, after the open handler. Subscribe before the handler completes; otherwise incoming messages are discarded.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The replies are a stream too: the next message is read once a reply was sent. The publisher of the messages completes when the connection closes: on a close, before the close handler runs, so that the close handler can wait for the stream.</td>
+<td>Pace reads by the replies sent. The incoming publisher completes before the close handler runs.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>A route has <code>onMessage</code> or <code>onMessageStream</code>. A message stream receives its messages one after the other, so it has no <code>maxConcurrentMessages</code>. The handler and the subscriber run on the executor of the route, with the upgrade request as the current request.</p>
+<p>Choose either <code>onMessage</code> or <code>onMessageStream</code>. Stream handlers follow subscriber demand and do not support <code>maxConcurrentMessages</code>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_delivery_and_backpressure">Delivery and backpressure</h3>
+<h3 id="_delivery_and_backpressure">Delivery and Backpressure</h3>
 <div class="paragraph">
-<p>The handlers of a connection run one after the other: the first message is handled once the open handler is done, and each next message once the handler of the previous one is done, i.e. once the stage it returned completed. The connection reads at most <code>maxPendingMessages(&#8230;&#8203;)</code> messages ahead of its handlers, <code>16</code> by default, so a client cannot send messages faster than they are handled. A message sent in fragments counts each of its fragments, so that the messages that wait take a bounded amount of memory.</p>
+<p>By default, handlers run sequentially per connection: the next message waits until the previous handler&#8217;s stage completes. The server reads ahead up to <code>maxPendingMessages</code>, <code>16</code> by default. Fragmented messages count each fragment toward that limit.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Concurrent handlers</div>
@@ -46827,20 +46859,20 @@ routes.GET("/upper").webSocket { ws -&gt; ws
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The executor of the route runs its handlers: here the executor for blocking work. By default they run on the event loop.</td>
+<td>Run handlers on the blocking executor instead of the event loop.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Up to 4 messages of a connection are handled at the same time, in any order.</td>
+<td>Allow up to four message handlers per connection to run concurrently; completion order can differ from arrival order.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Up to 32 messages are read ahead of the handlers.</td>
+<td>Allow up to 32 pending messages.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The pings are answered as they are read, and a close is handled as soon as it is read, while the handlers that run go on: the messages read before it that still wait for their turn are discarded, except for a message stream, which receives them before it completes. Once <code>maxPendingMessages</code> messages wait, the connection decodes nothing until a handler is done, the pings and the close included, even when many frames arrive at once. It still reads up to 64 KiB more, undecoded, so that a client that drops the connection without a close is noticed at once, with an abnormal closure (<code>1006</code>). <code>maxPendingMessages(0)</code> reads all the time, without backpressure.</p>
+<p>When the pending limit is reached, message decoding pauses until handlers catch up. <code>maxPendingMessages(0)</code> disables this backpressure, so use it carefully.</p>
 </div>
 <div class="admonitionblock important">
 <table>
@@ -46849,13 +46881,13 @@ routes.GET("/upper").webSocket { ws -&gt; ws
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-A handler that returns a stage that does not complete, e.g. the stage of <code>sendAllAsync</code> for a stream that does not end, holds the next messages of its connection back. A handler that streams while the connection receives starts the stream and returns <code>null</code>.
+A handler&#8217;s stage delays subsequent messages. To send an ongoing stream while continuing to receive messages, start the stream and return <code>null</code> rather than returning a stage that never completes.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The <code>@ServerWebSocket</code> beans keep their behavior: their connections read all the time, and their messages are handled as they are read.</p>
+<p>These delivery settings apply to functional WebSocket routes. Annotated <code>@ServerWebSocket</code> beans retain their existing behaviour.</p>
 </div>
 </div>
 
@@ -46869,7 +46901,7 @@ A handler that returns a stage that does not complete, e.g. the stage of <code>s
 
 
 <div class="paragraph">
-<p>The terminal <code>resources(&#8230;&#8203;)</code> ends a <code>GET</code> route with a handler of the resources under its URI: the route serves the files of a directory, or the resources of a package of the classpath, under a URI prefix. <a href="../api/io/micronaut/http/server/routes/StaticResources.html">StaticResources</a> is the handler of the HTTP server for static resources.</p>
+<p>Finish a <code>GET</code> route with <code>resources(&#8230;&#8203;)</code> to serve files or classpath resources under a URI prefix. Use <a href="../api/io/micronaut/http/server/routes/StaticResources.html">StaticResources</a> for the standard file-serving behaviour.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Serving static resources under a prefix</div>
@@ -46919,31 +46951,28 @@ routes.GET("/site").resources(StaticResources.fileSystem(siteDirectory)) // <b c
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>A <code>GET</code> route declares the URI prefix of the resources.</td>
+<td>Declare the URI prefix with <code>GET</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The settings of the route are declared before the terminal, like for any route: here a filter, but also <code>where(&#8230;&#8203;)</code>, <code>order(&#8230;&#8203;)</code>, <code>attribute(&#8230;&#8203;)</code>, <code>port(&#8230;&#8203;)</code> or <code>executeOn(&#8230;&#8203;)</code>. They apply to every resource of the route.</td>
+<td>Add filters and other route settings before <code>resources(&#8230;&#8203;)</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td><code>StaticResources.classpath(base)</code> serves the resources under a package of the classpath, inside jars too: <code>GET /assets/css/site.css</code> answers <code>functional-static/assets/css/site.css</code>.</td>
+<td><code>StaticResources.classpath(base)</code> serves resources from the classpath, including jars. Here <code>/assets/css/site.css</code> maps to <code>functional-static/assets/css/site.css</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td><code>cacheControl(&#8230;&#8203;)</code> sets the <code>Cache-Control</code> header of the resources, here for files whose names change with their content. Without it, the header is the one of the files of the server, see <code>micronaut.server.responses.file</code>.</td>
+<td>Set <code>Cache-Control</code> for the resources. Otherwise, the server&#8217;s file-response configuration applies.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td><code>StaticResources.fileSystem(directory)</code> serves the files under a directory of the file system: <code>GET /site/hello.txt</code> answers the file <code>hello.txt</code> of the directory. Symbolic links that lead outside the directory are not followed.</td>
+<td><code>StaticResources.fileSystem(directory)</code> serves files from a directory without following symbolic links outside it.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The route registers two routes to the handler: <code>GET prefix</code>, which answers the index file of the directory, and <code>GET prefix/{+path}</code>, which answers the resource at <code>path</code>, relative to the prefix. Trailing slashes of the prefix are ignored. Like any <code>GET</code> route they have implicit <code>HEAD</code> routes, and they are ordinary routes: a more specific route of a controller or a handler under the prefix takes precedence.</p>
-</div>
-<div class="paragraph">
-<p>A route of resources is declared in a group like any other route. <code>GET("")</code> serves the resources at the prefix of the group:</p>
+<p>The prefix itself serves the index file, and paths beneath it serve individual resources. <code>GET</code> also registers <code>HEAD</code>. More specific controller or functional routes under the prefix take precedence.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">Static resources in a group</div>
@@ -46994,46 +47023,65 @@ routes.path("/manual", manual_routes)</code></pre>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The media types of the group do not apply to a route of resources: the content type of each resource follows its file name, here <code>text/html</code> for <code>index.html</code>, although the group produces JSON.</td>
+<td>Content types follow file names, regardless of the group&#8217;s media types.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The executor of the group applies. Without one, a route of resources runs on the blocking executor, because reading files and jars blocks: the executor of the route or of its groups replaces it.</td>
+<td>The group&#8217;s executor applies. Without an explicit executor, resources run on the blocking executor.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The filters of the group apply to the route of resources, like to the other routes of the group.</td>
+<td>Group filters apply normally.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td><code>GET /manual</code> answers <code>index.html</code> of <code>functional-static/manual</code>.</td>
+<td><code>/manual</code> serves the classpath directory&#8217;s <code>index.html</code>.</td>
 </tr>
 </table>
 </div>
-<div class="sect3">
-<h4 id="_options">Options</h4>
+<div class="sect2">
+<h3 id="_resource_options">Resource Options</h3>
 <div class="paragraph">
-<p><code>StaticResources</code> is immutable: each option returns a copy.</p>
+<p><code>StaticResources</code> is immutable; each option returns a configured copy.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>classpath(base)</code>, <code>fileSystem(directory)</code> (a <code>String</code> or a <code>Path</code>), <code>of(locations&#8230;&#8203;)</code> with the locations of <code>micronaut.router.static-resources</code>, e.g. <code>classpath:public</code> and <code>file:/var/www</code>, and <code>of(resourceLoaders&#8230;&#8203;)</code>. With several locations, the first one that has a resource answers it. The classpath locations are of the context class loader of the thread that creates them, the class loader of the application. <code>fileSystem(directory)</code> fails with an <code>IllegalArgumentException</code> if the directory does not exist.</p>
-</li>
-<li>
-<p><code>indexFile(name)</code>: the file answered for the prefix itself and for a path whose last segment has no extension and is a directory, e.g. <code>v1.2/docs</code>, <code>index.html</code> by default; <code>null</code> for none, then such a request is answered with <code>404</code>. It is the name of a file, without a slash.</p>
-</li>
-<li>
-<p><code>cacheControl(value)</code>: the <code>Cache-Control</code> header of the resources.</p>
-</li>
-<li>
-<p><code>pathVariable(name)</code>: the name of the path variable of the path of the resource, <code>path</code> by default: letters, digits and underscores.</p>
-</li>
-<li>
-<p><code>hiddenFiles(serve)</code>: whether the hidden files are served, the paths with a segment that starts with a dot, e.g. <code>.env</code>, <code>.git/config</code> or <code>.well-known/security.txt</code>. By default they are not: such a path is answered with <code>404</code>.</p>
-</li>
-</ul>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Option</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>classpath(base)</code>, <code>fileSystem(directory)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Choose a classpath location or existing filesystem directory.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>of(locations&#8230;&#8203;)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Search multiple locations in order, using values such as <code>classpath:public</code> or <code>file:/var/www</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>indexFile(name)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Choose the directory index file, <code>index.html</code> by default. Use <code>null</code> to disable it.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cacheControl(value)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set the <code>Cache-Control</code> header.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>pathVariable(name)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Rename the resource path variable, <code>path</code> by default, if it conflicts with a prefix variable.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hiddenFiles(true)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allow paths with dot-prefixed segments, which are hidden by default.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="listingblock multi-language-sample">
 <div class="title">Serving the hidden files</div>
 <div class="content">
@@ -47062,71 +47110,30 @@ routes.path("/manual", manual_routes)</code></pre>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><code>GET /public/.well-known/security.txt</code> answers the file, while <code>GET /site/.well-known/security.txt</code> of the route without the option answers <code>404</code>.</td>
+<td>Enable access to <code>.well-known/security.txt</code> for this route. A route without the option returns <code>404</code> for it.</td>
 </tr>
 </table>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_responses">Responses</h4>
+<div class="sect2">
+<h3 id="_responses_and_paths">Responses and Paths</h3>
 <div class="paragraph">
-<p>A file of the file system is answered as a <a href="../api/io/micronaut/http/server/types/files/SystemFile.html">SystemFile</a>, and any other resource, e.g. in a jar, as a <a href="../api/io/micronaut/http/server/types/files/StreamedFile.html">StreamedFile</a>, so they are answered like the files of <code>micronaut.router.static-resources</code>:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>the content type follows the extension of the file name;</p>
-</li>
-<li>
-<p>the response has a <code>Last-Modified</code> header, and a request with a matching <code>If-Modified-Since</code> header is answered with <code>304</code>;</p>
-</li>
-<li>
-<p>a <code>Range</code> request for a file of the file system is answered with <code>206</code>. A resource of the classpath is a file of the file system when the classpath is a directory, e.g. while developing, and not in a jar, so it is answered with <code>206</code> while developing but not from the jar;</p>
-</li>
-<li>
-<p>a <code>HEAD</code> request is answered with the headers of a <code>GET</code> request, including <code>304</code> to a matching <code>If-Modified-Since</code>, without the content.</p>
-</li>
-</ul>
+<p>Resources use normal file responses: content types follow extensions, <code>Last-Modified</code> supports conditional requests with <code>304</code>, and <code>HEAD</code> returns headers without content. Byte ranges produce <code>206</code> for filesystem-backed files; resources inside jars do not support that range handling.</p>
 </div>
 <div class="paragraph">
-<p>A request for a resource that no location has, or for a directory without an index file, is answered with <code>404</code>. So is a path that tries to leave the base: a <code>.</code> or <code>..</code> segment, a backslash, a colon, a NUL character, an absolute path, or a dot, slash or backslash encoded twice, e.g. <code>/assets/%252e%252e/secret.txt</code>, which the router decodes once. So is another spelling of a path, which the router could route elsewhere, e.g. past a more specific route under the prefix: an empty segment, as in <code>/assets/css//site.css</code>, an encoded slash in the path of the resource, as in <code>/assets/css%2fsite.css</code> or <code>/assets/..%2fsecret.txt</code>, and, on a file system that ignores the case, e.g. on macOS or Windows, a file spelled with another case, as in <code>/assets/CSS/SITE.CSS</code>: the names of the path under the base are compared exactly with the names their directories list, which a file system that tells the case apart does not need. An encoded slash of the prefix is part of the prefix.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_the_rules_of_a_route_of_resources">The rules of a route of resources</h4>
-<div class="ulist">
-<ul>
-<li>
-<p><code>resources(&#8230;&#8203;)</code> ends a route of <code>GET</code> only, e.g. <code>GET(uri)</code> or <code>route(HttpMethod.GET, uri)</code>. On any other route, e.g. <code>POST(uri)</code>, <code>any(uri)</code> or a route of <code>GET</code> and <code>POST</code>, it throws an <code>IllegalStateException</code> while the routes are built, so the application fails at startup. It throws one too on a route already ended by another terminal.</p>
-</li>
-<li>
-<p>The URI of the route is a prefix: it has no query or fragment, each of its variables matches one segment, e.g. <code>{tenant}</code>, <code>{id:\d+}</code> or <code>{tenant:[^/]+}</code>, not <code>{/version}</code>, <code>{+dir}</code>, <code>{dir:.<strong>}</code> or <code>{dir:[a-z]</strong>}</code>, which may match several segments or none, and its regular expression has no capturing groups, e.g. <code>a|b</code>, not <code>(a|b)</code>, and no slash outside a character class. A regular expression is checked as far as it can be, by trying it on values that are empty or have a slash; <code>StaticResources</code> also answers <code>404</code> to a request whose prefix variables are empty or have a slash, which a custom <code>ResourceHandler</code> should do too, and the path variable of the handler is a plain name. Otherwise the route fails with an <code>IllegalArgumentException</code>. The prefix is a URI template: in a group whose <code>templates(&#8230;&#8203;)</code> parse another language, <code>resources(&#8230;&#8203;)</code> throws an <code>IllegalStateException</code>.</p>
-</li>
-<li>
-<p>The media types of its groups do not apply, but their filters, executor, conditions, order, port, annotations and attributes do.</p>
-</li>
-<li>
-<p>Reading the resources of the file system and of the classpath blocks, so the route runs on the blocking executor, unless the route or its groups declare an executor, e.g. <code>executeOn(&#8230;&#8203;)</code> or <code>nonBlocking()</code>. A custom <code>ResourceHandler</code> that reads its resources without blocking returns <code>false</code> from <code>blocking()</code>.</p>
-</li>
-<li>
-<p>A <code>ResourceHandler</code> given to an ordinary route, e.g. <code>GET("/files/{+path}", StaticResources.fileSystem(directory))</code>, runs like a route of resources: on the blocking executor, without the media types of its groups, and not on a located route. A request whose other variables matched a slash, e.g. a decoded <code>%2F</code>, is answered with <code>404</code>.</p>
-</li>
-<li>
-<p>A route of resources is a route of an <code>HttpRoutes</code> bean: on a located route, see <a href="#functionalRoutesLocators">Locator Routes</a>, it throws an <code>IllegalStateException</code>.</p>
-</li>
-<li>
-<p>The prefix of the route, with the prefixes of its groups, does not have the path variable of the handler, e.g. <code>path("/tenants/{path}", &#8230;&#8203;)</code>: it throws an <code>IllegalStateException</code>. Give the handler another one with <code>pathVariable(&#8230;&#8203;)</code>.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_static_resources_of_the_configuration">Static resources of the configuration</h4>
-<div class="paragraph">
-<p>The static resources of the configuration, <code>micronaut.router.static-resources</code> (see <a href="#staticResources">Serving Static Resources</a>), and the routes of resources share the resolution of a path to a resource, <a href="../api/io/micronaut/web/router/resource/StaticResourceResolver.html">StaticResourceResolver</a>: the order of the locations, the index file of a directory and the content type are the same. A route of resources rejects more paths, e.g. the hidden files and the other spellings of a path, and its classpath locations are of the context class loader of the thread that creates them.</p>
+<p>Missing resources and directories without an index return <code>404</code>. Unsafe or alternative path spellings are also rejected, including traversal, encoded separators, repeated separators and incorrect filename case on case-insensitive filesystems. Use the resource&#8217;s exact path.</p>
 </div>
 <div class="paragraph">
-<p>Use the configuration to serve static resources without code, e.g. to change the locations per environment. Use a route of resources to give them the settings of a route: filters, conditions, an order, a port, an executor or a <code>Cache-Control</code> header, or to declare them with the other functional routes of a group.</p>
+<p>Resource routes must use <code>GET</code> and standard URI templates. Prefix variables must match a single non-empty path segment, and cannot use the resource handler&#8217;s path-variable name. Declare resource routes on the application builder, not in located routes.</p>
+</div>
+<div class="paragraph">
+<p>Reading files and jars blocks. Keep the default blocking executor or choose another suitable executor. Group filters, conditions, annotations and other route settings apply, while group media types do not.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_choosing_configuration_or_routes">Choosing Configuration or Routes</h3>
+<div class="paragraph">
+<p>Use <a href="#staticResources">static resource configuration</a> when you want to serve files without code or choose locations per environment. Use a functional resource route when you need route-specific filters, conditions, caching headers or grouping with other routes.</p>
 </div>
 </div>
 
@@ -47139,42 +47146,26 @@ routes.path("/manual", manual_routes)</code></pre>
 </div>
 
 
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-The router reads the routes, their configuration and their filters when it is created: the routes cannot change while the application runs. A builder, group or route specification kept after <code>HttpRoutes.routes(&#8230;&#8203;)</code>, or after the lambda of its group, returned throws an <code>IllegalStateException</code> when it is used, and so does a filter of a group. The other specifications are not checked: a change to a filter declared with <code>serverFilter(&#8230;&#8203;)</code> on the builder, or to an error or status route, after <code>HttpRoutes.routes(&#8230;&#8203;)</code> returned is ignored.
-</td>
-</tr>
-</table>
-</div>
 <div class="paragraph">
-<p>Functional routes are experimental and have these known limitations:</p>
+<p>Functional routes are experimental. Keep these limitations in mind:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Tools that read the annotations of controllers, such as Micronaut OpenAPI, do not see handler routes.</p>
+<p>Routes and their settings are fixed when the router is created. Configure them inside <code>HttpRoutes.routes(&#8230;&#8203;)</code> and group callbacks; do not retain builders to make runtime changes.</p>
 </li>
 <li>
-<p>There is no Kotlin DSL and no support for <code>suspend</code> handler functions.</p>
+<p>Tools that discover routes from controller annotations, such as Micronaut OpenAPI, do not discover handler routes.</p>
+</li>
+<li>
+<p>There is no Kotlin DSL or support for <code>suspend</code> handler functions. The streaming APIs do provide <a href="#functionalRoutesStreaming">coroutine helpers</a>.</p>
 </li>
 </ul>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-A handler route has no annotations unless it is given some, see <a href="#functionalRoutesAnnotations">Annotations on Handler Routes</a>, so the body and the path variables of a handler route are not validated. To validate them, let the handler call a method of a bean whose parameters carry the constraints, e.g. <code>@Valid Item item</code> or <code>@NotBlank String name</code>: the method is validated like any other bean method, and a violation is answered with <code>400</code>, as for a controller.
-</td>
-</tr>
-</table>
+<div class="sect2">
+<h3 id="_validation">Validation</h3>
+<div class="paragraph">
+<p>Handler bodies and path variables are not automatically validated. To validate them, call a bean method whose parameters carry constraints such as <code>@Valid</code> or <code>@NotBlank</code>. A constraint violation produces <code>400</code>, as it does for a controller.</p>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="title">A bean method that validates its parameters</div>
@@ -47222,7 +47213,7 @@ static class ProductService {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The method is validated when it is called: an invalid product throws a <code>ConstraintViolationException</code>, answered with <code>400</code>.</td>
+<td>Calling the validated method with an invalid product throws <code>ConstraintViolationException</code>, producing <code>400</code>.</td>
 </tr>
 </table>
 </div>
@@ -47260,9 +47251,10 @@ static class ProductService {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The handler passes the body to the validated method.</td>
+<td>The handler delegates body validation to the bean method.</td>
 </tr>
 </table>
+</div>
 </div>
 
 <h2 id="sessions"><a class="anchor" href="#sessions"></a>6.32 HTTP Sessions</h2>
