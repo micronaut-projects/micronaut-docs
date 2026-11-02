@@ -66740,6 +66740,16 @@ micronaut.dev.patch-in-place=true</code></pre>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>Once a generation of the application first runs, the launcher logs a short note at INFO, followed by the link to the development pages with the launch&#8217;s access token when the application has an HTTP server (see <a href="#devModeSecurity">Security</a>), and by the port of the LiveReload server when it runs. A reload does not repeat the note. The launcher is not for production: run the packaged application there.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Development Mode Active: Not for production usage.
+Development pages: http://localhost:8080/dev?token=8RkV...
+LiveReload server listening on port 35729</pre>
+</div>
+</div>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -66829,11 +66839,74 @@ Everything under the manifest&#8217;s <code>micronaut.dev.</code> keys can be se
 </div>
 </div>
 <div class="paragraph">
-<p>The reload is a JSON request. It is refused with a 403 when a browser marks it as coming from another site, or when its <code>Origin</code> is not the server&#8217;s own: <code>localhost</code>, a <code>*.localhost</code> name or the loopback address, on the port the request arrived on. The <code>Host</code> the request names plays no part, since a page of another site can make its own name resolve to the machine. A page the developer visits therefore cannot trigger it with a form; a client that is no page, such as curl or an IDE, sends no <code>Origin</code>:</p>
+<p>The reload is a JSON request. It is refused with a 403 when a browser marks it as coming from another site, or when its <code>Origin</code> is not the server&#8217;s own: a host the development runtime answers (see <a href="#devModeSecurity">Security</a>) on the port the request arrived on. The <code>Host</code> the request names plays no part, since a page of another site can make its own name resolve to the machine. A page the developer visits therefore cannot trigger it with a form. Like every development page, it also needs the launch&#8217;s access token:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -X POST -H 'Content-Type: application/json' http://localhost:8080/dev/reload</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -X POST -H 'Content-Type: application/json' -H "X-Micronaut-Dev-Token: $TOKEN" http://localhost:8080/dev/reload</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="devModeSecurity">Security</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The development runtime reveals the machine: the <code>dev</code> endpoint reports absolute paths and reloads the application, the Control Panel shows its beans and configuration, and a failed compilation names the source files. The launcher therefore guards these development pages, and only in development mode: a packaged application has none of it.</p>
+</div>
+<div class="sect2">
+<h3 id="_the_access_token">The access token</h3>
+<div class="paragraph">
+<p>Each start of the launcher generates a random token of 256 bits, which reloads keep and a relaunch replaces. Once the application first runs, the startup note prints a link with it on a line of its own, to the Control Panel when the application has one (at <code>micronaut.control-panel.path</code>, <code>/control-panel</code> by default) and to the <code>dev</code> endpoint otherwise. It is the only place the token is shown:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Development Mode Active: Not for production usage.
+Development pages: http://localhost:8080/control-panel?token=8RkV...
+LiveReload server listening on port 35729</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Opening the link sets a cookie, <code>HttpOnly</code>, <code>SameSite=Strict</code> and of path <code>/</code>, and redirects to the same page without the token, so that it leaves the address bar and the history. From then on the browser reaches the development pages: everything under the <code>dev</code> endpoint, wherever <code>endpoints.dev.path</code> puts it, and under the Control Panel&#8217;s path. Only the pages the application has are guarded: the <code>dev</code> endpoint when it is routed, being present and enabled, and the Control Panel&#8217;s path when the Control Panel is there. Without them, the application&#8217;s own routes at <code>/dev</code> or <code>/control-panel</code> are left alone, as is every other route. A client that is not a browser, such as curl or an IDE, sends the token in the <code>X-Micronaut-Dev-Token</code> header. A request with neither is answered 401 with a hint to open the link. The token is compared in constant time.</p>
+</div>
+<div class="paragraph">
+<p>A compilation failure answered to the application&#8217;s own routes shows the compiler&#8217;s diagnostics, source paths included, only to a request that carries the token. Any other request is told that the compilation failed and to look at the console.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_allowed_hosts">Allowed hosts</h3>
+<div class="paragraph">
+<p>A development page, and a compilation failure, answer only a request whose <code>Host</code> is <code>localhost</code>, a name under <code>.localhost</code>, <code>127.0.0.1</code> or <code>[::1]</code>, on any port. Any other host is refused with a 403: a page of another site whose name was made to resolve to the machine, as DNS rebinding does, cannot read them. The same holds for the 503 the launcher answers while no generation runs, which says only that the application is not running; why is in the console. The responder answers a few connections at a time and closes the others.</p>
+</div>
+<div class="paragraph">
+<p>To open the application through another name, such as a LAN host or a development container whose ports are forwarded, list it in <code>micronaut.dev.allowed-hosts</code>, comma-separated, in the manifest, as a system property of the launcher or in the application&#8217;s configuration. The host the server is bound to with <code>micronaut.server.host</code> is allowed too.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">-Dmicronaut.dev.allowed-hosts=devbox.lan,app-container</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_binding_to_the_loopback_address">Binding to the loopback address</h3>
+<div class="paragraph">
+<p>In run mode, the launcher binds the HTTP server to <code>localhost</code>, so that other machines on the network cannot reach the development server at all. It sets <code>micronaut.server.host=localhost</code> at the lowest precedence: a <code>micronaut.server.host</code> in the application&#8217;s configuration, an environment variable or a system property wins. The manifest entry <code>micronaut.dev.bind-loopback</code>, which the build plugins write, turns this off when false, as does <code>-Dmicronaut.dev.bind-loopback=false</code>. Test mode leaves the host alone. The startup note warns, on a line of its own, when the server listens on every interface or on an address other than a loopback one.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_opting_out">Opting out</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>micronaut.dev.access-token.enabled=false</code> turns the token off: the development pages answer an allowed host without it, and the compilation failures show their diagnostics. Set it in the manifest, as a system property of the launcher or in the application&#8217;s configuration.</p>
+</li>
+<li>
+<p><code>micronaut.dev.allowed-hosts</code> adds the hosts to answer. There is no wildcard: the loopback names stay allowed and every other name is listed.</p>
+</li>
+<li>
+<p><code>micronaut.dev.bind-loopback=false</code>, or setting <code>micronaut.server.host</code> to <code>0.0.0.0</code> for instance, makes the server reachable from other machines; the token still guards the development pages.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -66955,12 +67028,26 @@ Everything under the manifest&#8217;s <code>micronaut.dev.</code> keys can be se
 <p>the browser extensions (<code>chrome-extension:</code>, <code>moz-extension:</code> and <code>safari-web-extension:</code> origins);</p>
 </li>
 <li>
-<p>pages served by <code>localhost</code>, a <code>*.localhost</code> name or the loopback address, on any port.</p>
+<p>pages served by <code>localhost</code>, a <code>*.localhost</code> name or the loopback address, on any port;</p>
+</li>
+<li>
+<p>pages of the origins listed in <code>micronaut.dev.livereload.allowed-origins</code>, none by default.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
 <p>A page of any other site is refused, so that a site the developer visits cannot follow the reloads. This holds for the script a browser extension injects too, since it runs in the page and connects with the page&#8217;s origin. Open the application through <code>localhost</code>, the loopback address or a name under <code>.localhost</code>, such as <code>myapp.localhost</code>, which browsers resolve to the loopback address.</p>
+</div>
+<div class="paragraph">
+<p>When the browser opens the application through another name, such as a LAN host or the name of a development container whose ports are forwarded, list that name in <code>micronaut.dev.livereload.allowed-origins</code>, comma-separated, in the manifest or as a system property of the launcher:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.dev.livereload.allowed-origins=http://devbox.lan:8080,app-container</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An origin, <code><a href="http://devbox.lan:8080" class="bare">http://devbox.lan:8080</a></code>, allows pages of that scheme, host and port, the default port matching an origin that leaves it out; a host name alone, <code>app-container</code>, allows its pages over HTTP or HTTPS on any port. The loopback origins and the extensions stay allowed. No pattern is accepted: an entry with a <code>*</code>, or one that is neither an origin nor a host name, is ignored with a warning, so the socket never opens to every site. The setting only decides which pages may connect: the server still listens on the loopback address, so the LiveReload port must reach it from the browser, as forwarded ports or an SSH tunnel do. The event channel and the pages the server serves stay those of <code>localhost</code>.</p>
 </div>
 <div class="sect2">
 <h3 id="_serving_other_pages">Serving other pages</h3>
@@ -67138,6 +67225,9 @@ Everything under the manifest&#8217;s <code>micronaut.dev.</code> keys can be se
 <div class="paragraph">
 <p>A bean retained across restarts that watched a changed prefix is not kept when that restart comes.</p>
 </div>
+<div class="paragraph">
+<p>Logback is configured from the application&#8217;s resources, in the order Logback&#8217;s own startup follows: <code>logback-test.xml</code>, then <code>logback.xml</code>, and the file named by the <code>logback.configurationFile</code> system property ahead of both. The launcher does so before it logs anything; when the resources hold no Logback configuration, the launcher and the application log at INFO rather than at the DEBUG of Logback&#8217;s basic configuration. A changed Logback configuration file applies at once, without a restart, and resets the levels set since, which <code>logger.levels</code> sets again at the next restart. Logback itself stays on the launcher&#8217;s classpath: an <code>&lt;include resource="&#8230;&#8203;"&gt;</code> and the appender classes a configuration names are looked up there, so a file included from the application&#8217;s resources is not found, and an appender must come from a dependency rather than from the application&#8217;s sources; <code>&lt;include file="&#8230;&#8203;"&gt;</code> works.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -67207,6 +67297,50 @@ Everything under the manifest&#8217;s <code>micronaut.dev.</code> keys can be se
 </div>
 <div class="paragraph">
 <p>A configuration bean in the closure does not keep the bean from being retained, and is not retained with it. Each generation binds it again, so the retained bean must copy the values it needs rather than keep the configuration bean. Since nothing checks that it does, a bean made from a configuration bean of the application&#8217;s own class, which a restart replaces, is not retained: it could keep that class of the previous generation.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_http_client_connections">HTTP client connections</h3>
+<div class="paragraph">
+<p>A restart keeps the idle connections of the Netty HTTP clients, so that the TCP connection, and the TLS handshake of a secure one, are not made again. Each generation still gets its own client objects, codecs, filters and pipeline handlers:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>As a client stops with its generation, it takes its own handlers off each idle HTTP/1.1 connection. What is left is the transport, and the TLS session of a secure connection.</p>
+</li>
+<li>
+<p>The next generation&#8217;s client with the same configuration takes those connections back before its first request, adds its own handlers and pools them.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>A connection is kept only when all of these hold:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It runs on the event loops that are retained across the restart.</p>
+</li>
+<li>
+<p>It carries no handler of a <code>NettyClientCustomizer</code>, a proxy or a packet capture.</p>
+</li>
+<li>
+<p>Its client&#8217;s configuration, TLS builders and channel factory are not classes of the application.</p>
+</li>
+<li>
+<p>Its TLS session comes from the configuration alone, not from certificate providers.</p>
+</li>
+<li>
+<p>Its client sets no <code>connect-ttl</code>, which a restart would start again, and uses the default connection pool.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>HTTP/2 and HTTP/3 connections are not kept: their multiplexing handlers and streams belong to the client that opened them.</p>
+</div>
+<div class="paragraph">
+<p>A change under <code>micronaut.http.client</code>, <code>micronaut.http.services</code>, <code>micronaut.ssl</code> or the event loops' configuration closes the kept connections. A connection that no client of the next generation takes back is closed when that generation stops.</p>
 </div>
 </div>
 </div>
@@ -67873,6 +68007,9 @@ final class SerializerRegistry {
 <p>This is more than destroying the bean and getting it again, which would leave its dependents holding the destroyed instance.</p>
 </div>
 <div class="paragraph">
+<p>A controller, a server filter or a <code>LocatedRoutes</code> bean that is recreated serves the next request: the development router rebuilds its route table, whose routes would otherwise hold the destroyed instance.</p>
+</div>
+<div class="paragraph">
 <p>Both methods return whether anything was recreated, which a prototype, a bean of a custom scope or a singleton registered at runtime never is.</p>
 </div>
 <div class="paragraph">
@@ -68315,6 +68452,39 @@ micronaut.dev.test.filter=com.example.*Test</code></pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_a_warm_graalpy_engine">A warm GraalPy engine</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Each test class that starts an application context with Python beans gets a GraalPy context of its own. Test mode sets <code>micronaut.dev.test.enabled</code> on the contexts the tests start, and in test mode the contexts of one generation share a GraalPy engine. The engine stays open between them, so a context built after the first one reuses the code the engine has already parsed and compiled, instead of starting cold.</p>
+</div>
+<div class="paragraph">
+<p>An engine accepts only one host access configuration for all its contexts. The Python host access holds a target type mapping for each generated class, so a shared engine cannot outlive its generation:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The engine is kept with the host access of its generation. That host access is built from the target type mappings of the first context.</p>
+</li>
+<li>
+<p>A context of a new generation retires both. The retired engine closes when its last context closes, so it does not keep the retired generation reachable.</p>
+</li>
+<li>
+<p>When the launcher closes, it releases the engine of the last generation in the same way.</p>
+</li>
+<li>
+<p>An application with a target type mapping that has instance fields does not share an engine. A shared host access would convert with the mapping instances of another context.</p>
+</li>
+<li>
+<p>A change to the <code>graalpy.engine</code> configuration replaces the warm engine.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>micronaut.dev.python.warm-engine=false</code> turns this off: every application context then creates and closes its own engine. Development mode starts one context per generation, so there is nothing for it to share.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_html_report">HTML Report</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -68341,6 +68511,9 @@ micronaut.dev.test.filter=com.example.*Test</code></pre>
 </div>
 <div class="paragraph">
 <p>With <code>micronaut-dev-livereload</code> on the classpath as well, the LiveReload server serves the page at <code><a href="http://localhost:35729/tests/" class="bare">http://localhost:35729/tests/</a></code>, or the path <code>micronaut.dev.test.html-report-path</code> names, such as <code>/reports/tests/</code>. The launcher logs the address. The page follows each run test by test over the event channel&#8217;s <code>tests</code> topic, without reloading. Opened from the file system, the page shows the state it was written with.</p>
+</div>
+<div class="paragraph">
+<p>Beside the page, <code>state.json</code> holds the state it renders. A tool can read it to tell whether continuous testing runs: its <code>pid</code> is the launcher&#8217;s process, <code>pidStartedAt</code> the instant that process started (left out where the platform does not tell), so that a reused process number is told apart, and <code>url</code> the address of the served page, <code>null</code> when no LiveReload server serves it.</p>
 </div>
 </div>
 </div>

@@ -59,6 +59,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
 <li><a href="#%3Cinit%3E()" tabindex="0">DevServerSockets()</a></li>
+<li><a href="#%3Cinit%3E(java.util.function.Predicate)" tabindex="0">DevServerSockets(Predicate)</a></li>
 </ol>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
@@ -72,7 +73,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#releaseUnclaimed(long,java.util.function.BooleanSupplier)" tabindex="0">releaseUnclaimed(long, BooleanSupplier)</a></li>
 <li><a href="#resume()" tabindex="0">resume()</a></li>
 <li><a href="#isBound()" tabindex="0">isBound()</a></li>
-<li><a href="#serveUnavailable(java.lang.String)" tabindex="0">serveUnavailable(String)</a></li>
+<li><a href="#serveUnavailable()" tabindex="0">serveUnavailable()</a></li>
 <li><a href="#stopServingUnavailable()" tabindex="0">stopServingUnavailable()</a></li>
 <li><a href="#stopServingUnavailable(java.util.function.BooleanSupplier)" tabindex="0">stopServingUnavailable(BooleanSupplier)</a></li>
 <li><a href="#close()" tabindex="0">close()</a></li>
@@ -106,8 +107,10 @@ server accepts it, instead of being refused.
 
 <p>While a batch is processed, the servers stop accepting, so that a new connection is served by
 whichever generation runs once the batch is done. While no generation runs because the last one failed
-to start, the sockets answer every connection with a 503 and a <code>Retry-After</code>, rather than
-leaving it waiting.</p></div>
+to start, the sockets answer every connection with a generic 503 and a <code>Retry-After</code>, rather than
+leaving it waiting; why it failed is in the console only. A request for a host the development runtime does not
+answer is refused with a 403, and only a few connections are answered at once, each on a thread of its own: others
+are closed.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -127,7 +130,11 @@ leaving it waiting.</p></div>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">DevServerSockets</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Sockets whose 503 answers only <code>localhost</code>, its subdomains and the loopback addresses.</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.util.function.Predicate)" class="member-name-link">DevServerSockets</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Predicate.html" title="class or interface in java.util.function" class="external-link">Predicate</a>&lt;@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;allowsHost)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -198,7 +205,7 @@ newer generation exists, the sockets are its own.</div>
 <div class="block">The socket for a listener on a fixed port: bound the first time it is asked for, the same one afterwards.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#serveUnavailable(java.lang.String)" class="member-name-link">serveUnavailable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;reason)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#serveUnavailable()" class="member-name-link">serveUnavailable</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Answers every connection with a 503 until a server accepts on the sockets again: no generation runs.</div>
 </div>
@@ -235,6 +242,19 @@ failed to start answers with a 503 until the next one runs.</div>
 <h3>DevServerSockets</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">DevServerSockets</span>()</div>
+<div class="block">Sockets whose 503 answers only <code>localhost</code>, its subdomains and the loopback addresses.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(java.util.function.Predicate)">
+<h3>DevServerSockets</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">DevServerSockets</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Predicate.html" title="class or interface in java.util.function" class="external-link">Predicate</a>&lt;@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;allowsHost)</span></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>allowsHost</code> - Whether the 503 answers a request's <code>Host</code>, null when it has none</dd>
+</dl>
 </div>
 </section>
 </li>
@@ -371,15 +391,11 @@ newer generation exists, the sockets are its own.</div>
 </section>
 </li>
 <li>
-<section class="detail" id="serveUnavailable(java.lang.String)">
+<section class="detail" id="serveUnavailable()">
 <h3>serveUnavailable</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">serveUnavailable</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;reason)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">serveUnavailable</span>()</div>
 <div class="block">Answers every connection with a 503 until a server accepts on the sockets again: no generation runs.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>reason</code> - Why, the body of the response</dd>
-</dl>
 </div>
 </section>
 </li>

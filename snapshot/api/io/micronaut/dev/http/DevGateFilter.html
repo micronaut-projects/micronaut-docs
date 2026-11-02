@@ -86,11 +86,16 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public final class </span><span class="element-name type-name-label">DevGateFilter</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="../../core/order/Ordered.html" title="interface in io.micronaut.core.order">Ordered</a></span></div>
-<div class="block">Holds requests while a reload is in progress, up to <a href="../manifest/DevManifest.html#requestHoldTimeout()"><code>DevManifest.requestHoldTimeout()</code></a>
+<div class="block">Holds requests while a reload is in progress, through the runtime's <a href="../../context/reload/RequestAdmission.html" title="interface in io.micronaut.context.reload"><code>RequestAdmission</code></a>, which server runtimes
+holding requests at their own level follow too, up to its <a href="../../context/reload/RequestAdmission.html#holdTimeout()"><code>RequestAdmission.holdTimeout()</code></a>
 and then answers them with a 503 and a <code>Retry-After</code>; answers them with the diagnostics while the last
 compilation failed: a page for a browser, a structured 503 for anything else. The stale generation
 keeps serving what compiles. The development endpoint is never answered with the failure: reloading through it is
-how to recover when the watcher missed the corrected edit.</div>
+how to recover when the watcher missed the corrected edit.
+
+<p>The diagnostics name the machine's source paths: only a request that <a href="DevAccessFilter.html" title="class in io.micronaut.dev.http"><code>DevAccessFilter</code></a> would let through to
+the development pages sees them, one with an allowed host and the launch's access token. Another request with an
+allowed host is told that the compilation failed and to look at the console; one with another host is refused.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
