@@ -66722,6 +66722,9 @@ micronaut.dev.patch-in-place=true</code></pre>
 <p>The launcher compiles every language whose class output does not exist yet, so it works from a clean checkout. It then runs the application&#8217;s own <code>main</code> on a thread of its own.</p>
 </div>
 <div class="paragraph">
+<p>When the first start fails, the launcher reports why and keeps running, waiting for a change to start the application again, instead of exiting; in CI or other non-interactive use it therefore waits until it is killed.</p>
+</div>
+<div class="paragraph">
 <p>The application does what it always does, <code>Micronaut.run(Application.class, args)</code>. An <code>ApplicationContextConfigurer</code> the module ships gives the context:</p>
 </div>
 <div class="ulist">
@@ -66926,7 +66929,7 @@ LiveReload server listening on port 35729</pre>
 <p>Groovy compiles through the project&#8217;s own Groovy on the launch classpath, with the Micronaut AST transformations the compile classpath carries.</p>
 </li>
 <li>
-<p>Kotlin compiles through the Kotlin Build Tools API when <code>kotlin-build-tools-impl</code> is on the launch classpath at the project&#8217;s Kotlin version. It runs the symbol processors of the processor path first when <code>symbol-processing-aa-embeddable</code> is there at the project&#8217;s KSP version. The <code>-A</code> options of the language pass to the processors, and the other options to <code>kotlinc</code>.</p>
+<p>Kotlin compiles through the Kotlin Build Tools API when <code>kotlin-build-tools-impl</code> is on the launch classpath at the project&#8217;s Kotlin version, which must be 2.4 or later. With an older Kotlin, the launcher logs a warning naming the version it found and the version it needs, and does not compile Kotlin: changes to the Kotlin sources reach the application through the class output the build tool writes. The compiler runs the symbol processors of the processor path first when <code>symbol-processing-aa-embeddable</code> is there at the project&#8217;s KSP version. The <code>-A</code> options of the language pass to the processors, and the other options to <code>kotlinc</code>.</p>
 </li>
 </ul>
 </div>

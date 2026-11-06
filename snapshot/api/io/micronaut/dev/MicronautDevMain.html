@@ -182,7 +182,7 @@ runtime jars, with the manifest's resource roots and then its reloadable roots a
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Starts the runtime for a manifest: the loader, the watcher and the application, returning once
-the first generation started.</div>
+the first generation started, or failed to: the failure is reported, and the next change launches a generation.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#launchApplication(java.lang.ClassLoader,java.lang.String,java.lang.String%5B%5D)" class="member-name-link">launchApplication</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;classLoader,
@@ -214,7 +214,8 @@ its <code>main</code>.</div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runForStatus(java.lang.String%5B%5D)" class="member-name-link">runForStatus</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Runs the launcher with the given arguments and keeps the JVM alive while the application, or in test mode the
-watching, runs.</div>
+watching, runs, and while an application that failed to start, with its failure reported, waits for the change
+that starts it again.</div>
 </div>
 </div>
 </div>
@@ -350,7 +351,8 @@ default; see <a href="manifest/DevManifest.html#maxGenerations()"><code>DevManif
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">runForStatus</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</span>
                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></span></div>
 <div class="block">Runs the launcher with the given arguments and keeps the JVM alive while the application, or in test mode the
-watching, runs. In test mode the call returns once the runtime is closed, with the status the process exits with:
+watching, runs, and while an application that failed to start, with its failure reported, waits for the change
+that starts it again. In test mode the call returns once the runtime is closed, with the status the process exits with:
 0 when the last run passed, 1 otherwise; with <code>micronaut.dev.test.once</code> the tests run once first. On a terminal, test mode also reads single keys: space
 runs the last tests again, <code>a</code> every test, <code>f</code> the failures, <code>w</code> turns watching on or off, and
 <code>q</code> exits with the last run's status.</div>
@@ -372,7 +374,8 @@ runs the last tests again, <code>a</code> every test, <code>f</code> the failure
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="DevRuntime.html" title="class in io.micronaut.dev">DevRuntime</a></span>&nbsp;<span class="element-name">launch</span><wbr><span class="parameters">(<a href="manifest/DevManifest.html" title="class in io.micronaut.dev.manifest">DevManifest</a>&nbsp;manifest,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</span></div>
 <div class="block">Starts the runtime for a manifest: the loader, the watcher and the application, returning once
-the first generation started. The application runs on its own thread.</div>
+the first generation started, or failed to: the failure is reported, and the next change launches a generation.
+The application runs on its own thread.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>manifest</code> - The manifest</dd>

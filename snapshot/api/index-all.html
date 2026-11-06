@@ -5788,6 +5788,11 @@ other injection systems beyond JSR-330 in downstream modules.</div>
 <dd>
 <div class="block">Top level interface for obtaining bean information.</div>
 </dd>
+<dt><a href="io/micronaut/context/BeanInitializationFailure.html" class="type-name-link" title="class in io.micronaut.context">BeanInitializationFailure</a> - Exception Class in <a href="io/micronaut/context/package-summary.html">io.micronaut.context</a></dt>
+<dd>
+<div class="block">What a generated bean definition keeps of the failure of its static initializer, such as a missing optional
+dependency, to throw when the definition is loaded.</div>
+</dd>
 <dt><a href="io/micronaut/context/event/BeanInitializedEventListener.html" class="type-name-link" title="interface in io.micronaut.context.event">BeanInitializedEventListener&lt;T&gt;</a> - Interface in <a href="io/micronaut/context/event/package-summary.html">io.micronaut.context.event</a></dt>
 <dd>
 <div class="block">Allows hooking into bean instantiation at the point prior to when <a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/annotation/PostConstruct.html" title="class or interface in jakarta.annotation" class="external-link"><code>PostConstruct</code></a>
@@ -18007,6 +18012,10 @@ that bean.</div>
 <dd>
 <div class="block">Destroys the scope.</div>
 </dd>
+<dt><a href="io/micronaut/context/BeanInitializationFailure.html#detach(java.lang.Throwable)" class="member-name-link">detach(Throwable)</a> - Static method in exception class io.micronaut.context.<a href="io/micronaut/context/BeanInitializationFailure.html" title="class in io.micronaut.context">BeanInitializationFailure</a></dt>
+<dd>
+<div class="block">Copies a failure and those it refers to.</div>
+</dd>
 <dt><a href="io/micronaut/http/BasicHttpAttributes.DetachedRouteState.html#%3Cinit%3E(java.lang.Object,java.lang.Object)" class="member-name-link">DetachedRouteState(Object, Object)</a> - Constructor for record class io.micronaut.http.<a href="io/micronaut/http/BasicHttpAttributes.DetachedRouteState.html" title="class in io.micronaut.http">BasicHttpAttributes.DetachedRouteState</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>DetachedRouteState</code> record class.</div>
@@ -24288,6 +24297,10 @@ refresh the material when the underlying files change using a file watcher or sc
 </dd>
 <dt><a href="io/micronaut/annotation/processing/PostponeToNextRoundException.html#fillInStackTrace()" class="member-name-link">fillInStackTrace()</a> - Method in exception class io.micronaut.annotation.processing.<a href="io/micronaut/annotation/processing/PostponeToNextRoundException.html" title="class in io.micronaut.annotation.processing">PostponeToNextRoundException</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/context/BeanInitializationFailure.html#fillInStackTrace()" class="member-name-link">fillInStackTrace()</a> - Method in exception class io.micronaut.context.<a href="io/micronaut/context/BeanInitializationFailure.html" title="class in io.micronaut.context">BeanInitializationFailure</a></dt>
+<dd>
+<div class="block">Captures nothing: this is what would create the backtrace.</div>
+</dd>
 <dt><a href="io/micronaut/context/exceptions/ConstructorAdviceException.html#fillInStackTrace()" class="member-name-link">fillInStackTrace()</a> - Method in exception class io.micronaut.context.exceptions.<a href="io/micronaut/context/exceptions/ConstructorAdviceException.html" title="class in io.micronaut.context.exceptions">ConstructorAdviceException</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/context/exceptions/DisabledBeanException.html#fillInStackTrace()" class="member-name-link">fillInStackTrace()</a> - Method in exception class io.micronaut.context.exceptions.<a href="io/micronaut/context/exceptions/DisabledBeanException.html" title="class in io.micronaut.context.exceptions">DisabledBeanException</a></dt>
@@ -51243,7 +51256,7 @@ project has symbol processors, run incrementally by <a href="io/micronaut/dev/co
 <dt><a href="io/micronaut/dev/MicronautDevMain.html#launch(io.micronaut.dev.manifest.DevManifest,java.lang.String%5B%5D)" class="member-name-link">launch(DevManifest, String[])</a> - Method in class io.micronaut.dev.<a href="io/micronaut/dev/MicronautDevMain.html" title="class in io.micronaut.dev">MicronautDevMain</a></dt>
 <dd>
 <div class="block">Starts the runtime for a manifest: the loader, the watcher and the application, returning once
-the first generation started.</div>
+the first generation started, or failed to: the failure is reported, and the next change launches a generation.</div>
 </dd>
 <dt><a href="io/micronaut/dev/MicronautDevMain.html#launchApplication(java.lang.ClassLoader,java.lang.String,java.lang.String%5B%5D)" class="member-name-link">launchApplication(ClassLoader, String, String[])</a> - Method in class io.micronaut.dev.<a href="io/micronaut/dev/MicronautDevMain.html" title="class in io.micronaut.dev">MicronautDevMain</a></dt>
 <dd>
@@ -70786,7 +70799,8 @@ operation opens are closed by this provider's shutdown.</div>
 <dt><a href="io/micronaut/dev/MicronautDevMain.html#runForStatus(java.lang.String%5B%5D)" class="member-name-link">runForStatus(String[])</a> - Method in class io.micronaut.dev.<a href="io/micronaut/dev/MicronautDevMain.html" title="class in io.micronaut.dev">MicronautDevMain</a></dt>
 <dd>
 <div class="block">Runs the launcher with the given arguments and keeps the JVM alive while the application, or in test mode the
-watching, runs.</div>
+watching, runs, and while an application that failed to start, with its failure reported, waits for the change
+that starts it again.</div>
 </dd>
 <dt><a href="io/micronaut/dev/test/TestRunRequest.html#runId()" class="member-name-link">runId()</a> - Method in record class io.micronaut.dev.test.<a href="io/micronaut/dev/test/TestRunRequest.html" title="class in io.micronaut.dev.test">TestRunRequest</a></dt>
 <dd>
@@ -79528,6 +79542,8 @@ a collection is converted element by element, and a single value is an array of 
 <dt><a href="io/micronaut/context/AbstractInitializableBeanDefinitionReference.html#toString()" class="member-name-link">toString()</a> - Method in class io.micronaut.context.<a href="io/micronaut/context/AbstractInitializableBeanDefinitionReference.html" title="class in io.micronaut.context">AbstractInitializableBeanDefinitionReference</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/context/BeanDependencyGraph.BeanDependency.html#toString()" class="member-name-link">toString()</a> - Method in class io.micronaut.context.<a href="io/micronaut/context/BeanDependencyGraph.BeanDependency.html" title="class in io.micronaut.context">BeanDependencyGraph.BeanDependency</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/context/BeanInitializationFailure.html#toString()" class="member-name-link">toString()</a> - Method in exception class io.micronaut.context.<a href="io/micronaut/context/BeanInitializationFailure.html" title="class in io.micronaut.context">BeanInitializationFailure</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/context/BeanRegistration.html#toString()" class="member-name-link">toString()</a> - Method in class io.micronaut.context.<a href="io/micronaut/context/BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a></dt>
 <dd>&nbsp;</dd>
