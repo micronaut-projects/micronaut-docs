@@ -67309,6 +67309,28 @@ LiveReload server listening on port 35729</pre>
 </div>
 </div>
 <div class="sect2">
+<h3 id="_when_a_generation_fails_to_start">When a generation fails to start</h3>
+<div class="paragraph">
+<p>A generation whose context fails to start is stopped at once, and the launcher keeps running until a change starts the next one:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The beans the failed context created are destroyed, whether they could have been retained or not. A pool it created does not stay open to conflict with the next generation&#8217;s.</p>
+</li>
+<li>
+<p>The beans retained from the generation before it are not destroyed. The next generation adopts them, so correcting the error does not pay for a new pool.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This covers a failure inside the start of the context. A context that did start and then stopped, for example because its server could not bind its port, stopped as any context does: the beans it adopted are destroyed with it, and the next generation creates them again.</p>
+</div>
+<div class="paragraph">
+<p>No context runs while the generation is failed, so nothing can tell what a later edit of a configuration file changed. It may be what the retained beans were made from, so that edit releases them all.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_http_client_connections">HTTP client connections</h3>
 <div class="paragraph">
 <p>A restart keeps the idle connections of the Netty HTTP clients, so that the TCP connection, and the TLS handshake of a secure one, are not made again. Each generation still gets its own client objects, codecs, filters and pipeline handlers:</p>
