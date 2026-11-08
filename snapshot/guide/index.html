@@ -15370,7 +15370,80 @@ Previously, we recommended using <code>Micronaut.defaultEnvironments("dev")</cod
 </div>
 </div>
 <div class="paragraph">
-<p>To customize the banner with your own ASCII Art (just plain ASCII at this moment), create the file <code>src/main/resources/micronaut-banner.txt</code> and it will be used instead.</p>
+<p>To customize the text banner, create the file <code>src/main/resources/micronaut-banner.txt</code> and it will be used instead.</p>
+</div>
+<div class="paragraph">
+<p>When the application starts in a Kitty, iTerm2, or WezTerm terminal, the default banner displays the Micronaut logo. You can also replace this image.</p>
+</div>
+<div class="paragraph">
+<p>Set the <code>MICRONAUT_BANNER_MODE</code> environment variable to choose the output mode. The default, <code>auto</code>, detects the terminal protocol. Set it to <code>ascii</code> to always print ASCII art, or to <code>kitty</code> to force the Kitty graphics protocol (which is supported by iTerm2 as well). A forced protocol bypasses terminal detection, so use it only when the output terminal supports it. If the image resource is missing, Micronaut prints the ASCII banner.</p>
+</div>
+<div class="paragraph">
+<p>Set <code>MICRONAUT_BANNER_THEME</code> to <code>light</code> or <code>dark</code> to select the right logo for the given terminal theme. The default, <code>auto</code>, checks the <code>COLORFGBG</code> environment variable when it is set: background color index <code>7</code> or <code>15</code> selects a logo for light mode terminals; other values and an unset variable select dark mode. Set the variable explicitly when the terminal does not provide <code>COLORFGBG</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">MICRONAUT_BANNER_MODE=ascii ./gradlew run
+MICRONAUT_BANNER_MODE=kitty ./gradlew run
+MICRONAUT_BANNER_MODE=kitty MICRONAUT_BANNER_THEME=light ./gradlew run</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To choose the mode in your <code>Application</code> class, call <code>bannerMode</code>. The <code>MICRONAUT_BANNER_MODE</code> environment variable takes precedence, so the mode can still be changed where the application runs:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public class Application {
+
+    public static void main(String[] args) {
+        Micronaut.build(args)
+                 .bannerMode(BannerMode.ASCII) <i class="conum" data-value="1"></i><b>(1)</b>
+                 .start();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Set the mode to <code>AUTO</code> (the default), <code>KITTY</code>, <code>ASCII</code>, or <code>ANIMATED</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To display your own image in these terminals, add a PNG at the following location. It is displayed at its pixel size and is included in GraalVM native images automatically:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">src/main/resources/META-INF/micronaut/banner.png</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To use a different image in terminals with a light background, also add <code>src/main/resources/META-INF/micronaut/banner-light.png</code>.</p>
+</div>
+<div class="paragraph">
+<p>In these terminals <code>banner.png</code> is used in preference to <code>micronaut-banner.txt</code>, so you can provide both and the text banner is printed everywhere else.</p>
+</div>
+<div class="paragraph">
+<p>To animate the banner, set the <code>ANIMATED</code> mode. The <code>ANIMATED</code> mode (<code>MICRONAUT_BANNER_MODE=animated</code>) enables animated banners. It detects the terminal like <code>AUTO</code>, and in a terminal that displays images the default banner is an animated Micronaut logo. The animation starts as soon as the banner is printed and its frames are sent while the application starts, so the banner does not delay startup.</p>
+</div>
+<div class="paragraph">
+<p>In this mode you can provide an SVG image, at <code>src/main/resources/META-INF/micronaut/banner.svg</code> (and <code>banner-light.svg</code> for a light background). It is used in preference to <code>banner.png</code>, is rendered at its <code>width</code> and <code>height</code> in pixels, and can be animated with SMIL <code>&lt;animate&gt;</code> and <code>&lt;animateTransform&gt;</code> elements, which play once, or in a loop when an animation has <code>repeatCount="indefinite"</code>. Use <code>currentColor</code> to follow the terminal theme: it is white on a dark background and black on a light one. In the other modes <code>banner.svg</code> is ignored.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;svg width="300" height="60" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;circle cx="30" cy="30" r="20" fill="currentColor"&gt;
+    &lt;animate attributeName="opacity" values="0;1" dur="0.5s" fill="freeze"/&gt;
+    &lt;animateTransform attributeName="transform" type="translate" values="-30 0;0 0" dur="0.5s"
+                      calcMode="spline" keySplines="0.2 0.8 0.2 1" fill="freeze"/&gt;
+  &lt;/circle&gt;
+&lt;/svg&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The banner renderer supports a subset of SVG: the <code>path</code> (with every command), <code>polygon</code>, <code>polyline</code>, <code>line</code>, <code>rect</code>, <code>circle</code>, <code>ellipse</code>, <code>g</code> and nested <code>svg</code> elements, <code>image</code> elements with an embedded PNG (<code>data:image/png;base64,&#8230;&#8203;</code>), <code>clipPath</code>, transforms, and the fill, stroke, opacity and <code>color</code> properties. Strokes always have round joins. Text, gradients, masks, filters and CSS style sheets are not rendered, so convert text to paths and CSS animations to SMIL. A terminal that displays images but not animations shows the image as it is when the animation ends. Every frame that changes is sent to the terminal, so keep animations short: a long animation of a large image can send tens of megabytes.</p>
 </div>
 <div class="paragraph">
 <p>To disable it, modify your <code>Application</code> class:</p>
