@@ -59,6 +59,17 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#newZlibEncoder(io.netty.handler.codec.compression.ZlibWrapper,int,int,int)" tabindex="0">newZlibEncoder(ZlibWrapper, int, int, int)</a></li>
 <li><a href="#newZlibDecoder(io.netty.handler.codec.compression.ZlibWrapper,int)" tabindex="0">newZlibDecoder(ZlibWrapper, int)</a></li>
+<li><a href="#compressZlib(io.netty.handler.codec.compression.ZlibWrapper,int,int,int,io.netty.buffer.ByteBuf,io.netty.buffer.ByteBufAllocator)" tabindex="0">compressZlib(ZlibWrapper, int, int, int, ByteBuf, ByteBufAllocator)</a></li>
+<li><a href="#newWebSocketServerCompressionHandler(int)" tabindex="0">newWebSocketServerCompressionHandler(int)</a></li>
+<li><a href="#newWebSocketClientCompressionHandler(int)" tabindex="0">newWebSocketClientCompressionHandler(int)</a></li>
+<li><a href="#isBrotliAvailable()" tabindex="0">isBrotliAvailable()</a></li>
+<li><a href="#isZstdAvailable()" tabindex="0">isZstdAvailable()</a></li>
+<li><a href="#newBrotliEncoder()" tabindex="0">newBrotliEncoder()</a></li>
+<li><a href="#newBrotliDecoder(int)" tabindex="0">newBrotliDecoder(int)</a></li>
+<li><a href="#newZstdEncoder(int,int)" tabindex="0">newZstdEncoder(int, int)</a></li>
+<li><a href="#newZstdDecoder(int)" tabindex="0">newZstdDecoder(int)</a></li>
+<li><a href="#newSnappyFrameEncoder()" tabindex="0">newSnappyFrameEncoder()</a></li>
+<li><a href="#newSnappyFrameDecoder()" tabindex="0">newSnappyFrameDecoder()</a></li>
 </ol>
 </li>
 </ol>
@@ -76,8 +87,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">NettyZlibCodecFactory</span></div>
-<div class="block">Creates streaming gzip and deflate handlers for HTTP connections and streams.
-Each call must return a fresh handler whose resources are released when it is removed.
+<div class="block">Creates compression handlers for HTTP connections, streams, and WebSocket extensions.
+Calls may arrive concurrently from different event loops. Each call must return a fresh
+handler whose resources are released when it is removed, except for sharable WebSocket handlers.
 A replacement bean applies independently of the configured channel transport.</div>
 <dl class="notes">
 <dt>Since:</dt>
@@ -92,25 +104,87 @@ A replacement bean applies independently of the configured channel transport.</d
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>io.netty.handler.codec.compression.ZlibDecoder</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#newZlibDecoder(io.netty.handler.codec.compression.ZlibWrapper,int)" class="member-name-link">newZlibDecoder</a><wbr>(io.netty.handler.codec.compression.ZlibWrapper&nbsp;wrapper,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default @Nullable io.netty.buffer.ByteBuf</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#compressZlib(io.netty.handler.codec.compression.ZlibWrapper,int,int,int,io.netty.buffer.ByteBuf,io.netty.buffer.ByteBufAllocator)" class="member-name-link">compressZlib</a><wbr>(io.netty.handler.codec.compression.ZlibWrapper&nbsp;wrapper,
+ int&nbsp;compressionLevel,
+ int&nbsp;windowBits,
+ int&nbsp;memLevel,
+ io.netty.buffer.ByteBuf&nbsp;body,
+ io.netty.buffer.ByteBufAllocator&nbsp;allocator)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Compresses a complete body into one zlib or gzip stream, in place of an encoder from
+<a href="#newZlibEncoder(io.netty.handler.codec.compression.ZlibWrapper,int,int,int)"><code>newZlibEncoder(ZlibWrapper, int, int, int)</code></a> when the caller already has the whole body.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isBrotliAvailable()" class="member-name-link">isBrotliAvailable</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Reports whether this provider supports Brotli encoding and decoding.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isZstdAvailable()" class="member-name-link">isZstdAvailable</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Reports whether this provider supports Zstandard encoding and decoding.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default io.netty.channel.ChannelHandler</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#newBrotliDecoder(int)" class="member-name-link">newBrotliDecoder</a><wbr>(int&nbsp;maxAllocation)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Creates a Brotli decoder.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default io.netty.channel.ChannelHandler</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#newBrotliEncoder()" class="member-name-link">newBrotliEncoder</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Creates a Brotli encoder with Netty's default quality (4) and text mode.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default io.netty.channel.ChannelHandler</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#newSnappyFrameDecoder()" class="member-name-link">newSnappyFrameDecoder</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Creates a framed Snappy decoder with Netty's default checksum policy (no validation).</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default io.netty.channel.ChannelHandler</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#newSnappyFrameEncoder()" class="member-name-link">newSnappyFrameEncoder</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Creates a Snappy encoder using the framed stream format, including chunk checksums.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default io.netty.handler.codec.http.websocketx.extensions.WebSocketClientExtensionHandler</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#newWebSocketClientCompressionHandler(int)" class="member-name-link">newWebSocketClientCompressionHandler</a><wbr>(int&nbsp;maxMessageBytes)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Creates a client handler that negotiates WebSocket compression extensions.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default io.netty.handler.codec.http.websocketx.extensions.WebSocketServerExtensionHandler</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#newWebSocketServerCompressionHandler(int)" class="member-name-link">newWebSocketServerCompressionHandler</a><wbr>(int&nbsp;maxMessageBytes)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Creates a server handler that negotiates WebSocket compression extensions.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>io.netty.handler.codec.compression.ZlibDecoder</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#newZlibDecoder(io.netty.handler.codec.compression.ZlibWrapper,int)" class="member-name-link">newZlibDecoder</a><wbr>(io.netty.handler.codec.compression.ZlibWrapper&nbsp;wrapper,
  int&nbsp;maxAllocation)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Creates a decoder, including the zlib-or-raw compatibility mode.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>io.netty.handler.codec.compression.ZlibEncoder</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#newZlibEncoder(io.netty.handler.codec.compression.ZlibWrapper,int,int,int)" class="member-name-link">newZlibEncoder</a><wbr>(io.netty.handler.codec.compression.ZlibWrapper&nbsp;wrapper,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>io.netty.handler.codec.compression.ZlibEncoder</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#newZlibEncoder(io.netty.handler.codec.compression.ZlibWrapper,int,int,int)" class="member-name-link">newZlibEncoder</a><wbr>(io.netty.handler.codec.compression.ZlibWrapper&nbsp;wrapper,
  int&nbsp;compressionLevel,
  int&nbsp;windowBits,
  int&nbsp;memLevel)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Creates an encoder.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default io.netty.channel.ChannelHandler</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#newZstdDecoder(int)" class="member-name-link">newZstdDecoder</a><wbr>(int&nbsp;maxAllocation)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Creates a Zstandard decoder.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default io.netty.channel.ChannelHandler</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#newZstdEncoder(int,int)" class="member-name-link">newZstdEncoder</a><wbr>(int&nbsp;compressionLevel,
+ int&nbsp;maxEncodeSize)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Creates a Zstandard encoder with Netty's default block size.</div>
 </div>
 </div>
 </div>
@@ -160,6 +234,205 @@ A replacement bean applies independently of the configured channel transport.</d
 <dt>Parameters:</dt>
 <dd><code>wrapper</code> - The wrapper format</dd>
 <dd><code>maxAllocation</code> - The maximum output buffer allocation, or 0 for no allocation limit</dd>
+<dt>Returns:</dt>
+<dd>A fresh decoder</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="compressZlib(io.netty.handler.codec.compression.ZlibWrapper,int,int,int,io.netty.buffer.ByteBuf,io.netty.buffer.ByteBufAllocator)">
+<h3>compressZlib</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">@Nullable io.netty.buffer.ByteBuf</span>&nbsp;<span class="element-name">compressZlib</span><wbr><span class="parameters">(io.netty.handler.codec.compression.ZlibWrapper&nbsp;wrapper,
+ int&nbsp;compressionLevel,
+ int&nbsp;windowBits,
+ int&nbsp;memLevel,
+ io.netty.buffer.ByteBuf&nbsp;body,
+ io.netty.buffer.ByteBufAllocator&nbsp;allocator)</span></div>
+<div class="block">Compresses a complete body into one zlib or gzip stream, in place of an encoder from
+<a href="#newZlibEncoder(io.netty.handler.codec.compression.ZlibWrapper,int,int,int)"><code>newZlibEncoder(ZlibWrapper, int, int, int)</code></a> when the caller already has the whole body. The result must decode
+to the body, but need not match the encoder's bytes. The default returns <code>null</code>, so the
+caller streams the body through an encoder.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>wrapper</code> - The wrapper format, <code>ZlibWrapper.GZIP</code> or <code>ZlibWrapper.ZLIB</code></dd>
+<dd><code>compressionLevel</code> - The compression level, from 0 to 9</dd>
+<dd><code>windowBits</code> - The window size, from 9 to 15</dd>
+<dd><code>memLevel</code> - The memory level, from 1 to 9</dd>
+<dd><code>body</code> - The complete body, still owned by the caller</dd>
+<dd><code>allocator</code> - The allocator for the result</dd>
+<dt>Returns:</dt>
+<dd>The compressed stream, owned by the caller, or <code>null</code> to use an encoder</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newWebSocketServerCompressionHandler(int)">
+<h3>newWebSocketServerCompressionHandler</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">io.netty.handler.codec.http.websocketx.extensions.WebSocketServerExtensionHandler</span>&nbsp;<span class="element-name">newWebSocketServerCompressionHandler</span><wbr><span class="parameters">(int&nbsp;maxMessageBytes)</span></div>
+<div class="block">Creates a server handler that negotiates WebSocket compression extensions. The default
+retains Netty's compression settings and allocation policy. Overrides may enforce the
+endpoint's payload limit on decompressed messages.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>maxMessageBytes</code> - The endpoint's configured maximum message payload length</dd>
+<dt>Returns:</dt>
+<dd>A fresh extension handler, or a sharable handler</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newWebSocketClientCompressionHandler(int)">
+<h3>newWebSocketClientCompressionHandler</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">io.netty.handler.codec.http.websocketx.extensions.WebSocketClientExtensionHandler</span>&nbsp;<span class="element-name">newWebSocketClientCompressionHandler</span><wbr><span class="parameters">(int&nbsp;maxMessageBytes)</span></div>
+<div class="block">Creates a client handler that negotiates WebSocket compression extensions. The default
+retains Netty's compression settings and allocation policy and returns one sharable instance.
+Overrides may enforce the endpoint's payload limit on decompressed messages.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>maxMessageBytes</code> - The endpoint's configured maximum message payload length</dd>
+<dt>Returns:</dt>
+<dd>A fresh extension handler, or a sharable handler</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isBrotliAvailable()">
+<h3>isBrotliAvailable</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isBrotliAvailable</span>()</div>
+<div class="block">Reports whether this provider supports Brotli encoding and decoding. Overrides need not
+initialize Netty's optional Brotli implementation.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether Brotli is available</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isZstdAvailable()">
+<h3>isZstdAvailable</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isZstdAvailable</span>()</div>
+<div class="block">Reports whether this provider supports Zstandard encoding and decoding.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether Zstandard is available</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newBrotliEncoder()">
+<h3>newBrotliEncoder</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">io.netty.channel.ChannelHandler</span>&nbsp;<span class="element-name">newBrotliEncoder</span>()</div>
+<div class="block">Creates a Brotli encoder with Netty's default quality (4) and text mode.
+Called only when <a href="#isBrotliAvailable()"><code>isBrotliAvailable()</code></a> is true.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>A fresh encoder</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newBrotliDecoder(int)">
+<h3>newBrotliDecoder</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">io.netty.channel.ChannelHandler</span>&nbsp;<span class="element-name">newBrotliDecoder</span><wbr><span class="parameters">(int&nbsp;maxAllocation)</span></div>
+<div class="block">Creates a Brotli decoder. Called only when <a href="#isBrotliAvailable()"><code>isBrotliAvailable()</code></a> is true.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>maxAllocation</code> - The maximum output buffer allocation, or 0 for no allocation limit</dd>
+<dt>Returns:</dt>
+<dd>A fresh decoder</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newZstdEncoder(int,int)">
+<h3>newZstdEncoder</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">io.netty.channel.ChannelHandler</span>&nbsp;<span class="element-name">newZstdEncoder</span><wbr><span class="parameters">(int&nbsp;compressionLevel,
+ int&nbsp;maxEncodeSize)</span></div>
+<div class="block">Creates a Zstandard encoder with Netty's default block size.
+Called only when <a href="#isZstdAvailable()"><code>isZstdAvailable()</code></a> is true.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>compressionLevel</code> - The configured compression level</dd>
+<dd><code>maxEncodeSize</code> - The maximum size of data to encode in one operation</dd>
+<dt>Returns:</dt>
+<dd>A fresh encoder</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newZstdDecoder(int)">
+<h3>newZstdDecoder</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">io.netty.channel.ChannelHandler</span>&nbsp;<span class="element-name">newZstdDecoder</span><wbr><span class="parameters">(int&nbsp;maxAllocation)</span></div>
+<div class="block">Creates a Zstandard decoder. Called only when <a href="#isZstdAvailable()"><code>isZstdAvailable()</code></a> is true.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>maxAllocation</code> - The maximum output buffer allocation, or 0 for no allocation limit</dd>
+<dt>Returns:</dt>
+<dd>A fresh decoder</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newSnappyFrameEncoder()">
+<h3>newSnappyFrameEncoder</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">io.netty.channel.ChannelHandler</span>&nbsp;<span class="element-name">newSnappyFrameEncoder</span>()</div>
+<div class="block">Creates a Snappy encoder using the framed stream format, including chunk checksums.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>A fresh encoder</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newSnappyFrameDecoder()">
+<h3>newSnappyFrameDecoder</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">io.netty.channel.ChannelHandler</span>&nbsp;<span class="element-name">newSnappyFrameDecoder</span>()</div>
+<div class="block">Creates a framed Snappy decoder with Netty's default checksum policy (no validation).</div>
+<dl class="notes">
 <dt>Returns:</dt>
 <dd>A fresh decoder</dd>
 <dt>Since:</dt>
