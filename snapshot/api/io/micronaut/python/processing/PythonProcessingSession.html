@@ -64,6 +64,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#classLoader(java.util.List,java.util.function.Supplier)" tabindex="0">classLoader(List, Supplier)</a></li>
+<li><a href="#compilationFinished(boolean)" tabindex="0">compilationFinished(boolean)</a></li>
 <li><a href="#parser(java.lang.ClassLoader,boolean)" tabindex="0">parser(ClassLoader, boolean)</a></li>
 <li><a href="#initialized()" tabindex="0">initialized()</a></li>
 <li><a href="#close()" tabindex="0">close()</a></li>
@@ -133,15 +134,20 @@ implements <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initialized()" class="member-name-link">initialized</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#compilationFinished(boolean)" class="member-name-link">compilationFinished</a><wbr>(boolean&nbsp;completed)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Ends a compilation that ran with the session's class loader.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initialized()" class="member-name-link">initialized</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Reports whether GraalPy has been initialized.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="PythonAstParser.html" title="class in io.micronaut.python.processing">PythonAstParser</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parser(java.lang.ClassLoader,boolean)" class="member-name-link">parser</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;classLoader,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="PythonAstParser.html" title="class in io.micronaut.python.processing">PythonAstParser</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parser(java.lang.ClassLoader,boolean)" class="member-name-link">parser</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;classLoader,
  boolean&nbsp;incremental)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Obtains the parser for a compilation, initializing GraalPy on first use.</div>
 </div>
 </div>
@@ -196,6 +202,23 @@ must therefore have the same lifetime as the context.</p></div>
 <dd><code>factory</code> - Creates the class loader when the classpath changes</dd>
 <dt>Returns:</dt>
 <dd>The session class loader</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="compilationFinished(boolean)">
+<h3>compilationFinished</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">compilationFinished</span><wbr><span class="parameters">(boolean&nbsp;completed)</span></div>
+<div class="block">Ends a compilation that ran with the session's class loader. The processors it loaded stay for the next
+compilation with what they keep in static fields, so that state is released here, as a new class loader would
+start it. A compilation that ended with a failure of a processor rather than a problem in the sources leaves
+nothing that can be trusted, and the next one starts over.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>completed</code> - Whether the compiler ran to the end, with or without errors in the sources</dd>
 </dl>
 </div>
 </section>

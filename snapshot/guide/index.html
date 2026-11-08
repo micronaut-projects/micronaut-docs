@@ -66776,6 +66776,9 @@ micronaut.dev.patch-in-place=true</code></pre>
 </ul>
 </div>
 <div class="paragraph">
+<p>For a Python module, <code>micronaut.dev.compile.python.incremental-mode</code> chooses what a compilation after an edit recompiles. With <code>conservative</code>, the default, it recompiles every Python source when the static analysis of the sources finds a relationship it cannot prove isolated, such as a star import or an import it cannot resolve. With <code>optimistic</code>, it recompiles the sources the analysis relates to the edit, whatever it could not see, and a change to the body of a function does not reach the modules that import it. In test mode, <code>micronaut.dev.test.compile.python.incremental-mode</code> chooses the same for the tests, which do not inherit the mode of the application. The other languages have no such modes, and the launcher warns about an <code>optimistic</code> one set for them.</p>
+</div>
+<div class="paragraph">
 <p>On macOS, put <code>micronaut-runtime-osx</code> on the development runtime classpath as well, which the build plugins do. The launcher then watches through the native file system events, and a save is noticed at once.</p>
 </div>
 <div class="paragraph">
@@ -67221,6 +67224,9 @@ LiveReload server listening on port 35729</pre>
 </div>
 <div class="paragraph">
 <p>The agent is <code>micronaut-dev</code> itself, launched with <code>-javaagent</code>, which the build plugins add. Without it, or with <code>strategy=restart</code>, every change restarts.</p>
+</div>
+<div class="paragraph">
+<p>An edit of a statically compiled Python function changes the class compiled from it as well as the module. When the class qualifies and a reloader takes the module, as described below, the JVM redefines the class and the reloader patches the module, in the same generation; if either refuses, the application restarts. <code>micronaut.dev.patch-in-place=false</code> restarts such a change.</p>
 </div>
 </div>
 </div>
