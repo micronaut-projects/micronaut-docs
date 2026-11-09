@@ -58,6 +58,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
+<li><a href="#%3Cinit%3E(io.micronaut.context.watch.ConfigurationChange,java.util.List,java.util.List,int,java.util.List,java.util.List)" tabindex="0">RefreshResult(ConfigurationChange, List, List, int, List, List)</a></li>
 <li><a href="#%3Cinit%3E(io.micronaut.context.watch.ConfigurationChange,java.util.List,java.util.List,int,java.util.List)" tabindex="0">RefreshResult(ConfigurationChange, List, List, int, List)</a></li>
 </ol>
 </li>
@@ -72,6 +73,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#recreated()" tabindex="0">recreated()</a></li>
 <li><a href="#disposed()" tabindex="0">disposed()</a></li>
 <li><a href="#outcomes()" tabindex="0">outcomes()</a></li>
+<li><a href="#kept()" tabindex="0">kept()</a></li>
 </ol>
 </li>
 </ol>
@@ -94,10 +96,15 @@ loadScripts(document, 'script');</script>
 <dd><code><span id="param-recreated">recreated</span></code> - The configuration beans replaced by a new instance, bound through a constructor</dd>
 <dd><code><span id="param-disposed">disposed</span></code> - How many refreshable beans were disposed of, to be created again on use</dd>
 <dd><code><span id="param-outcomes">outcomes</span></code> - What each configuration watch the change touched answered</dd>
+<dd><code><span id="param-kept">kept</span></code> - The configuration beans the change did not reach, because replacing them, or destroying a removed
+            <code>@EachProperty</code> entry, would have stopped the running application, as when a running server
+            received them: the running instances are kept, a setter or field bean rebound in place, and the change
+            reaches them fully on a restart, which <a href="#requiresRestart()"><code>requiresRestart()</code></a> reports. Only a context that records
+            the dependency graph, as in development mode, keeps one</dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">RefreshResult</span>(<a href="../../../../context/watch/ConfigurationChange.html" title="class in io.micronaut.context.watch">ConfigurationChange</a>&nbsp;change, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;&nbsp;rebound, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;&nbsp;recreated, int&nbsp;disposed, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../context/watch/ReloadingConfigurationWatcher.Outcome.html" title="enum class in io.micronaut.context.watch">ReloadingConfigurationWatcher.Outcome</a>&gt;&nbsp;outcomes)
+<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">RefreshResult</span>(<a href="../../../../context/watch/ConfigurationChange.html" title="class in io.micronaut.context.watch">ConfigurationChange</a>&nbsp;change, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;&nbsp;rebound, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;&nbsp;recreated, int&nbsp;disposed, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../context/watch/ReloadingConfigurationWatcher.Outcome.html" title="enum class in io.micronaut.context.watch">ReloadingConfigurationWatcher.Outcome</a>&gt;&nbsp;outcomes, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;&nbsp;kept)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
 <div class="block">What a configuration refresh did.</div>
 <dl class="notes">
@@ -124,6 +131,15 @@ loadScripts(document, 'script');</script>
  int&nbsp;disposed,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../context/watch/ReloadingConfigurationWatcher.Outcome.html" title="enum class in io.micronaut.context.watch">ReloadingConfigurationWatcher.Outcome</a>&gt;&nbsp;outcomes)</code></div>
 <div class="col-last even-row-color">
+<div class="block">A result that kept no bean.</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(io.micronaut.context.watch.ConfigurationChange,java.util.List,java.util.List,int,java.util.List,java.util.List)" class="member-name-link">RefreshResult</a><wbr>(<a href="../../../../context/watch/ConfigurationChange.html" title="class in io.micronaut.context.watch">ConfigurationChange</a>&nbsp;change,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;&nbsp;rebound,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;&nbsp;recreated,
+ int&nbsp;disposed,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../context/watch/ReloadingConfigurationWatcher.Outcome.html" title="enum class in io.micronaut.context.watch">ReloadingConfigurationWatcher.Outcome</a>&gt;&nbsp;outcomes,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;&nbsp;kept)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Validating constructor.</div>
 </div>
 </div>
@@ -160,27 +176,32 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a hash code value for this object.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../../../context/watch/ReloadingConfigurationWatcher.Outcome.html" title="enum class in io.micronaut.context.watch">ReloadingConfigurationWatcher.Outcome</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#outcomes()" class="member-name-link">outcomes</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#kept()" class="member-name-link">kept</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-kept"><code>kept</code></a> record component.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../../../context/watch/ReloadingConfigurationWatcher.Outcome.html" title="enum class in io.micronaut.context.watch">ReloadingConfigurationWatcher.Outcome</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#outcomes()" class="member-name-link">outcomes</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-outcomes"><code>outcomes</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#rebound()" class="member-name-link">rebound</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#rebound()" class="member-name-link">rebound</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-rebound"><code>rebound</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#recreated()" class="member-name-link">recreated</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#recreated()" class="member-name-link">recreated</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-recreated"><code>recreated</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#requiresRestart()" class="member-name-link">requiresRestart</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#requiresRestart()" class="member-name-link">requiresRestart</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a string representation of this record class.</div>
 </div>
 </div>
@@ -201,6 +222,29 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="&lt;init&gt;(io.micronaut.context.watch.ConfigurationChange,java.util.List,java.util.List,int,java.util.List,java.util.List)">
+<h3>RefreshResult</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">RefreshResult</span><wbr><span class="parameters">(<a href="../../../../context/watch/ConfigurationChange.html" title="class in io.micronaut.context.watch">ConfigurationChange</a>&nbsp;change,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;&nbsp;rebound,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;&nbsp;recreated,
+ int&nbsp;disposed,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../context/watch/ReloadingConfigurationWatcher.Outcome.html" title="enum class in io.micronaut.context.watch">ReloadingConfigurationWatcher.Outcome</a>&gt;&nbsp;outcomes,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;&nbsp;kept)</span></div>
+<div class="block">Validating constructor.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>change</code> - The change</dd>
+<dd><code>rebound</code> - The rebound beans</dd>
+<dd><code>recreated</code> - The recreated beans</dd>
+<dd><code>disposed</code> - The disposed count</dd>
+<dd><code>outcomes</code> - The outcomes</dd>
+<dd><code>kept</code> - The beans kept until a restart</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="&lt;init&gt;(io.micronaut.context.watch.ConfigurationChange,java.util.List,java.util.List,int,java.util.List)">
 <h3>RefreshResult</h3>
 <div class="horizontal-scroll">
@@ -209,7 +253,7 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;&nbsp;recreated,
  int&nbsp;disposed,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../context/watch/ReloadingConfigurationWatcher.Outcome.html" title="enum class in io.micronaut.context.watch">ReloadingConfigurationWatcher.Outcome</a>&gt;&nbsp;outcomes)</span></div>
-<div class="block">Validating constructor.</div>
+<div class="block">A result that kept no bean.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>change</code> - The change</dd>
@@ -236,7 +280,8 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">requiresRestart</span>()</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether a watch answered that the change needs a restart of the application</dd>
+<dd>Whether the change needs a restart of the application: a watch answered so, or a bean was
+<a href="#kept()"><code>kept</code></a> because replacing it would have stopped the running application</dd>
 </dl>
 </div>
 </section>
@@ -349,6 +394,19 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the value of the <a href="#param-outcomes"><code>outcomes</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="kept()">
+<h3>kept</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">kept</span>()</div>
+<div class="block">Returns the value of the <a href="#param-kept"><code>kept</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-kept"><code>kept</code></a> record component</dd>
 </dl>
 </div>
 </section>
