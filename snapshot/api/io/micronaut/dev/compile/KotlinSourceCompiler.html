@@ -67,7 +67,11 @@ loadScripts(document, 'script');</script>
 <li><a href="#kinds()" tabindex="0">kinds()</a></li>
 <li><a href="#isAvailable()" tabindex="0">isAvailable()</a></li>
 <li><a href="#runCompilation(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.List)" tabindex="0">runCompilation(CompilationRequest, Set, Set, Path, Path, List)</a></li>
+<li><a href="#runWithoutProcessors(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.util.List)" tabindex="0">runWithoutProcessors(CompilationRequest, Set, Set, Path, List)</a></li>
+<li><a href="#compilesBodyEditsWithoutProcessors()" tabindex="0">compilesBodyEditsWithoutProcessors()</a></li>
+<li><a href="#declarationText(java.lang.String)" tabindex="0">declarationText(String)</a></li>
 <li><a href="#compilesEmptyBatches()" tabindex="0">compilesEmptyBatches()</a></li>
+<li><a href="#keepSharedOutputs(io.micronaut.dev.compile.CompilationRequest,io.micronaut.dev.compile.SiblingOutput,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.Set)" tabindex="0">keepSharedOutputs(CompilationRequest, SiblingOutput, Set, Path, Path, Set)</a></li>
 </ol>
 </li>
 </ol>
@@ -145,37 +149,73 @@ Kotlin sources are the build tool's.</p></div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#compilesEmptyBatches()" class="member-name-link">compilesEmptyBatches</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#compilesBodyEditsWithoutProcessors()" class="member-name-link">compilesBodyEditsWithoutProcessors</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the compiler compiles an edit of method bodies without the processors: it implements
+<a href="StagedSourceCompiler.html#runWithoutProcessors(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.util.List)"><code>StagedSourceCompiler.runWithoutProcessors(CompilationRequest, Set, Set, Path, List)</code></a> and <a href="StagedSourceCompiler.html#declarationText(java.lang.String)"><code>StagedSourceCompiler.declarationText(String)</code></a>, and there are processors to leave out.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#compilesEmptyBatches()" class="member-name-link">compilesEmptyBatches</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Whether a batch that selects no source to compile, one that only deletes sources, still runs
 <a href="StagedSourceCompiler.html#runCompilation(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.List)"><code>StagedSourceCompiler.runCompilation(CompilationRequest, Set, Set, Path, Path, List)</code></a>, with an empty set: a compiler whose processors keep state between runs and
 regenerate what depends on every source, as KSP does, needs to see the deletion, and what the run
 produces replaces what the deleted sources produced.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#declarationText(java.lang.String)" class="member-name-link">declarationText</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">What the processors can read of a source that the class files compiled from it do not hold, as its documentation
+and its annotations of <code>SOURCE</code> retention: null, by default, when <a href="StagedSourceCompiler.html#runWithoutProcessors(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.util.List)"><code>StagedSourceCompiler.runWithoutProcessors(CompilationRequest, Set, Set, Path, List)</code></a> is not
+supported.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAvailable()" class="member-name-link">isAvailable</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Whether the compiler can run in this JVM.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#kinds()" class="member-name-link">kinds</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected @Nullable <a href="StagedSourceCompiler.Produced.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler.Produced</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runCompilation(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.List)" class="member-name-link">runCompilation</a><wbr>(<a href="CompilationRequest.html" title="class in io.micronaut.dev.compile">CompilationRequest</a>&nbsp;request,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#keepSharedOutputs(io.micronaut.dev.compile.CompilationRequest,io.micronaut.dev.compile.SiblingOutput,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.Set)" class="member-name-link">keepSharedOutputs</a><wbr>(<a href="CompilationRequest.html" title="class in io.micronaut.dev.compile">CompilationRequest</a>&nbsp;request,
+ <a href="SiblingOutput.html" title="class in io.micronaut.dev.compile">SiblingOutput</a>&nbsp;siblings,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;hiddenClasses,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;staging,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;siblingStaging,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;siblingClasses)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Splits between the staging directories, and merges with what the outputs hold, a file whose contents belong to more
+than one source, which a compiler that writes such a file knows how to do.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="SourceKind.html" title="enum class in io.micronaut.dev.compile">SourceKind</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#kinds()" class="member-name-link">kinds</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected @Nullable <a href="StagedSourceCompiler.Produced.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler.Produced</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runCompilation(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.List)" class="member-name-link">runCompilation</a><wbr>(<a href="CompilationRequest.html" title="class in io.micronaut.dev.compile">CompilationRequest</a>&nbsp;request,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;&nbsp;toCompile,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;hiddenClasses,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;staging,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;generatedStaging,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="CompileDiagnostic.html" title="class in io.micronaut.dev.compile">CompileDiagnostic</a>&gt;&nbsp;diagnostics)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Runs the compiler on the selected sources.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected @Nullable <a href="StagedSourceCompiler.Produced.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler.Produced</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runWithoutProcessors(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.util.List)" class="member-name-link">runWithoutProcessors</a><wbr>(<a href="CompilationRequest.html" title="class in io.micronaut.dev.compile">CompilationRequest</a>&nbsp;request,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;&nbsp;toCompile,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;hiddenClasses,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;staging,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="CompileDiagnostic.html" title="class in io.micronaut.dev.compile">CompileDiagnostic</a>&gt;&nbsp;diagnostics)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Compiles sources without the annotation or symbol processors, for <a href="StagedSourceCompiler.html#compile(io.micronaut.dev.compile.CompilationRequest)"><code>StagedSourceCompiler.compile(CompilationRequest)</code></a> to keep what the processors
+produced for them before when every class compiled differs from the one in the output in method bodies alone and
+<a href="StagedSourceCompiler.html#declarationText(java.lang.String)"><code>StagedSourceCompiler.declarationText(String)</code></a> is as it was: the processors read declarations, annotations, signatures and
+documentation, none of which such an edit changes.</div>
 </div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.micronaut.dev.compile.StagedSourceCompiler">Methods inherited from class&nbsp;<a href="StagedSourceCompiler.html#method-summary" title="class in io.micronaut.dev.compile">StagedSourceCompiler</a></h3>
-<code><a href="StagedSourceCompiler.html#belongsTo(java.lang.String,java.lang.String,java.lang.String)" title="belongsTo(String, String, String)">belongsTo</a>, <a href="StagedSourceCompiler.html#compile(io.micronaut.dev.compile.CompilationRequest)" title="compile(CompilationRequest)">compile</a>, <a href="StagedSourceCompiler.html#outputsOf(java.nio.file.Path,java.lang.String)" title="outputsOf(Path, String)">outputsOf</a>, <a href="StagedSourceCompiler.html#staging(java.nio.file.Path)" title="staging(Path)">staging</a></code></div>
+<code><a href="StagedSourceCompiler.html#belongsTo(java.lang.String,java.lang.String,java.lang.String)" title="belongsTo(String, String, String)">belongsTo</a>, <a href="StagedSourceCompiler.html#comparesStructureFirst()" title="comparesStructureFirst()">comparesStructureFirst</a>, <a href="StagedSourceCompiler.html#compile(io.micronaut.dev.compile.CompilationRequest)" title="compile(CompilationRequest)">compile</a>, <a href="StagedSourceCompiler.html#outputsOf(java.nio.file.Path,java.lang.String)" title="outputsOf(Path, String)">outputsOf</a>, <a href="StagedSourceCompiler.html#staging(java.nio.file.Path)" title="staging(Path)">staging</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#method-summary" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
@@ -268,6 +308,79 @@ produces replaces what the deleted sources produced.</div>
 </section>
 </li>
 <li>
+<section class="detail" id="runWithoutProcessors(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.util.List)">
+<h3>runWithoutProcessors</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">@Nullable <a href="StagedSourceCompiler.Produced.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler.Produced</a></span>&nbsp;<span class="element-name">runWithoutProcessors</span><wbr><span class="parameters">(<a href="CompilationRequest.html" title="class in io.micronaut.dev.compile">CompilationRequest</a>&nbsp;request,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;&nbsp;toCompile,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;hiddenClasses,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;staging,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="CompileDiagnostic.html" title="class in io.micronaut.dev.compile">CompileDiagnostic</a>&gt;&nbsp;diagnostics)</span>
+                                                                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="StagedSourceCompiler.html#runWithoutProcessors(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.util.List)">StagedSourceCompiler</a></code></span></div>
+<div class="block">Compiles sources without the annotation or symbol processors, for <a href="StagedSourceCompiler.html#compile(io.micronaut.dev.compile.CompilationRequest)"><code>StagedSourceCompiler.compile(CompilationRequest)</code></a> to keep what the processors
+produced for them before when every class compiled differs from the one in the output in method bodies alone and
+<a href="StagedSourceCompiler.html#declarationText(java.lang.String)"><code>StagedSourceCompiler.declarationText(String)</code></a> is as it was: the processors read declarations, annotations, signatures and
+documentation, none of which such an edit changes. By default there is no such mode.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="StagedSourceCompiler.html#runWithoutProcessors(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.util.List)">runWithoutProcessors</a></code>&nbsp;in class&nbsp;<code><a href="StagedSourceCompiler.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>request</code> - The request</dd>
+<dd><code>toCompile</code> - The sources to compile, absolute</dd>
+<dd><code>hiddenClasses</code> - The top-level classes the compiler must not resolve from the class output: those compiled
+                     from the sources themselves. What the processors produced for them stays visible, as it is
+                     kept, so a source that uses a class generated from it compiles, and a generated top-level
+                     declaration stays listed in the module metadata</dd>
+<dd><code>staging</code> - Where class files go</dd>
+<dd><code>diagnostics</code> - Where to add the compiler's messages</dd>
+<dt>Returns:</dt>
+<dd>What was compiled, by source, or null when the compilation failed or the compiler has no such mode</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if the compiler cannot read or write</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="compilesBodyEditsWithoutProcessors()">
+<h3>compilesBodyEditsWithoutProcessors</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">compilesBodyEditsWithoutProcessors</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="StagedSourceCompiler.html#compilesBodyEditsWithoutProcessors()">StagedSourceCompiler</a></code></span></div>
+<div class="block">Whether the compiler compiles an edit of method bodies without the processors: it implements
+<a href="StagedSourceCompiler.html#runWithoutProcessors(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.util.List)"><code>StagedSourceCompiler.runWithoutProcessors(CompilationRequest, Set, Set, Path, List)</code></a> and <a href="StagedSourceCompiler.html#declarationText(java.lang.String)"><code>StagedSourceCompiler.declarationText(String)</code></a>, and there are processors to leave out. By default it
+does not. The system property "micronaut.dev.compile.body-edits-without-processors" set to <code>false</code> turns it off whatever this says.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="StagedSourceCompiler.html#compilesBodyEditsWithoutProcessors()">compilesBodyEditsWithoutProcessors</a></code>&nbsp;in class&nbsp;<code><a href="StagedSourceCompiler.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler</a></code></dd>
+<dt>Returns:</dt>
+<dd>True if an edit of method bodies may compile without the processors</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="declarationText(java.lang.String)">
+<h3>declarationText</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">declarationText</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;source)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="StagedSourceCompiler.html#declarationText(java.lang.String)">StagedSourceCompiler</a></code></span></div>
+<div class="block">What the processors can read of a source that the class files compiled from it do not hold, as its documentation
+and its annotations of <code>SOURCE</code> retention: null, by default, when <a href="StagedSourceCompiler.html#runWithoutProcessors(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.util.List)"><code>StagedSourceCompiler.runWithoutProcessors(CompilationRequest, Set, Set, Path, List)</code></a> is not
+supported.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="StagedSourceCompiler.html#declarationText(java.lang.String)">declarationText</a></code>&nbsp;in class&nbsp;<code><a href="StagedSourceCompiler.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>source</code> - The text of a source</dd>
+<dt>Returns:</dt>
+<dd>That part of it, or null</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="compilesEmptyBatches()">
 <h3>compilesEmptyBatches</h3>
 <div class="horizontal-scroll">
@@ -282,6 +395,38 @@ produces replaces what the deleted sources produced. By default such a batch onl
 <dd><code><a href="StagedSourceCompiler.html#compilesEmptyBatches()">compilesEmptyBatches</a></code>&nbsp;in class&nbsp;<code><a href="StagedSourceCompiler.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler</a></code></dd>
 <dt>Returns:</dt>
 <dd>True to run the compilation for an empty batch</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="keepSharedOutputs(io.micronaut.dev.compile.CompilationRequest,io.micronaut.dev.compile.SiblingOutput,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.Set)">
+<h3>keepSharedOutputs</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">keepSharedOutputs</span><wbr><span class="parameters">(<a href="CompilationRequest.html" title="class in io.micronaut.dev.compile">CompilationRequest</a>&nbsp;request,
+ <a href="SiblingOutput.html" title="class in io.micronaut.dev.compile">SiblingOutput</a>&nbsp;siblings,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;hiddenClasses,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;staging,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;siblingStaging,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;siblingClasses)</span>
+                                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="StagedSourceCompiler.html#keepSharedOutputs(io.micronaut.dev.compile.CompilationRequest,io.micronaut.dev.compile.SiblingOutput,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.Set)">StagedSourceCompiler</a></code></span></div>
+<div class="block">Splits between the staging directories, and merges with what the outputs hold, a file whose contents belong to more
+than one source, which a compiler that writes such a file knows how to do.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="StagedSourceCompiler.html#keepSharedOutputs(io.micronaut.dev.compile.CompilationRequest,io.micronaut.dev.compile.SiblingOutput,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.Set)">keepSharedOutputs</a></code>&nbsp;in class&nbsp;<code><a href="StagedSourceCompiler.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>request</code> - The request</dd>
+<dd><code>siblings</code> - The sibling output</dd>
+<dd><code>hiddenClasses</code> - The classes the compilation replaced</dd>
+<dd><code>staging</code> - The staging directory of the class output</dd>
+<dd><code>siblingStaging</code> - The staging directory of the sibling output</dd>
+<dd><code>siblingClasses</code> - The top-level classes of the compiled sibling sources</dd>
+<dt>Returns:</dt>
+<dd>The files, relative to the staging directories, that are in place</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if a file cannot be read or written</dd>
 </dl>
 </div>
 </section>

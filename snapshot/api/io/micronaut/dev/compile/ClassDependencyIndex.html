@@ -58,10 +58,12 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#scan(java.nio.file.Path)" tabindex="0">scan(Path)</a></li>
+<li><a href="#scan(java.util.List)" tabindex="0">scan(List)</a></li>
 <li><a href="#classes()" tabindex="0">classes()</a></li>
 <li><a href="#referencesOf(java.lang.String)" tabindex="0">referencesOf(String)</a></li>
 <li><a href="#dependentsOf(java.lang.String)" tabindex="0">dependentsOf(String)</a></li>
 <li><a href="#declaresConstants(java.lang.String)" tabindex="0">declaresConstants(String)</a></li>
+<li><a href="#isInlinedElsewhere(java.lang.String)" tabindex="0">isInlinedElsewhere(String)</a></li>
 <li><a href="#transitiveDependentsOf(java.util.Set)" tabindex="0">transitiveDependentsOf(Set)</a></li>
 <li><a href="#topLevelClassOf(java.nio.file.Path)" tabindex="0">topLevelClassOf(Path)</a></li>
 <li><a href="#topLevelOf(java.lang.String)" tabindex="0">topLevelOf(String)</a></li>
@@ -87,8 +89,9 @@ pools of the class files, so that an incremental compilation recompiles the sour
 link against a changed class.
 
 <p>The index over-approximates on purpose: every class name a constant pool mentions counts as a
-reference, including ones that appear only in a descriptor. Recompiling a source that did not
-strictly need it is cheap; missing one that did leaves the output inconsistent.</p></div>
+reference, including ones that appear only in a descriptor, and so does every class whose code the
+compiler inlined into the class, which its SMAP names. Recompiling a source that did not strictly
+need it is cheap; missing one that did leaves the output inconsistent.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -118,24 +121,35 @@ strictly need it is cheap; missing one that did leaves the output inconsistent.<
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#declaresConstants(java.lang.String)" class="member-name-link">declaresConstants</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;topLevelClass)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Whether a top-level class, or a class nested in it, declares a compile-time constant: a static
-final field with a constant value, which javac inlines into the classes that read it, leaving no
-reference in their constant pools for the index to follow.</div>
+<div class="block">Whether a top-level class, or a class nested in it, declares a compile-time constant another class can read: a
+static final field with a constant value, which javac inlines into the classes that read it, leaving no reference
+in their constant pools for the index to follow.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dependentsOf(java.lang.String)" class="member-name-link">dependentsOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;topLevelClass)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The top-level classes that reference the given one, directly.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#referencesOf(java.lang.String)" class="member-name-link">referencesOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;topLevelClass)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isInlinedElsewhere(java.lang.String)" class="member-name-link">isInlinedElsewhere</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;topLevelClass)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the compiler inlined code of a top-level class, or of a class nested in it, into another class: the body of
+a Kotlin inline function, which its callers hold a copy of.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#referencesOf(java.lang.String)" class="member-name-link">referencesOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;topLevelClass)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The top-level classes the given top-level class references.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="ClassDependencyIndex.html" title="class in io.micronaut.dev.compile">ClassDependencyIndex</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#scan(java.nio.file.Path)" class="member-name-link">scan</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;classOutput)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="ClassDependencyIndex.html" title="class in io.micronaut.dev.compile">ClassDependencyIndex</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#scan(java.nio.file.Path)" class="member-name-link">scan</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;classOutput)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Reads the class files under the given directory.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="ClassDependencyIndex.html" title="class in io.micronaut.dev.compile">ClassDependencyIndex</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#scan(java.util.List)" class="member-name-link">scan</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;&nbsp;classOutputs)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Reads the class files under the given directories.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#topLevelClassOf(java.nio.file.Path)" class="member-name-link">topLevelClassOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;relativeClassFile)</code></div>
@@ -176,6 +190,23 @@ reference in their constant pools for the index to follow.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>classOutput</code> - The class output directory; a missing directory yields an empty index</dd>
+<dt>Returns:</dt>
+<dd>The index</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/UncheckedIOException.html" title="class or interface in java.io" class="external-link">UncheckedIOException</a></code> - if a class file cannot be read</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="scan(java.util.List)">
+<h3>scan</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ClassDependencyIndex.html" title="class in io.micronaut.dev.compile">ClassDependencyIndex</a></span>&nbsp;<span class="element-name">scan</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;&nbsp;classOutputs)</span></div>
+<div class="block">Reads the class files under the given directories.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>classOutputs</code> - The directories; a missing directory adds nothing</dd>
 <dt>Returns:</dt>
 <dd>The index</dd>
 <dt>Throws:</dt>
@@ -232,14 +263,31 @@ reference in their constant pools for the index to follow.</div>
 <h3>declaresConstants</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">declaresConstants</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;topLevelClass)</span></div>
-<div class="block">Whether a top-level class, or a class nested in it, declares a compile-time constant: a static
-final field with a constant value, which javac inlines into the classes that read it, leaving no
-reference in their constant pools for the index to follow.</div>
+<div class="block">Whether a top-level class, or a class nested in it, declares a compile-time constant another class can read: a
+static final field with a constant value, which javac inlines into the classes that read it, leaving no reference
+in their constant pools for the index to follow. A private one does not count: only the class and the classes
+nested in it can read it, and they come from the same source, which compiles with it.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>topLevelClass</code> - The binary name</dd>
 <dt>Returns:</dt>
 <dd>True if a change to the class can change the classes that read its constants without the index knowing</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isInlinedElsewhere(java.lang.String)">
+<h3>isInlinedElsewhere</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isInlinedElsewhere</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;topLevelClass)</span></div>
+<div class="block">Whether the compiler inlined code of a top-level class, or of a class nested in it, into another class: the body of
+a Kotlin inline function, which its callers hold a copy of.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>topLevelClass</code> - The binary name</dd>
+<dt>Returns:</dt>
+<dd>True if a change to a method body of the class changes other classes</dd>
 </dl>
 </div>
 </section>

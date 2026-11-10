@@ -68,6 +68,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#ALLOWED_HOSTS" tabindex="0">ALLOWED_HOSTS</a></li>
 <li><a href="#ACCESS_TOKEN_ENABLED" tabindex="0">ACCESS_TOKEN_ENABLED</a></li>
 <li><a href="#BIND_LOOPBACK" tabindex="0">BIND_LOOPBACK</a></li>
+<li><a href="#SIBLING_SOURCES" tabindex="0">SIBLING_SOURCES</a></li>
+<li><a href="#SIBLING_OUTPUT" tabindex="0">SIBLING_OUTPUT</a></li>
 <li><a href="#NATIVE_MAX_GENERATIONS" tabindex="0">NATIVE_MAX_GENERATIONS</a></li>
 </ol>
 </li>
@@ -80,10 +82,12 @@ loadScripts(document, 'script');</script>
 <li><a href="#projectDir()" tabindex="0">projectDir()</a></li>
 <li><a href="#strategy()" tabindex="0">strategy()</a></li>
 <li><a href="#patchInPlace()" tabindex="0">patchInPlace()</a></li>
+<li><a href="#pythonWarmUp()" tabindex="0">pythonWarmUp()</a></li>
 <li><a href="#runtimeClasspath()" tabindex="0">runtimeClasspath()</a></li>
 <li><a href="#reloadableRoots()" tabindex="0">reloadableRoots()</a></li>
 <li><a href="#compileClasspath()" tabindex="0">compileClasspath()</a></li>
 <li><a href="#processorPath()" tabindex="0">processorPath()</a></li>
+<li><a href="#siblingOutput()" tabindex="0">siblingOutput()</a></li>
 <li><a href="#sourceRoots()" tabindex="0">sourceRoots()</a></li>
 <li><a href="#sourceRoots(io.micronaut.dev.compile.SourceKind)" tabindex="0">sourceRoots(SourceKind)</a></li>
 <li><a href="#resourceRoots()" tabindex="0">resourceRoots()</a></li>
@@ -157,6 +161,8 @@ micronaut.dev.compile.java.output=build/classes/java/main
 micronaut.dev.compile.java.generated-sources=build/generated/sources/annotationProcessor/java/main
 micronaut.dev.compile.java.options=-parameters,--release,21,-Amicronaut.processing.group=example
 micronaut.dev.compile.python.incremental-mode=optimistic
+micronaut.dev.compile.sibling-sources=../library/src/main/java
+micronaut.dev.compile.sibling-output=build/micronaut-dev/siblings
 micronaut.dev.build-tool=gradle
 micronaut.dev.build-tool.trigger=build/micronaut-dev/reload
 micronaut.dev.retain=javax.sql.DataSource
@@ -164,7 +170,12 @@ micronaut.dev.max-generations=10
 micronaut.dev.requests.hold-timeout=30s
 micronaut.dev.requests.drain-timeout=10s
 micronaut.dev.requests.retain-sockets=true
-</pre></div>
+</pre>
+
+<p><a href="#SIBLING_SOURCES">"micronaut.dev.compile.sibling-sources"</a> names, among the source roots, those of other modules of the build, and
+<a href="#SIBLING_OUTPUT">"micronaut.dev.compile.sibling-output"</a> the directory their compilation goes under instead of the application's class output, which
+the build tool packages: see <a href="#siblingOutput()"><code>siblingOutput()</code></a>. A manifest without them compiles every root into its language's
+class output.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -260,6 +271,19 @@ stops it anyway.</div>
 <div class="col-last odd-row-color">
 <div class="block">The key of whether the HTTP servers' listening sockets are kept bound across generations, so that a connection
 made during a restart waits for the next generation instead of being refused.</div>
+</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#SIBLING_OUTPUT" class="member-name-link">SIBLING_OUTPUT</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">The key of the directory what those sources compile to goes under, which the launcher owns and empties: under the
+build directory of the application, where its package step does not read, such as
+<code>target/micronaut-dev/siblings</code> or <code>build/micronaut-dev/siblings</code>.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#SIBLING_SOURCES" class="member-name-link">SIBLING_SOURCES</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">The key of the source directories that belong to other modules of the build than the application, which depends on
+them: a list of directories that <code>micronaut.dev.sources.&lt;kind&gt;</code> names too, in Java, Kotlin or Groovy.</div>
 </div>
 </div>
 </section>
@@ -379,46 +403,58 @@ generation.</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#projectDir()" class="member-name-link">projectDir</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reloadableRoots()" class="member-name-link">reloadableRoots</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#requestDrainTimeout()" class="member-name-link">requestDrainTimeout</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pythonWarmUp()" class="member-name-link">pythonWarmUp</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether a launch with Python sources initializes a GraalPy context on a thread of its own while it starts the
+application, which then finds GraalPy's classes loaded.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reloadableRoots()" class="member-name-link">reloadableRoots</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#requestDrainTimeout()" class="member-name-link">requestDrainTimeout</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">How long a restart waits for the requests in flight on the stopping generation, <a href="#REQUESTS_DRAIN_TIMEOUT">"micronaut.dev.requests.drain-timeout"</a>:
 they finish on the generation they started on.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#requestHoldTimeout()" class="member-name-link">requestHoldTimeout</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#requestHoldTimeout()" class="member-name-link">requestHoldTimeout</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">How long a request that arrives while a batch is processed is held, <a href="#REQUESTS_HOLD_TIMEOUT">"micronaut.dev.requests.hold-timeout"</a>: it is
 served once the batch is done, by the generation that runs then, or answered with a 503 and a <code>Retry-After</code>
 when the batch takes longer.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="ResourceRoot.html" title="class in io.micronaut.dev.manifest">ResourceRoot</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resourceRoots()" class="member-name-link">resourceRoots</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retain()" class="member-name-link">retain</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="ResourceRoot.html" title="class in io.micronaut.dev.manifest">ResourceRoot</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resourceRoots()" class="member-name-link">resourceRoots</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retainAnnotated()" class="member-name-link">retainAnnotated</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retain()" class="member-name-link">retain</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retainAnnotated()" class="member-name-link">retainAnnotated</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Whether the beans a module annotated with <a href="../../context/annotation/Retain.html" title="annotation interface in io.micronaut.context.annotation"><code>Retain</code></a> are retained too, as they
 are unless <code>micronaut.dev.retain-annotated=false</code>, which leaves only what <code>micronaut.dev.retain</code> names.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retainServerSockets()" class="member-name-link">retainServerSockets</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retainServerSockets()" class="member-name-link">retainServerSockets</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Whether the HTTP servers' listening sockets are kept bound across generations, <a href="#REQUESTS_RETAIN_SOCKETS">"micronaut.dev.requests.retain-sockets"</a>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runtimeClasspath()" class="member-name-link">runtimeClasspath</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sets(java.lang.String)" class="member-name-link">sets</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;key)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runtimeClasspath()" class="member-name-link">runtimeClasspath</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sets(java.lang.String)" class="member-name-link">sets</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;key)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Whether the manifest, or a system property of the same name, sets a key rather than leaving it to its default.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="../compile/SiblingOutput.html" title="class in io.micronaut.dev.compile">SiblingOutput</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#siblingOutput()" class="member-name-link">siblingOutput</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Where the compilation of the sources of other modules of the build goes, <a href="#SIBLING_OUTPUT">"micronaut.dev.compile.sibling-output"</a>, and which sources
+those are, <a href="#SIBLING_SOURCES">"micronaut.dev.compile.sibling-sources"</a>.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../compile/SourceRoot.html" title="class in io.micronaut.dev.compile">SourceRoot</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sourceRoots()" class="member-name-link">sourceRoots</a>()</code></div>
@@ -639,6 +675,43 @@ otherwise, so that other machines cannot reach it. Written by the build plugins 
 </section>
 </li>
 <li>
+<section class="detail" id="SIBLING_SOURCES">
+<h3>SIBLING_SOURCES</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">SIBLING_SOURCES</span></div>
+<div class="block">The key of the source directories that belong to other modules of the build than the application, which depends on
+them: a list of directories that <code>micronaut.dev.sources.&lt;kind&gt;</code> names too, in Java, Kotlin or Groovy.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#io.micronaut.dev.manifest.DevManifest.SIBLING_SOURCES">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="SIBLING_OUTPUT">
+<h3>SIBLING_OUTPUT</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">SIBLING_OUTPUT</span></div>
+<div class="block">The key of the directory what those sources compile to goes under, which the launcher owns and empties: under the
+build directory of the application, where its package step does not read, such as
+<code>target/micronaut-dev/siblings</code> or <code>build/micronaut-dev/siblings</code>.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#io.micronaut.dev.manifest.DevManifest.SIBLING_OUTPUT">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="NATIVE_MAX_GENERATIONS">
 <h3>NATIVE_MAX_GENERATIONS</h3>
 <div class="horizontal-scroll">
@@ -770,6 +843,22 @@ generation. On by default, under every strategy: patching defines no class, so i
 </section>
 </li>
 <li>
+<section class="detail" id="pythonWarmUp()">
+<h3>pythonWarmUp</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">pythonWarmUp</span>()</div>
+<div class="block">Whether a launch with Python sources initializes a GraalPy context on a thread of its own while it starts the
+application, which then finds GraalPy's classes loaded. On by default; <code>micronaut.dev.python.warm-up=false</code>
+turns it off, which an application that configures <code>engine.CompilerThreads</code> needs to get them: the first
+engine of the JVM sizes the compiler queue.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether the launch warms up GraalPy</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="runtimeClasspath()">
 <h3>runtimeClasspath</h3>
 <div class="horizontal-scroll">
@@ -813,6 +902,23 @@ generation. On by default, under every strategy: patching defines no class, so i
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The annotation processor path</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="siblingOutput()">
+<h3>siblingOutput</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="../compile/SiblingOutput.html" title="class in io.micronaut.dev.compile">SiblingOutput</a></span>&nbsp;<span class="element-name">siblingOutput</span>()</div>
+<div class="block">Where the compilation of the sources of other modules of the build goes, <a href="#SIBLING_OUTPUT">"micronaut.dev.compile.sibling-output"</a>, and which sources
+those are, <a href="#SIBLING_SOURCES">"micronaut.dev.compile.sibling-sources"</a>. Both are written by the build plugins, for an application that has such modules
+and compiles here; the build-tool mode compiles each module into its own output and needs neither. Without them every
+root compiles into its language's class output. So do all of them with Python sources among the roots, since the Python
+compiler writes to its class output alone.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>What the manifest names, null when it does not name both or has Python sources</dd>
 </dl>
 </div>
 </section>

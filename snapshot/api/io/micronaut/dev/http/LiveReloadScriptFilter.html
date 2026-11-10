@@ -54,9 +54,11 @@ loadScripts(document, 'script');</script>
 <div class="toc-header">Contents&nbsp;<input type="text" class="filter-input" disabled placeholder="Filter contents (type .)" aria-label="Filter table of contents" autocomplete="off" spellcheck="false"><input type="reset" class="reset-filter" disabled tabindex="-1" value="Reset"></div>
 <ol class="toc-list" tabindex="-1">
 <li><a href="#" tabindex="0">Description</a></li>
+<li><a href="#field-summary" tabindex="0">Field Summary</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
+<li><a href="#getOrder()" tabindex="0">getOrder()</a></li>
 <li><a href="#inject(io.micronaut.http.HttpRequest,io.micronaut.http.MutableHttpResponse)" tabindex="0">inject(HttpRequest, MutableHttpResponse)</a></li>
 </ol>
 </li>
@@ -71,6 +73,10 @@ loadScripts(document, 'script');</script>
 <div class="inheritance">io.micronaut.dev.http.LiveReloadScriptFilter</div>
 </div>
 <section class="class-description" id="class-description">
+<dl class="notes">
+<dt>All Implemented Interfaces:</dt>
+<dd><code><a href="../../core/order/Ordered.html" title="interface in io.micronaut.core.order">Ordered</a></code></dd>
+</dl>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="annotations"><a href="../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
@@ -78,7 +84,8 @@ loadScripts(document, 'script');</script>
 <a href="../../context/annotation/Requires.html" title="annotation interface in io.micronaut.context.annotation">@Requires</a>(<a href="../../context/annotation/Requires.html#classes()">classes</a>=<a href="../../http/annotation/ServerFilter.html" title="annotation interface in io.micronaut.http.annotation">ServerFilter</a>.class) <a href="../../context/annotation/Requires.html" title="annotation interface in io.micronaut.context.annotation">@Requires</a>(<a href="../../context/annotation/Requires.html#beans()">beans</a>=<a href="../DevRuntime.html" title="class in io.micronaut.dev">DevRuntime</a>.class)
 <a href="../../context/env/DevelopmentActive.html" title="annotation interface in io.micronaut.context.env">@DevelopmentActive</a>
 </span><span class="modifiers">public final class </span><span class="element-name type-name-label">LiveReloadScriptFilter</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
+implements <a href="../../core/order/Ordered.html" title="interface in io.micronaut.core.order">Ordered</a></span></div>
 <div class="block">Adds the LiveReload client script to HTML pages, and a no-store cache header so that a refresh
 always reaches the server. Pages with a Content-Security-Policy, in a header or in a <code>&lt;meta http-equiv&gt;</code>
 element, are left alone, as the script would be blocked; extension users turn the injection off in the manifest.</div>
@@ -92,6 +99,15 @@ element, are left alone, as the script would be blocked; extension users turn th
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="inherited-list">
+<h3 id="fields-inherited-from-class-io.micronaut.core.order.Ordered">Fields inherited from interface&nbsp;<a href="../../core/order/Ordered.html#field-summary" title="interface in io.micronaut.core.order">Ordered</a></h3>
+<code><a href="../../core/order/Ordered.html#HIGHEST_PRECEDENCE">HIGHEST_PRECEDENCE</a>, <a href="../../core/order/Ordered.html#LOWEST_PRECEDENCE">LOWEST_PRECEDENCE</a></code></div>
+</section>
+</li>
 <!-- ========== METHOD SUMMARY =========== -->
 <li>
 <section class="method-summary" id="method-summary">
@@ -103,10 +119,17 @@ element, are left alone, as the script would be blocked; extension users turn th
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#inject(io.micronaut.http.HttpRequest,io.micronaut.http.MutableHttpResponse)" class="member-name-link">inject</a><wbr>(<a href="../../http/HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
- <a href="../../http/MutableHttpResponse.html" title="interface in io.micronaut.http">MutableHttpResponse</a>&lt;?&gt;&nbsp;response)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOrder()" class="member-name-link">getOrder</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Ahead of the built-in filter phases, so that it sees the response after the filters of those phases and of the
+default order: after a filter of the application or a module changed it, as views' filter swaps the model for
+the view to render, and after a policy header was set.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;@Nullable <a href="../../http/MutableHttpResponse.html" title="interface in io.micronaut.http">MutableHttpResponse</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#inject(io.micronaut.http.HttpRequest,io.micronaut.http.MutableHttpResponse)" class="member-name-link">inject</a><wbr>(<a href="../../http/HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
+ <a href="../../http/MutableHttpResponse.html" title="interface in io.micronaut.http">MutableHttpResponse</a>&lt;?&gt;&nbsp;response)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Injects the script into an HTML response.</div>
 </div>
 </div>
@@ -127,17 +150,39 @@ element, are left alone, as the script would be blocked; extension users turn th
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="getOrder()">
+<h3>getOrder</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getOrder</span>()</div>
+<div class="block">Ahead of the built-in filter phases, so that it sees the response after the filters of those phases and of the
+default order: after a filter of the application or a module changed it, as views' filter swaps the model for
+the view to render, and after a policy header was set. A filter ordered ahead of this one still sees the
+response after it.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../core/order/Ordered.html#getOrder()">getOrder</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/order/Ordered.html" title="interface in io.micronaut.core.order">Ordered</a></code></dd>
+<dt>Returns:</dt>
+<dd>The order</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="inject(io.micronaut.http.HttpRequest,io.micronaut.http.MutableHttpResponse)">
 <h3>inject</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations"><a href="../../http/annotation/ResponseFilter.html" title="annotation interface in io.micronaut.http.annotation">@ResponseFilter</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">inject</span><wbr><span class="parameters">(<a href="../../http/HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;@Nullable <a href="../../http/MutableHttpResponse.html" title="interface in io.micronaut.http">MutableHttpResponse</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">inject</span><wbr><span class="parameters">(<a href="../../http/HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;?&gt;&nbsp;request,
  <a href="../../http/MutableHttpResponse.html" title="interface in io.micronaut.http">MutableHttpResponse</a>&lt;?&gt;&nbsp;response)</span></div>
-<div class="block">Injects the script into an HTML response.</div>
+<div class="block">Injects the script into an HTML response. A page a blocking writer renders, as a view is, is rendered on the
+blocking executor, as the server would write it there; any other response is handled on the spot. The response
+to a HEAD request is handled as the one to a GET, so that it has the same length and cache header.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>request</code> - The request</dd>
 <dd><code>response</code> - The response</dd>
+<dt>Returns:</dt>
+<dd>The response once a page a blocking writer renders has the script, null when it was handled on the spot</dd>
 </dl>
 </div>
 </section>

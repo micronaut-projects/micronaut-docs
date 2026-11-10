@@ -66,6 +66,8 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#kinds()" tabindex="0">kinds()</a></li>
 <li><a href="#isAvailable()" tabindex="0">isAvailable()</a></li>
+<li><a href="#close()" tabindex="0">close()</a></li>
+<li><a href="#comparesStructureFirst()" tabindex="0">comparesStructureFirst()</a></li>
 <li><a href="#runCompilation(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.List)" tabindex="0">runCompilation(CompilationRequest, Set, Set, Path, Path, List)</a></li>
 </ol>
 </li>
@@ -106,7 +108,10 @@ sources have their class files, the classes generated for them and their entries
 <code>META-INF/micronaut</code> index removed.</p>
 
 <p>Which top-level classes a source produces is learnt from javac and kept beside the class output
-(see <code>SourceIndex</code>), so a source declaring several top-level classes is handled whole.</p></div>
+(see <code>SourceIndex</code>), so a source declaring several top-level classes is handled whole.</p>
+
+<p>The annotation processors' class loader is kept between compilations while the processor path stays the same
+(see <code>ProcessorLoaders</code>), so that their classes are not loaded and compiled by the JIT again for every edit.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -150,6 +155,15 @@ sources have their class files, the classes generated for them and their entries
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#comparesStructureFirst()" class="member-name-link">comparesStructureFirst</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">javac reads a class it compiles a dependent against through its structure alone, its constants included: a
+change to method bodies leaves the dependents as they were.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAvailable()" class="member-name-link">isAvailable</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -173,13 +187,13 @@ sources have their class files, the classes generated for them and their entries
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.micronaut.dev.compile.StagedSourceCompiler">Methods inherited from class&nbsp;<a href="StagedSourceCompiler.html#method-summary" title="class in io.micronaut.dev.compile">StagedSourceCompiler</a></h3>
-<code><a href="StagedSourceCompiler.html#belongsTo(java.lang.String,java.lang.String,java.lang.String)" title="belongsTo(String, String, String)">belongsTo</a>, <a href="StagedSourceCompiler.html#compile(io.micronaut.dev.compile.CompilationRequest)" title="compile(CompilationRequest)">compile</a>, <a href="StagedSourceCompiler.html#compilesEmptyBatches()" title="compilesEmptyBatches()">compilesEmptyBatches</a>, <a href="StagedSourceCompiler.html#outputsOf(java.nio.file.Path,java.lang.String)" title="outputsOf(Path, String)">outputsOf</a>, <a href="StagedSourceCompiler.html#staging(java.nio.file.Path)" title="staging(Path)">staging</a></code></div>
+<code><a href="StagedSourceCompiler.html#belongsTo(java.lang.String,java.lang.String,java.lang.String)" title="belongsTo(String, String, String)">belongsTo</a>, <a href="StagedSourceCompiler.html#compile(io.micronaut.dev.compile.CompilationRequest)" title="compile(CompilationRequest)">compile</a>, <a href="StagedSourceCompiler.html#compilesBodyEditsWithoutProcessors()" title="compilesBodyEditsWithoutProcessors()">compilesBodyEditsWithoutProcessors</a>, <a href="StagedSourceCompiler.html#compilesEmptyBatches()" title="compilesEmptyBatches()">compilesEmptyBatches</a>, <a href="StagedSourceCompiler.html#declarationText(java.lang.String)" title="declarationText(String)">declarationText</a>, <a href="StagedSourceCompiler.html#keepSharedOutputs(io.micronaut.dev.compile.CompilationRequest,io.micronaut.dev.compile.SiblingOutput,java.util.Set,java.nio.file.Path,java.nio.file.Path,java.util.Set)" title="keepSharedOutputs(CompilationRequest, SiblingOutput, Set, Path, Path, Set)">keepSharedOutputs</a>, <a href="StagedSourceCompiler.html#outputsOf(java.nio.file.Path,java.lang.String)" title="outputsOf(Path, String)">outputsOf</a>, <a href="StagedSourceCompiler.html#runWithoutProcessors(io.micronaut.dev.compile.CompilationRequest,java.util.Set,java.util.Set,java.nio.file.Path,java.util.List)" title="runWithoutProcessors(CompilationRequest, Set, Set, Path, List)">runWithoutProcessors</a>, <a href="StagedSourceCompiler.html#staging(java.nio.file.Path)" title="staging(Path)">staging</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#method-summary" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.micronaut.dev.compile.SourceCompiler">Methods inherited from interface&nbsp;<a href="SourceCompiler.html#method-summary" title="interface in io.micronaut.dev.compile">SourceCompiler</a></h3>
-<code><a href="SourceCompiler.html#close()" title="close()">close</a>, <a href="SourceCompiler.html#jointKinds()" title="jointKinds()">jointKinds</a></code></div>
+<code><a href="SourceCompiler.html#jointKinds()" title="jointKinds()">jointKinds</a></code></div>
 </section>
 </li>
 </ul>
@@ -229,6 +243,30 @@ sources have their class files, the classes generated for them and their entries
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>True if its implementation is present</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="close()">
+<h3>close</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="comparesStructureFirst()">
+<h3>comparesStructureFirst</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">comparesStructureFirst</span>()</div>
+<div class="block">javac reads a class it compiles a dependent against through its structure alone, its constants included: a
+change to method bodies leaves the dependents as they were.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="StagedSourceCompiler.html#comparesStructureFirst()">comparesStructureFirst</a></code>&nbsp;in class&nbsp;<code><a href="StagedSourceCompiler.html" title="class in io.micronaut.dev.compile">StagedSourceCompiler</a></code></dd>
+<dt>Returns:</dt>
+<dd>True</dd>
 </dl>
 </div>
 </section>
