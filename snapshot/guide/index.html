@@ -83755,6 +83755,24 @@ Beans compiled with an earlier version keep the previous order until they are re
 </div>
 </div>
 <div class="sect2">
+<h3 id="_the_read_timeout_of_the_http_client_applies_to_each_http2_and_http3_stream_5_3">The read timeout of the HTTP client applies to each HTTP/2 and HTTP/3 stream (5.3)</h3>
+<div class="paragraph">
+<p>For an HTTP/2 or HTTP/3 connection, <code>micronaut.http.client.read-timeout</code> now applies to each request on the connection, and a request that times out resets only its own stream. Previously one read timeout covered the whole connection, so a timeout closed it and failed the other requests on it. When the request that timed out is the only one on the connection, the connection is still closed. The read timeout does not apply to a request that has a response timeout of its own. HTTP/1 connections are unchanged.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_a_request_the_http_client_could_not_send_fails_with_unprocessedrequestexception_5_3">A request the HTTP client could not send fails with <code>UnprocessedRequestException</code> (5.3)</h3>
+<div class="paragraph">
+<p>When the Netty HTTP client cannot obtain a connection from its pool, because too many requests wait for one or the pool acquire timeout elapsed, the request now fails with <code>io.micronaut.http.client.exceptions.UnprocessedRequestException</code> (with the reason <code>POOL_ACQUIRE</code>), as it does when the connection cannot be opened (<code>CONNECT</code>, <code>CONNECT_TIMEOUT</code>). Previously a pool acquire timeout failed the request with a <code>ReadTimeoutException</code>. Code that retries or reports on a read timeout should also handle <code>UnprocessedRequestException</code>; <code>UnprocessedRequestException.isUnprocessed(Throwable)</code> tells whether the request was sent at all.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_reading_a_body_inputstream_beyond_the_request_size_limit_throws_contentlengthexceededexception_5_3">Reading a <code>@Body InputStream</code> beyond the request size limit throws <code>ContentLengthExceededException</code> (5.3)</h3>
+<div class="paragraph">
+<p>A route that reads a <code>@Body InputStream</code> of a request without a <code>Content-Length</code>, which only reaches <code>micronaut.server.max-request-size</code> while the stream is read, now gets the unchecked <code>io.micronaut.http.exceptions.ContentLengthExceededException</code> from <code>read</code>, and the server answers 413 like for any other body over the limit. Previously <code>read</code> threw an <code>IOException</code> wrapping it, and the server answered 500 unless the route handled it. A route that catches <code>IOException</code> around the reads to handle the limit should catch <code>ContentLengthExceededException</code> as well. Other read failures are still <code>IOException</code>.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_a_reflectively_dispatched_executable_method_propagates_the_methods_exception">A reflectively dispatched executable method propagates the method&#8217;s exception</h3>
 <div class="paragraph">
 <p>An executable method that generated code cannot call directly, for example a <code>private</code> method annotated with <code>@Executable</code> and <code>@ReflectiveAccess</code>, is dispatched through reflection. Previously <code>ExecutableMethod.invoke</code> wrapped whatever such a method threw in an <a href="../api/io/micronaut/core/reflect/exception/InvocationException.html">InvocationException</a>, with the <code>java.lang.reflect.InvocationTargetException</code> as its cause, while the same method declared package-private or public threw its own exception.</p>
