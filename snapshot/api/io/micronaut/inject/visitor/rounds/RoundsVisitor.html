@@ -76,9 +76,11 @@ loadScripts(document, 'script');</script>
 <li><a href="#setRegisterInFinish(boolean)" tabindex="0">setRegisterInFinish(boolean)</a></li>
 <li><a href="#reset()" tabindex="0">reset()</a></li>
 <li><a href="#getVisitorKind()" tabindex="0">getVisitorKind()</a></li>
+<li><a href="#aggregatesCompilation()" tabindex="0">aggregatesCompilation()</a></li>
 <li><a href="#visitClass(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.visitor.VisitorContext)" tabindex="0">visitClass(ClassElement, VisitorContext)</a></li>
 <li><a href="#finishRound(io.micronaut.inject.visitor.VisitorContext)" tabindex="0">finishRound(VisitorContext)</a></li>
 <li><a href="#finish(io.micronaut.inject.visitor.VisitorContext)" tabindex="0">finish(VisitorContext)</a></li>
+<li><a href="#finishCompilation(io.micronaut.inject.visitor.VisitorContext)" tabindex="0">finishCompilation(VisitorContext)</a></li>
 </ol>
 </li>
 </ol>
@@ -103,8 +105,9 @@ loadScripts(document, 'script');</script>
 implements <a href="../TypeElementVisitor.html" title="interface in io.micronaut.inject.visitor">TypeElementVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</span></div>
 <div class="block">Records the rounds of the classes of the package <a href="#PACKAGE">"registerbean"</a>, and registers a bean of <a href="RegisteredRecord.html" title="class in io.micronaut.inject.visitor.rounds"><code>RegisteredRecord</code></a>
 for each of them from <a href="#finishRound(io.micronaut.inject.visitor.VisitorContext)"><code>finishRound(VisitorContext)</code></a>, named after the round, and one from
-<a href="#finish(io.micronaut.inject.visitor.VisitorContext)"><code>finish(VisitorContext)</code></a>, named <code>finish</code>. Visiting the class <a href="#TRIGGER">"registerbean.Trigger"</a> generates the source of
-the class <a href="#GENERATED">"registerbean.GeneratedLater"</a>, which the next round visits.</div>
+<a href="#finish(io.micronaut.inject.visitor.VisitorContext)"><code>finish(VisitorContext)</code></a>, named <code>finish</code>, and one from <a href="#finishCompilation(io.micronaut.inject.visitor.VisitorContext)"><code>finishCompilation(VisitorContext)</code></a>, named
+<code>compilation</code>, for the classes of every round. Visiting the class <a href="#TRIGGER">"registerbean.Trigger"</a> generates the source of the
+class <a href="#GENERATED">"registerbean.GeneratedLater"</a>, which the next round visits.</div>
 </div>
 </section>
 <section class="summary">
@@ -171,10 +174,22 @@ the class <a href="#GENERATED">"registerbean.GeneratedLater"</a>, which the next
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#finish(io.micronaut.inject.visitor.VisitorContext)" class="member-name-link">finish</a><wbr>(<a href="../VisitorContext.html" title="interface in io.micronaut.inject.visitor">VisitorContext</a>&nbsp;context)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#aggregatesCompilation()" class="member-name-link">aggregatesCompilation</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the visitor aggregates the classes of the whole compilation in
+<a href="../TypeElementVisitor.html#finishCompilation(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finishCompilation(VisitorContext)</code></a>, which a visitor implementing that method has to declare.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#finish(io.micronaut.inject.visitor.VisitorContext)" class="member-name-link">finish</a><wbr>(<a href="../VisitorContext.html" title="interface in io.micronaut.inject.visitor">VisitorContext</a>&nbsp;context)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called when visitor processing finishes.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#finishCompilation(io.micronaut.inject.visitor.VisitorContext)" class="member-name-link">finishCompilation</a><wbr>(<a href="../VisitorContext.html" title="interface in io.micronaut.inject.visitor">VisitorContext</a>&nbsp;context)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Called once, after the last round of the compilation, when no class is visited anymore, before
+<a href="../TypeElementVisitor.html#finish(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finish(VisitorContext)</code></a>.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#finishRound(io.micronaut.inject.visitor.VisitorContext)" class="member-name-link">finishRound</a><wbr>(<a href="../VisitorContext.html" title="interface in io.micronaut.inject.visitor">VisitorContext</a>&nbsp;context)</code></div>
@@ -212,7 +227,7 @@ the class <a href="#GENERATED">"registerbean.GeneratedLater"</a>, which the next
 <code><a href="../../../core/util/Toggleable.html#isEnabled()" title="isEnabled()">isEnabled</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-io.micronaut.inject.visitor.TypeElementVisitor">Methods inherited from interface&nbsp;<a href="../TypeElementVisitor.html#method-summary" title="interface in io.micronaut.inject.visitor">TypeElementVisitor</a></h3>
-<code><a href="../TypeElementVisitor.html#getClassType()" title="getClassType()">getClassType</a>, <a href="../TypeElementVisitor.html#getElementType()" title="getElementType()">getElementType</a>, <a href="../TypeElementVisitor.html#getSupportedAnnotationNames()" title="getSupportedAnnotationNames()">getSupportedAnnotationNames</a>, <a href="../TypeElementVisitor.html#getSupportedOptions()" title="getSupportedOptions()">getSupportedOptions</a>, <a href="../TypeElementVisitor.html#query()" title="query()">query</a>, <a href="../TypeElementVisitor.html#start(io.micronaut.inject.visitor.VisitorContext)" title="start(VisitorContext)">start</a>, <a href="../TypeElementVisitor.html#visitConstructor(io.micronaut.inject.ast.ConstructorElement,io.micronaut.inject.visitor.VisitorContext)" title="visitConstructor(ConstructorElement, VisitorContext)">visitConstructor</a>, <a href="../TypeElementVisitor.html#visitEnumConstant(io.micronaut.inject.ast.EnumConstantElement,io.micronaut.inject.visitor.VisitorContext)" title="visitEnumConstant(EnumConstantElement, VisitorContext)">visitEnumConstant</a>, <a href="../TypeElementVisitor.html#visitField(io.micronaut.inject.ast.FieldElement,io.micronaut.inject.visitor.VisitorContext)" title="visitField(FieldElement, VisitorContext)">visitField</a>, <a href="../TypeElementVisitor.html#visitMethod(io.micronaut.inject.ast.MethodElement,io.micronaut.inject.visitor.VisitorContext)" title="visitMethod(MethodElement, VisitorContext)">visitMethod</a></code></div>
+<code><a href="../TypeElementVisitor.html#getClassType()" title="getClassType()">getClassType</a>, <a href="../TypeElementVisitor.html#getElementType()" title="getElementType()">getElementType</a>, <a href="../TypeElementVisitor.html#getSupportedAnnotationNames()" title="getSupportedAnnotationNames()">getSupportedAnnotationNames</a>, <a href="../TypeElementVisitor.html#getSupportedOptions()" title="getSupportedOptions()">getSupportedOptions</a>, <a href="../TypeElementVisitor.html#query()" title="query()">query</a>, <a href="../TypeElementVisitor.html#skipClassesGeneratedForOtherLanguages()" title="skipClassesGeneratedForOtherLanguages()">skipClassesGeneratedForOtherLanguages</a>, <a href="../TypeElementVisitor.html#start(io.micronaut.inject.visitor.VisitorContext)" title="start(VisitorContext)">start</a>, <a href="../TypeElementVisitor.html#visitConstructor(io.micronaut.inject.ast.ConstructorElement,io.micronaut.inject.visitor.VisitorContext)" title="visitConstructor(ConstructorElement, VisitorContext)">visitConstructor</a>, <a href="../TypeElementVisitor.html#visitEnumConstant(io.micronaut.inject.ast.EnumConstantElement,io.micronaut.inject.visitor.VisitorContext)" title="visitEnumConstant(EnumConstantElement, VisitorContext)">visitEnumConstant</a>, <a href="../TypeElementVisitor.html#visitField(io.micronaut.inject.ast.FieldElement,io.micronaut.inject.visitor.VisitorContext)" title="visitField(FieldElement, VisitorContext)">visitField</a>, <a href="../TypeElementVisitor.html#visitMethod(io.micronaut.inject.ast.MethodElement,io.micronaut.inject.visitor.VisitorContext)" title="visitMethod(MethodElement, VisitorContext)">visitMethod</a></code></div>
 </section>
 </li>
 </ul>
@@ -341,6 +356,33 @@ the class <a href="#GENERATED">"registerbean.GeneratedLater"</a>, which the next
 </section>
 </li>
 <li>
+<section class="detail" id="aggregatesCompilation()">
+<h3>aggregatesCompilation</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">aggregatesCompilation</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../TypeElementVisitor.html#aggregatesCompilation()">TypeElementVisitor</a></code></span></div>
+<div class="block">Whether the visitor aggregates the classes of the whole compilation in
+<a href="../TypeElementVisitor.html#finishCompilation(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finishCompilation(VisitorContext)</code></a>, which a visitor implementing that method has to declare.
+
+<p>It is read before any class is visited, independently of <a href="../TypeElementVisitor.html#getVisitorKind()"><code>TypeElementVisitor.getVisitorKind()</code></a>: the visitor stays
+isolating for what it writes for each class it visits, and can still add beans. Under javac, the annotation
+processor that runs such a visitor is an aggregating processor of every class for Gradle's incremental
+compilation, so that Gradle processes every class again whenever a source is changed, added or removed, even if
+the previous compilation wrote nothing. That makes every file the processor writes an aggregating output, and
+an annotation of source retention in the compilation makes Gradle compile every source. KSP, Groovy and Python
+do not read it: KSP cannot declare a processor aggregating before it runs, and Gradle has no incremental
+annotation processing for Groovy or Python.</p></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../TypeElementVisitor.html#aggregatesCompilation()">aggregatesCompilation</a></code>&nbsp;in interface&nbsp;<code><a href="../TypeElementVisitor.html" title="interface in io.micronaut.inject.visitor">TypeElementVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></dd>
+<dt>Returns:</dt>
+<dd>Whether the visitor aggregates the classes of the compilation in
+<a href="../TypeElementVisitor.html#finishCompilation(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finishCompilation(VisitorContext)</code></a></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="visitClass(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.visitor.VisitorContext)">
 <h3>visitClass</h3>
 <div class="horizontal-scroll">
@@ -412,11 +454,83 @@ usable during that round: KSP invalidates them when the round ends.</p></div>
 <p>Under KSP and Groovy, this method is called once, when nothing generated as source is compiled anymore. Under
 javac, it is called at the end of every annotation processing round, after <a href="../TypeElementVisitor.html#finishRound(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finishRound(VisitorContext)</code></a>,
 the final round included. Prefer <a href="../TypeElementVisitor.html#finishRound(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finishRound(VisitorContext)</code></a> for work that has to be done once the
-classes of a round are visited: under KSP the elements of the rounds are invalid by the time this method is
-called, and no bean can be registered from it.</p></div>
+classes of a round are visited, and <a href="../TypeElementVisitor.html#finishCompilation(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finishCompilation(VisitorContext)</code></a> for work that has to be done once
+every round is over: under KSP the elements of the rounds are invalid by the time this method is called, and
+no bean can be registered from it.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../TypeElementVisitor.html#finish(io.micronaut.inject.visitor.VisitorContext)">finish</a></code>&nbsp;in interface&nbsp;<code><a href="../TypeElementVisitor.html" title="interface in io.micronaut.inject.visitor">TypeElementVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></dd>
+<dt>Parameters:</dt>
+<dd><code>context</code> - The visitor context</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="finishCompilation(io.micronaut.inject.visitor.VisitorContext)">
+<h3>finishCompilation</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">finishCompilation</span><wbr><span class="parameters">(<a href="../VisitorContext.html" title="interface in io.micronaut.inject.visitor">VisitorContext</a>&nbsp;context)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../TypeElementVisitor.html#finishCompilation(io.micronaut.inject.visitor.VisitorContext)">TypeElementVisitor</a></code></span></div>
+<div class="block">Called once, after the last round of the compilation, when no class is visited anymore, before
+<a href="../TypeElementVisitor.html#finish(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finish(VisitorContext)</code></a>.
+
+<p>This is the point for work that has to see every class of the compilation, including the classes that
+another visitor or annotation processor generated as source in a later round: aggregating what every round
+visited, adding the beans that follow from it, and validating the result. A bean added here with
+<a href="../VisitorContext.html#registerBean(io.micronaut.inject.ast.ClassElement,io.micronaut.inject.ast.Element...)"><code>VisitorContext.registerBean(ClassElement, io.micronaut.inject.ast.Element...)</code></a> is written by every
+compiler, javac, KSP, Groovy and Python. A source generated here is not visited anymore.</p>
+
+<p>A visitor that implements this method has to return <code>true</code> from <a href="../TypeElementVisitor.html#aggregatesCompilation()"><code>TypeElementVisitor.aggregatesCompilation()</code></a>, so
+that the build knows before the compilation starts that the visitor has to see every class again whenever a
+class is changed, added or removed: an incremental compilation otherwise compiles the changed sources only, so
+the visitors would see only them, here as in every other method, and a visitor that writes nothing for the
+classes it saw would not be given the others in the next compilation. Everything written as a result of this
+method, the beans added here, their service entries, and the classes, sources and resources written here,
+follows from the whole compilation. A bean added here still has to be given the classes it follows from as
+originating elements:</p>
+
+<ul>
+    <li>javac: the annotation processor that runs a visitor aggregating the compilation is an aggregating
+    processor for the incremental compilation of Gradle, registered for every class: Gradle processes again
+    every class of the previous compilation, without compiling them again, whenever a source is changed, added
+    or removed, and writes again everything the processor wrote. The files are written with every originating
+    element, except to the filer of Gradle, which gets none: for a visitor that does not declare
+    <a href="../TypeElementVisitor.html#aggregatesCompilation()"><code>TypeElementVisitor.aggregatesCompilation()</code></a>, whose processor stays isolating, such a file disables incremental
+    annotation processing once it is written, which does not help a compilation that writes nothing.</li>
+    <li>KSP: the files are aggregating outputs of the files of their originating elements, which KSP writes
+    again, processing those files again, whenever a source of the compilation is changed, added or
+    removed. KSP has no way to declare a processor aggregating before it runs, so
+    <a href="../TypeElementVisitor.html#aggregatesCompilation()"><code>TypeElementVisitor.aggregatesCompilation()</code></a> does not change it: until a visitor wrote something here, an incremental
+    KSP compilation gives it the changed sources only. KSP also fixes the dependencies of a file when the
+    <a href="../../writer/GeneratedFile.html" title="interface in io.micronaut.inject.writer"><code>GeneratedFile</code></a> is obtained, so a file written here has to be obtained
+    here, not kept from a round.</li>
+    <li>Groovy and Python: the originating elements are not reported to the build. Neither compiler tracks the
+    origins of what the visitors write, and an incremental Python compilation visits the changed Python classes
+    only.</li>
+</ul>
+
+<p>Where each compiler calls it:</p>
+
+<ul>
+    <li>javac: in the final annotation processing round, in which nothing generated is processed anymore.
+    The bean definitions are written in that round, without javac warning that they are not processed. A
+    source generated there is compiled, but javac warns that it is not processed.</li>
+    <li>KSP: from <code>SymbolProcessor.finish</code>. KSP invalidates the elements of a round when the round ends,
+    so an element kept from a <code>visit</code> method or from <a href="../TypeElementVisitor.html#finishRound(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finishRound(VisitorContext)</code></a> must not be used
+    here: look the classes up again by name, with <a href="../VisitorContext.html#getClassElement(java.lang.String)"><code>VisitorContext.getClassElement(String)</code></a>, which resolves
+    them anew.</li>
+    <li>Groovy: at class generation, after the last round.</li>
+    <li>Python: once for the Python classes, after their single round, on the visitors that visited them.
+    javac then compiles the Java sources of the compilation and the Java classes generated for the Python
+    classes, with other instances of the visitors, and calls it once more on those, as for any javac
+    compilation. A visitor of every class also visits the Java classes generated for the Python classes there,
+    unless it skips them with <a href="../TypeElementVisitor.html#skipClassesGeneratedForOtherLanguages()"><code>TypeElementVisitor.skipClassesGeneratedForOtherLanguages()</code></a>, which a visitor that aggregates
+    its classes here should do, so that it does not contribute a Python class twice.</li>
+</ul></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../TypeElementVisitor.html#finishCompilation(io.micronaut.inject.visitor.VisitorContext)">finishCompilation</a></code>&nbsp;in interface&nbsp;<code><a href="../TypeElementVisitor.html" title="interface in io.micronaut.inject.visitor">TypeElementVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></dd>
 <dt>Parameters:</dt>
 <dd><code>context</code> - The visitor context</dd>
 </dl>

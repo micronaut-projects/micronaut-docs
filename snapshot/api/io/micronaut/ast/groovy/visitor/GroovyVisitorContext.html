@@ -1141,15 +1141,19 @@ this method can be called with any element of the compilation as origin, and wit
 can be registered from <a href="../../../inject/visitor/TypeElementVisitor.html#finishRound(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finishRound(VisitorContext)</code></a> for what a whole round contained.</p>
 
 <p>The definition is named after the first originating element, which must be a class or a method of the
-compilation. Every originating element is reported to the compiler: an incremental build that recompiles or
-deletes one of them replaces or deletes the definition. Under javac, Gradle's incremental compilation of an
-isolating processor expects exactly one originating element, and recompiles every source when there are more.</p>
+compilation. The originating elements are reported to the compiler: an incremental build that recompiles or
+deletes one of them replaces or deletes the definition. Under javac, Gradle tracks the files of an isolating
+processor by the top level types of their originating elements, and disables incremental annotation processing
+when a file has none or several of them, so that the subsequent affected compilations compile all sources: a
+definition written during the rounds is therefore reported to Gradle with its first originating element only,
+and one written once every round is over without originating element, since it follows from the whole
+compilation, see <a href="../../../inject/visitor/TypeElementVisitor.html#finishCompilation(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finishCompilation(VisitorContext)</code></a>.</p>
 
 <p>The definition is written with the beans of the current round, see
-<a href="../../../inject/visitor/TypeElementVisitor.html#finishRound(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finishRound(VisitorContext)</code></a>. Registering from
-<a href="../../../inject/visitor/TypeElementVisitor.html#finish(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finish(VisitorContext)</code></a> is not portable: Groovy writes the bean, javac writes it in the
-final round and warns that the written class is not processed anymore, and KSP refuses it, because it has
-invalidated the elements of the compilation once its last round is over.</p>
+<a href="../../../inject/visitor/TypeElementVisitor.html#finishRound(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finishRound(VisitorContext)</code></a>. To register a bean once every round is over, for what
+the whole compilation contained, register it from <a href="../../../inject/visitor/TypeElementVisitor.html#finishCompilation(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finishCompilation(VisitorContext)</code></a>.
+Registering from <a href="../../../inject/visitor/TypeElementVisitor.html#finish(io.micronaut.inject.visitor.VisitorContext)"><code>TypeElementVisitor.finish(VisitorContext)</code></a> is not portable: javac calls it in every
+round, and KSP refuses it, because it has invalidated the elements of the compilation by then.</p>
 
 <p>Like <a href="../../../inject/ast/ClassElement.html#addAssociatedBean(io.micronaut.inject.ast.ClassElement)"><code>ClassElement.addAssociatedBean(ClassElement)</code></a>, it can only be called from an
 <a href="../../../inject/visitor/TypeElementVisitor.VisitorKind.html#ISOLATING"><code>TypeElementVisitor.VisitorKind.ISOLATING</code></a> visitor.</p></div>
