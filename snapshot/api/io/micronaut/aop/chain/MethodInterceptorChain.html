@@ -92,6 +92,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#getDeclaringType()" tabindex="0">getDeclaringType()</a></li>
 <li><a href="#toString()" tabindex="0">toString()</a></li>
 <li><a href="#getExecutableMethod()" tabindex="0">getExecutableMethod()</a></li>
+<li><a href="#findBeanDefinition()" tabindex="0">findBeanDefinition()</a></li>
 <li><a href="#initialize(io.micronaut.context.BeanResolutionContext,io.micronaut.context.BeanContext,io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod,T1)" tabindex="0">initialize(BeanResolutionContext, BeanContext, BeanDefinition, ExecutableMethod, T1)</a></li>
 <li><a href="#initialize(io.micronaut.context.BeanResolutionContext,io.micronaut.context.BeanContext,io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod,T1,java.util.Collection)" tabindex="0">initialize(BeanResolutionContext, BeanContext, BeanDefinition, ExecutableMethod, T1, Collection)</a></li>
 <li><a href="#dispose(io.micronaut.context.BeanResolutionContext,io.micronaut.context.BeanContext,io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod,T1)" tabindex="0">dispose(BeanResolutionContext, BeanContext, BeanDefinition, ExecutableMethod, T1)</a></li>
@@ -259,108 +260,117 @@ consumed by the framework itself and should not be used directly in application 
 <div class="deprecation-comment">Bean definitions dispose through <a href="InterceptorChainFactory.html#dispose(io.micronaut.context.BeanResolutionContext,io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod,T,java.util.Collection)"><code>InterceptorChainFactory.dispose(BeanResolutionContext, BeanDefinition, ExecutableMethod, T, Collection)</code></a>.</div>
 </div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;[]</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getArgumentTypes()" class="member-name-link">getArgumentTypes</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/convert/value/MutableConvertibleValues.html" title="interface in io.micronaut.core.convert.value">MutableConvertibleValues</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAttributes()" class="member-name-link">getAttributes</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;<a href="#type-param-T" title="type parameter in MethodInterceptorChain">T</a>&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findBeanDefinition()" class="member-name-link">findBeanDefinition</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The definition of the bean the invocation is made for, when the invocation knows it: an invocation answers with
+the definition its <a href="../MethodInvocationContext.html#getExecutableMethod()"><code>executable method</code></a> carries, as the methods standing for the
+<a href="../InterceptorKind.html#POST_CONSTRUCT"><code>InterceptorKind.POST_CONSTRUCT</code></a> and <a href="../InterceptorKind.html#PRE_DESTROY"><code>InterceptorKind.PRE_DESTROY</code></a> events of a bean do, so that a
+lifecycle interceptor can keep what it derives for the event on the definition with
+<a href="../../inject/BeanDefinition.html#getCachedValue(java.lang.Class,java.util.function.Function)"><code>BeanDefinition.getCachedValue(Class, Function)</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;[]</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getArgumentTypes()" class="member-name-link">getArgumentTypes</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/convert/value/MutableConvertibleValues.html" title="interface in io.micronaut.core.convert.value">MutableConvertibleValues</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAttributes()" class="member-name-link">getAttributes</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Overrides the default <a href="../../core/attr/AttributeHolder.html#getAttributes()"><code>AttributeHolder.getAttributes()</code></a> method to return a mutable object.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a><wbr>&lt;<a href="#type-param-T" title="type parameter in MethodInterceptorChain">T</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDeclaringType()" class="member-name-link">getDeclaringType</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject">ExecutableMethod</a><wbr>&lt;<a href="#type-param-T" title="type parameter in MethodInterceptorChain">T</a>,<wbr><a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getExecutableMethod()" class="member-name-link">getExecutableMethod</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a><wbr>&lt;<a href="#type-param-T" title="type parameter in MethodInterceptorChain">T</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDeclaringType()" class="member-name-link">getDeclaringType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject">ExecutableMethod</a><wbr>&lt;<a href="#type-param-T" title="type parameter in MethodInterceptorChain">T</a>,<wbr><a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getExecutableMethod()" class="member-name-link">getExecutableMethod</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The underlying <a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject"><code>ExecutableMethod</code></a> reference.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../InterceptorKind.html" title="enum class in io.micronaut.aop">InterceptorKind</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKind()" class="member-name-link">getKind</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMethodName()" class="member-name-link">getMethodName</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../InterceptorKind.html" title="enum class in io.micronaut.aop">InterceptorKind</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKind()" class="member-name-link">getKind</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="../../core/type/MutableArgumentValue.html" title="interface in io.micronaut.core.type">MutableArgumentValue</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParameters()" class="member-name-link">getParameters</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMethodName()" class="member-name-link">getMethodName</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="../../core/type/MutableArgumentValue.html" title="interface in io.micronaut.core.type">MutableArgumentValue</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParameters()" class="member-name-link">getParameters</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the current parameters as a map of mutable argument values.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>[]</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParameterValues()" class="member-name-link">getParameterValues</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>[]</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParameterValues()" class="member-name-link">getParameterValues</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the current state of the parameters as an array by parameter index.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/type/ReturnType.html" title="interface in io.micronaut.core.type">ReturnType</a><wbr>&lt;<a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getReturnType()" class="member-name-link">getReturnType</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link">Method</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTargetMethod()" class="member-name-link">getTargetMethod</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/type/ReturnType.html" title="interface in io.micronaut.core.type">ReturnType</a><wbr>&lt;<a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getReturnType()" class="member-name-link">getReturnType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link">Method</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTargetMethod()" class="member-name-link">getTargetMethod</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link"><code>Method</code></a> this reference stands for.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasTargetMethod()" class="member-name-link">hasTargetMethod</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasTargetMethod()" class="member-name-link">hasTargetMethod</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Whether this reference stands for a Java <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Method.html" title="class or interface in java.lang.reflect" class="external-link"><code>Method</code></a> that <a href="../../inject/MethodReference.html#getTargetMethod()"><code>MethodReference.getTargetMethod()</code></a> returns.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static &lt;T1&gt;&nbsp;@Nullable T1</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#initialize(io.micronaut.context.BeanResolutionContext,io.micronaut.context.BeanContext,io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod,T1)" class="member-name-link">initialize</a><wbr>(<a href="../../context/BeanResolutionContext.html" title="interface in io.micronaut.context">BeanResolutionContext</a>&nbsp;resolutionContext,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static &lt;T1&gt;&nbsp;@Nullable T1</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#initialize(io.micronaut.context.BeanResolutionContext,io.micronaut.context.BeanContext,io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod,T1)" class="member-name-link">initialize</a><wbr>(<a href="../../context/BeanResolutionContext.html" title="interface in io.micronaut.context">BeanResolutionContext</a>&nbsp;resolutionContext,
  <a href="../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext,
  <a href="../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;T1&gt;&nbsp;definition,
  <a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject">ExecutableMethod</a>&lt;T1,<wbr>T1&gt;&nbsp;postConstructMethod,
  T1&nbsp;bean)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6">
-<div class="block"><span class="deprecated-label">Deprecated.</span>
-<div class="deprecation-comment">Bean definitions initialize through <a href="InterceptorChainFactory.html#initialize(io.micronaut.context.BeanResolutionContext,io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod,T,java.util.Collection)"><code>InterceptorChainFactory.initialize(BeanResolutionContext, BeanDefinition, ExecutableMethod, T, Collection)</code></a>.</div>
-</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static &lt;T1&gt;&nbsp;@Nullable T1</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#initialize(io.micronaut.context.BeanResolutionContext,io.micronaut.context.BeanContext,io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod,T1,java.util.Collection)" class="member-name-link">initialize</a><wbr>(<a href="../../context/BeanResolutionContext.html" title="interface in io.micronaut.context">BeanResolutionContext</a>&nbsp;resolutionContext,
- <a href="../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext,
- <a href="../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;T1&gt;&nbsp;definition,
- <a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject">ExecutableMethod</a>&lt;T1,<wbr>T1&gt;&nbsp;postConstructMethod,
- T1&nbsp;bean,
- @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../../context/BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;<a href="../Interceptor.html" title="interface in io.micronaut.aop">Interceptor</a>&lt;?,<wbr>?&gt;&gt;&gt;&nbsp;interceptors)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span>
 <div class="deprecation-comment">Bean definitions initialize through <a href="InterceptorChainFactory.html#initialize(io.micronaut.context.BeanResolutionContext,io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod,T,java.util.Collection)"><code>InterceptorChainFactory.initialize(BeanResolutionContext, BeanDefinition, ExecutableMethod, T, Collection)</code></a>.</div>
 </div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#invoke(T,java.lang.Object...)" class="member-name-link">invoke</a><wbr>(<a href="#type-param-T" title="type parameter in MethodInterceptorChain">T</a>&nbsp;instance,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static &lt;T1&gt;&nbsp;@Nullable T1</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#initialize(io.micronaut.context.BeanResolutionContext,io.micronaut.context.BeanContext,io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod,T1,java.util.Collection)" class="member-name-link">initialize</a><wbr>(<a href="../../context/BeanResolutionContext.html" title="interface in io.micronaut.context">BeanResolutionContext</a>&nbsp;resolutionContext,
+ <a href="../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext,
+ <a href="../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;T1&gt;&nbsp;definition,
+ <a href="../../inject/ExecutableMethod.html" title="interface in io.micronaut.inject">ExecutableMethod</a>&lt;T1,<wbr>T1&gt;&nbsp;postConstructMethod,
+ T1&nbsp;bean,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../../context/BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;<a href="../Interceptor.html" title="interface in io.micronaut.aop">Interceptor</a>&lt;?,<wbr>?&gt;&gt;&gt;&nbsp;interceptors)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6">
+<div class="block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Bean definitions initialize through <a href="InterceptorChainFactory.html#initialize(io.micronaut.context.BeanResolutionContext,io.micronaut.inject.BeanDefinition,io.micronaut.inject.ExecutableMethod,T,java.util.Collection)"><code>InterceptorChainFactory.initialize(BeanResolutionContext, BeanDefinition, ExecutableMethod, T, Collection)</code></a>.</div>
+</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#invoke(T,java.lang.Object...)" class="member-name-link">invoke</a><wbr>(<a href="#type-param-T" title="type parameter in MethodInterceptorChain">T</a>&nbsp;instance,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>...&nbsp;arguments)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Invokes the method.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAbstract()" class="member-name-link">isAbstract</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAbstract()" class="member-name-link">isAbstract</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Defines whether the method is abstract.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSuspend()" class="member-name-link">isSuspend</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSuspend()" class="member-name-link">isSuspend</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Defines whether the method is Kotlin suspend function.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#proceed()" class="member-name-link">proceed</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#proceed()" class="member-name-link">proceed</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Proceeds with the invocation.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#proceed(io.micronaut.aop.Interceptor)" class="member-name-link">proceed</a><wbr>(<a href="../Interceptor.html" title="interface in io.micronaut.aop">Interceptor</a>&nbsp;from)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#proceed(io.micronaut.aop.Interceptor)" class="member-name-link">proceed</a><wbr>(<a href="../Interceptor.html" title="interface in io.micronaut.aop">Interceptor</a>&nbsp;from)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Proceeds with the invocation using the given interceptor as a position to start from.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#proceedLifecycle()" class="member-name-link">proceedLifecycle</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#proceedLifecycle()" class="member-name-link">proceedLifecycle</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Executes a lifecycle invocation, preserving nullable unadvised results and rejecting null advice results.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -807,6 +817,31 @@ answers <code>true</code> and fails as <a href="../../inject/MethodReference.htm
 <dd><code><a href="../MethodInvocationContext.html#getExecutableMethod()">getExecutableMethod</a></code>&nbsp;in interface&nbsp;<code><a href="../MethodInvocationContext.html" title="interface in io.micronaut.aop">MethodInvocationContext</a>&lt;<a href="#type-param-T" title="type parameter in MethodInterceptorChain">T</a>,<wbr><a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a>&gt;</code></dd>
 <dt>Returns:</dt>
 <dd>The underlying method reference.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="findBeanDefinition()">
+<h3>findBeanDefinition</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;<a href="#type-param-T" title="type parameter in MethodInterceptorChain">T</a>&gt;&gt;</span>&nbsp;<span class="element-name">findBeanDefinition</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../MethodInvocationContext.html#findBeanDefinition()">MethodInvocationContext</a></code></span></div>
+<div class="block">The definition of the bean the invocation is made for, when the invocation knows it: an invocation answers with
+the definition its <a href="../MethodInvocationContext.html#getExecutableMethod()"><code>executable method</code></a> carries, as the methods standing for the
+<a href="../InterceptorKind.html#POST_CONSTRUCT"><code>InterceptorKind.POST_CONSTRUCT</code></a> and <a href="../InterceptorKind.html#PRE_DESTROY"><code>InterceptorKind.PRE_DESTROY</code></a> events of a bean do, so that a
+lifecycle interceptor can keep what it derives for the event on the definition with
+<a href="../../inject/BeanDefinition.html#getCachedValue(java.lang.Class,java.util.function.Function)"><code>BeanDefinition.getCachedValue(Class, Function)</code></a>.
+
+<p>The methods of <a href="../InterceptorKind.html#AROUND"><code>InterceptorKind.AROUND</code></a> and <a href="../InterceptorKind.html#INTRODUCTION"><code>InterceptorKind.INTRODUCTION</code></a> advice carry no
+definition, and their invocations answer with an empty optional; such an interceptor keeps what it derives for
+a method with <a href="../MethodInvocationContext.html#getCachedValue(java.lang.Class,java.util.function.Function)"><code>MethodInvocationContext.getCachedValue(Class, Function)</code></a>. An invocation that wraps another and does not override
+this method answers with an empty optional too.</p></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../MethodInvocationContext.html#findBeanDefinition()">findBeanDefinition</a></code>&nbsp;in interface&nbsp;<code><a href="../MethodInvocationContext.html" title="interface in io.micronaut.aop">MethodInvocationContext</a>&lt;<a href="#type-param-T" title="type parameter in MethodInterceptorChain">T</a>,<wbr><a href="#type-param-R" title="type parameter in MethodInterceptorChain">R</a>&gt;</code></dd>
+<dt>Returns:</dt>
+<dd>The definition of the bean, or an empty optional when the invocation does not know it</dd>
 </dl>
 </div>
 </section>

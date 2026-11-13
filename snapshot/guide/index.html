@@ -36546,7 +36546,7 @@ class PersonController {
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-To avoid denial-of-service attacks, collection types and arrays created during binding are limited by the setting <code>jackson.arraySizeThreshold</code> in your configuration file (e.g <code>application.yml</code>)
+To avoid denial-of-service attacks, collection types and arrays created during binding are limited by the setting <code>jackson.arraySizeThreshold</code> in your configuration file (e.g <code>application.yml</code>). The nesting depth of a form key is limited to 100 levels, and the total array padding of a request is limited to the threshold plus the length of its keys.
 </td>
 </tr>
 </table>
@@ -55174,7 +55174,7 @@ micronaut.server.netty.access-logger.exclusions[1]=/path/.+</code></pre>
 <p><strong>%B</strong> - Bytes sent, excluding HTTP headers</p>
 </li>
 <li>
-<p><strong>%h</strong> - Remote host name</p>
+<p><strong>%h</strong> - Remote host. No reverse DNS lookup is done, so this is the remote IP address</p>
 </li>
 <li>
 <p><strong>%H</strong> - Request protocol</p>
@@ -83490,6 +83490,34 @@ repositories {
 
 <div class="paragraph">
 <p>This section documents breaking changes between Micronaut versions</p>
+</div>
+<div class="sect2">
+<h3 id="_argument_oftype_keeps_wildcards_type_variables_and_generic_arrays_5_3"><code>Argument.of(Type)</code> keeps wildcards, type variables and generic arrays (5.3)</h3>
+<div class="paragraph">
+<p><code>Argument.of(java.lang.reflect.Type)</code> now converts every kind of type it is given, through the accessors of the type alone. Previously only a class and a parameterized type were converted: a wildcard or a type variable among the type arguments made the whole type raw, and a wildcard, a type variable or a generic array on its own was rejected with an <code>IllegalArgumentException</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>List&lt;?&gt;</code> now gives a <code>List</code> argument whose type parameter is a <a href="../api/io/micronaut/core/type/WildcardArgument.html">WildcardArgument</a> of <code>Object</code>, where it gave the raw <code>List</code> with no type parameter. <code>List&lt;? extends Number&gt;</code> gives a wildcard of <code>Number</code>, and <code>Consumer&lt;? super Integer&gt;</code> a wildcard of <code>Integer</code> whose lower bound is kept.</p>
+</li>
+<li>
+<p>A type variable gives a <a href="../api/io/micronaut/core/type/GenericPlaceholder.html">GenericPlaceholder</a> of the type it erases to with every bound it declares, and a generic array, <code>List&lt;String&gt;[]</code> or <code>T[]</code>, the array of its component.</p>
+</li>
+<li>
+<p>A wildcard, a type variable and a generic array on their own no longer throw.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Because the argument now carries the wildcard, it is no longer equal to the raw argument: <code>Argument.of(listOfWildcardType).equals(Argument.of(List.class))</code> is <code>false</code>. Code that uses such an argument as a key, looks up beans with it, or converts values to it, sees the wildcard type argument where it saw a raw type before. To keep the previous result, build the raw argument explicitly, for example <code>Argument.of(List.class)</code>. Classes and parameterized types of classes convert as before, and a generic class named without type arguments, such as the raw <code>List</code>, is still the argument of that class with no type parameter.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_max_file_size_applies_to_streamed_uploads_5_3"><code>max-file-size</code> applies to streamed uploads (5.3)</h3>
+<div class="paragraph">
+<p><code>micronaut.server.multipart.max-file-size</code> (1MB by default) now limits the content of every part an upload binding reads, not only a buffered <code>CompletedFileUpload</code>. A <code>StreamingFileUpload</code>, <code>Publisher&lt;StreamingFileUpload&gt;</code>, <code>Publisher&lt;PartData&gt;</code> or <code>Publisher&lt;Publisher&lt;&#8230;&#8203;&gt;&gt;</code> argument whose part is larger now fails with a <code>ContentLengthExceededException</code>, which the server answers with <code>413 Request Entity Too Large</code>. An application that streams larger files should raise <code>micronaut.server.multipart.max-file-size</code>, together with <code>micronaut.server.max-request-size</code>.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_a_plus_sign_in_a_path_variable_is_a_plus_sign_5_3">A plus sign in a path variable is a plus sign (5.3)</h3>

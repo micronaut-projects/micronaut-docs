@@ -187,7 +187,9 @@ parameter and the type-use annotations of its type.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a><wbr>&lt;?&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#of(java.lang.reflect.Type)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>&nbsp;type)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Converts a type to an <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a>.</div>
+<div class="block">Converts a type to an <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a>: a type variable is converted to a <a href="../core/type/GenericPlaceholder.html" title="interface in io.micronaut.core.type"><code>GenericPlaceholder</code></a> of the
+type it erases to, keeping every bound the variable declares, a wildcard to its bound and a generic array to
+the array of its raw component.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a><wbr>&lt;?&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#ofExact(java.lang.String,java.lang.reflect.Type)" class="member-name-link">ofExact</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
@@ -320,9 +322,9 @@ type-use annotations of each level.</div>
 <h3>of</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a>&lt;?&gt;</span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>&nbsp;type)</span></div>
-<div class="block">Converts a type to an <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a>. Unlike <a href="../core/type/Argument.html#of(java.lang.reflect.Type)"><code>Argument.of(Type)</code></a>, a type variable is converted to
-a <a href="../core/type/GenericPlaceholder.html" title="interface in io.micronaut.core.type"><code>GenericPlaceholder</code></a> of the type it erases to, keeping every bound the variable declares, a
-wildcard to its bound and a generic array to the array of its raw component.</div>
+<div class="block">Converts a type to an <a href="../core/type/Argument.html" title="interface in io.micronaut.core.type"><code>Argument</code></a>: a type variable is converted to a <a href="../core/type/GenericPlaceholder.html" title="interface in io.micronaut.core.type"><code>GenericPlaceholder</code></a> of the
+type it erases to, keeping every bound the variable declares, a wildcard to its bound and a generic array to
+the array of its raw component. <a href="../core/type/Argument.html#of(java.lang.reflect.Type)"><code>Argument.of(Type)</code></a> keeps the wildcard and the component instead.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>type</code> - The type</dd>
@@ -353,7 +355,10 @@ at the array and at its component. The conversion is lossless:
 
 <p>Unlike <a href="#of(java.lang.reflect.Type)"><code>of(Type)</code></a>, which reads a wildcard as its bound and a generic array as the array of its
 raw component, the argument tells <code>List&lt;? extends Number&gt;</code> from <code>List&lt;Number&gt;</code> and
-<code>Map&lt;K, V&gt;[]</code> from <code>Map[]</code>, which a specification whose type rules do - CDI's - needs.</p></div>
+<code>Map&lt;K, V&gt;[]</code> from <code>Map[]</code>, which a specification whose type rules do - CDI's - needs.</p>
+
+<p><a href="../core/type/Argument.html#of(java.lang.reflect.Type)"><code>Argument.of(Type)</code></a> converts a type the same way without reading any class: it does not name
+the type arguments, expand a raw type or read annotations.</p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>type</code> - The type</dd>
@@ -361,6 +366,12 @@ raw component, the argument tells <code>List&lt;? extends Number&gt;</code> from
 <dd>The argument</dd>
 <dt>Since:</dt>
 <dd>5.3.0</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../core/type/Argument.html#of(java.lang.reflect.Type)"><code>Argument.of(Type)</code></a></li>
+</ul>
+</dd>
 </dl>
 </div>
 </section>

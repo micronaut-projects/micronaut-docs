@@ -94,11 +94,15 @@ loadScripts(document, 'script');</script>
 <li><a href="#createWebSocketSession(io.netty.channel.ChannelHandlerContext)" tabindex="0">createWebSocketSession(ChannelHandlerContext)</a></li>
 <li><a href="#invokeExecutable(io.micronaut.core.bind.BoundExecutable,io.micronaut.inject.MethodExecutionHandle)" tabindex="0">invokeExecutable(BoundExecutable, MethodExecutionHandle)</a></li>
 <li><a href="#awaitsCompletionStages()" tabindex="0">awaitsCompletionStages()</a></li>
+<li><a href="#getMaxPayloadLength()" tabindex="0">getMaxPayloadLength()</a></li>
+<li><a href="#isReadPaused()" tabindex="0">isReadPaused()</a></li>
 <li><a href="#channelRead0(io.netty.channel.ChannelHandlerContext,java.lang.Object)" tabindex="0">channelRead0(ChannelHandlerContext, Object)</a></li>
+<li><a href="#holdsFramesWhileMessageHandled()" tabindex="0">holdsFramesWhileMessageHandled()</a></li>
 <li><a href="#handleWebSocketFrame(io.netty.channel.ChannelHandlerContext,io.netty.handler.codec.http.websocketx.WebSocketFrame)" tabindex="0">handleWebSocketFrame(ChannelHandlerContext, WebSocketFrame)</a></li>
 <li><a href="#messageHandled(io.netty.channel.ChannelHandlerContext,java.lang.Object)" tabindex="0">messageHandled(ChannelHandlerContext, Object)</a></li>
 <li><a href="#writeCloseFrameAndTerminate(io.netty.channel.ChannelHandlerContext,io.micronaut.websocket.CloseReason)" tabindex="0">writeCloseFrameAndTerminate(ChannelHandlerContext, CloseReason)</a></li>
 <li><a href="#handleCloseReason(io.netty.channel.ChannelHandlerContext,io.micronaut.websocket.CloseReason,boolean)" tabindex="0">handleCloseReason(ChannelHandlerContext, CloseReason, boolean)</a></li>
+<li><a href="#rejectTooLargeMessage(io.netty.channel.ChannelHandlerContext)" tabindex="0">rejectTooLargeMessage(ChannelHandlerContext)</a></li>
 </ol>
 </li>
 </ol>
@@ -276,33 +280,41 @@ or message handler is done, and fails, with its stage.</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a><wbr>&lt;?&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getBodyArgument()" class="member-name-link">getBodyArgument</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a><wbr>&lt;?&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getPongArgument()" class="member-name-link">getPongArgument</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="NettyWebSocketSession.html" title="class in io.micronaut.http.netty.websocket">NettyWebSocketSession</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getSession()" class="member-name-link">getSession</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMaxPayloadLength()" class="member-name-link">getMaxPayloadLength</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="../../../core/type/Argument.html" title="interface in io.micronaut.core.type">Argument</a><wbr>&lt;?&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getPongArgument()" class="member-name-link">getPongArgument</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handleCloseReason(io.netty.channel.ChannelHandlerContext,io.micronaut.websocket.CloseReason,boolean)" class="member-name-link">handleCloseReason</a><wbr>(io.netty.channel.ChannelHandlerContext&nbsp;ctx,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="NettyWebSocketSession.html" title="class in io.micronaut.http.netty.websocket">NettyWebSocketSession</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getSession()" class="member-name-link">getSession</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handleCloseReason(io.netty.channel.ChannelHandlerContext,io.micronaut.websocket.CloseReason,boolean)" class="member-name-link">handleCloseReason</a><wbr>(io.netty.channel.ChannelHandlerContext&nbsp;ctx,
  <a href="../../../websocket/CloseReason.html" title="class in io.micronaut.websocket">CloseReason</a>&nbsp;cr,
  boolean&nbsp;writeCloseReason)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Used to close the session with a given reason.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handlerFailed(io.netty.channel.ChannelHandlerContext,java.lang.Throwable)" class="member-name-link">handlerFailed</a><wbr>(io.netty.channel.ChannelHandlerContext&nbsp;ctx,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handlerFailed(io.netty.channel.ChannelHandlerContext,java.lang.Throwable)" class="member-name-link">handlerFailed</a><wbr>(io.netty.channel.ChannelHandlerContext&nbsp;ctx,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;cause)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Handle the failure of a handler, e.g.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handlerRemoved(io.netty.channel.ChannelHandlerContext)" class="member-name-link">handlerRemoved</a><wbr>(io.netty.channel.ChannelHandlerContext&nbsp;ctx)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handleWebSocketFrame(io.netty.channel.ChannelHandlerContext,io.netty.handler.codec.http.websocketx.WebSocketFrame)" class="member-name-link">handleWebSocketFrame</a><wbr>(io.netty.channel.ChannelHandlerContext&nbsp;ctx,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handlerRemoved(io.netty.channel.ChannelHandlerContext)" class="member-name-link">handlerRemoved</a><wbr>(io.netty.channel.ChannelHandlerContext&nbsp;ctx)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handleWebSocketFrame(io.netty.channel.ChannelHandlerContext,io.netty.handler.codec.http.websocketx.WebSocketFrame)" class="member-name-link">handleWebSocketFrame</a><wbr>(io.netty.channel.ChannelHandlerContext&nbsp;ctx,
  io.netty.handler.codec.http.websocketx.WebSocketFrame&nbsp;msg)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Handles WebSocket frame request.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#holdsFramesWhileMessageHandled()" class="member-name-link">holdsFramesWhileMessageHandled</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the data frames read while a message is being handled wait until it completes.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a><wbr>&lt;?&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#invokeExecutable(io.micronaut.core.bind.BoundExecutable,io.micronaut.inject.MethodExecutionHandle)" class="member-name-link">invokeExecutable</a><wbr>(<a href="../../../core/bind/BoundExecutable.html" title="interface in io.micronaut.core.bind">BoundExecutable</a>&nbsp;boundExecutable,
@@ -310,11 +322,19 @@ or message handler is done, and fails, with its stage.</div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Invokes the given executable.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#messageHandled(io.netty.channel.ChannelHandlerContext,java.lang.Object)" class="member-name-link">messageHandled</a><wbr>(io.netty.channel.ChannelHandlerContext&nbsp;ctx,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReadPaused()" class="member-name-link">isReadPaused</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#messageHandled(io.netty.channel.ChannelHandlerContext,java.lang.Object)" class="member-name-link">messageHandled</a><wbr>(io.netty.channel.ChannelHandlerContext&nbsp;ctx,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;message)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Method called once a message has been handled by the handler.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#rejectTooLargeMessage(io.netty.channel.ChannelHandlerContext)" class="member-name-link">rejectTooLargeMessage</a><wbr>(io.netty.channel.ChannelHandlerContext&nbsp;ctx)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Closes the session with <a href="../../../websocket/CloseReason.html#MESSAGE_TO_BIG"><code>CloseReason.MESSAGE_TO_BIG</code></a>.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeCloseFrameAndTerminate(io.netty.channel.ChannelHandlerContext,io.micronaut.websocket.CloseReason)" class="member-name-link">writeCloseFrameAndTerminate</a><wbr>(io.netty.channel.ChannelHandlerContext&nbsp;ctx,
@@ -683,6 +703,30 @@ handler, as before 5.3.</div>
 </section>
 </li>
 <li>
+<section class="detail" id="getMaxPayloadLength()">
+<h3>getMaxPayloadLength</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getMaxPayloadLength</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The largest message payload the message handler accepts</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isReadPaused()">
+<h3>isReadPaused</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isReadPaused</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether reading is paused until the frames kept while a message is handled are handled</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="channelRead0(io.netty.channel.ChannelHandlerContext,java.lang.Object)">
 <h3>channelRead0</h3>
 <div class="horizontal-scroll">
@@ -691,6 +735,21 @@ handler, as before 5.3.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>channelRead0</code>&nbsp;in class&nbsp;<code>io.netty.channel.SimpleChannelInboundHandler&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="holdsFramesWhileMessageHandled()">
+<h3>holdsFramesWhileMessageHandled</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">holdsFramesWhileMessageHandled</span>()</div>
+<div class="block">Whether the data frames read while a message is being handled wait until it completes. A
+subclass that controls how many messages are handled at the same time itself returns
+<code>false</code>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd><code>true</code> to handle the messages one after the other</dd>
 </dl>
 </div>
 </section>
@@ -753,6 +812,19 @@ handler, as before 5.3.</div>
 <dd><code>ctx</code> - The context</dd>
 <dd><code>cr</code> - The reason</dd>
 <dd><code>writeCloseReason</code> - Whether to allow writing the close reason to the remote</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="rejectTooLargeMessage(io.netty.channel.ChannelHandlerContext)">
+<h3>rejectTooLargeMessage</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">rejectTooLargeMessage</span><wbr><span class="parameters">(io.netty.channel.ChannelHandlerContext&nbsp;ctx)</span></div>
+<div class="block">Closes the session with <a href="../../../websocket/CloseReason.html#MESSAGE_TO_BIG"><code>CloseReason.MESSAGE_TO_BIG</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>ctx</code> - The context</dd>
 </dl>
 </div>
 </section>
