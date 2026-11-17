@@ -60,6 +60,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#defaults()" tabindex="0">defaults()</a></li>
 <li><a href="#withRawValues()" tabindex="0">withRawValues()</a></li>
 <li><a href="#rawValues()" tabindex="0">rawValues()</a></li>
+<li><a href="#withRawView()" tabindex="0">withRawView()</a></li>
+<li><a href="#rawView()" tabindex="0">rawView()</a></li>
 </ol>
 </li>
 </ol>
@@ -105,11 +107,22 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#rawValues()" class="member-name-link">rawValues</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="FormOptions.html" title="interface in io.micronaut.http.body">FormOptions</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#withRawValues()" class="member-name-link">withRawValues</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#rawView()" class="member-name-link">rawView</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="FormOptions.html" title="interface in io.micronaut.http.body">FormOptions</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#withRawValues()" class="member-name-link">withRawValues</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Options that keep the values of the fields of an <code>application/x-www-form-urlencoded</code>
 form as they appear in the body, not percent-decoded, e.g.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="FormOptions.html" title="interface in io.micronaut.http.body">FormOptions</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#withRawView()" class="member-name-link">withRawView</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Options that read an <code>application/x-www-form-urlencoded</code> form with the decoded values
+of its fields, like the defaults, and their values as they appear in the body as its
+<a href="../form/FormData.html#raw()"><code>raw view</code></a>, from one read of the body: what a
+framework needs that reads some fields decoded and others raw, e.g.</div>
 </div>
 </div>
 </div>
@@ -147,7 +160,8 @@ form as they appear in the body, not percent-decoded, e.g. <code>a%2Fb</code>, a
 is not turned into a space, and the percent-encoded bytes of a non-ASCII value: what a
 framework needs for a field it must not decode, e.g. a JAX-RS <code>@Encoded</code> form
 parameter. The names of the fields are decoded. A <code>multipart/form-data</code> form has no
-percent-encoding: it is read as with the defaults.</div>
+percent-encoding: it is read as with the defaults.
+<p>It is mutually exclusive with <a href="#withRawView()"><code>withRawView()</code></a>: the last one called wins.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The options with raw values</dd>
@@ -164,6 +178,47 @@ percent-encoding: it is read as with the defaults.</div>
 <dt>Returns:</dt>
 <dd>Whether the values of an <code>application/x-www-form-urlencoded</code> form are kept as
 they appear in the body, see <a href="#withRawValues()"><code>withRawValues()</code></a></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="withRawView()">
+<h3>withRawView</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type"><a href="FormOptions.html" title="interface in io.micronaut.http.body">FormOptions</a></span>&nbsp;<span class="element-name">withRawView</span>()</div>
+<div class="block">Options that read an <code>application/x-www-form-urlencoded</code> form with the decoded values
+of its fields, like the defaults, and their values as they appear in the body as its
+<a href="../form/FormData.html#raw()"><code>raw view</code></a>, from one read of the body: what a
+framework needs that reads some fields decoded and others raw, e.g. JAX-RS <code>@FormParam</code>
+with and without <code>@Encoded</code>. The form is read from the bytes like with
+<a href="#withRawValues()"><code>withRawValues()</code></a>, with its rules: it is not the shared form of the request. A
+<code>multipart/form-data</code> form is read as with the defaults, and is its own raw view.
+
+<pre><code>body.form(FormOptions.defaults().withRawView())
+    .thenApply(form -&gt; form.getString("path") + " " + form.raw().getString("path")); // "a/b a%2Fb"
+</code></pre>
+<p>It is mutually exclusive with <a href="#withRawValues()"><code>withRawValues()</code></a>: the last one called wins.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The options with the decoded values and a raw view</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="rawView()">
+<h3>rawView</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">rawView</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether the form has the decoded values with the raw ones as its raw view, see
+<a href="#withRawView()"><code>withRawView()</code></a></dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>

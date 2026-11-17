@@ -58,6 +58,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#empty()" tabindex="0">empty()</a></li>
+<li><a href="#raw()" tabindex="0">raw()</a></li>
 <li><a href="#names()" tabindex="0">names()</a></li>
 <li><a href="#contains(java.lang.String)" tabindex="0">contains(String)</a></li>
 <li><a href="#getValues(java.lang.String)" tabindex="0">getValues(String)</a></li>
@@ -215,6 +216,12 @@ type and the headers of each part, as sent by the client.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#names()" class="member-name-link">names</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="FormData.html" title="interface in io.micronaut.http.form">FormData</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#raw()" class="member-name-link">raw</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">The form with the values of its text fields as they appear in the body, not
+percent-decoded, e.g.</div>
+</div>
 </div>
 </div>
 </div>
@@ -241,6 +248,36 @@ type and the headers of each part, as sent by the client.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The empty form, which holds nothing to release</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="raw()">
+<h3>raw</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="FormData.html" title="interface in io.micronaut.http.form">FormData</a></span>&nbsp;<span class="element-name">raw</span>()</div>
+<div class="block">The form with the values of its text fields as they appear in the body, not
+percent-decoded, e.g. <code>a%2Fb</code> for <code>a/b</code> and <code>+</code> that is not a space: what a
+framework needs for a field it must not decode, e.g. a JAX-RS <code>@Encoded</code> form
+parameter, together with the decoded values of the same read, see
+<a href="../body/FormOptions.html#withRawView()"><code>FormOptions.withRawView()</code></a>. The names and the files are those
+of this form. A form that has no percent-encoding, e.g. a <code>multipart/form-data</code> form
+or the <a href="#empty()"><code>empty form</code></a>, is its own raw form, and so is a form read with
+<a href="../body/FormOptions.html#withRawValues()"><code>FormOptions.withRawValues()</code></a>.
+
+<pre><code>body.form(FormOptions.defaults().withRawView()).thenApply(form -&gt;
+    form.getString("path") + " " + form.raw().getString("path")); // "a/b a%2Fb"
+</code></pre></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The raw form</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link">UnsupportedOperationException</a></code> - if the raw values were not kept: a form read without
+<a href="../body/FormOptions.html#withRawView()"><code>FormOptions.withRawView()</code></a> or
+<a href="../body/FormOptions.html#withRawValues()"><code>FormOptions.withRawValues()</code></a>, e.g. the shared form of the request</dd>
 <dt>Since:</dt>
 <dd>5.3.0</dd>
 </dl>
