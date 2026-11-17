@@ -59,10 +59,15 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#copyOf(java.lang.String,java.util.List,java.util.List)" tabindex="0">copyOf(String, List, List)</a></li>
 <li><a href="#of(java.lang.String,java.util.List,java.util.List)" tabindex="0">of(String, List, List)</a></li>
+<li><a href="#of(java.lang.String,java.util.List,java.util.List,int%5B%5D)" tabindex="0">of(String, List, List, int[])</a></li>
 <li><a href="#path()" tabindex="0">path()</a></li>
 <li><a href="#variables()" tabindex="0">variables()</a></li>
 <li><a href="#values()" tabindex="0">values()</a></li>
 <li><a href="#value(java.lang.String)" tabindex="0">value(String)</a></li>
+<li><a href="#values(java.lang.String)" tabindex="0">values(String)</a></li>
+<li><a href="#hasOffsets()" tabindex="0">hasOffsets()</a></li>
+<li><a href="#start(int)" tabindex="0">start(int)</a></li>
+<li><a href="#end(int)" tabindex="0">end(int)</a></li>
 <li><a href="#toUriMatchInfo()" tabindex="0">toUriMatchInfo()</a></li>
 <li><a href="#toUriMatchInfo(java.util.List,java.util.Map)" tabindex="0">toUriMatchInfo(List, Map)</a></li>
 <li><a href="#uriMatchVariables(java.util.List)" tabindex="0">uriMatchVariables(List)</a></li>
@@ -82,7 +87,9 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public sealed interface </span><span class="element-name type-name-label">RouteCaptures</span></div>
 <div class="block">The values a <a href="RouteTemplate.html" title="interface in io.micronaut.http.uri"><code>RouteTemplate</code></a> captured for its variables, in the order of the
 <a href="RouteTemplate.html#variables()"><code>variables</code></a>. The values are as they appear in the path,
-not percent-decoded.</div>
+not percent-decoded. A template may also report where each value is in the
+<a href="#path()"><code>path</code></a>, see <a href="#start(int)"><code>start(int)</code></a>: what a framework needs to tell which segments
+of the path a variable captured, e.g. for the path segments or the matched URIs of JAX-RS.</div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -111,6 +118,14 @@ not percent-decoded.</div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Captures of copies of the lists.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#end(int)" class="member-name-link">end</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Where the value of a variable ends in the <a href="#path()"><code>path</code></a>, see <a href="#start(int)"><code>start(int)</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#hasOffsets()" class="member-name-link">hasOffsets</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="RouteCaptures.html" title="interface in io.micronaut.http.uri">RouteCaptures</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#of(java.lang.String,java.util.List,java.util.List)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="RouteTemplateVariable.html" title="interface in io.micronaut.http.uri">RouteTemplateVariable</a>&gt;&nbsp;variables,
@@ -119,9 +134,26 @@ not percent-decoded.</div>
 <div class="block">Captures that take the lists as they are, without copying them: for a template that matches
 many requests.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#path()" class="member-name-link">path</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="RouteCaptures.html" title="interface in io.micronaut.http.uri">RouteCaptures</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#of(java.lang.String,java.util.List,java.util.List,int%5B%5D)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="RouteTemplateVariable.html" title="interface in io.micronaut.http.uri">RouteTemplateVariable</a>&gt;&nbsp;variables,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;values,
+ int[]&nbsp;offsets)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1">
+<div class="block">Captures with the positions of the values in the path, see <a href="#start(int)"><code>start(int)</code></a>, that take
+the lists and the array as they are, without copying them, like
+<a href="#of(java.lang.String,java.util.List,java.util.List)"><code>of(String, List, List)</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#path()" class="member-name-link">path</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#start(int)" class="member-name-link">start</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Where the value of a variable starts in the <a href="#path()"><code>path</code></a>: <code>path().substring(start(i), end(i))</code>
+is the value of the variable <code>i</code>, and the path before it is what the template matched
+before the variable, e.g.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="UriMatchInfo.html" title="interface in io.micronaut.http.uri">UriMatchInfo</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#toUriMatchInfo()" class="member-name-link">toUriMatchInfo</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
@@ -148,9 +180,12 @@ out, and the variables are described as <a href="UriMatchVariable.html" title="c
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#values()" class="member-name-link">values</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="RouteTemplateVariable.html" title="interface in io.micronaut.http.uri">RouteTemplateVariable</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#variables()" class="member-name-link">variables</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#values(java.lang.String)" class="member-name-link">values</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="RouteTemplateVariable.html" title="interface in io.micronaut.http.uri">RouteTemplateVariable</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#variables()" class="member-name-link">variables</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -208,6 +243,37 @@ recognizes without comparing it.</div>
 </section>
 </li>
 <li>
+<section class="detail" id="of(java.lang.String,java.util.List,java.util.List,int[])">
+<h3>of</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="RouteCaptures.html" title="interface in io.micronaut.http.uri">RouteCaptures</a></span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="RouteTemplateVariable.html" title="interface in io.micronaut.http.uri">RouteTemplateVariable</a>&gt;&nbsp;variables,
+ <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;values,
+ int[]&nbsp;offsets)</span></div>
+<div class="block">Captures with the positions of the values in the path, see <a href="#start(int)"><code>start(int)</code></a>, that take
+the lists and the array as they are, without copying them, like
+<a href="#of(java.lang.String,java.util.List,java.util.List)"><code>of(String, List, List)</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>path</code> - The path that was matched</dd>
+<dd><code>variables</code> - The variables, in order: an immutable list</dd>
+<dd><code>values</code> - The values, one per variable, not percent-decoded: a list that does not change</dd>
+<dd><code>offsets</code> - The start and the end offset of each value in the path, two per variable:
+                 <code>offsets[2 * i]</code> is the start of the value of the variable <code>i</code>,
+                 <code>offsets[2 * i + 1]</code> its end, exclusive; <code>-1</code> for both if the
+                 value is absent. An array that does not change</dd>
+<dt>Returns:</dt>
+<dd>The captures</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if there are not two offsets per variable, or the offsets
+of a value do not delimit it in the path</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="path()">
 <h3>path</h3>
 <div class="horizontal-scroll">
@@ -253,6 +319,81 @@ recognizes without comparing it.</div>
 <dd><code>name</code> - The name of a variable</dd>
 <dt>Returns:</dt>
 <dd>The value of its first occurrence, or <code>null</code> if absent</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="values(java.lang.String)">
+<h3>values</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">values</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - The name of a variable</dd>
+<dt>Returns:</dt>
+<dd>The values of every occurrence of the name, in the order of the template, an
+absent one left out: more than one for a template that repeats the name</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="hasOffsets()">
+<h3>hasOffsets</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">hasOffsets</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether the template reported where the values are in the <a href="#path()"><code>path</code></a>,
+see <a href="#start(int)"><code>start(int)</code></a></dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="start(int)">
+<h3>start</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">int</span>&nbsp;<span class="element-name">start</span><wbr><span class="parameters">(int&nbsp;index)</span></div>
+<div class="block">Where the value of a variable starts in the <a href="#path()"><code>path</code></a>: <code>path().substring(start(i), end(i))</code>
+is the value of the variable <code>i</code>, and the path before it is what the template matched
+before the variable, e.g. to count the segments a variable or the part of the template
+before it matched.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>index</code> - The index of the variable, in the order of the <a href="#variables()"><code>variables</code></a></dd>
+<dt>Returns:</dt>
+<dd>The offset of the first character of the value in the path, or <code>-1</code> if the
+value is absent or the template did not report it, see <a href="#hasOffsets()"><code>hasOffsets()</code></a></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IndexOutOfBoundsException.html" title="class or interface in java.lang" class="external-link">IndexOutOfBoundsException</a></code> - if there is no variable at the index</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="end(int)">
+<h3>end</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">int</span>&nbsp;<span class="element-name">end</span><wbr><span class="parameters">(int&nbsp;index)</span></div>
+<div class="block">Where the value of a variable ends in the <a href="#path()"><code>path</code></a>, see <a href="#start(int)"><code>start(int)</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>index</code> - The index of the variable, in the order of the <a href="#variables()"><code>variables</code></a></dd>
+<dt>Returns:</dt>
+<dd>The offset after the last character of the value in the path, or <code>-1</code> if
+the value is absent or the template did not report it, see <a href="#hasOffsets()"><code>hasOffsets()</code></a></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IndexOutOfBoundsException.html" title="class or interface in java.lang" class="external-link">IndexOutOfBoundsException</a></code> - if there is no variable at the index</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>

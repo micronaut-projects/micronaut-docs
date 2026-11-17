@@ -83509,6 +83509,12 @@ repositories {
 <p>This section documents breaking changes between Micronaut versions</p>
 </div>
 <div class="sect2">
+<h3 id="_bean_registration_collections_are_unmodifiable_5_3">Bean registration collections are unmodifiable (5.3)</h3>
+<div class="paragraph">
+<p>The collection that <code>getBeanRegistrations(&#8230;&#8203;)</code> of the <a href="../api/io/micronaut/context/BeanContext.html">BeanContext</a> returns, and a <code>Collection&lt;BeanRegistration&lt;T&gt;&gt;</code> or <code>List&lt;BeanRegistration&lt;T&gt;&gt;</code> injected into a bean, is now unmodifiable for every bean type. Previously only the collection of a type whose candidates were all singletons was shared between callers, and the collection of any other type was a new mutable list, which a caller could sort or change. Sorting or changing it now throws an <code>UnsupportedOperationException</code>. The registrations are already sorted by <a href="../api/io/micronaut/core/order/OrderUtil.html">OrderUtil</a>: to order them differently, copy them first, for example <code>new ArrayList&lt;&gt;(registrations)</code>.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_url_encoded_forms_with_a_malformed_percent_escape_are_rejected_5_3">URL-encoded forms with a malformed percent escape are rejected (5.3)</h3>
 <div class="paragraph">
 <p>The Netty server previously decoded a malformed percent escape in an <code>application/x-www-form-urlencoded</code> body leniently: a body such as <code>g=%2</code> or <code>g=%GG</code> was accepted and the route answered as if the escape were text. Since Micronaut 5.3 such a body is a client error and is answered with <code>400 Bad Request</code>, for every reader of the form: a <code>@Body</code> or <code>FormData</code> argument, the <code>form()</code> of a functional route, <code>AsyncRequestBody.form()</code>, and the raw values of the form. An escape split between two chunks of the body is still decoded. To restore the lenient decoding, set <code>micronaut.server.netty.form-lenient-percent-decoding</code> to <code>true</code>.</p>
