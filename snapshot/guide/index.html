@@ -13506,6 +13506,12 @@ The example above implements the <a href="../api/io/micronaut/inject/annotation/
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>An <a href="../api/io/micronaut/inject/annotation/AnnotationRemapper.html">AnnotationRemapper</a> can also implement the experimental <a href="../api/io/micronaut/inject/annotation/RepeatableAnnotationRemapper.html">RepeatableAnnotationRemapper</a> interface to recognize containers of annotations that do not declare <code>@Repeatable</code>. Its <code>isRepeatableAnnotationContainer</code> method receives the candidate container and a <code>VisitorContext</code>, so it can inspect application-defined annotation types during compilation. Register the implementation through the existing <code>META-INF/services/io.micronaut.inject.annotation.AnnotationRemapper</code> file.</p>
+</div>
+<div class="paragraph">
+<p>When the method returns <code>true</code>, Micronaut processes each annotation in the container&#8217;s <code>value</code> array through the annotation pipeline and records the container relationship in the generated metadata. Normal annotation-value and stereotype lookups then expose the repeated occurrences. The array must contain annotations of one type, and the remapper must recognize one container per repeated annotation type. A <code>@Repeatable</code> declared by the annotation type takes precedence.</p>
+</div>
 </div>
 </div>
 <div class="sect2">
