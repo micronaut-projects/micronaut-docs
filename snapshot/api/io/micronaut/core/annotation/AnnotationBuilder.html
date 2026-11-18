@@ -156,9 +156,10 @@ conversion service.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static &lt;A extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>&gt;<br><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="AnnotationBuilder.html" title="interface in io.micronaut.core.annotation">AnnotationBuilder</a>&lt;A&gt;&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#find(java.lang.Class,java.lang.ClassLoader)" class="member-name-link">find</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;A&gt;&nbsp;annotationType,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;classLoader)</code></div>
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;classLoader)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1">
-<div class="block">Finds the builder of an annotation type, among the builders visible to a class loader.</div>
+<div class="block">Finds the builder of an annotation type for an application whose classes a class loader loads: among the
+builders of Micronaut, then of the class loader of the annotation type, then of the given class loader.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="AnnotationBuilder.html" title="interface in io.micronaut.core.annotation">AnnotationBuilder</a>&lt;?&gt;&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#find(java.lang.String)" class="member-name-link">find</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;annotationName)</code></div>
@@ -169,7 +170,9 @@ conversion service.</div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#find(java.lang.String,java.lang.ClassLoader)" class="member-name-link">find</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;annotationName,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;classLoader)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1">
-<div class="block">Finds the builder of an annotation type by name, among the builders visible to a class loader.</div>
+<div class="block">Finds the builder of an annotation type by name, among the builders visible to a class loader, that class
+loader alone: unlike <a href="#find(java.lang.Class,java.lang.ClassLoader)"><code>find(Class, ClassLoader)</code></a>, Micronaut's builders are not searched first, since
+without the type a builder found elsewhere could be for another type of the same name.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#toMap(A)" class="member-name-link">toMap</a><wbr>(<a href="#type-param-A" title="type parameter in AnnotationBuilder">A</a>&nbsp;annotation)</code></div>
@@ -224,15 +227,19 @@ without a search.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="type-parameters">&lt;A extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>&gt;</span>
 <span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="AnnotationBuilder.html" title="interface in io.micronaut.core.annotation">AnnotationBuilder</a>&lt;A&gt;&gt;</span>&nbsp;<span class="element-name">find</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;A&gt;&nbsp;annotationType,
- <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;classLoader)</span></div>
-<div class="block">Finds the builder of an annotation type, among the builders visible to a class loader. Every call looks the
-builders of the class loader up, so keep the builder.</div>
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;classLoader)</span></div>
+<div class="block">Finds the builder of an annotation type for an application whose classes a class loader loads: among the
+builders of Micronaut, then of the class loader of the annotation type, then of the given class loader. An
+annotation of a library and its builder can be in a class loader below the one of Micronaut, and the builder
+of an application in a class loader below the one of the annotation. What the class loader of the annotation
+supplies is kept with the type, but the builders of the given class loader are looked up on every call that
+reaches it, so keep the builder.</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><span id="find(java.lang.Class,java.lang.ClassLoader)-type-param-A"><code>A</code> - The annotation type</span></dd>
 <dt>Parameters:</dt>
 <dd><code>annotationType</code> - The annotation type</dd>
-<dd><code>classLoader</code> - The class loader</dd>
+<dd><code>classLoader</code> - The class loader of the application, or <code>null</code> when it is not known</dd>
 <dt>Returns:</dt>
 <dd>The builder, empty when none is registered for this very type</dd>
 </dl>
@@ -260,8 +267,10 @@ builders of the class loader up, so keep the builder.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="AnnotationBuilder.html" title="interface in io.micronaut.core.annotation">AnnotationBuilder</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">find</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;annotationName,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html" title="class or interface in java.lang" class="external-link">ClassLoader</a>&nbsp;classLoader)</span></div>
-<div class="block">Finds the builder of an annotation type by name, among the builders visible to a class loader. Every call
-looks the builders of the class loader up, so keep the builder.</div>
+<div class="block">Finds the builder of an annotation type by name, among the builders visible to a class loader, that class
+loader alone: unlike <a href="#find(java.lang.Class,java.lang.ClassLoader)"><code>find(Class, ClassLoader)</code></a>, Micronaut's builders are not searched first, since
+without the type a builder found elsewhere could be for another type of the same name. Every call looks the
+builders of the class loader up, so keep the builder.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>annotationName</code> - The name of the annotation type</dd>
