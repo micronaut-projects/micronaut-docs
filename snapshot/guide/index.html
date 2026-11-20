@@ -49211,6 +49211,72 @@ runtime = [
 <p>Before triggering additional requests, the <code>isServerPushSupported()</code> method should be called to ensure the feature is available. Once it&#8217;s known the feature is supported, use the <code>serverPush(HttpRequest)</code> method to trigger additional requests. For example: <code>request.serverPush(HttpRequest.GET("/static/style.css"))</code>).</p>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_bidirectional_streaming">Bidirectional Streaming</h4>
+<div class="paragraph">
+<p>On HTTP/2 a request and its response travel on the same stream in both directions at once, so a route can start its response as soon as it has the request headers and keep answering while the request body is still arriving. This is what streaming RPC protocols such as gRPC need for client-streaming and bidirectional-streaming calls.</p>
+</div>
+<div class="paragraph">
+<p>To do this, claim the request body with <code>byteBody().move()</code> without buffering it, and return a <a href="../api/io/micronaut/http/ByteBodyHttpResponse.html">ByteBodyHttpResponse</a> whose body is built from it. The response can be written while request data is still arriving, and <a href="#byteBodyTrailers">trailers</a> can follow the last element of the response, for example a <code>grpc-status</code> computed once the request has ended.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The elements of the request body publisher are chunks of bytes, not messages. A message can span several chunks, one chunk can carry several messages, and chunks that arrive before the body is read are combined. A protocol with its own framing, such as gRPC with its length-prefixed messages, must parse that framing from the byte stream itself.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Post
+@Consumes("application/grpc") <i class="conum" data-value="1"></i><b>(1)</b>
+@Produces("application/grpc")
+HttpResponse&lt;?&gt; bidi(ServerHttpRequest&lt;?&gt; request) {
+    CloseableByteBody requestBody = request.byteBody().move(); <i class="conum" data-value="2"></i><b>(2)</b>
+    CompletableFuture&lt;HttpHeaders&gt; requestTrailers = requestBody.trailers().toCompletableFuture();
+    Flux&lt;ReadBuffer&gt; answers = Flux.from(requestBody.toByteArrayPublisher()) <i class="conum" data-value="3"></i><b>(3)</b>
+        .concatMapIterable(chunk -&gt; decoder.decode(chunk)) // complete messages only
+        .map(message -&gt; answer(message))
+        .doFinally(signal -&gt; requestBody.close());
+    CompletableFuture&lt;HttpHeaders&gt; responseTrailers = requestTrailers.thenApply(t -&gt; status(t)); <i class="conum" data-value="4"></i><b>(4)</b>
+    return ByteBodyHttpResponseWrapper.wrap(
+        HttpResponse.ok().contentType("application/grpc"),
+        bodyFactory.withTrailers(bodyFactory.adapt(answers), responseTrailers));
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Declare the content type. A <code>@Post</code> route without <code>@Consumes</code> only accepts <code>application/json</code> and answers other content types with <code>415</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Claim the streaming request body. The route returns before the request has ended.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Feed each chunk to a decoder for the protocol&#8217;s own framing (here a hypothetical <code>decoder</code> that buffers partial messages and returns the complete ones), and answer each complete message.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Send the trailers after the last answer, once the request trailers have arrived.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A response with no body whose headers carry the outcome, such as a gRPC trailers-only error response, needs nothing special: the headers end the stream.</p>
+</div>
+<div class="paragraph">
+<p>The server accepts HTTP/2 over cleartext with prior knowledge, as gRPC clients connect, when <code>micronaut.server.http-version</code> is <code>2.0</code> and TLS is disabled. With TLS it negotiates <code>h2</code> with ALPN.</p>
+</div>
+</div>
 
 <h2 id="http3Server"><a class="anchor" href="#http3Server"></a>6.36 HTTP/3 Support</h2>
 
@@ -83516,6 +83582,12 @@ repositories {
 
 <div class="paragraph">
 <p>This section documents breaking changes between Micronaut versions</p>
+</div>
+<div class="sect2">
+<h3 id="_closing_the_http_client_fails_the_requests_that_wait_for_a_connection_5_3">Closing the HTTP client fails the requests that wait for a connection (5.3)</h3>
+<div class="paragraph">
+<p>When a Netty HTTP client is closed, a request that waits for a pooled connection, for example because the pool has reached <code>max-concurrent-http1-connections</code>, now completes with an <a href="../api/io/micronaut/http/client/exceptions/UnprocessedRequestException.html">UnprocessedRequestException</a> of reason <code>POOL_ACQUIRE</code>. Previously such a request stayed pending, and the pool opened new connections for it as the closed connections went away: with an event loop group shared with another client, the request and those connections waited forever. The closed client opens no more connections, and a connection that was still being established when the client closed is closed once it is established.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_http1_client_connections_are_reused_after_the_read_that_ends_a_response_5_3">HTTP/1 client connections are reused after the read that ends a response (5.3)</h3>
