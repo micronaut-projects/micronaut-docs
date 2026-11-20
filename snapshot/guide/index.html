@@ -83584,6 +83584,12 @@ repositories {
 <p>This section documents breaking changes between Micronaut versions</p>
 </div>
 <div class="sect2">
+<h3 id="_trailers_are_validated_5_3">Trailers are validated (5.3)</h3>
+<div class="paragraph">
+<p>The trailers of a body, which the Netty client sends after a request body and the Netty server after a response body, were previously copied into the message without validation, so a value with a line break was written as is. They are now validated: a name or value with a forbidden character, such as a CR or LF in a value, and the headers that frame a message, <code>Content-Length</code>, <code>Transfer-Encoding</code> and <code>Trailer</code>, are rejected, and the exchange fails instead of sending them. The denylist is this framing set, the same one Netty applies; it does not enforce the wider list of fields that RFC 9110 §6.5.1 says must not be sent in trailers, such as <code>Host</code>, <code>Authorization</code>, <code>Content-Type</code> or <code>Set-Cookie</code>. In the trailers of a received HTTP/2 request, the Netty server treats invalid trailers, including these framing headers, as a stream error: the stream is reset with <code>PROTOCOL_ERROR</code> and the request body fails instead of completing. This differs from HTTP/1, where Netty drops the framing headers from received trailers and fails the request only for a forbidden character.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_closing_the_http_client_fails_the_requests_that_wait_for_a_connection_5_3">Closing the HTTP client fails the requests that wait for a connection (5.3)</h3>
 <div class="paragraph">
 <p>When a Netty HTTP client is closed, a request that waits for a pooled connection, for example because the pool has reached <code>max-concurrent-http1-connections</code>, now completes with an <a href="../api/io/micronaut/http/client/exceptions/UnprocessedRequestException.html">UnprocessedRequestException</a> of reason <code>POOL_ACQUIRE</code>. Previously such a request stayed pending, and the pool opened new connections for it as the closed connections went away: with an event loop group shared with another client, the request and those connections waited forever. The closed client opens no more connections, and a connection that was still being established when the client closed is closed once it is established.</p>
