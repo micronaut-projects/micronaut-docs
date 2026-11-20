@@ -1060,7 +1060,13 @@ class path.</p></div>
 <h3>getBeanRegistration</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="BeanRegistration.html" title="class in io.micronaut.context">BeanRegistration</a>&lt;T&gt;</span>&nbsp;<span class="element-name">getBeanRegistration</span><wbr><span class="parameters">(<a href="../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;T&gt;&nbsp;beanDefinition)</span></div>
-<div class="block">Find a bean registration for the given bean definition.</div>
+<div class="block">Find a bean registration for the given bean definition.
+
+<p>A definition declared with <a href="annotation/Any.html" title="annotation interface in io.micronaut.context.annotation"><code>@Any</code></a> is resolved for no qualifier, as a
+lookup by type without a qualifier resolves it when it picks the definition: a factory of it sees no qualifier,
+and its scope holds the bean under no qualifier, so a singleton is the one that lookup returns. Since 5.3.0;
+before, it was resolved for the any qualifier, and a singleton of it was held apart from the one of that
+lookup.</p></div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><span id="getBeanRegistration(io.micronaut.inject.BeanDefinition)-type-param-T"><code>T</code> - The concrete type</span></dd>
@@ -1086,11 +1092,12 @@ class path.</p></div>
 
 <p>The registration is the one <a href="#getBeanRegistration(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)"><code>getBeanRegistration(Argument, Qualifier)</code></a> returns for the bean type when
 its lookup picks this definition, without the lookup: the caller has already chosen the definition, and no
-other candidate is considered. The bean is resolved in the scope of the definition, and with the definition's
-declared qualifier, as <a href="#getBeanRegistration(io.micronaut.inject.BeanDefinition)"><code>getBeanRegistration(BeanDefinition)</code></a> resolves it. What differs from that method
-is the type the bean is resolved as: a definition that builds its bean from the type it was asked for, such as
-the one of <a href="BeanProvider.html" title="interface in io.micronaut.context"><code>BeanProvider</code></a>, sees the type arguments of the given bean type rather than those of its own
-type.</p>
+other candidate is considered. The bean is resolved in the scope of the definition, and for the qualifier
+<a href="#getBeanRegistration(io.micronaut.inject.BeanDefinition)"><code>getBeanRegistration(BeanDefinition)</code></a> resolves it for: the definition's declared qualifier, or no
+qualifier for a definition declared with <a href="annotation/Any.html" title="annotation interface in io.micronaut.context.annotation"><code>@Any</code></a>. What differs from
+that method is the type the bean is resolved as: a definition that builds its bean from the type it was asked
+for, such as the one of <a href="BeanProvider.html" title="interface in io.micronaut.context"><code>BeanProvider</code></a>, sees the type arguments of the given bean type rather than those
+of its own type.</p>
 
 <p>The definition may be of a subtype of the bean type: a definition of an implementation is resolved as an
 interface it implements.</p>
@@ -1127,8 +1134,8 @@ qualifier, as <a href="#getBeanRegistration(io.micronaut.inject.BeanDefinition,i
 <p>A definition declared with <a href="annotation/Any.html" title="annotation interface in io.micronaut.context.annotation"><code>@Any</code></a> is resolved for the given
 qualifier, as a lookup by type with that qualifier resolves it when it picks the definition: its bean is held
 by its scope under that qualifier, and a factory of it sees that qualifier as the one it is created for. Any
-other definition is resolved with its declared qualifier, the given one is ignored. A definition is resolved
-for its declared qualifier by <a href="#getBeanRegistration(io.micronaut.inject.BeanDefinition,io.micronaut.core.type.Argument)"><code>getBeanRegistration(BeanDefinition, Argument)</code></a>.</p></div>
+other definition is resolved with its declared qualifier, the given one is ignored. A qualifier is required: a
+definition is resolved without one by <a href="#getBeanRegistration(io.micronaut.inject.BeanDefinition,io.micronaut.core.type.Argument)"><code>getBeanRegistration(BeanDefinition, Argument)</code></a>.</p></div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><span id="getQualifiedBeanRegistration(io.micronaut.inject.BeanDefinition,io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)-type-param-T"><code>T</code> - The concrete type</span></dd>

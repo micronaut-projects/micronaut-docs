@@ -48342,6 +48342,9 @@ A WebSocket endpoint can also be declared in code, as a route of the route build
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>A Netty <code>WebSocketFrame</code> argument is handed over to the method, which owns it, as in Netty&#8217;s own handlers: the method must release it, with <code>frame.release()</code> or <code>ReferenceCountUtil.release(frame)</code>, or send it on. Sending the frame consumes its reference, so an echo needs no <code>retain()</code>: <code>session.sendAsync(frame)</code>. A method that both sends the frame and keeps using it afterwards calls <code>retain()</code> before sending and releases it once done. The framework only releases a frame the method never receives, for example because another argument cannot be bound. A <code>ByteBuf</code> argument, in contrast, is released by the framework once the method, or the publisher or stage it returns, completes; to use it after that, call <code>retain()</code> on it and release it yourself.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_the_onerror_method">The @OnError Method</h3>
@@ -83515,9 +83518,21 @@ repositories {
 <p>This section documents breaking changes between Micronaut versions</p>
 </div>
 <div class="sect2">
+<h3 id="_http1_client_connections_are_reused_after_the_read_that_ends_a_response_5_3">HTTP/1 client connections are reused after the read that ends a response (5.3)</h3>
+<div class="paragraph">
+<p>When the read that delivers the end of an HTTP/1 response also holds more data, the Netty client now starts the next request on that pooled connection only after the read was processed. Previously a request that waited for the connection was written as soon as the response ended, and a further response in the same read, which the server sent without a request, was delivered to that waiting request as its response. Such data now closes the connection, as data that arrives while no request runs already did, and the waiting request is dispatched to another connection. Well-behaved servers are not affected: a waiting request that is handed a connection in the middle of a read starts when the read completes, on the same event loop iteration.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_bean_registration_collections_are_unmodifiable_5_3">Bean registration collections are unmodifiable (5.3)</h3>
 <div class="paragraph">
 <p>The collection that <code>getBeanRegistrations(&#8230;&#8203;)</code> of the <a href="../api/io/micronaut/context/BeanContext.html">BeanContext</a> returns, and a <code>Collection&lt;BeanRegistration&lt;T&gt;&gt;</code> or <code>List&lt;BeanRegistration&lt;T&gt;&gt;</code> injected into a bean, is now unmodifiable for every bean type. Previously only the collection of a type whose candidates were all singletons was shared between callers, and the collection of any other type was a new mutable list, which a caller could sort or change. Sorting or changing it now throws an <code>UnsupportedOperationException</code>. The registrations are already sorted by <a href="../api/io/micronaut/core/order/OrderUtil.html">OrderUtil</a>: to order them differently, copy them first, for example <code>new ArrayList&lt;&gt;(registrations)</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_an_any_factory_resolved_by_its_definition_without_a_qualifier_is_resolved_as_an_unqualified_lookup_5_3">An <code>@Any</code> factory resolved by its definition without a qualifier is resolved as an unqualified lookup (5.3)</h3>
+<div class="paragraph">
+<p>When the definition of an <code>@Any</code> factory is resolved without a qualifier, through <code>getBean(BeanDefinition)</code> or <code>getBeanRegistration(BeanDefinition)</code> of the <a href="../api/io/micronaut/context/BeanContext.html">BeanContext</a>, the factory now receives a <code>null</code> <a href="../api/io/micronaut/context/Qualifier.html">Qualifier</a>, as it does for a lookup of the bean type without a qualifier, and a singleton is the one that lookup returns. Previously the factory was given <code>AnyQualifier</code>, and a singleton was a second instance, held apart from the one of the unqualified lookup. A factory that dereferences its <code>Qualifier</code> without a null check now fails there, as it already does for an unqualified lookup: check it for <code>null</code> first. To resolve the definition for a qualifier, use <code>getQualifiedBeanRegistration(BeanDefinition, Argument, Qualifier)</code>.</p>
 </div>
 </div>
 <div class="sect2">
@@ -83714,6 +83729,12 @@ one throws after <code>proceed()</code>.</p>
 <p>A construct interceptor that used the injected state of the instance returned by <code>proceed()</code> should bind to
 <code>InterceptorKind.POST_CONSTRUCT</code> instead, where the bean is injected. See <a href="#lifecycleAdvice">Bean Life Cycle Advice</a>.
 Beans compiled with an earlier version keep the previous order until they are recompiled.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the_io_ratio_of_an_event_loop_group_is_applied_5_3">The <code>io-ratio</code> of an event loop group is applied (5.3)</h3>
+<div class="paragraph">
+<p>The <code>micronaut.netty.event-loops.*.io-ratio</code> setting was read but had no effect since Micronaut moved to Netty 4.2, whose event loops had no I/O ratio at first. Netty 4.2.19 brought it back, and since Micronaut 5.3 the setting is passed to the event loops again: with a value below 100, the time an event loop spends on its tasks in one iteration is limited in proportion to the time it spent on I/O, as in Netty 4.1. Without the setting the event loops keep Netty&#8217;s default of 100, which sets no such proportion, so an application that does not configure <code>io-ratio</code> is unaffected. An application that still carries a value from Netty 4.1 should check that it wants it, or remove it. A value outside 1 to 100 now fails the creation of the event loop group. It applies to the event loop groups of the registry and to the acceptor and worker groups the HTTP server creates, so <code>micronaut.server.netty.parent.io-ratio</code> and <code>micronaut.server.netty.worker.io-ratio</code> take effect too. It needs Netty 4.2.19 or later: on an older Netty a configured value fails the creation of the group. The setting does not apply to an event loop group with <code>loom-carrier</code> enabled, which logs a warning when it is set.</p>
 </div>
 </div>
 <div class="sect2">

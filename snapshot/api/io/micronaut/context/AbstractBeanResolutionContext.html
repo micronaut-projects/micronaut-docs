@@ -1119,9 +1119,11 @@ for.
 <p>The bean is the one <a href="BeanLocator.html#getBean(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)"><code>BeanLocator.getBean(Argument, Qualifier)</code></a> returns for the bean type when its lookup picks this
 definition, without the lookup: the caller has already chosen the definition, so no other candidate is
 considered and no candidate lookup or cache is involved. The bean is resolved in the scope of the definition and
-with its declared qualifier, as <a href="BeanDefinitionRegistry.html#getBeanRegistration(io.micronaut.inject.BeanDefinition,io.micronaut.core.type.Argument)"><code>BeanDefinitionRegistry.getBeanRegistration(BeanDefinition, Argument)</code></a>
-resolves it, and a bean that has no scope of its own is a dependent of the bean this context resolves for and
-is destroyed with it, as one <a href="BeanLocator.html#getBean(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)"><code>BeanLocator.getBean(Argument, Qualifier)</code></a> creates is.</p>
+with its declared qualifier, or for no qualifier if it is declared with
+<a href="annotation/Any.html" title="annotation interface in io.micronaut.context.annotation"><code>@Any</code></a>, as
+<a href="BeanDefinitionRegistry.html#getBeanRegistration(io.micronaut.inject.BeanDefinition,io.micronaut.core.type.Argument)"><code>BeanDefinitionRegistry.getBeanRegistration(BeanDefinition, Argument)</code></a> resolves it, and a bean that has
+no scope of its own is a dependent of the bean this context resolves for and is destroyed with it, as one
+<a href="BeanLocator.html#getBean(io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)"><code>BeanLocator.getBean(Argument, Qualifier)</code></a> creates is.</p>
 
 <p>The definition may be of a subtype of the bean type: a definition of an implementation is resolved as an
 interface it implements.</p></div>
@@ -1153,8 +1155,8 @@ this context resolves for, as <a href="BeanResolutionContext.html#getBean(io.mic
 <p>A definition declared with <a href="annotation/Any.html" title="annotation interface in io.micronaut.context.annotation"><code>@Any</code></a> is resolved for the given
 qualifier, as a lookup by type with that qualifier resolves it when it picks the definition: its bean is held
 by its scope under that qualifier, and a factory of it sees that qualifier as the one it is created for. Any
-other definition is resolved with its declared qualifier, the given one is ignored. A definition is resolved
-for its declared qualifier by <a href="BeanResolutionContext.html#getBean(io.micronaut.inject.BeanDefinition,io.micronaut.core.type.Argument)"><code>BeanResolutionContext.getBean(BeanDefinition, Argument)</code></a>.</p></div>
+other definition is resolved with its declared qualifier, the given one is ignored. A qualifier is required: a
+definition is resolved without one by <a href="BeanResolutionContext.html#getBean(io.micronaut.inject.BeanDefinition,io.micronaut.core.type.Argument)"><code>BeanResolutionContext.getBean(BeanDefinition, Argument)</code></a>.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="BeanResolutionContext.html#getQualifiedBean(io.micronaut.inject.BeanDefinition,io.micronaut.core.type.Argument,io.micronaut.context.Qualifier)">getQualifiedBean</a></code>&nbsp;in interface&nbsp;<code><a href="BeanResolutionContext.html" title="interface in io.micronaut.context">BeanResolutionContext</a></code></dd>
@@ -1176,7 +1178,13 @@ for its declared qualifier by <a href="BeanResolutionContext.html#getBean(io.mic
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">getBean</span><wbr><span class="parameters">(<a href="../inject/BeanDefinition.html" title="interface in io.micronaut.inject">BeanDefinition</a>&lt;T&gt;&nbsp;definition)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="BeanLocator.html#getBean(io.micronaut.inject.BeanDefinition)">BeanLocator</a></code></span></div>
-<div class="block">Obtains a Bean for the given bean definition.</div>
+<div class="block">Obtains a Bean for the given bean definition.
+
+<p>A definition declared with <a href="annotation/Any.html" title="annotation interface in io.micronaut.context.annotation"><code>@Any</code></a> is resolved for no qualifier, as a
+lookup by type without a qualifier resolves it when it picks the definition: a factory of it sees no qualifier,
+and its scope holds the bean under no qualifier, so a singleton is the one that lookup returns. Since 5.3.0;
+before, it was resolved for the any qualifier, and a singleton of it was held apart from the one of that
+lookup.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="BeanLocator.html#getBean(io.micronaut.inject.BeanDefinition)">getBean</a></code>&nbsp;in interface&nbsp;<code><a href="BeanLocator.html" title="interface in io.micronaut.context">BeanLocator</a></code></dd>
