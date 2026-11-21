@@ -73,6 +73,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#DEFAULT_COMPRESSIONLEVEL" tabindex="0">DEFAULT_COMPRESSIONLEVEL</a></li>
 <li><a href="#DEFAULT_MAX_ZSTD_ENCODE_SIZE" tabindex="0">DEFAULT_MAX_ZSTD_ENCODE_SIZE</a></li>
 <li><a href="#DEFAULT_KEEP_ALIVE_ON_SERVER_ERROR" tabindex="0">DEFAULT_KEEP_ALIVE_ON_SERVER_ERROR</a></li>
+<li><a href="#DEFAULT_PROXY_PROTOCOL_TIMEOUT_SECONDS" tabindex="0">DEFAULT_PROXY_PROTOCOL_TIMEOUT_SECONDS</a></li>
 <li><a href="#DEFAULT_EAGER_PARSING" tabindex="0">DEFAULT_EAGER_PARSING</a></li>
 <li><a href="#DEFAULT_JSON_BUFFER_MAX_COMPONENTS" tabindex="0">DEFAULT_JSON_BUFFER_MAX_COMPONENTS</a></li>
 <li><a href="#DEFAULT_HTTP3_INITIAL_MAX_DATA" tabindex="0">DEFAULT_HTTP3_INITIAL_MAX_DATA</a></li>
@@ -155,6 +156,10 @@ loadScripts(document, 'script');</script>
 <li><a href="#setRequestDecompressionEnabled(boolean)" tabindex="0">setRequestDecompressionEnabled(boolean)</a></li>
 <li><a href="#isLegacyMultiplexHandlers()" tabindex="0">isLegacyMultiplexHandlers()</a></li>
 <li><a href="#setLegacyMultiplexHandlers(boolean)" tabindex="0">setLegacyMultiplexHandlers(boolean)</a></li>
+<li><a href="#isProxyProtocol()" tabindex="0">isProxyProtocol()</a></li>
+<li><a href="#setProxyProtocol(boolean)" tabindex="0">setProxyProtocol(boolean)</a></li>
+<li><a href="#getProxyProtocolTimeout()" tabindex="0">getProxyProtocolTimeout()</a></li>
+<li><a href="#setProxyProtocolTimeout(java.time.Duration)" tabindex="0">setProxyProtocolTimeout(Duration)</a></li>
 <li><a href="#getFormMaxFields()" tabindex="0">getFormMaxFields()</a></li>
 <li><a href="#setFormMaxFields(int)" tabindex="0">setFormMaxFields(int)</a></li>
 <li><a href="#getFieldMaxBufferedBytes()" tabindex="0">getFieldMaxBufferedBytes()</a></li>
@@ -362,24 +367,29 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">The default max initial line length.</div>
 </div>
-<div class="col-first odd-row-color"><code>static final boolean</code></div>
-<div class="col-second odd-row-color"><code><a href="#DEFAULT_USE_NATIVE_TRANSPORT" class="member-name-link">DEFAULT_USE_NATIVE_TRANSPORT</a></code></div>
+<div class="col-first odd-row-color"><code>static final int</code></div>
+<div class="col-second odd-row-color"><code><a href="#DEFAULT_PROXY_PROTOCOL_TIMEOUT_SECONDS" class="member-name-link">DEFAULT_PROXY_PROTOCOL_TIMEOUT_SECONDS</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">The default use netty's native transport flag.</div>
+<div class="block">The default time in seconds a connection may take to send the PROXY protocol header.</div>
 </div>
 <div class="col-first even-row-color"><code>static final boolean</code></div>
-<div class="col-second even-row-color"><code><a href="#DEFAULT_VALIDATEHEADERS" class="member-name-link">DEFAULT_VALIDATEHEADERS</a></code></div>
+<div class="col-second even-row-color"><code><a href="#DEFAULT_USE_NATIVE_TRANSPORT" class="member-name-link">DEFAULT_USE_NATIVE_TRANSPORT</a></code></div>
 <div class="col-last even-row-color">
+<div class="block">The default use netty's native transport flag.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final boolean</code></div>
+<div class="col-second odd-row-color"><code><a href="#DEFAULT_VALIDATEHEADERS" class="member-name-link">DEFAULT_VALIDATEHEADERS</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">The default validate headers value.</div>
 </div>
-<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#ENABLED" class="member-name-link">ENABLED</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#ENABLED" class="member-name-link">ENABLED</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">Whether the Netty HTTP server is enabled.</div>
 </div>
-<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#PREFIX" class="member-name-link">PREFIX</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#PREFIX" class="member-name-link">PREFIX</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">Prefix for Netty HTTP server settings.</div>
 </div>
 </div>
@@ -551,46 +561,59 @@ parser</a>, if present.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../../netty/channel/ChannelPipelineListener.html" title="interface in io.micronaut.http.netty.channel">ChannelPipelineListener</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPipelineCustomizers()" class="member-name-link">getPipelineCustomizers</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="NettyHttpServerConfiguration.HttpServerType.html" title="enum class in io.micronaut.http.server.netty.configuration">NettyHttpServerConfiguration.HttpServerType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getServerType()" class="member-name-link">getServerType</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="NettyHttpServerConfiguration.Worker.html" title="class in io.micronaut.http.server.netty.configuration">NettyHttpServerConfiguration.Worker</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getWorker()" class="member-name-link">getWorker</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isChunkedSupported()" class="member-name-link">isChunkedSupported</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getProxyProtocolTimeout()" class="member-name-link">getProxyProtocolTimeout</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">How long a connection of a listener with the PROXY protocol enabled may take to send the
+complete PROXY protocol header before it is closed.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="NettyHttpServerConfiguration.HttpServerType.html" title="enum class in io.micronaut.http.server.netty.configuration">NettyHttpServerConfiguration.HttpServerType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getServerType()" class="member-name-link">getServerType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="NettyHttpServerConfiguration.Worker.html" title="class in io.micronaut.http.server.netty.configuration">NettyHttpServerConfiguration.Worker</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getWorker()" class="member-name-link">getWorker</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isChunkedSupported()" class="member-name-link">isChunkedSupported</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Whether chunked requests are supported.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isCloseOnExpectationFailed()" class="member-name-link">isCloseOnExpectationFailed</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isCloseOnExpectationFailed()" class="member-name-link">isCloseOnExpectationFailed</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">If a 100-continue response is detected but the content length is too large then true means close the connection.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isEagerParsing()" class="member-name-link">isEagerParsing</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isEagerParsing()" class="member-name-link">isEagerParsing</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Parse incoming JSON data eagerly, before route binding.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isEnabled()" class="member-name-link">isEnabled</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isEnabled()" class="member-name-link">isEnabled</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns whether the Netty HTTP server is enabled.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isFormLenientPercentDecoding()" class="member-name-link">isFormLenientPercentDecoding</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isFormLenientPercentDecoding()" class="member-name-link">isFormLenientPercentDecoding</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Whether URL-encoded forms accept malformed percent escapes, e.g.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isKeepAliveOnServerError()" class="member-name-link">isKeepAliveOnServerError</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isLegacyMultiplexHandlers()" class="member-name-link">isLegacyMultiplexHandlers</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isKeepAliveOnServerError()" class="member-name-link">isKeepAliveOnServerError</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isLegacyMultiplexHandlers()" class="member-name-link">isLegacyMultiplexHandlers</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Prior to 4.4.0, the Micronaut HTTP server used a multi-pipeline approach for handling HTTP/2
 connections where every request got its own netty pipeline with HTTP/2 to HTTP/1.1
 converters on the pipeline.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isProxyProtocol()" class="member-name-link">isProxyProtocol</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the listeners that the server creates from <code>micronaut.server.port</code> and
+<code>micronaut.server.ssl.port</code> expect the PROXY protocol (version 1 or 2) header at the
+start of each connection.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isRequestDecompressionEnabled()" class="member-name-link">isRequestDecompressionEnabled</a>()</code></div>
@@ -775,6 +798,19 @@ converters on the pipeline.</div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPcapLoggingPathPattern(java.lang.String)" class="member-name-link">setPcapLoggingPathPattern</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;pcapLoggingPathPattern)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The path pattern to use for logging incoming connections to pcap.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setProxyProtocol(boolean)" class="member-name-link">setProxyProtocol</a><wbr>(boolean&nbsp;proxyProtocol)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the listeners that the server creates from <code>micronaut.server.port</code> and
+<code>micronaut.server.ssl.port</code> expect the PROXY protocol (version 1 or 2) header at the
+start of each connection.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setProxyProtocolTimeout(java.time.Duration)" class="member-name-link">setProxyProtocolTimeout</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;proxyProtocolTimeout)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">How long a connection of a listener with the PROXY protocol enabled may take to send the
+complete PROXY protocol header before it is closed.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRequestDecompressionEnabled(boolean)" class="member-name-link">setRequestDecompressionEnabled</a><wbr>(boolean&nbsp;requestDecompressionEnabled)</code></div>
@@ -1036,6 +1072,25 @@ converters on the pipeline.</div>
 <dd>
 <ul class="tag-list">
 <li><a href="../../../../../../constant-values.html#io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration.DEFAULT_KEEP_ALIVE_ON_SERVER_ERROR">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="DEFAULT_PROXY_PROTOCOL_TIMEOUT_SECONDS">
+<h3>DEFAULT_PROXY_PROTOCOL_TIMEOUT_SECONDS</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">DEFAULT_PROXY_PROTOCOL_TIMEOUT_SECONDS</span></div>
+<div class="block">The default time in seconds a connection may take to send the PROXY protocol header.</div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../../constant-values.html#io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration.DEFAULT_PROXY_PROTOCOL_TIMEOUT_SECONDS">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
@@ -2161,6 +2216,89 @@ customizers, however. Setting this option to <code>true</code> returns to the ol
 <dt>Parameters:</dt>
 <dd><code>legacyMultiplexHandlers</code> - Whether to enable the legacy multi-pipeline multiplex
                                 handlers for HTTP/2 connections</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isProxyProtocol()">
+<h3>isProxyProtocol</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isProxyProtocol</span>()</div>
+<div class="block">Whether the listeners that the server creates from <code>micronaut.server.port</code> and
+<code>micronaut.server.ssl.port</code> expect the PROXY protocol (version 1 or 2) header at the
+start of each connection. Off by default. It does not apply to explicitly configured
+<a href="#getListeners()"><code>listeners</code></a>, which have
+<a href="NettyHttpServerConfiguration.NettyListenerConfiguration.html#isProxyProtocol()"><code>their own setting</code></a>, nor to the listeners
+of additional exposed ports, e.g. the management port.
+
+<p>When enabled, a connection that does not start with a valid header is closed. The
+client address that the header carries is the client address of the requests of the
+connection: the <code>HttpClientAddressResolver</code> (and so the <code>remoteAddress</code> route
+condition) and the access log use it, and it is the
+<code>HttpClientAddressResolver.PROXY_PROTOCOL_CLIENT_ADDRESS</code> request attribute.
+<code>HttpRequest#getRemoteAddress()</code> and the <code>peerAddress</code> route condition stay
+the peer of the connection, the load balancer. Enable it only if every connection comes
+from a trusted load balancer that sends the header, since the header is not
+authenticated.</p></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether the implicit listeners expect the PROXY protocol header</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setProxyProtocol(boolean)">
+<h3>setProxyProtocol</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setProxyProtocol</span><wbr><span class="parameters">(boolean&nbsp;proxyProtocol)</span></div>
+<div class="block">Whether the listeners that the server creates from <code>micronaut.server.port</code> and
+<code>micronaut.server.ssl.port</code> expect the PROXY protocol (version 1 or 2) header at the
+start of each connection. Off by default. See <a href="#isProxyProtocol()"><code>isProxyProtocol()</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>proxyProtocol</code> - Whether the implicit listeners expect the PROXY protocol header</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getProxyProtocolTimeout()">
+<h3>getProxyProtocolTimeout</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getProxyProtocolTimeout</span>()</div>
+<div class="block">How long a connection of a listener with the PROXY protocol enabled may take to send the
+complete PROXY protocol header before it is closed. Default value
+(<a href="#DEFAULT_PROXY_PROTOCOL_TIMEOUT_SECONDS">10</a> seconds). Zero or a negative duration
+disables the timeout.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The timeout</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setProxyProtocolTimeout(java.time.Duration)">
+<h3>setProxyProtocolTimeout</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setProxyProtocolTimeout</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;proxyProtocolTimeout)</span></div>
+<div class="block">How long a connection of a listener with the PROXY protocol enabled may take to send the
+complete PROXY protocol header before it is closed. Default value
+(<a href="#DEFAULT_PROXY_PROTOCOL_TIMEOUT_SECONDS">10</a> seconds). Zero or a negative duration
+disables the timeout.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>proxyProtocolTimeout</code> - The timeout</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>
