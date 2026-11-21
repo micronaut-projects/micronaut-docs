@@ -546,12 +546,15 @@ that reports them, e.g. by a <a href="../../http/uri/UriMatchTemplate.html" titl
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../http/uri/RouteCaptures.html" title="interface in io.micronaut.http.uri">RouteCaptures</a>&gt;</span>&nbsp;<span class="element-name">getLocatorRouteCaptures</span>()</div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../http/uri/UriMatchInfo.html#getLocatorRouteCaptures()">UriMatchInfo</a></code></span></div>
 <div class="block">The captures of the templates of the locator routes that located the route of this match,
-the outer locator first. The <a href="../../http/uri/RouteCaptures.html#path()"><code>path</code></a> of each is what its locator
-route matched: the request path for the outer locator, the rest after the prefixes of the
-outer locators for a nested one, and the <a href="../../http/uri/UriMatchInfo.html#getRouteCaptures()"><code>captures</code></a> of the route
-are in the rest after every prefix. The rest of a locator is its last variable, so the
-offsets of an inner capture add to the start of the rest of the locator before it, e.g. to
-tell where a variable of a prefix or of the route is in the request path.</div>
+the outer locator first. The list holds only the locator routes whose templates report
+captures, see <a href="../../http/uri/RouteTemplate.html#match(java.lang.String)"><code>RouteTemplate.match(String)</code></a>. The <a href="../../http/uri/RouteCaptures.html#path()"><code>path</code></a> of
+each is what its locator route matched: the request path for the outer locator, the rest
+after the prefixes of the outer locators for a nested one, and the
+<a href="../../http/uri/UriMatchInfo.html#getRouteCaptures()"><code>captures</code></a> of the route are in the rest after every prefix. The
+rest of a locator is its last variable and the path of a nested locator or route keeps its
+leading slash, which the rest of the parent starts after, so an inner capture <code>i</code> is at
+<code>parent.start(restIndex) - 1 + child.start(i)</code> in the path of the parent, e.g. to tell
+where a variable of a prefix or of the route is in the request path.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../http/uri/UriMatchInfo.html#getLocatorRouteCaptures()">getLocatorRouteCaptures</a></code>&nbsp;in interface&nbsp;<code><a href="../../http/uri/UriMatchInfo.html" title="interface in io.micronaut.http.uri">UriMatchInfo</a></code></dd>

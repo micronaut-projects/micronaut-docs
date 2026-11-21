@@ -61,6 +61,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#routes(io.micronaut.web.router.builder.LocatedHttpRouteBuilder)" tabindex="0">routes(LocatedHttpRouteBuilder)</a></li>
 <li><a href="#locatedTarget(io.micronaut.http.PathVariables)" tabindex="0">locatedTarget(PathVariables)</a></li>
 <li><a href="#locatedTarget(io.micronaut.http.PathVariables,java.lang.Class)" tabindex="0">locatedTarget(PathVariables, Class)</a></li>
+<li><a href="#locatorRouteCaptures(io.micronaut.http.PathVariables)" tabindex="0">locatorRouteCaptures(PathVariables)</a></li>
+<li><a href="#locatorRouteCapture(io.micronaut.http.PathVariables)" tabindex="0">locatorRouteCapture(PathVariables)</a></li>
 </ol>
 </li>
 </ol>
@@ -153,6 +155,19 @@ innermost one when locators locate each other.</div>
 <div class="block">The target a locator returned for the route of the path variables given to a handler, of a
 type, see <a href="#locatedTarget(io.micronaut.http.PathVariables)"><code>locatedTarget(PathVariables)</code></a>.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static @Nullable <a href="../../../http/uri/RouteCaptures.html" title="interface in io.micronaut.http.uri">RouteCaptures</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#locatorRouteCapture(io.micronaut.http.PathVariables)" class="member-name-link">locatorRouteCapture</a><wbr>(<a href="../../../http/PathVariables.html" title="interface in io.micronaut.http">PathVariables</a>&nbsp;pathVariables)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1">
+<div class="block">The captures of the template of the running locator route, given the path variables a
+<a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder"><code>LocatorHandler</code></a> received, e.g.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../../http/uri/RouteCaptures.html" title="interface in io.micronaut.http.uri">RouteCaptures</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#locatorRouteCaptures(io.micronaut.http.PathVariables)" class="member-name-link">locatorRouteCaptures</a><wbr>(<a href="../../../http/PathVariables.html" title="interface in io.micronaut.http">PathVariables</a>&nbsp;pathVariables)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
+<div class="block">The captures of the templates of the locator routes while a locator runs, given the path
+variables a <a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder"><code>LocatorHandler</code></a> received: of the locator routes that located the running
+one, outermost first, then of the running locator route itself.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#routes(io.micronaut.web.router.builder.LocatedHttpRouteBuilder)" class="member-name-link">routes</a><wbr>(<a href="LocatedHttpRouteBuilder.html" title="interface in io.micronaut.web.router.builder">LocatedHttpRouteBuilder</a>&lt;<a href="#type-param-T" title="type parameter in LocatedRoutes">T</a>&gt;&nbsp;routes)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
@@ -244,6 +259,69 @@ type, see <a href="#locatedTarget(io.micronaut.http.PathVariables)"><code>locate
 <dd>The target</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if the route was not located, or the target is not of the type</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="locatorRouteCaptures(io.micronaut.http.PathVariables)">
+<h3>locatorRouteCaptures</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../http/uri/RouteCaptures.html" title="interface in io.micronaut.http.uri">RouteCaptures</a>&gt;</span>&nbsp;<span class="element-name">locatorRouteCaptures</span><wbr><span class="parameters">(<a href="../../../http/PathVariables.html" title="interface in io.micronaut.http">PathVariables</a>&nbsp;pathVariables)</span></div>
+<div class="block">The captures of the templates of the locator routes while a locator runs, given the path
+variables a <a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder"><code>LocatorHandler</code></a> received: of the locator routes that located the running
+one, outermost first, then of the running locator route itself. The list holds only the
+locator routes whose templates report captures, see
+<a href="../../../http/uri/RouteTemplate.html#match(java.lang.String)"><code>RouteTemplate.match(String)</code></a>: a route of a template that does
+not, e.g. a <a href="../../../http/uri/UriMatchTemplate.html" title="class in io.micronaut.http.uri"><code>UriMatchTemplate</code></a>, is left out, so the position of
+a capture in the list does not tell the nesting level. Use
+<a href="#locatorRouteCapture(io.micronaut.http.PathVariables)"><code>locatorRouteCapture(PathVariables)</code></a> for the running locator's own captures.
+
+<p>The captures are the same as <a href="../../../http/uri/UriMatchInfo.html#getLocatorRouteCaptures()"><code>UriMatchInfo.getLocatorRouteCaptures()</code></a>
+of the routes the locator locates. The <a href="../../../http/uri/RouteCaptures.html#path()"><code>path</code></a> of each is what its
+locator route matched: the request path for the outermost locator, the rest after the
+prefixes of the outer locators for a nested one. The rest of a locator is its last variable
+and the path of a nested locator keeps its leading slash, which the rest of the parent
+starts after, so an inner capture <code>i</code> is at
+<code>parent.start(restIndex) - 1 + child.start(i)</code> in the path of the parent.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>pathVariables</code> - The path variables a locator received</dd>
+<dt>Returns:</dt>
+<dd>The captures of the locator routes, empty if these are not the variables of a
+running locator or no template of its locator routes reports them</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="locatorRouteCapture(io.micronaut.http.PathVariables)">
+<h3>locatorRouteCapture</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type">@Nullable <a href="../../../http/uri/RouteCaptures.html" title="interface in io.micronaut.http.uri">RouteCaptures</a></span>&nbsp;<span class="element-name">locatorRouteCapture</span><wbr><span class="parameters">(<a href="../../../http/PathVariables.html" title="interface in io.micronaut.http">PathVariables</a>&nbsp;pathVariables)</span></div>
+<div class="block">The captures of the template of the running locator route, given the path variables a
+<a href="LocatorHandler.html" title="interface in io.micronaut.web.router.builder"><code>LocatorHandler</code></a> received, e.g. to tell where the variables of its prefix are in the
+path it matched.
+
+<pre><code>// offsetTemplate: a RouteTemplate of an engine whose captures report offsets, with the single variable "id"
+builder.locate(offsetTemplate("/users/:id"), (request, pathVariables) -&gt; {
+    RouteCaptures own = LocatedRoutes.locatorRouteCapture(pathVariables);
+    if (own == null || own.start(0) &lt; 0) {
+        return null; // no captures, or no offset of the value of "id"
+    }
+    return users.find(own.path().substring(own.start(0), own.end(0)));
+}, routesOf);
+</code></pre></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>pathVariables</code> - The path variables a locator received</dd>
+<dt>Returns:</dt>
+<dd>The captures, or <code>null</code> if these are not the variables of a running locator
+or its template does not report them</dd>
 <dt>Since:</dt>
 <dd>5.3.0</dd>
 </dl>
