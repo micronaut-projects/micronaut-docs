@@ -76,7 +76,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#setStrategy(io.micronaut.http.client.loadbalance.LoadBalancerStrategy)" tabindex="0">setStrategy(LoadBalancerStrategy)</a></li>
 <li><a href="#getStrategy()" tabindex="0">getStrategy()</a></li>
 <li><a href="#setOutlierDetection(io.micronaut.http.client.loadbalance.OutlierDetectionConfiguration)" tabindex="0">setOutlierDetection(OutlierDetectionConfiguration)</a></li>
+<li><a href="#enableHealthCheck()" tabindex="0">enableHealthCheck()</a></li>
 <li><a href="#getServiceID()" tabindex="0">getServiceID()</a></li>
+<li><a href="#getInstancesForHealthCheck()" tabindex="0">getInstancesForHealthCheck()</a></li>
 <li><a href="#getNextAvailable(java.util.List)" tabindex="0">getNextAvailable(List)</a></li>
 <li><a href="#getNextAvailable(java.util.List,java.lang.Object)" tabindex="0">getNextAvailable(List, Object)</a></li>
 <li><a href="#report(io.micronaut.discovery.ServiceInstance,io.micronaut.http.client.LoadBalancer.Outcome)" tabindex="0">report(ServiceInstance, LoadBalancer.Outcome)</a></li>
@@ -174,6 +176,19 @@ implements <a href="../LoadBalancer.html" title="interface in io.micronaut.http.
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="OutlierDetector.html" title="class in io.micronaut.http.client.loadbalance">OutlierDetector</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#enableHealthCheck()" class="member-name-link">enableHealthCheck</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The detector that holds the availability of the instances, created for the active health
+check when the outlier detection is not enabled: a probed-unhealthy instance is left out
+of the selection like an ejected one, and shows in <a href="#getOutlierEjectionStates()"><code>getOutlierEjectionStates()</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../discovery/ServiceInstance.html" title="interface in io.micronaut.discovery">ServiceInstance</a>&gt;&gt;&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getInstancesForHealthCheck()" class="member-name-link">getInstancesForHealthCheck</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Looks up the current instances of the service, from the same source as the selection,
+for the active health check: each call of the supplier is one lookup.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../../../discovery/ServiceInstance.html" title="interface in io.micronaut.discovery">ServiceInstance</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNextAvailable(java.util.List)" class="member-name-link">getNextAvailable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../discovery/ServiceInstance.html" title="interface in io.micronaut.discovery">ServiceInstance</a>&gt;&nbsp;serviceInstances)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -376,10 +391,30 @@ can: a round-robin one. Any other load balancer is returned as it is.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setOutlierDetection</span><wbr><span class="parameters">(@Nullable <a href="OutlierDetectionConfiguration.html" title="class in io.micronaut.http.client.loadbalance">OutlierDetectionConfiguration</a>&nbsp;outlierDetection)</span></div>
 <div class="block">Stop selecting an instance that keeps failing, as configured, or ignore the reported
-outcomes with <code>null</code>. The ejection state starts over.</div>
+outcomes with <code>null</code>. The ejection state starts over; the results of the active
+health check stay.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>outlierDetection</code> - The outlier detection configuration, or <code>null</code> for none</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="enableHealthCheck()">
+<h3>enableHealthCheck</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="OutlierDetector.html" title="class in io.micronaut.http.client.loadbalance">OutlierDetector</a></span>&nbsp;<span class="element-name">enableHealthCheck</span>()</div>
+<div class="block">The detector that holds the availability of the instances, created for the active health
+check when the outlier detection is not enabled: a probed-unhealthy instance is left out
+of the selection like an ejected one, and shows in <a href="#getOutlierEjectionStates()"><code>getOutlierEjectionStates()</code></a>.
+Internal use only, by <a href="HealthCheckProber.html" title="class in io.micronaut.http.client.loadbalance"><code>HealthCheckProber</code></a>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The detector the health check reports to</dd>
 <dt>Since:</dt>
 <dd>5.3.0</dd>
 </dl>
@@ -394,6 +429,24 @@ outcomes with <code>null</code>. The ejection state starts over.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The service ID</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getInstancesForHealthCheck()">
+<h3>getInstancesForHealthCheck</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations"><a href="../../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../discovery/ServiceInstance.html" title="interface in io.micronaut.discovery">ServiceInstance</a>&gt;&gt;&gt;&gt;</span>&nbsp;<span class="element-name">getInstancesForHealthCheck</span>()</div>
+<div class="block">Looks up the current instances of the service, from the same source as the selection,
+for the active health check: each call of the supplier is one lookup. Internal use only.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The lookup of the instances, or empty when this load balancer cannot tell them, in
+which case it is not health checked</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>

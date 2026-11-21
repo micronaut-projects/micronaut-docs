@@ -1091,6 +1091,12 @@
 </div>
 </div>
 <div class="sect2">
+<h3 id="_active_health_checks_for_discovered_services_in_micronaut_framework_5_3">Active Health Checks for Discovered Services in Micronaut Framework 5.3</h3>
+<div class="paragraph">
+<p>The <code>health-check</code> setting of <code>micronaut.http.services.&lt;id&gt;</code> now belongs to the load balancer of the service, so it also probes the instances a <a href="#serviceDiscovery">discovery client</a> finds: enable it for a service id without <code>urls</code>. The probes follow the instance list as it changes. A probed-unhealthy instance is left out of the selection like an instance ejected by outlier detection, and shows in <code>LoadBalancer.getOutlierEjectionStates()</code>. When every instance is unhealthy, all of them are used, or none with <code>health-check-all-unhealthy: none</code>. The existing <code>health-check</code>, <code>health-check-uri</code> and <code>health-check-interval</code> settings keep working unchanged. See <a href="#clientSideLoadBalancing">Client Side Load Balancing</a>.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_core_themes_in_micronaut_framework_5_0_x">Core Themes in Micronaut Framework 5.0.x</h3>
 <div class="paragraph">
 <p>Micronaut Framework 5.0.x continues the work started in the first 5.0 milestones and adds a number of improvements across the core container, HTTP stack, configuration system, and developer-facing APIs.</p>
@@ -57774,6 +57780,9 @@ micronaut.http.services.foo.read-timeout=5s</code></pre>
 </ul>
 </div>
 <div class="paragraph">
+<p>The same per-service configuration also controls the load balancer of the service: its strategy (<code>load-balancer-strategy</code>), its passive <code>outlier-detection</code>, and its active health check (<code>health-check</code>, <code>health-check-uri</code>, <code>health-check-interval</code>, <code>health-check-all-unhealthy</code>). These apply to a service whose instances come from a discovery client too, by configuring them for its service id without <code>urls</code>. See <a href="#serviceDiscoveryManual">Manual Service Discovery Configuration</a> and <a href="#clientSideLoadBalancing">Client Side Load Balancing</a>.</p>
+</div>
+<div class="paragraph">
 <p>For the Netty HTTP client, you can also plug in a custom DNS resolver by referencing a named Netty <code>AddressResolverGroup</code> bean with the <code>address-resolver-group-name</code> property. This is useful when you need custom name resolution behavior for a specific client.</p>
 </div>
 <div class="listingblock multi-language-sample">
@@ -66264,7 +66273,100 @@ micronaut.http.services.foo.health-check-uri=/health</code></pre>
 </ul>
 </div>
 <div class="paragraph">
-<p>The Micronaut framework starts a background thread to check the health status of the service and if any of the configured services respond with an error code, they are removed from the list of available services.</p>
+<p>The health check is part of the load balancer of the service. From the application startup, each instance is sent a <code>GET</code> to <code>health-check-uri</code>, resolved against the instance URL, through the client of the service and its filters. A configured URL is probed as configured, and its user info is not sent as credentials, as before; a discovered instance is probed with the credentials its metadata gives, like its requests. An instance whose response, after any redirects the client of the service follows, has a status of 300 or above, or that does not answer in time, is unhealthy: the load balancer leaves it out of the selection until a probe succeeds again. The unhealthy instances show in <a href="../api/io/micronaut/http/client/LoadBalancer.html#getOutlierEjectionStates--">getOutlierEjectionStates--</a> with <code>unhealthy</code> set, next to the instances the outlier detection below ejects: both are left out through the same mechanism.</p>
+</div>
+<div class="paragraph">
+<p>The same configuration also health checks a service whose instances come from a <a href="#serviceDiscovery">discovery client</a>: set <code>health-check</code> for its service id without any <code>urls</code>, see <a href="#clientSideLoadBalancing">Client Side Load Balancing</a>.</p>
+</div>
+<div class="paragraph">
+<p>A probe fails when it does not answer within the interval or 10 seconds, whichever is shorter. One failed probe makes an instance unhealthy and one successful probe makes it healthy again. At most 8 instances of a service are probed at once, and each interval is spread by up to 10% either way, so that the clients of a service do not probe it in step.</p>
+</div>
+<div class="paragraph">
+<p>Each round of probes follows the current instance list: a new instance is probed from the next round, and the results of an instance that left the list are forgotten. An instance that was never probed counts as healthy.</p>
+</div>
+<div class="paragraph">
+<p>When the health check finds every instance unhealthy, the <code>health-check-all-unhealthy</code> setting decides what the load balancer does:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.http.services.foo.health-check=true
+micronaut.http.services.foo.health-check-all-unhealthy=use-all</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  http:
+    services:
+      foo:
+        health-check: true
+        health-check-all-unhealthy: use-all</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {http = {services = {foo = {health-check = true, health-check-all-unhealthy = "use-all"}}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  http {
+    services {
+      foo {
+        healthCheck = true
+        healthCheckAllUnhealthy = "use-all"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    http {
+      services {
+        foo {
+          health-check = true
+          health-check-all-unhealthy = "use-all"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "http": {
+      "services": {
+        "foo": {
+          "health-check": true,
+          "health-check-all-unhealthy": "use-all"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>use-all</code>, the default, uses all of the instances anyway, like the panic mode of Envoy: requests are still tried rather than failing at once. This is also what happens when every instance is ejected by outlier detection.</p>
+</li>
+<li>
+<p><code>none</code> uses none of them: requests fail at once with no available instance, as they did before the health check moved to the load balancer, when it removed every configured URL.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p>The clients also report the outcome of every exchange to the load balancer of the service. With <strong>outlier detection</strong>, an instance whose exchanges keep failing is not selected for a while, without waiting for the next health check:</p>
@@ -66419,6 +66521,91 @@ micronaut.http.services.foo.outlier-detection.max-ejection-percent=50</code></pr
 </div>
 <div class="paragraph">
 <p>In fact that is exactly what the Netflix Ribbon support does, described in the next section.</p>
+</div>
+<div class="sect2">
+<h3 id="_health_checking_discovered_instances">Health Checking Discovered Instances</h3>
+<div class="paragraph">
+<p>The status of an instance as reported by the discovery server is often only refreshed every few seconds or minutes. To probe the instances of a discovered service directly, enable the health check for its service id, without <code>urls</code>:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.http.services.foo.health-check=true
+micronaut.http.services.foo.health-check-interval=10s
+micronaut.http.services.foo.health-check-uri=/health</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  http:
+    services:
+      foo:
+        health-check: true
+        health-check-interval: 10s
+        health-check-uri: /health</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {http = {services = {foo = {health-check = true, health-check-interval = "10s", health-check-uri = "/health"}}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  http {
+    services {
+      foo {
+        healthCheck = true
+        healthCheckInterval = "10s"
+        healthCheckUri = "/health"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    http {
+      services {
+        foo {
+          health-check = true
+          health-check-interval = "10s"
+          health-check-uri = "/health"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "http": {
+      "services": {
+        "foo": {
+          "health-check": true,
+          "health-check-interval": "10s",
+          "health-check-uri": "/health"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>The load balancer of <code>foo</code> then probes every instance the discovery client returns, follows the instance list as it changes, and leaves the unhealthy instances out of the selection. The settings, including <code>health-check-all-unhealthy</code>, are the same as for <a href="#serviceDiscoveryManual">manually configured services</a>, where they are described. The health check applies to the default round-robin load balancer and its strategies; a load balancer from a replaced factory that does not extend <a href="../api/io/micronaut/http/client/loadbalance/AbstractRoundRobinLoadBalancer.html">AbstractRoundRobinLoadBalancer</a> is not probed.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_load_balancer_strategies">Load Balancer Strategies</h3>
@@ -66628,7 +66815,7 @@ micronaut.http.services.foo.load-balancer-key-header=X-Session-Id</code></pre>
 <p>With a strategy configured, an instance whose <code>backup</code> metadata is <code>true</code> is a backup, like the backup servers of nginx: it is selected only when no other instance is available, whatever the strategy. Without the <code>load-balancer-strategy</code> setting, the <code>backup</code> metadata is ignored and a backup instance is selected in turn like any other.</p>
 </div>
 <div class="paragraph">
-<p>Every strategy picks among the instances that are up and that the <a href="#serviceDiscoveryManual">outlier detection</a> has not ejected: an ejected instance is never selected, whatever the strategy. The instances are those of each selection, so instances added or removed by a refresh of the discovery client are taken into account on the next selection.</p>
+<p>Every strategy picks among the instances that are up, that the <a href="#serviceDiscoveryManual">outlier detection</a> has not ejected and that the active health check has not found unhealthy: such an instance is never selected, whatever the strategy, unless every instance is left out, in which case all of them are used (see <code>health-check-all-unhealthy</code> for the health check). The instances are those of each selection, so instances added or removed by a refresh of the discovery client are taken into account on the next selection.</p>
 </div>
 <div class="paragraph">
 <p>To pick the instance in another way, implement <a href="../api/io/micronaut/http/client/loadbalance/LoadBalancerStrategy.html">LoadBalancerStrategy</a> and register it as a bean named after the strategy:</p>
@@ -83582,6 +83769,25 @@ repositories {
 
 <div class="paragraph">
 <p>This section documents breaking changes between Micronaut versions</p>
+</div>
+<div class="sect2">
+<h3 id="_the_client_health_check_belongs_to_the_load_balancer_5_3">The client health check belongs to the load balancer (5.3)</h3>
+<div class="paragraph">
+<p>The <code>health-check</code> setting of <code>micronaut.http.services.&lt;id&gt;</code> used to remove failing URLs from the <code>StaticServiceInstanceList</code> of the service, whatever load balancer used that list. Since Micronaut 5.3 the health check is part of the load balancer of the service, so that it also covers discovered instances, see <a href="#clientSideLoadBalancing">Client Side Load Balancing</a>. This changes the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The health check starts only with the default <code>LoadBalancerResolver</code> and a load balancer that extends <code>AbstractRoundRobinLoadBalancer</code>, as the load balancers of the default factories do. With a replaced resolver, or a factory that returns another load balancer, <code>health-check: true</code> no longer has any effect, and a warning is logged at startup.</p>
+</li>
+<li>
+<p>A failing URL stays in <code>StaticServiceInstanceList.getLoadBalancedURIs()</code>: the load balancer leaves it out of the selection instead, and <code>LoadBalancer.getOutlierEjectionStates()</code> reports it as <code>unhealthy</code>.</p>
+</li>
+<li>
+<p>When every URL fails, requests are sent to all of them by default rather than failing at once with no available instance. Set <code>health-check-all-unhealthy: none</code> to keep the previous behaviour.</p>
+</li>
+</ul>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_trailers_are_validated_5_3">Trailers are validated (5.3)</h3>

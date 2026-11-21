@@ -59,10 +59,12 @@ loadScripts(document, 'script');</script>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
 <li><a href="#%3Cinit%3E(java.net.URI,boolean,int,java.time.Instant,int,int)" tabindex="0">OutlierEjectionState(URI, boolean, int, Instant, int, int)</a></li>
+<li><a href="#%3Cinit%3E(java.net.URI,boolean,int,java.time.Instant,int,int,boolean)" tabindex="0">OutlierEjectionState(URI, boolean, int, Instant, int, int, boolean)</a></li>
 </ol>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
+<li><a href="#excluded()" tabindex="0">excluded()</a></li>
 <li><a href="#toString()" tabindex="0">toString()</a></li>
 <li><a href="#hashCode()" tabindex="0">hashCode()</a></li>
 <li><a href="#equals(java.lang.Object)" tabindex="0">equals(Object)</a></li>
@@ -72,6 +74,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#ejectedUntil()" tabindex="0">ejectedUntil()</a></li>
 <li><a href="#consecutiveFailures()" tabindex="0">consecutiveFailures()</a></li>
 <li><a href="#consecutiveServerErrors()" tabindex="0">consecutiveServerErrors()</a></li>
+<li><a href="#unhealthy()" tabindex="0">unhealthy()</a></li>
 </ol>
 </li>
 </ol>
@@ -95,10 +98,12 @@ loadScripts(document, 'script');</script>
 <dd><code><span id="param-ejectedUntil">ejectedUntil</span></code> - When the current ejection ends, or <code>null</code> when the instance is not ejected</dd>
 <dd><code><span id="param-consecutiveFailures">consecutiveFailures</span></code> - The consecutive connect failures, timeouts and resets</dd>
 <dd><code><span id="param-consecutiveServerErrors">consecutiveServerErrors</span></code> - The consecutive server errors</dd>
+<dd><code><span id="param-unhealthy">unhealthy</span></code> - Whether the active health check found the instance unhealthy, see
+                               <a href="../ServiceHttpClientConfiguration.html#isHealthCheck()"><code>ServiceHttpClientConfiguration.isHealthCheck()</code></a></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">OutlierEjectionState</span>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&nbsp;uri, boolean&nbsp;ejected, int&nbsp;ejectionCount, @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Instant.html" title="class or interface in java.time" class="external-link">Instant</a>&nbsp;ejectedUntil, int&nbsp;consecutiveFailures, int&nbsp;consecutiveServerErrors)
+<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">OutlierEjectionState</span>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&nbsp;uri, boolean&nbsp;ejected, int&nbsp;ejectionCount, @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Instant.html" title="class or interface in java.time" class="external-link">Instant</a>&nbsp;ejectedUntil, int&nbsp;consecutiveFailures, int&nbsp;consecutiveServerErrors, boolean&nbsp;unhealthy)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
 <div class="block">A snapshot of the outlier detection state of one instance of a service.
 
@@ -108,7 +113,10 @@ reach the configured threshold is <em>ejected</em>: the load balancer stops sele
 for the ejection time, which grows with each ejection, then tries it again. This record tells
 whether an instance is ejected now, until when, and how close it is to the next ejection, for
 example for a management endpoint. Obtain it from
-<a href="../LoadBalancer.html#getOutlierEjectionStates()"><code>LoadBalancer.getOutlierEjectionStates()</code></a>.</p></div>
+<a href="../LoadBalancer.html#getOutlierEjectionStates()"><code>LoadBalancer.getOutlierEjectionStates()</code></a>.</p>
+
+<p>The active health check, when enabled, is part of the same view: an instance it found
+unhealthy is <a href="#unhealthy()"><code>unhealthy()</code></a> and left out of the selection like an ejected one.</p></div>
 <dl class="notes">
 <dt>Since:</dt>
 <dd>5.3.0</dd>
@@ -134,6 +142,16 @@ example for a management endpoint. Obtain it from
  int&nbsp;consecutiveFailures,
  int&nbsp;consecutiveServerErrors)</code></div>
 <div class="col-last even-row-color">
+<div class="block">The state of an instance that the active health check did not find unhealthy.</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.net.URI,boolean,int,java.time.Instant,int,int,boolean)" class="member-name-link">OutlierEjectionState</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&nbsp;uri,
+ boolean&nbsp;ejected,
+ int&nbsp;ejectionCount,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Instant.html" title="class or interface in java.time" class="external-link">Instant</a>&nbsp;ejectedUntil,
+ int&nbsp;consecutiveFailures,
+ int&nbsp;consecutiveServerErrors,
+ boolean&nbsp;unhealthy)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Creates an instance of a <code>OutlierEjectionState</code> record class.</div>
 </div>
 </div>
@@ -180,15 +198,23 @@ example for a management endpoint. Obtain it from
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#excluded()" class="member-name-link">excluded</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a hash code value for this object.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a string representation of this record class.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unhealthy()" class="member-name-link">unhealthy</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-unhealthy"><code>unhealthy</code></a> record component.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#uri()" class="member-name-link">uri</a>()</code></div>
@@ -222,6 +248,30 @@ example for a management endpoint. Obtain it from
  @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Instant.html" title="class or interface in java.time" class="external-link">Instant</a>&nbsp;ejectedUntil,
  int&nbsp;consecutiveFailures,
  int&nbsp;consecutiveServerErrors)</span></div>
+<div class="block">The state of an instance that the active health check did not find unhealthy.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>uri</code> - The URI of the instance</dd>
+<dd><code>ejected</code> - Whether it is ejected now</dd>
+<dd><code>ejectionCount</code> - The number of ejections</dd>
+<dd><code>ejectedUntil</code> - Until when it is ejected, if it is</dd>
+<dd><code>consecutiveFailures</code> - The consecutive transport failures</dd>
+<dd><code>consecutiveServerErrors</code> - The consecutive server errors</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(java.net.URI,boolean,int,java.time.Instant,int,int,boolean)">
+<h3>OutlierEjectionState</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">OutlierEjectionState</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&nbsp;uri,
+ boolean&nbsp;ejected,
+ int&nbsp;ejectionCount,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Instant.html" title="class or interface in java.time" class="external-link">Instant</a>&nbsp;ejectedUntil,
+ int&nbsp;consecutiveFailures,
+ int&nbsp;consecutiveServerErrors,
+ boolean&nbsp;unhealthy)</span></div>
 <div class="block">Creates an instance of a <code>OutlierEjectionState</code> record class.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -231,6 +281,7 @@ example for a management endpoint. Obtain it from
 <dd><code>ejectedUntil</code> - the value for the <a href="#param-ejectedUntil"><code>ejectedUntil</code></a> record component</dd>
 <dd><code>consecutiveFailures</code> - the value for the <a href="#param-consecutiveFailures"><code>consecutiveFailures</code></a> record component</dd>
 <dd><code>consecutiveServerErrors</code> - the value for the <a href="#param-consecutiveServerErrors"><code>consecutiveServerErrors</code></a> record component</dd>
+<dd><code>unhealthy</code> - the value for the <a href="#param-unhealthy"><code>unhealthy</code></a> record component</dd>
 </dl>
 </div>
 </section>
@@ -243,6 +294,20 @@ example for a management endpoint. Obtain it from
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="excluded()">
+<h3>excluded</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">excluded</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether the instance is left out of the selection now, ejected by the outlier
+detection or found unhealthy by the active health check. When every instance is left out,
+all of them are selected anyway.</dd>
+</dl>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="toString()">
 <h3>toString</h3>
@@ -364,6 +429,19 @@ example for a management endpoint. Obtain it from
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the value of the <a href="#param-consecutiveServerErrors"><code>consecutiveServerErrors</code></a> record component</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="unhealthy()">
+<h3>unhealthy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">unhealthy</span>()</div>
+<div class="block">Returns the value of the <a href="#param-unhealthy"><code>unhealthy</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-unhealthy"><code>unhealthy</code></a> record component</dd>
 </dl>
 </div>
 </section>

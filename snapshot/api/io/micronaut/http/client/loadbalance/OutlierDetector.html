@@ -65,7 +65,11 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#available(java.util.List)" tabindex="0">available(List)</a></li>
+<li><a href="#setNoneWhenAllUnhealthy(boolean)" tabindex="0">setNoneWhenAllUnhealthy(boolean)</a></li>
 <li><a href="#isEjected(io.micronaut.discovery.ServiceInstance)" tabindex="0">isEjected(ServiceInstance)</a></li>
+<li><a href="#isUnhealthy(java.net.URI)" tabindex="0">isUnhealthy(URI)</a></li>
+<li><a href="#reportProbe(java.net.URI,boolean,int,int)" tabindex="0">reportProbe(URI, boolean, int, int)</a></li>
+<li><a href="#retainProbed(java.util.Set)" tabindex="0">retainProbed(Set)</a></li>
 <li><a href="#report(io.micronaut.discovery.ServiceInstance,io.micronaut.http.client.LoadBalancer.Outcome)" tabindex="0">report(ServiceInstance, LoadBalancer.Outcome)</a></li>
 <li><a href="#snapshot()" tabindex="0">snapshot()</a></li>
 </ol>
@@ -106,10 +110,10 @@ the consecutive failures of each instance, by URI, and until when an instance is
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.http.client.loadbalance.OutlierDetectionConfiguration)" class="member-name-link">OutlierDetector</a><wbr>(<a href="OutlierDetectionConfiguration.html" title="class in io.micronaut.http.client.loadbalance">OutlierDetectionConfiguration</a>&nbsp;configuration)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(io.micronaut.http.client.loadbalance.OutlierDetectionConfiguration,java.util.function.LongSupplier)" class="member-name-link">OutlierDetector</a><wbr>(<a href="OutlierDetectionConfiguration.html" title="class in io.micronaut.http.client.loadbalance">OutlierDetectionConfiguration</a>&nbsp;configuration,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.http.client.loadbalance.OutlierDetectionConfiguration,java.util.function.LongSupplier)" class="member-name-link">OutlierDetector</a><wbr>(@Nullable <a href="OutlierDetectionConfiguration.html" title="class in io.micronaut.http.client.loadbalance">OutlierDetectionConfiguration</a>&nbsp;configuration,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/LongSupplier.html" title="class or interface in java.util.function" class="external-link">LongSupplier</a>&nbsp;clock)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(io.micronaut.http.client.loadbalance.OutlierDetectionConfiguration)" class="member-name-link">OutlierDetector</a><wbr>(<a href="OutlierDetectionConfiguration.html" title="class in io.micronaut.http.client.loadbalance">OutlierDetectionConfiguration</a>&nbsp;configuration)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
@@ -128,18 +132,43 @@ the consecutive failures of each instance, by URI, and until when an instance is
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../../discovery/ServiceInstance.html" title="interface in io.micronaut.discovery">ServiceInstance</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#available(java.util.List)" class="member-name-link">available</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../discovery/ServiceInstance.html" title="interface in io.micronaut.discovery">ServiceInstance</a>&gt;&nbsp;instances)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">The instances that are not ejected.</div>
+<div class="block">The instances that are neither ejected nor found unhealthy by the active health check.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isEjected(io.micronaut.discovery.ServiceInstance)" class="member-name-link">isEjected</a><wbr>(<a href="../../../discovery/ServiceInstance.html" title="interface in io.micronaut.discovery">ServiceInstance</a>&nbsp;instance)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Whether the instance is ejected now.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#report(io.micronaut.discovery.ServiceInstance,io.micronaut.http.client.LoadBalancer.Outcome)" class="member-name-link">report</a><wbr>(<a href="../../../discovery/ServiceInstance.html" title="interface in io.micronaut.discovery">ServiceInstance</a>&nbsp;instance,
- <a href="../LoadBalancer.Outcome.html" title="enum class in io.micronaut.http.client">LoadBalancer.Outcome</a>&nbsp;outcome)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isUnhealthy(java.net.URI)" class="member-name-link">isUnhealthy</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&nbsp;uri)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the active health check found the instance unhealthy.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#report(io.micronaut.discovery.ServiceInstance,io.micronaut.http.client.LoadBalancer.Outcome)" class="member-name-link">report</a><wbr>(<a href="../../../discovery/ServiceInstance.html" title="interface in io.micronaut.discovery">ServiceInstance</a>&nbsp;instance,
+ <a href="../LoadBalancer.Outcome.html" title="enum class in io.micronaut.http.client">LoadBalancer.Outcome</a>&nbsp;outcome)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Count the outcome of an exchange with an instance.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reportProbe(java.net.URI,boolean,int,int)" class="member-name-link">reportProbe</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&nbsp;uri,
+ boolean&nbsp;healthy,
+ int&nbsp;healthyThreshold,
+ int&nbsp;unhealthyThreshold)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Count the result of a health check probe of an instance.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#retainProbed(java.util.Set)" class="member-name-link">retainProbed</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;&nbsp;uris)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Forget the probe results of the instances that are no longer in the instance list.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setNoneWhenAllUnhealthy(boolean)" class="member-name-link">setNoneWhenAllUnhealthy</a><wbr>(boolean&nbsp;none)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether no instance is used when the health check finds every instance unhealthy, rather
+than all of them, see
+<a href="../ServiceHttpClientConfiguration.html#getHealthCheckAllUnhealthy()"><code>ServiceHttpClientConfiguration.getHealthCheckAllUnhealthy()</code></a>.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="OutlierEjectionState.html" title="class in io.micronaut.http.client.loadbalance">OutlierEjectionState</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#snapshot()" class="member-name-link">snapshot</a>()</code></div>
@@ -180,11 +209,11 @@ instance with a reported outcome.</div>
 <section class="detail" id="&lt;init&gt;(io.micronaut.http.client.loadbalance.OutlierDetectionConfiguration,java.util.function.LongSupplier)">
 <h3>OutlierDetector</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">OutlierDetector</span><wbr><span class="parameters">(<a href="OutlierDetectionConfiguration.html" title="class in io.micronaut.http.client.loadbalance">OutlierDetectionConfiguration</a>&nbsp;configuration,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">OutlierDetector</span><wbr><span class="parameters">(@Nullable <a href="OutlierDetectionConfiguration.html" title="class in io.micronaut.http.client.loadbalance">OutlierDetectionConfiguration</a>&nbsp;configuration,
  <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/LongSupplier.html" title="class or interface in java.util.function" class="external-link">LongSupplier</a>&nbsp;clock)</span></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>configuration</code> - The configuration</dd>
+<dd><code>configuration</code> - The configuration, or <code>null</code> for only the active health check</dd>
 <dd><code>clock</code> - The clock, in nanoseconds</dd>
 </dl>
 </div>
@@ -203,13 +232,31 @@ instance with a reported outcome.</div>
 <h3>available</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../discovery/ServiceInstance.html" title="interface in io.micronaut.discovery">ServiceInstance</a>&gt;</span>&nbsp;<span class="element-name">available</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../discovery/ServiceInstance.html" title="interface in io.micronaut.discovery">ServiceInstance</a>&gt;&nbsp;instances)</span></div>
-<div class="block">The instances that are not ejected. When every instance is ejected, all of them, so that
-a service whose every instance failed is still tried.</div>
+<div class="block">The instances that are neither ejected nor found unhealthy by the active health check.
+When none is left, all of them (panic mode, as in Envoy): a service whose every instance
+failed is still tried rather than failing every request. With
+<a href="#setNoneWhenAllUnhealthy(boolean)"><code>setNoneWhenAllUnhealthy(boolean)</code></a>, the instances that the health check found
+unhealthy stay out even then, so that none may be left.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>instances</code> - The instances that are up</dd>
 <dt>Returns:</dt>
 <dd>The instances to select among</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setNoneWhenAllUnhealthy(boolean)">
+<h3>setNoneWhenAllUnhealthy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setNoneWhenAllUnhealthy</span><wbr><span class="parameters">(boolean&nbsp;none)</span></div>
+<div class="block">Whether no instance is used when the health check finds every instance unhealthy, rather
+than all of them, see
+<a href="../ServiceHttpClientConfiguration.html#getHealthCheckAllUnhealthy()"><code>ServiceHttpClientConfiguration.getHealthCheckAllUnhealthy()</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>none</code> - Whether no instance is used</dd>
 </dl>
 </div>
 </section>
@@ -225,6 +272,55 @@ a service whose every instance failed is still tried.</div>
 <dd><code>instance</code> - The instance</dd>
 <dt>Returns:</dt>
 <dd>Whether it is ejected</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isUnhealthy(java.net.URI)">
+<h3>isUnhealthy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isUnhealthy</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&nbsp;uri)</span></div>
+<div class="block">Whether the active health check found the instance unhealthy.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>uri</code> - The URI of the instance</dd>
+<dt>Returns:</dt>
+<dd>Whether it is unhealthy</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="reportProbe(java.net.URI,boolean,int,int)">
+<h3>reportProbe</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">reportProbe</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&nbsp;uri,
+ boolean&nbsp;healthy,
+ int&nbsp;healthyThreshold,
+ int&nbsp;unhealthyThreshold)</span></div>
+<div class="block">Count the result of a health check probe of an instance. An instance is unhealthy after
+the given number of consecutive failed probes, and healthy again after the given number
+of consecutive successful ones. An instance that was never probed is healthy.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>uri</code> - The URI of the instance</dd>
+<dd><code>healthy</code> - Whether the probe succeeded</dd>
+<dd><code>healthyThreshold</code> - The consecutive successes that make an unhealthy instance healthy</dd>
+<dd><code>unhealthyThreshold</code> - The consecutive failures that make a healthy instance unhealthy</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="retainProbed(java.util.Set)">
+<h3>retainProbed</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">retainProbed</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;&nbsp;uris)</span></div>
+<div class="block">Forget the probe results of the instances that are no longer in the instance list.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>uris</code> - The URIs of the instances in the list</dd>
 </dl>
 </div>
 </section>

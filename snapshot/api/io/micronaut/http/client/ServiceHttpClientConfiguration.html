@@ -93,6 +93,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#getConnectionPoolConfiguration()" tabindex="0">getConnectionPoolConfiguration()</a></li>
 <li><a href="#getWebSocketCompressionConfiguration()" tabindex="0">getWebSocketCompressionConfiguration()</a></li>
 <li><a href="#getHttp2Configuration()" tabindex="0">getHttp2Configuration()</a></li>
+<li><a href="#getHealthCheckAllUnhealthy()" tabindex="0">getHealthCheckAllUnhealthy()</a></li>
+<li><a href="#setHealthCheckAllUnhealthy(io.micronaut.http.client.ServiceHttpClientConfiguration.HealthCheckAllUnhealthy)" tabindex="0">setHealthCheckAllUnhealthy(ServiceHttpClientConfiguration.HealthCheckAllUnhealthy)</a></li>
 <li><a href="#getOutlierDetection()" tabindex="0">getOutlierDetection()</a></li>
 <li><a href="#getLoadBalancerStrategy()" tabindex="0">getLoadBalancerStrategy()</a></li>
 <li><a href="#setLoadBalancerStrategy(java.lang.String)" tabindex="0">setLoadBalancerStrategy(String)</a></li>
@@ -147,29 +149,35 @@ implements <a href="../context/ClientContextPathProvider.html" title="interface 
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Class</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>static class&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="ServiceHttpClientConfiguration.ServiceConnectionPoolConfiguration.html" class="type-name-link" title="class in io.micronaut.http.client">ServiceHttpClientConfiguration.ServiceConnectionPoolConfiguration</a></code></div>
+<div class="col-first even-row-color"><code>static enum&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.html" class="type-name-link" title="enum class in io.micronaut.http.client">ServiceHttpClientConfiguration.HealthCheckAllUnhealthy</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">The default connection pool configuration.</div>
+<div class="block">What the load balancer of a service does when its health check finds every instance
+unhealthy, see <a href="#getHealthCheckAllUnhealthy()"><code>getHealthCheckAllUnhealthy()</code></a>.</div>
 </div>
 <div class="col-first odd-row-color"><code>static class&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="ServiceHttpClientConfiguration.ServiceHttp2ClientConfiguration.html" class="type-name-link" title="class in io.micronaut.http.client">ServiceHttpClientConfiguration.ServiceHttp2ClientConfiguration</a></code></div>
+<div class="col-second odd-row-color"><code><a href="ServiceHttpClientConfiguration.ServiceConnectionPoolConfiguration.html" class="type-name-link" title="class in io.micronaut.http.client">ServiceHttpClientConfiguration.ServiceConnectionPoolConfiguration</a></code></div>
 <div class="col-last odd-row-color">
+<div class="block">The default connection pool configuration.</div>
+</div>
+<div class="col-first even-row-color"><code>static class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="ServiceHttpClientConfiguration.ServiceHttp2ClientConfiguration.html" class="type-name-link" title="class in io.micronaut.http.client">ServiceHttpClientConfiguration.ServiceHttp2ClientConfiguration</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The service HTTP/2 configuration.</div>
 </div>
-<div class="col-first even-row-color"><code>static class&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="ServiceHttpClientConfiguration.ServiceOutlierDetectionConfiguration.html" class="type-name-link" title="class in io.micronaut.http.client">ServiceHttpClientConfiguration.ServiceOutlierDetectionConfiguration</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>static class&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="ServiceHttpClientConfiguration.ServiceOutlierDetectionConfiguration.html" class="type-name-link" title="class in io.micronaut.http.client">ServiceHttpClientConfiguration.ServiceOutlierDetectionConfiguration</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">The outlier detection configuration of the service.</div>
 </div>
-<div class="col-first odd-row-color"><code>static class&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="ServiceHttpClientConfiguration.ServiceSslClientConfiguration.html" class="type-name-link" title="class in io.micronaut.http.client">ServiceHttpClientConfiguration.ServiceSslClientConfiguration</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>static class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="ServiceHttpClientConfiguration.ServiceSslClientConfiguration.html" class="type-name-link" title="class in io.micronaut.http.client">ServiceHttpClientConfiguration.ServiceSslClientConfiguration</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The default connection pool configuration.</div>
 </div>
-<div class="col-first even-row-color"><code>static class&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="ServiceHttpClientConfiguration.ServiceWebSocketCompressionConfiguration.html" class="type-name-link" title="class in io.micronaut.http.client">ServiceHttpClientConfiguration.ServiceWebSocketCompressionConfiguration</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>static class&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="ServiceHttpClientConfiguration.ServiceWebSocketCompressionConfiguration.html" class="type-name-link" title="class in io.micronaut.http.client">ServiceHttpClientConfiguration.ServiceWebSocketCompressionConfiguration</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">The default WebSocket compression configuration.</div>
 </div>
 </div>
@@ -288,71 +296,87 @@ implements <a href="../context/ClientContextPathProvider.html" title="interface 
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getContextPath()" class="member-name-link">getContextPath</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHealthCheckInterval()" class="member-name-link">getHealthCheckInterval</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.html" title="enum class in io.micronaut.http.client">ServiceHttpClientConfiguration.HealthCheckAllUnhealthy</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHealthCheckAllUnhealthy()" class="member-name-link">getHealthCheckAllUnhealthy</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">What the load balancer of the service does when the health check finds every instance
+unhealthy: use all of them anyway (<a href="ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.html#USE_ALL"><code>ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.USE_ALL</code></a>, the default),
+or none (<a href="ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.html#NONE"><code>ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.NONE</code></a>), so that requests fail at once with no
+available instance.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHealthCheckInterval()" class="member-name-link">getHealthCheckInterval</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The default duration to check health status.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHealthCheckUri()" class="member-name-link">getHealthCheckUri</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHealthCheckUri()" class="member-name-link">getHealthCheckUri</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The URI to check the service for health status.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ServiceHttpClientConfiguration.ServiceHttp2ClientConfiguration.html" title="class in io.micronaut.http.client">ServiceHttpClientConfiguration.ServiceHttp2ClientConfiguration</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHttp2Configuration()" class="member-name-link">getHttp2Configuration</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ServiceHttpClientConfiguration.ServiceHttp2ClientConfiguration.html" title="class in io.micronaut.http.client">ServiceHttpClientConfiguration.ServiceHttp2ClientConfiguration</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHttp2Configuration()" class="member-name-link">getHttp2Configuration</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Obtains the HTTP/2 configuration.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLoadBalancerKeyHeader()" class="member-name-link">getLoadBalancerKeyHeader</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLoadBalancerKeyHeader()" class="member-name-link">getLoadBalancerKeyHeader</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The request header that holds the
 <a href="loadbalance/LoadBalancerKey.html" title="class in io.micronaut.http.client.loadbalance"><code>key</code></a> of a request for the
 load balancer, e.g.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLoadBalancerStrategy()" class="member-name-link">getLoadBalancerStrategy</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLoadBalancerStrategy()" class="member-name-link">getLoadBalancerStrategy</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">How the load balancer of the service picks among its available instances: a built-in
 <a href="loadbalance/LoadBalancerStrategy.html" title="interface in io.micronaut.http.client.loadbalance"><code>strategy</code></a>
 (<code>round-robin</code>, <code>random</code>, <code>p2c</code>, <code>weighted</code>, <code>sticky</code>) or the
 name of a strategy bean.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="loadbalance/OutlierDetectionConfiguration.html" title="class in io.micronaut.http.client.loadbalance">OutlierDetectionConfiguration</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOutlierDetection()" class="member-name-link">getOutlierDetection</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="loadbalance/OutlierDetectionConfiguration.html" title="class in io.micronaut.http.client.loadbalance">OutlierDetectionConfiguration</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOutlierDetection()" class="member-name-link">getOutlierDetection</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The outlier detection of the service: whether an instance that keeps failing stops being
 selected for a while.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPath()" class="member-name-link">getPath</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPath()" class="member-name-link">getPath</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The context path to use for requests.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getServiceId()" class="member-name-link">getServiceId</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getServiceId()" class="member-name-link">getServiceId</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The service id.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getUrls()" class="member-name-link">getUrls</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URI.html" title="class or interface in java.net" class="external-link">URI</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getUrls()" class="member-name-link">getUrls</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The URLs.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="HttpClientConfiguration.WebSocketCompressionConfiguration.html" title="class in io.micronaut.http.client">HttpClientConfiguration.WebSocketCompressionConfiguration</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getWebSocketCompressionConfiguration()" class="member-name-link">getWebSocketCompressionConfiguration</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="HttpClientConfiguration.WebSocketCompressionConfiguration.html" title="class in io.micronaut.http.client">HttpClientConfiguration.WebSocketCompressionConfiguration</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getWebSocketCompressionConfiguration()" class="member-name-link">getWebSocketCompressionConfiguration</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Obtains the WebSocket compression configuration.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isHealthCheck()" class="member-name-link">isHealthCheck</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isHealthCheck()" class="member-name-link">isHealthCheck</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the service health should be checked: the load balancer of the service probes
+the <a href="#getHealthCheckUri()"><code>health check URI</code></a> of each of its instances, configured
+with <code>urls</code> or found by a discovery client, and leaves out of the selection an
+instance that fails, unless every instance does.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHealthCheck(boolean)" class="member-name-link">setHealthCheck</a><wbr>(boolean&nbsp;healthCheck)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Whether the service health should be checked.</div>
+<div class="block">Sets whether the service health should be checked.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHealthCheck(boolean)" class="member-name-link">setHealthCheck</a><wbr>(boolean&nbsp;healthCheck)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHealthCheckAllUnhealthy(io.micronaut.http.client.ServiceHttpClientConfiguration.HealthCheckAllUnhealthy)" class="member-name-link">setHealthCheckAllUnhealthy</a><wbr>(@Nullable <a href="ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.html" title="enum class in io.micronaut.http.client">ServiceHttpClientConfiguration.HealthCheckAllUnhealthy</a>&nbsp;healthCheckAllUnhealthy)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Sets whether the service health should be checked.</div>
+<div class="block">Sets what the load balancer does when every instance is unhealthy.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHealthCheckInterval(java.time.Duration)" class="member-name-link">setHealthCheckInterval</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;healthCheckInterval)</code></div>
@@ -697,7 +721,10 @@ selected for a while.</div>
 <h3>isHealthCheck</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isHealthCheck</span>()</div>
-<div class="block">Whether the service health should be checked.</div>
+<div class="block">Whether the service health should be checked: the load balancer of the service probes
+the <a href="#getHealthCheckUri()"><code>health check URI</code></a> of each of its instances, configured
+with <code>urls</code> or found by a discovery client, and leaves out of the selection an
+instance that fails, unless every instance does.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>True if the health should be checked</dd>
@@ -828,6 +855,40 @@ selected for a while.</div>
 <dd><code><a href="HttpClientConfiguration.html#getHttp2Configuration()">getHttp2Configuration</a></code>&nbsp;in class&nbsp;<code><a href="HttpClientConfiguration.html" title="class in io.micronaut.http.client">HttpClientConfiguration</a></code></dd>
 <dt>Returns:</dt>
 <dd>The HTTP/2 configuration.</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getHealthCheckAllUnhealthy()">
+<h3>getHealthCheckAllUnhealthy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.html" title="enum class in io.micronaut.http.client">ServiceHttpClientConfiguration.HealthCheckAllUnhealthy</a></span>&nbsp;<span class="element-name">getHealthCheckAllUnhealthy</span>()</div>
+<div class="block">What the load balancer of the service does when the health check finds every instance
+unhealthy: use all of them anyway (<a href="ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.html#USE_ALL"><code>ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.USE_ALL</code></a>, the default),
+or none (<a href="ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.html#NONE"><code>ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.NONE</code></a>), so that requests fail at once with no
+available instance.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The policy</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setHealthCheckAllUnhealthy(io.micronaut.http.client.ServiceHttpClientConfiguration.HealthCheckAllUnhealthy)">
+<h3>setHealthCheckAllUnhealthy</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setHealthCheckAllUnhealthy</span><wbr><span class="parameters">(@Nullable <a href="ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.html" title="enum class in io.micronaut.http.client">ServiceHttpClientConfiguration.HealthCheckAllUnhealthy</a>&nbsp;healthCheckAllUnhealthy)</span></div>
+<div class="block">Sets what the load balancer does when every instance is unhealthy. Default value
+<a href="ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.html#USE_ALL"><code>ServiceHttpClientConfiguration.HealthCheckAllUnhealthy.USE_ALL</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>healthCheckAllUnhealthy</code> - The policy, or <code>null</code> to keep the current one</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>
