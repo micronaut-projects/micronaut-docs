@@ -61,6 +61,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#alloc()" tabindex="0">alloc()</a></li>
 <li><a href="#start()" tabindex="0">start()</a></li>
 <li><a href="#shutdown()" tabindex="0">shutdown()</a></li>
+<li><a href="#shutdownGracefully()" tabindex="0">shutdownGracefully()</a></li>
+<li><a href="#reportActiveTasks()" tabindex="0">reportActiveTasks()</a></li>
 <li><a href="#isRunning()" tabindex="0">isRunning()</a></li>
 <li><a href="#connect(io.micronaut.http.client.netty.NettyHttpClient.RequestKey,io.micronaut.http.client.netty.BlockHint)" tabindex="0">connect(NettyHttpClient.RequestKey, BlockHint)</a></li>
 <li><a href="#connect(io.micronaut.http.client.netty.NettyHttpClient.RequestKey,io.micronaut.http.client.netty.BlockHint,java.util.concurrent.atomic.AtomicReference)" tabindex="0">connect(NettyHttpClient.RequestKey, BlockHint, AtomicReference)</a></li>
@@ -138,9 +140,21 @@ Note: This class is public for use in micronaut-oracle-cloud.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isRunning()" class="member-name-link">isRunning</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#shutdown()" class="member-name-link">shutdown</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/OptionalLong.html" title="class or interface in java.util" class="external-link">OptionalLong</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reportActiveTasks()" class="member-name-link">reportActiveTasks</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The number of exchanges of this client that are not done, to report the progress of a
+<a href="#shutdownGracefully()"><code>graceful shutdown</code></a>, see <code>trackRequest(ExecutionFlow, Consumer)</code>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#shutdown()" class="member-name-link">shutdown</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;?&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#shutdownGracefully()" class="member-name-link">shutdownGracefully</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Shut this client down gracefully: let the exchanges in progress finish, and close each
+connection once no request is left for it, instead of keeping it in the pool.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#start()" class="member-name-link">start</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -202,6 +216,51 @@ Note: This class is public for use in micronaut-oracle-cloud.</div>
 <li><a href="DefaultHttpClient.html#stop()"><code>DefaultHttpClient.stop()</code></a></li>
 </ul>
 </dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="shutdownGracefully()">
+<h3>shutdownGracefully</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;?&gt;</span>&nbsp;<span class="element-name">shutdownGracefully</span>()</div>
+<div class="block">Shut this client down gracefully: let the exchanges in progress finish, and close each
+connection once no request is left for it, instead of keeping it in the pool. Idle
+connections close right away.
+<p>New requests are still served while the graceful shutdown is in progress, e.g. those
+that requests of the server make as it shuts down gracefully itself, but a connection is
+closed as soon as no request waits for it. A streamed response whose headers have arrived
+does not hold the shutdown, see <code>trackRequest(ExecutionFlow, Consumer)</code>. The client stays usable until
+<a href="#shutdown()"><code>shutdown()</code></a>, which closes what is still open.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>A stage that completes once no exchange is in progress, or once the client stops.
+It never completes exceptionally</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="DefaultHttpClient.html#stop()"><code>DefaultHttpClient.stop()</code></a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="reportActiveTasks()">
+<h3>reportActiveTasks</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/OptionalLong.html" title="class or interface in java.util" class="external-link">OptionalLong</a></span>&nbsp;<span class="element-name">reportActiveTasks</span>()</div>
+<div class="block">The number of exchanges of this client that are not done, to report the progress of a
+<a href="#shutdownGracefully()"><code>graceful shutdown</code></a>, see <code>trackRequest(ExecutionFlow, Consumer)</code>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The number of active exchanges</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>

@@ -72,6 +72,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#getProxyHttpClient(io.micronaut.core.annotation.AnnotationMetadata)" tabindex="0">getProxyHttpClient(AnnotationMetadata)</a></li>
 <li><a href="#getWebSocketClient(io.micronaut.core.annotation.AnnotationMetadata)" tabindex="0">getWebSocketClient(AnnotationMetadata)</a></li>
 <li><a href="#close()" tabindex="0">close()</a></li>
+<li><a href="#shutdownGracefully()" tabindex="0">shutdownGracefully()</a></li>
+<li><a href="#reportActiveTasks()" tabindex="0">reportActiveTasks()</a></li>
 <li><a href="#disposeClient(io.micronaut.core.annotation.AnnotationMetadata)" tabindex="0">disposeClient(AnnotationMetadata)</a></li>
 <li><a href="#httpClient(io.micronaut.inject.InjectionPoint,io.micronaut.http.client.LoadBalancer,io.micronaut.http.client.HttpClientConfiguration,io.micronaut.context.BeanContext)" tabindex="0">httpClient(InjectionPoint, LoadBalancer, HttpClientConfiguration, BeanContext)</a></li>
 <li><a href="#asyncProxyHttpClient(io.micronaut.inject.InjectionPoint,io.micronaut.http.client.LoadBalancer,io.micronaut.http.client.HttpClientConfiguration,io.micronaut.context.BeanContext)" tabindex="0">asyncProxyHttpClient(InjectionPoint, LoadBalancer, HttpClientConfiguration, BeanContext)</a></li>
@@ -103,7 +105,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="../../../context/event/ApplicationEventListener.html" title="interface in io.micronaut.context.event">ApplicationEventListener</a>&lt;<a href="../../../runtime/context/scope/refresh/RefreshEvent.html" title="class in io.micronaut.runtime.context.scope.refresh">RefreshEvent</a>&gt;, <a href="../../../core/order/Ordered.html" title="interface in io.micronaut.core.order">Ordered</a>, <a href="../HttpClientRegistry.html" title="interface in io.micronaut.http.client">HttpClientRegistry</a>&lt;<a href="../HttpClient.html" title="interface in io.micronaut.http.client">HttpClient</a>&gt;, <a href="NettyClientCustomizer.Registry.html" title="interface in io.micronaut.http.client.netty">NettyClientCustomizer.Registry</a>, <a href="../ProxyHttpClientRegistry.html" title="interface in io.micronaut.http.client">ProxyHttpClientRegistry</a>&lt;<a href="../ProxyHttpClient.html" title="interface in io.micronaut.http.client">ProxyHttpClient</a>&gt;, <a href="../RawHttpClientRegistry.html" title="interface in io.micronaut.http.client">RawHttpClientRegistry</a>, <a href="../sse/SseClientRegistry.html" title="interface in io.micronaut.http.client.sse">SseClientRegistry</a>&lt;<a href="../sse/SseClient.html" title="interface in io.micronaut.http.client.sse">SseClient</a>&gt;, <a href="../StreamingHttpClientRegistry.html" title="interface in io.micronaut.http.client">StreamingHttpClientRegistry</a>&lt;<a href="../StreamingHttpClient.html" title="interface in io.micronaut.http.client">StreamingHttpClient</a>&gt;, <a href="../../netty/channel/ChannelPipelineCustomizer.html" title="interface in io.micronaut.http.netty.channel">ChannelPipelineCustomizer</a>, <a href="../../../runtime/context/scope/refresh/RefreshEventListener.html" title="interface in io.micronaut.runtime.context.scope.refresh">RefreshEventListener</a>, <a href="../../../websocket/WebSocketClientRegistry.html" title="interface in io.micronaut.websocket">WebSocketClientRegistry</a>&lt;<a href="../../../websocket/WebSocketClient.html" title="interface in io.micronaut.websocket">WebSocketClient</a>&gt;, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/EventListener.html" title="class or interface in java.util" class="external-link">EventListener</a></code></dd>
+<dd><code><a href="../../../context/event/ApplicationEventListener.html" title="interface in io.micronaut.context.event">ApplicationEventListener</a>&lt;<a href="../../../runtime/context/scope/refresh/RefreshEvent.html" title="class in io.micronaut.runtime.context.scope.refresh">RefreshEvent</a>&gt;, <a href="../../../core/order/Ordered.html" title="interface in io.micronaut.core.order">Ordered</a>, <a href="../HttpClientRegistry.html" title="interface in io.micronaut.http.client">HttpClientRegistry</a>&lt;<a href="../HttpClient.html" title="interface in io.micronaut.http.client">HttpClient</a>&gt;, <a href="NettyClientCustomizer.Registry.html" title="interface in io.micronaut.http.client.netty">NettyClientCustomizer.Registry</a>, <a href="../ProxyHttpClientRegistry.html" title="interface in io.micronaut.http.client">ProxyHttpClientRegistry</a>&lt;<a href="../ProxyHttpClient.html" title="interface in io.micronaut.http.client">ProxyHttpClient</a>&gt;, <a href="../RawHttpClientRegistry.html" title="interface in io.micronaut.http.client">RawHttpClientRegistry</a>, <a href="../sse/SseClientRegistry.html" title="interface in io.micronaut.http.client.sse">SseClientRegistry</a>&lt;<a href="../sse/SseClient.html" title="interface in io.micronaut.http.client.sse">SseClient</a>&gt;, <a href="../StreamingHttpClientRegistry.html" title="interface in io.micronaut.http.client">StreamingHttpClientRegistry</a>&lt;<a href="../StreamingHttpClient.html" title="interface in io.micronaut.http.client">StreamingHttpClient</a>&gt;, <a href="../../netty/channel/ChannelPipelineCustomizer.html" title="interface in io.micronaut.http.netty.channel">ChannelPipelineCustomizer</a>, <a href="../../../runtime/context/scope/refresh/RefreshEventListener.html" title="interface in io.micronaut.runtime.context.scope.refresh">RefreshEventListener</a>, <a href="../../../runtime/graceful/GracefulShutdownCapable.html" title="interface in io.micronaut.runtime.graceful">GracefulShutdownCapable</a>, <a href="../../../websocket/WebSocketClientRegistry.html" title="interface in io.micronaut.websocket">WebSocketClientRegistry</a>&lt;<a href="../../../websocket/WebSocketClient.html" title="interface in io.micronaut.websocket">WebSocketClient</a>&gt;, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/EventListener.html" title="class or interface in java.util" class="external-link">EventListener</a></code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
@@ -111,7 +113,7 @@ loadScripts(document, 'script');</script>
 <a href="../../../core/annotation/Internal.html" title="annotation interface in io.micronaut.core.annotation">@Internal</a>
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">DefaultNettyHttpClientRegistry</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, <a href="../HttpClientRegistry.html" title="interface in io.micronaut.http.client">HttpClientRegistry</a>&lt;<a href="../HttpClient.html" title="interface in io.micronaut.http.client">HttpClient</a>&gt;, <a href="../sse/SseClientRegistry.html" title="interface in io.micronaut.http.client.sse">SseClientRegistry</a>&lt;<a href="../sse/SseClient.html" title="interface in io.micronaut.http.client.sse">SseClient</a>&gt;, <a href="../StreamingHttpClientRegistry.html" title="interface in io.micronaut.http.client">StreamingHttpClientRegistry</a>&lt;<a href="../StreamingHttpClient.html" title="interface in io.micronaut.http.client">StreamingHttpClient</a>&gt;, <a href="../../../websocket/WebSocketClientRegistry.html" title="interface in io.micronaut.websocket">WebSocketClientRegistry</a>&lt;<a href="../../../websocket/WebSocketClient.html" title="interface in io.micronaut.websocket">WebSocketClient</a>&gt;, <a href="../ProxyHttpClientRegistry.html" title="interface in io.micronaut.http.client">ProxyHttpClientRegistry</a>&lt;<a href="../ProxyHttpClient.html" title="interface in io.micronaut.http.client">ProxyHttpClient</a>&gt;, <a href="../RawHttpClientRegistry.html" title="interface in io.micronaut.http.client">RawHttpClientRegistry</a>, <a href="../../netty/channel/ChannelPipelineCustomizer.html" title="interface in io.micronaut.http.netty.channel">ChannelPipelineCustomizer</a>, <a href="NettyClientCustomizer.Registry.html" title="interface in io.micronaut.http.client.netty">NettyClientCustomizer.Registry</a>, <a href="../../../runtime/context/scope/refresh/RefreshEventListener.html" title="interface in io.micronaut.runtime.context.scope.refresh">RefreshEventListener</a></span></div>
+implements <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, <a href="../HttpClientRegistry.html" title="interface in io.micronaut.http.client">HttpClientRegistry</a>&lt;<a href="../HttpClient.html" title="interface in io.micronaut.http.client">HttpClient</a>&gt;, <a href="../sse/SseClientRegistry.html" title="interface in io.micronaut.http.client.sse">SseClientRegistry</a>&lt;<a href="../sse/SseClient.html" title="interface in io.micronaut.http.client.sse">SseClient</a>&gt;, <a href="../StreamingHttpClientRegistry.html" title="interface in io.micronaut.http.client">StreamingHttpClientRegistry</a>&lt;<a href="../StreamingHttpClient.html" title="interface in io.micronaut.http.client">StreamingHttpClient</a>&gt;, <a href="../../../websocket/WebSocketClientRegistry.html" title="interface in io.micronaut.websocket">WebSocketClientRegistry</a>&lt;<a href="../../../websocket/WebSocketClient.html" title="interface in io.micronaut.websocket">WebSocketClient</a>&gt;, <a href="../ProxyHttpClientRegistry.html" title="interface in io.micronaut.http.client">ProxyHttpClientRegistry</a>&lt;<a href="../ProxyHttpClient.html" title="interface in io.micronaut.http.client">ProxyHttpClient</a>&gt;, <a href="../RawHttpClientRegistry.html" title="interface in io.micronaut.http.client">RawHttpClientRegistry</a>, <a href="../../netty/channel/ChannelPipelineCustomizer.html" title="interface in io.micronaut.http.netty.channel">ChannelPipelineCustomizer</a>, <a href="NettyClientCustomizer.Registry.html" title="interface in io.micronaut.http.client.netty">NettyClientCustomizer.Registry</a>, <a href="../../../runtime/context/scope/refresh/RefreshEventListener.html" title="interface in io.micronaut.runtime.context.scope.refresh">RefreshEventListener</a>, <a href="../../../runtime/graceful/GracefulShutdownCapable.html" title="interface in io.micronaut.runtime.graceful">GracefulShutdownCapable</a></span></div>
 <div class="block">Factory for the default implementation of the <a href="../HttpClient.html" title="interface in io.micronaut.http.client"><code>HttpClient</code></a> interface based on Netty.</div>
 <dl class="notes">
 <dt>Since:</dt>
@@ -289,45 +291,55 @@ the <a href="../ProxyHttpClient.html" title="interface in io.micronaut.http.clie
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Register a new customizer with this registry.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../HttpClient.html" title="interface in io.micronaut.http.client">HttpClient</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveClient(io.micronaut.inject.InjectionPoint,io.micronaut.http.client.LoadBalancer,io.micronaut.http.client.HttpClientConfiguration,io.micronaut.context.BeanContext)" class="member-name-link">resolveClient</a><wbr>(@Nullable <a href="../../../inject/InjectionPoint.html" title="interface in io.micronaut.inject">InjectionPoint</a>&lt;?&gt;&nbsp;injectionPoint,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/OptionalLong.html" title="class or interface in java.util" class="external-link">OptionalLong</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reportActiveTasks()" class="member-name-link">reportActiveTasks</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">After a call to <a href="../../../runtime/graceful/GracefulShutdownCapable.html#shutdownGracefully()"><code>GracefulShutdownCapable.shutdownGracefully()</code></a> report the state of the shutdown.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../HttpClient.html" title="interface in io.micronaut.http.client">HttpClient</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveClient(io.micronaut.inject.InjectionPoint,io.micronaut.http.client.LoadBalancer,io.micronaut.http.client.HttpClientConfiguration,io.micronaut.context.BeanContext)" class="member-name-link">resolveClient</a><wbr>(@Nullable <a href="../../../inject/InjectionPoint.html" title="interface in io.micronaut.inject">InjectionPoint</a>&lt;?&gt;&nbsp;injectionPoint,
  @Nullable <a href="../LoadBalancer.html" title="interface in io.micronaut.http.client">LoadBalancer</a>&nbsp;loadBalancer,
  @Nullable <a href="../HttpClientConfiguration.html" title="class in io.micronaut.http.client">HttpClientConfiguration</a>&nbsp;configuration,
  <a href="../../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Resolves a <a href="../HttpClient.html" title="interface in io.micronaut.http.client"><code>HttpClient</code></a> for the given injection point.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../ProxyHttpClient.html" title="interface in io.micronaut.http.client">ProxyHttpClient</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveProxyHttpClient(io.micronaut.inject.InjectionPoint,io.micronaut.http.client.LoadBalancer,io.micronaut.http.client.HttpClientConfiguration,io.micronaut.context.BeanContext)" class="member-name-link">resolveProxyHttpClient</a><wbr>(@Nullable <a href="../../../inject/InjectionPoint.html" title="interface in io.micronaut.inject">InjectionPoint</a>&lt;?&gt;&nbsp;injectionPoint,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../ProxyHttpClient.html" title="interface in io.micronaut.http.client">ProxyHttpClient</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveProxyHttpClient(io.micronaut.inject.InjectionPoint,io.micronaut.http.client.LoadBalancer,io.micronaut.http.client.HttpClientConfiguration,io.micronaut.context.BeanContext)" class="member-name-link">resolveProxyHttpClient</a><wbr>(@Nullable <a href="../../../inject/InjectionPoint.html" title="interface in io.micronaut.inject">InjectionPoint</a>&lt;?&gt;&nbsp;injectionPoint,
  @Nullable <a href="../LoadBalancer.html" title="interface in io.micronaut.http.client">LoadBalancer</a>&nbsp;loadBalancer,
  @Nullable <a href="../HttpClientConfiguration.html" title="class in io.micronaut.http.client">HttpClientConfiguration</a>&nbsp;configuration,
  <a href="../../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Resolves a <a href="../ProxyHttpClient.html" title="interface in io.micronaut.http.client"><code>ProxyHttpClient</code></a> for the given injection point.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../sse/SseClient.html" title="interface in io.micronaut.http.client.sse">SseClient</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveSseClient(io.micronaut.inject.InjectionPoint,io.micronaut.http.client.LoadBalancer,io.micronaut.http.client.HttpClientConfiguration,io.micronaut.context.BeanContext)" class="member-name-link">resolveSseClient</a><wbr>(@Nullable <a href="../../../inject/InjectionPoint.html" title="interface in io.micronaut.inject">InjectionPoint</a>&lt;?&gt;&nbsp;injectionPoint,
- @Nullable <a href="../LoadBalancer.html" title="interface in io.micronaut.http.client">LoadBalancer</a>&nbsp;loadBalancer,
- @Nullable <a href="../HttpClientConfiguration.html" title="class in io.micronaut.http.client">HttpClientConfiguration</a>&nbsp;configuration,
- <a href="../../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Resolves a <a href="../sse/SseClient.html" title="interface in io.micronaut.http.client.sse"><code>SseClient</code></a> for the given injection point.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../StreamingHttpClient.html" title="interface in io.micronaut.http.client">StreamingHttpClient</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveStreamingHttpClient(io.micronaut.inject.InjectionPoint,io.micronaut.http.client.LoadBalancer,io.micronaut.http.client.HttpClientConfiguration,io.micronaut.context.BeanContext)" class="member-name-link">resolveStreamingHttpClient</a><wbr>(@Nullable <a href="../../../inject/InjectionPoint.html" title="interface in io.micronaut.inject">InjectionPoint</a>&lt;?&gt;&nbsp;injectionPoint,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../sse/SseClient.html" title="interface in io.micronaut.http.client.sse">SseClient</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveSseClient(io.micronaut.inject.InjectionPoint,io.micronaut.http.client.LoadBalancer,io.micronaut.http.client.HttpClientConfiguration,io.micronaut.context.BeanContext)" class="member-name-link">resolveSseClient</a><wbr>(@Nullable <a href="../../../inject/InjectionPoint.html" title="interface in io.micronaut.inject">InjectionPoint</a>&lt;?&gt;&nbsp;injectionPoint,
  @Nullable <a href="../LoadBalancer.html" title="interface in io.micronaut.http.client">LoadBalancer</a>&nbsp;loadBalancer,
  @Nullable <a href="../HttpClientConfiguration.html" title="class in io.micronaut.http.client">HttpClientConfiguration</a>&nbsp;configuration,
  <a href="../../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Resolves a <a href="../StreamingHttpClient.html" title="interface in io.micronaut.http.client"><code>StreamingHttpClient</code></a> for the given injection point.</div>
+<div class="block">Resolves a <a href="../sse/SseClient.html" title="interface in io.micronaut.http.client.sse"><code>SseClient</code></a> for the given injection point.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../websocket/WebSocketClient.html" title="interface in io.micronaut.websocket">WebSocketClient</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveWebSocketClient(io.micronaut.inject.InjectionPoint,io.micronaut.http.client.LoadBalancer,io.micronaut.http.client.HttpClientConfiguration,io.micronaut.context.BeanContext)" class="member-name-link">resolveWebSocketClient</a><wbr>(@Nullable <a href="../../../inject/InjectionPoint.html" title="interface in io.micronaut.inject">InjectionPoint</a>&lt;?&gt;&nbsp;injectionPoint,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../StreamingHttpClient.html" title="interface in io.micronaut.http.client">StreamingHttpClient</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveStreamingHttpClient(io.micronaut.inject.InjectionPoint,io.micronaut.http.client.LoadBalancer,io.micronaut.http.client.HttpClientConfiguration,io.micronaut.context.BeanContext)" class="member-name-link">resolveStreamingHttpClient</a><wbr>(@Nullable <a href="../../../inject/InjectionPoint.html" title="interface in io.micronaut.inject">InjectionPoint</a>&lt;?&gt;&nbsp;injectionPoint,
  @Nullable <a href="../LoadBalancer.html" title="interface in io.micronaut.http.client">LoadBalancer</a>&nbsp;loadBalancer,
  @Nullable <a href="../HttpClientConfiguration.html" title="class in io.micronaut.http.client">HttpClientConfiguration</a>&nbsp;configuration,
  <a href="../../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Resolves a <a href="../StreamingHttpClient.html" title="interface in io.micronaut.http.client"><code>StreamingHttpClient</code></a> for the given injection point.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../websocket/WebSocketClient.html" title="interface in io.micronaut.websocket">WebSocketClient</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveWebSocketClient(io.micronaut.inject.InjectionPoint,io.micronaut.http.client.LoadBalancer,io.micronaut.http.client.HttpClientConfiguration,io.micronaut.context.BeanContext)" class="member-name-link">resolveWebSocketClient</a><wbr>(@Nullable <a href="../../../inject/InjectionPoint.html" title="interface in io.micronaut.inject">InjectionPoint</a>&lt;?&gt;&nbsp;injectionPoint,
+ @Nullable <a href="../LoadBalancer.html" title="interface in io.micronaut.http.client">LoadBalancer</a>&nbsp;loadBalancer,
+ @Nullable <a href="../HttpClientConfiguration.html" title="class in io.micronaut.http.client">HttpClientConfiguration</a>&nbsp;configuration,
+ <a href="../../../context/BeanContext.html" title="interface in io.micronaut.context">BeanContext</a>&nbsp;beanContext)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Resolves a <a href="../../../websocket/WebSocketClient.html" title="interface in io.micronaut.websocket"><code>WebSocketClient</code></a> for the given injection point.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a><wbr>&lt;?&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#shutdownGracefully()" class="member-name-link">shutdownGracefully</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Shut the running clients down gracefully, see <a href="ConnectionManager.html#shutdownGracefully()"><code>ConnectionManager.shutdownGracefully()</code></a>.</div>
 </div>
 </div>
 </div>
@@ -561,6 +573,44 @@ the <a href="../ProxyHttpClient.html" title="interface in io.micronaut.http.clie
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="shutdownGracefully()">
+<h3>shutdownGracefully</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletionStage.html" title="class or interface in java.util.concurrent" class="external-link">CompletionStage</a>&lt;?&gt;</span>&nbsp;<span class="element-name">shutdownGracefully</span>()</div>
+<div class="block">Shut the running clients down gracefully, see <a href="ConnectionManager.html#shutdownGracefully()"><code>ConnectionManager.shutdownGracefully()</code></a>.
+The clients drain together: a client may serve a new request until all of them are idle at
+once, so none is considered done while another one is still busy.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../../runtime/graceful/GracefulShutdownCapable.html#shutdownGracefully()">shutdownGracefully</a></code>&nbsp;in interface&nbsp;<code><a href="../../../runtime/graceful/GracefulShutdownCapable.html" title="interface in io.micronaut.runtime.graceful">GracefulShutdownCapable</a></code></dd>
+<dt>Returns:</dt>
+<dd>A stage that completes once the requests of the clients are done and their
+connections are closed</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="reportActiveTasks()">
+<h3>reportActiveTasks</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/OptionalLong.html" title="class or interface in java.util" class="external-link">OptionalLong</a></span>&nbsp;<span class="element-name">reportActiveTasks</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../../runtime/graceful/GracefulShutdownCapable.html#reportActiveTasks()">GracefulShutdownCapable</a></code></span></div>
+<div class="block">After a call to <a href="../../../runtime/graceful/GracefulShutdownCapable.html#shutdownGracefully()"><code>GracefulShutdownCapable.shutdownGracefully()</code></a> report the state of the shutdown. If
+<a href="../../../runtime/graceful/GracefulShutdownCapable.html#shutdownGracefully()"><code>GracefulShutdownCapable.shutdownGracefully()</code></a> has not been called the behavior of this method is undefined.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../../runtime/graceful/GracefulShutdownCapable.html#reportActiveTasks()">reportActiveTasks</a></code>&nbsp;in interface&nbsp;<code><a href="../../../runtime/graceful/GracefulShutdownCapable.html" title="interface in io.micronaut.runtime.graceful">GracefulShutdownCapable</a></code></dd>
+<dt>Returns:</dt>
+<dd>The current number of still-active tasks before the shutdown completes, or
+<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html#empty()" title="class or interface in java.util" class="external-link"><code>Optional.empty()</code></a> if no state can be reported</dd>
 </dl>
 </div>
 </section>

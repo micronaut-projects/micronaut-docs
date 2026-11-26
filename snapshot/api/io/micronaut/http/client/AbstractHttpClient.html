@@ -108,6 +108,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#setupConversionService(io.micronaut.http.HttpRequest)" tabindex="0">setupConversionService(HttpRequest)</a></li>
 <li><a href="#decorate(E)" tabindex="0">decorate(E)</a></li>
 <li><a href="#completeExceptionallySafe(io.micronaut.core.execution.DelayedExecutionFlow,java.lang.Throwable)" tabindex="0">completeExceptionallySafe(DelayedExecutionFlow, Throwable)</a></li>
+<li><a href="#trackExchange(io.micronaut.core.execution.ExecutionFlow)" tabindex="0">trackExchange(ExecutionFlow)</a></li>
 <li><a href="#resolveRequestURI(io.micronaut.http.HttpRequest)" tabindex="0">resolveRequestURI(HttpRequest)</a></li>
 <li><a href="#resolveRequestURI(io.micronaut.http.HttpRequest,boolean)" tabindex="0">resolveRequestURI(HttpRequest, boolean)</a></li>
 <li><a href="#resolveRedirectURI(io.micronaut.http.HttpRequest,io.micronaut.http.HttpRequest)" tabindex="0">resolveRedirectURI(HttpRequest, HttpRequest)</a></li>
@@ -681,6 +682,13 @@ a time instead of Reactive Streams, including server-sent events.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected &lt;I&gt;&nbsp;<a href="../MutableHttpRequest.html" title="interface in io.micronaut.http">MutableHttpRequest</a><wbr>&lt;?&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toMutableRequest(io.micronaut.http.HttpRequest)" class="member-name-link">toMutableRequest</a><wbr>(<a href="../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&lt;I&gt;&nbsp;request)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected &lt;T&gt;&nbsp;<a href="../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#trackExchange(io.micronaut.core.execution.ExecutionFlow)" class="member-name-link">trackExchange</a><wbr>(<a href="../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;T&gt;&nbsp;flow)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Called with the flow of each exchange, from the selection of its server, through the
+filters and the wait for a connection, until its response is read: until its body is read
+for a full response, or until its headers arrive for a streamed one.</div>
+</div>
 </div>
 </div>
 </div>
@@ -1267,6 +1275,28 @@ transport, to a client exception.</div>
 <dt>Parameters:</dt>
 <dd><code>flow</code> - The flow</dd>
 <dd><code>exc</code> - The failure</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="trackExchange(io.micronaut.core.execution.ExecutionFlow)">
+<h3>trackExchange</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;T&gt;</span>&nbsp;<span class="element-name">trackExchange</span><wbr><span class="parameters">(<a href="../../core/execution/ExecutionFlow.html" title="interface in io.micronaut.core.execution">ExecutionFlow</a>&lt;T&gt;&nbsp;flow)</span></div>
+<div class="block">Called with the flow of each exchange, from the selection of its server, through the
+filters and the wait for a connection, until its response is read: until its body is read
+for a full response, or until its headers arrive for a streamed one. A client can count the
+exchanges in progress with it, e.g. to wait for them as it shuts down gracefully.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><span id="trackExchange(io.micronaut.core.execution.ExecutionFlow)-type-param-T"><code>T</code> - The response type</span></dd>
+<dt>Parameters:</dt>
+<dd><code>flow</code> - The flow of the exchange</dd>
+<dt>Returns:</dt>
+<dd>The flow to continue with, the given one by default</dd>
+<dt>Since:</dt>
+<dd>5.3.0</dd>
 </dl>
 </div>
 </section>

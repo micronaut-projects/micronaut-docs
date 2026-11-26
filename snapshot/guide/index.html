@@ -1095,9 +1095,17 @@
 <div class="sect2">
 <h3 id="_proxy_protocol_support_in_micronaut_framework_5_3">PROXY Protocol Support in Micronaut Framework 5.3</h3>
 <div class="paragraph">
-<p>The Netty HTTP server can read the <a href="#proxyProtocol">PROXY protocol</a> header (version 1 and 2) that TCP load balancers such as an AWS Network Load Balancer or HAProxy send, so that a service behind them sees the real client address. Enable it with <code>micronaut.server.netty.proxy-protocol</code> or per listener.
-=== Active Health Checks for Discovered Services in Micronaut Framework 5.3</p>
+<p>The Netty HTTP server can read the <a href="#proxyProtocol">PROXY protocol</a> header (version 1 and 2) that TCP load balancers such as an AWS Network Load Balancer or HAProxy send, so that a service behind them sees the real client address. Enable it with <code>micronaut.server.netty.proxy-protocol</code> or per listener.</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_http3_on_the_https_port_in_micronaut_framework_5_3">HTTP/3 on the HTTPS Port in Micronaut Framework 5.3</h3>
+<div class="paragraph">
+<p>The Netty HTTP server can serve HTTP/3 on the UDP port with the same number as the HTTPS port, next to HTTP/1.1 and HTTP/2, with a single setting: <code>micronaut.server.netty.http3.enabled</code>. Responses over HTTP/1.1 and HTTP/2 then carry an <code>Alt-Svc</code> header, so that clients can discover HTTP/3. See <a href="#http3Server">HTTP/3 Support</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_active_health_checks_for_discovered_services_in_micronaut_framework_5_3">Active Health Checks for Discovered Services in Micronaut Framework 5.3</h3>
 <div class="paragraph">
 <p>The <code>health-check</code> setting of <code>micronaut.http.services.&lt;id&gt;</code> now belongs to the load balancer of the service, so it also probes the instances a <a href="#serviceDiscovery">discovery client</a> finds: enable it for a service id without <code>urls</code>. The probes follow the instance list as it changes. A probed-unhealthy instance is left out of the selection like an instance ejected by outlier detection, and shows in <code>LoadBalancer.getOutlierEjectionStates()</code>. When every instance is unhealthy, all of them are used, or none with <code>health-check-all-unhealthy: none</code>. The existing <code>health-check</code>, <code>health-check-uri</code> and <code>health-check-interval</code> settings keep working unchanged. See <a href="#clientSideLoadBalancing">Client Side Load Balancing</a>.</p>
 </div>
@@ -8548,12 +8556,26 @@ to finish in-progress tasks. In the Micronaut framework, a graceful shutdown mea
 <li>
 <p>Scheduled tasks will stop running, but in-progress tasks will finish uninterrupted</p>
 </li>
+<li>
+<p>The Netty HTTP client lets its in-progress requests finish, including those waiting for a connection, and closes
+each connection once no request is left for it. Idle pooled connections are closed right away</p>
+</li>
 </ul>
 </div>
 <div class="paragraph">
 <p>If the <code>micronaut.lifecycle.graceful-shutdown.enabled</code> config property is set to <code>true</code>, a graceful shutdown is
 triggered automatically when the context stops (<code>ApplicationContext.stop()</code>). There is also a programmatic
 <a href="../api/io/micronaut/runtime/graceful/GracefulShutdownManager.html">GracefulShutdownManager</a> API if you want more control over the shutdown process.</p>
+</div>
+<div class="paragraph">
+<p>The Netty HTTP client still serves new requests during the graceful shutdown, since in-progress server requests may
+need it to call other services, but it no longer keeps connections open in the pool. A request counts as in progress
+from the selection of its server, through the client filters, until its response is read. For a streamed response,
+such as server-sent events or a data stream, that is until its headers arrive: a stream the application keeps open
+does not hold the shutdown, and it is closed when the client stops. Only the clients that the application context
+manages take part: declarative clients, injected clients and clients created with
+<code>ApplicationContext.createBean(HttpClient.class, url)</code>. Websocket connections are not waited for and are closed when
+the client stops. The JDK HTTP client (<code>micronaut-http-client-jdk</code>) does not take part in the graceful shutdown.</p>
 </div>
 <div class="paragraph">
 <p>Graceful shutdown status can be read using the health management endpoint. This also returns the number of still-active
@@ -40080,6 +40102,74 @@ public SystemFile download() {
 }</code></pre>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_zero_copy_file_transfers">Zero-Copy File Transfers</h3>
+<div class="paragraph">
+<p>A <code>File</code> or a <code>SystemFile</code>, and a static resource that is a file of the file system, is sent from the file directly to the connection, with <code>sendfile</code> or the equivalent of the Netty transport (NIO, epoll, io_uring or kqueue), without copying its bytes through the JVM heap. This also applies to a range of the file requested with a <code>Range</code> header. It applies to HTTP/1.x responses over connections without TLS that are not compressed; any other response, e.g. over HTTP/2, HTTP/3 or TLS, reads the file as a stream. A connection whose Netty pipeline carries an outbound handler that the server does not know to pass a file region on, e.g. a handler added by a <code>NettyServerCustomizer</code> that logs response bodies, also reads the file as a stream, so that the handler sees the bytes.</p>
+</div>
+<div class="paragraph">
+<p>It can also be disabled entirely:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.server.netty.zero-copy-file-responses=false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  server:
+    netty:
+      zero-copy-file-responses: false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {server = {netty = {zero-copy-file-responses = false}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  server {
+    netty {
+      zeroCopyFileResponses = false
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    server {
+      netty {
+        zero-copy-file-responses = false
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "server": {
+      "netty": {
+        "zero-copy-file-responses": false
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -49398,6 +49488,143 @@ that defining this listener will disable the implicit TCP listeners. You can add
 </tr>
 </table>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_serving_http3_on_the_https_port">Serving HTTP/3 on the HTTPS Port</h4>
+<div class="paragraph">
+<p>To serve HTTP/3 next to HTTP/1.1 and HTTP/2 without configuring listeners, enable <code>micronaut.server.netty.http3.enabled</code>. With <a href="#https">HTTPS</a> enabled, the server then binds an HTTP/3 listener to the UDP port with the same number as the HTTPS port, next to the implicit TCP listeners, and uses the same TLS configuration:</p>
+</div>
+<div class="openblock">
+<div class="title">Serving HTTP/3 on the HTTPS port</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.server.ssl.enabled=true
+micronaut.server.ssl.port=8443
+micronaut.server.netty.http3.enabled=true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  server:
+    ssl:
+      enabled: true
+      port: 8443
+    netty:
+      http3:
+        enabled: true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {server = {ssl = {enabled = true, port = 8443}, netty = {http3 = {enabled = true}}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  server {
+    ssl {
+      enabled = true
+      port = 8443
+    }
+    netty {
+      http3 {
+        enabled = true
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    server {
+      ssl {
+        enabled = true
+        port = 8443
+      }
+      netty {
+        http3 {
+          enabled = true
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "server": {
+      "ssl": {
+        "enabled": true,
+        "port": 8443
+      },
+      "netty": {
+        "http3": {
+          "enabled": true
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>With a random HTTPS port (<code>-1</code>), the HTTPS listener picks a port that is also free for UDP, and the HTTP/3 listener binds to the UDP port with that number. Without HTTPS, or when <code>micronaut.server.ssl.protocols</code> leaves out <code>TLSv1.3</code>, the setting has no effect and a warning is logged, since HTTP/3 always requires TLS 1.3. The setting has no effect either when the listeners are configured explicitly.</p>
+</div>
+<div class="paragraph">
+<p>HTTP/3 is part of what the server was configured to serve: when the UDP port is taken, the server fails to start, as it does when the HTTPS port is taken.</p>
+</div>
+<div class="paragraph">
+<p>Each new HTTP/3 connection uses the TLS context that is current when it is accepted, so a certificate from a <code>key-name</code> provider that loads asynchronously or rotates applies to HTTP/3 as it does to HTTPS. A self-signed certificate (<code>build-self-signed</code>) is shared by both listeners.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_advertising_http3_with_alt_svc">Advertising HTTP/3 with Alt-Svc</h4>
+<div class="paragraph">
+<p>Clients cannot know in advance that a server supports HTTP/3, so they first connect over TCP. When <code>micronaut.server.netty.http3.enabled</code> is set, the responses sent over HTTPS with HTTP/1.1 or HTTP/2 carry an <code>Alt-Svc</code> header (<a href="https://www.rfc-editor.org/rfc/rfc7838">RFC 7838</a>) that points clients to the HTTP/3 listener, for example <code>Alt-Svc: h3=":8443"</code>. Clients that support HTTP/3 then switch to it for later requests.</p>
+</div>
+<div class="paragraph">
+<p>The advertisement is configured with the following settings:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Setting</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.netty.http3.alt-svc</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to send the <code>Alt-Svc</code> header. Defaults to the value of <code>micronaut.server.netty.http3.enabled</code>. Set it to <code>true</code> to advertise an explicitly configured <code>QUIC</code> listener: each HTTPS listener points to a <code>QUIC</code> listener that its clients can reach and that serves them the same way: one bound to the address of the HTTPS listener or to a wildcard address that covers it, with the same <code>key-name</code>, <code>trust-name</code> and <code>expose-default-routes</code> settings and, where routes are restricted to a port, the same port. A <code>QUIC</code> listener on the port of the HTTPS listener is preferred. An HTTPS listener without such a <code>QUIC</code> listener sends no header.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.netty.http3.alt-svc-port</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The port to advertise when clients reach the HTTP/3 listener on another port than the one it is bound to, for example behind a container port mapping or a load balancer that maps UDP port 443 to 8443. When not set, the bound port is advertised.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.netty.http3.alt-svc-max-age</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How long clients may remember the advertisement, sent as the <code>ma</code> parameter, for example <code>1h</code> sends <code>ma=3600</code>. When not set, the parameter is omitted and clients use the default of 24 hours.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>These settings apply without a restart, also to connections that are already open. The header is only sent once the HTTP/3 listener has a TLS context to accept connections with. A response that already has an <code>Alt-Svc</code> header keeps it. Responses over plain HTTP and over HTTP/3 itself carry no <code>Alt-Svc</code> header.</p>
+</div>
 <div class="paragraph">
 <p>The <code>micronaut.server.idle-timeout</code> setting also applies to HTTP/3 connections, as the QUIC maximum idle timeout (<code>max_idle_timeout</code>). Idle QUIC connections are closed once it elapses. A negative value disables the idle timeout.</p>
 </div>
@@ -50581,6 +50808,13 @@ micronaut.server.netty.childOptions.autoRead=true</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.netty.validate-headers</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets whether to validate incoming headers. Default value (true).</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.netty.zero-copy-file-responses</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether a file response is sent from the file directly to the connection, without copying
+ its bytes through the JVM heap. Default: true.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -55092,6 +55326,203 @@ micronaut.server.ssl.client-authentication=need</code></pre>
 </div>
 <div class="paragraph">
 <p>A context set programmatically with <code>ServerSslConfiguration.setSslContext(..)</code> takes precedence over <code>context-name</code>. A provided context cannot be used for HTTP/3.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_post_quantum_key_exchange">Post-Quantum Key Exchange</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>key-exchange-groups</code> setting chooses the TLS key exchange named groups and their order of preference. Put a hybrid post-quantum group such as <code>X25519MLKEM768</code> first to protect new connections against later decryption by a quantum computer, and keep classical groups after it for peers that do not support it yet:</p>
+</div>
+<div class="openblock">
+<div class="title">Key Exchange Groups Configuration Example</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.server.ssl.enabled=true
+micronaut.server.ssl.key-name=cert-a
+micronaut.server.ssl.protocols[0]=TLSv1.3
+micronaut.server.ssl.key-exchange-groups[0]=X25519MLKEM768
+micronaut.server.ssl.key-exchange-groups[1]=x25519
+micronaut.server.ssl.key-exchange-groups[2]=secp256r1</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  server:
+    ssl:
+      enabled: true
+      key-name: cert-a
+      protocols:
+        - TLSv1.3
+      key-exchange-groups:
+        - X25519MLKEM768
+        - x25519
+        - secp256r1</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {server = {ssl = {enabled = true, key-name = "cert-a", protocols = ["TLSv1.3"], key-exchange-groups = ["X25519MLKEM768", "x25519", "secp256r1"]}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  server {
+    ssl {
+      enabled = true
+      keyName = "cert-a"
+      protocols = ["TLSv1.3"]
+      keyExchangeGroups = ["X25519MLKEM768", "x25519", "secp256r1"]
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    server {
+      ssl {
+        enabled = true
+        key-name = "cert-a"
+        protocols = ["TLSv1.3"]
+        key-exchange-groups = ["X25519MLKEM768", "x25519", "secp256r1"]
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "server": {
+      "ssl": {
+        "enabled": true,
+        "key-name": "cert-a",
+        "protocols": ["TLSv1.3"],
+        "key-exchange-groups": ["X25519MLKEM768", "x25519", "secp256r1"]
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>The same setting is available for the HTTP client under <code>micronaut.http.client.ssl</code>, and for both under <code>micronaut.ssl</code>. It applies to the JDK and OpenSSL TLS implementations and to HTTP/3. Startup fails when the TLS implementation in use does not support one of the configured groups. Post-quantum groups are only negotiated over TLS 1.3. Whether the JDK TLS implementation supports <code>X25519MLKEM768</code> depends on the JDK version and vendor: <code>SSLContext.getDefault().getSupportedSSLParameters().getNamedGroups()</code> lists the groups of your runtime. The OpenSSL implementation (<code>netty-tcnative-boringssl-static</code>) supports it.</p>
+</div>
+<div class="paragraph">
+<p>The <code>pqc-policy</code> setting adds a post-quantum requirement on top of the groups. A policy set under <code>micronaut.ssl</code> applies to the server only: HTTP clients do not inherit it, because a strict client fails against every server without post-quantum support. Set <code>micronaut.http.client.ssl.pqc-policy</code> to apply a policy to clients.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Policy</th>
+<th class="tableblock halign-left valign-top">Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>none</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The default. The configured groups, or the defaults of the TLS implementation, are used as they are. A post-quantum group is used when both peers support and enable it.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>relaxed</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">At least one post-quantum group and at least one classical group must be enabled, so peers without post-quantum support still connect. Without <code>key-exchange-groups</code>, it enables <code>X25519MLKEM768</code>, <code>x25519</code>, <code>secp256r1</code> and <code>secp384r1</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>strict</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Only post-quantum groups and only TLS 1.3 are allowed, so peers without post-quantum support fail the handshake. Without <code>protocols</code>, it enables <code>TLSv1.3</code> only; configuring an older protocol fails startup, because TLS 1.2 can complete a handshake without any of the groups. Without <code>key-exchange-groups</code>, it enables <code>X25519MLKEM768</code>, <code>SecP256r1MLKEM768</code> and <code>SecP384r1MLKEM1024</code>, as far as the TLS implementation supports them.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>With <code>relaxed</code> or <code>strict</code>, startup fails when the TLS implementation supports no post-quantum group, when a configured group does not meet the policy, or when <code>protocols</code> is set without <code>TLSv1.3</code>. Each list entry must be a single group name, such as <code>X25519MLKEM768</code>, not a colon-separated list.</p>
+</div>
+<div class="paragraph">
+<p>For the JDK TLS implementation, startup checks that an engine restricted to each configured group really offers it, so a provider that does not know or does not enforce a group is rejected instead of silently falling back to classical groups.</p>
+</div>
+<div class="openblock">
+<div class="title">Strict Post-Quantum Policy Example</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.server.ssl.enabled=true
+micronaut.server.ssl.key-name=cert-a
+micronaut.server.ssl.pqc-policy=strict</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  server:
+    ssl:
+      enabled: true
+      key-name: cert-a
+      pqc-policy: strict</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {server = {ssl = {enabled = true, key-name = "cert-a", pqc-policy = "strict"}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  server {
+    ssl {
+      enabled = true
+      keyName = "cert-a"
+      pqcPolicy = "strict"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    server {
+      ssl {
+        enabled = true
+        key-name = "cert-a"
+        pqc-policy = "strict"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "server": {
+      "ssl": {
+        "enabled": true,
+        "key-name": "cert-a",
+        "pqc-policy": "strict"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
