@@ -106,7 +106,9 @@ stored in the standard and de facto standard proxy headers.</div>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.http.HttpRequest)" class="member-name-link">ProxyHeaderParser</a><wbr>(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&nbsp;request)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Parses the <code>Forwarded</code> header or, when it is absent, the <code>X-Forwarded-*</code> headers.</div>
+</div>
 </div>
 </section>
 </li>
@@ -158,6 +160,10 @@ stored in the standard and de facto standard proxy headers.</div>
 <h3>ProxyHeaderParser</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ProxyHeaderParser</span><wbr><span class="parameters">(<a href="../../HttpRequest.html" title="interface in io.micronaut.http">HttpRequest</a>&nbsp;request)</span></div>
+<div class="block">Parses the <code>Forwarded</code> header or, when it is absent, the <code>X-Forwarded-*</code> headers.
+This constructor reads both header families whatever the values of
+<code>micronaut.server.host-resolution.allow-forwarded</code> and <code>allow-xforwarded</code>: those settings
+apply to host resolution by <a href="DefaultHttpHostResolver.html" title="class in io.micronaut.http.server.util"><code>DefaultHttpHostResolver</code></a> only.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>request</code> - The request</dd>
@@ -204,7 +210,8 @@ stored in the standard and de facto standard proxy headers.</div>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getHost</span>()</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The host</dd>
+<dd>The host. For the <code>Forwarded</code> header, it comes from the first element whose <code>host</code>
+parses, which may not be the element that <a href="#getScheme()"><code>getScheme()</code></a> comes from</dd>
 </dl>
 </div>
 </section>
@@ -216,7 +223,9 @@ stored in the standard and de facto standard proxy headers.</div>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getScheme</span>()</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The scheme or protocol</dd>
+<dd>The scheme or protocol. For the <code>Forwarded</code> header, it is the first <code>proto</code> of the header,
+which may come from another element than <a href="#getHost()"><code>getHost()</code></a>; host resolution pairs the host with the
+<code>proto</code> of its own element</dd>
 </dl>
 </div>
 </section>
@@ -228,7 +237,7 @@ stored in the standard and de facto standard proxy headers.</div>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></span>&nbsp;<span class="element-name">getPort</span>()</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The port</dd>
+<dd>The port, a number from 1 to 65535, or <code>null</code></dd>
 </dl>
 </div>
 </section>

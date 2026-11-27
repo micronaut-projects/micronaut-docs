@@ -1111,6 +1111,12 @@
 </div>
 </div>
 <div class="sect2">
+<h3 id="_forwarded_headers_are_opt_in_for_host_resolution_in_micronaut_framework_5_3">Forwarded Headers Are Opt-In for Host Resolution in Micronaut Framework 5.3</h3>
+<div class="paragraph">
+<p>Host resolution now ignores <code>Forwarded</code> and <code>X-Forwarded-*</code> headers by default. Applications behind a trusted proxy can enable either family independently. See <a href="#hostResolution">Host Resolution</a> for the configuration and <a href="#breaks">Breaking Changes</a> for migration guidance.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_core_themes_in_micronaut_framework_5_0_x">Core Themes in Micronaut Framework 5.0.x</h3>
 <div class="paragraph">
 <p>Micronaut Framework 5.0.x continues the work started in the first 5.0 milestones and adds a number of improvements across the core container, HTTP stack, configuration system, and developer-facing APIs.</p>
@@ -30342,13 +30348,13 @@ HttpResponse&lt;Map&lt;String, Object&gt;&gt; loadCart(ShoppingCart shoppingCart
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>The supplied configuration</p>
+<p>The configured host, protocol and port headers. When any of them is configured, no other header is read: a missing value comes from the request URI or the embedded server, and the two properties below do not apply.</p>
 </li>
 <li>
-<p>The <code>Forwarded</code> header</p>
+<p>The <code>Forwarded</code> header, if <code>micronaut.server.host-resolution.allow-forwarded</code> is <code>true</code>. When enabled and present, <code>Forwarded</code> takes precedence over the <code>X-Forwarded-*</code> headers even if it has no <code>host</code> parameter.</p>
 </li>
 <li>
-<p><code>X-Forwarded-</code> headers. If the <code>X-Forwarded-Host</code> header is not present, the other <code>X-Forwarded</code> headers are ignored.</p>
+<p>The <code>X-Forwarded-Host</code>, <code>X-Forwarded-Proto</code> and <code>X-Forwarded-Port</code> headers, if <code>micronaut.server.host-resolution.allow-xforwarded</code> is <code>true</code> and <code>X-Forwarded-Host</code> is present.</p>
 </li>
 <li>
 <p>The <code>Host</code> header</p>
@@ -30360,6 +30366,9 @@ HttpResponse&lt;Map&lt;String, Object&gt;&gt; loadCart(ShoppingCart shoppingCart
 <p>The properties on the embedded server URI</p>
 </li>
 </ol>
+</div>
+<div class="paragraph">
+<p>Both properties default to <code>false</code>. Enable a header family only behind a trusted proxy that overwrites or removes those headers. The environment variable for <code>allow-xforwarded</code> is <code>MICRONAUT_SERVER_HOST_RESOLUTION_ALLOW_XFORWARDED</code>. Micronaut silently ignores the spelling <code>allow-x-forwarded</code> and its environment variable <code>MICRONAUT_SERVER_HOST_RESOLUTION_ALLOW_X_FORWARDED</code>.</p>
 </div>
 <div class="paragraph">
 <p>The behavior of which headers to pull the relevant data can be changed with the following configuration:</p>
@@ -30382,6 +30391,26 @@ HttpResponse&lt;Map&lt;String, Object&gt;&gt; loadCart(ShoppingCart shoppingCart
 </tr>
 </thead>
 <tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.host-resolution.allow-forwarded</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether host resolution reads the host, protocol and port from the Forwarded header
+ (RFC 7239) when no host, protocol or port header is configured. Enable this only behind a
+ trusted proxy that overwrites or removes this header. Client address resolution separately
+ reads the for parameter of the Forwarded header. Default value (false).</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.host-resolution.allow-xforwarded</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether host resolution reads the X-Forwarded-Host, X-Forwarded-Proto and X-Forwarded-Port
+ headers when no host, protocol or port header is configured. The property is spelled
+ allow-xforwarded, without a hyphen between x and forwarded, and its environment variable is
+ MICRONAUT_SERVER_HOST_RESOLUTION_ALLOW_XFORWARDED. Micronaut silently ignores allow-x-forwarded.
+ Enable this only behind a trusted proxy that overwrites or removes these headers.
+ Client address resolution separately reads X-Forwarded-For. Default value (false).</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.server.host-resolution.allowed-hosts</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.util.List</p></td>
@@ -84469,6 +84498,28 @@ repositories {
 
 <div class="paragraph">
 <p>This section documents breaking changes between Micronaut versions</p>
+</div>
+<div class="sect2">
+<h3 id="_host_resolution_ignores_forwarded_headers_by_default_5_3">Host resolution ignores forwarded headers by default (5.3)</h3>
+<div class="paragraph">
+<p>Earlier versions used <code>Forwarded</code> and <code>X-Forwarded-*</code> headers automatically to resolve the request&#8217;s host, scheme and port. Starting with Micronaut 5.3, the default resolver uses the <code>Host</code> header, then the request URI, then the embedded server URI. Behind a reverse proxy, this can change the host in generated URLs and HTTP-to-HTTPS redirects.</p>
+</div>
+<div class="paragraph">
+<p>To use the public address supplied by a trusted proxy, enable the header family that the proxy overwrites or removes from incoming requests.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Set <code>micronaut.server.host-resolution.allow-forwarded</code> to <code>true</code> for <code>Forwarded</code>.</p>
+</li>
+<li>
+<p>Set <code>micronaut.server.host-resolution.allow-xforwarded</code> to <code>true</code> for <code>X-Forwarded-Host</code>, <code>X-Forwarded-Proto</code> and <code>X-Forwarded-Port</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Both properties default to <code>false</code>. Enabling both restores the previous header precedence. See <a href="#hostResolution">Host Resolution</a>.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_httprequest_getremoteaddress_is_nullable_5_3"><code>HttpRequest.getRemoteAddress()</code> is nullable (5.3)</h3>
